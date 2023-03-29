@@ -1,0 +1,33 @@
+import { Route, Routes } from "react-router-dom";
+import {routes} from '../config/routes';
+import { UserContext } from "../context/User";
+import { useContext } from "react";
+import Login from "../pages/Login";
+import Registration from "../pages/Registration";
+
+export default function AppRouter() {
+  const { user } = useContext(UserContext);
+
+  return (
+    <main>
+      <div className="iss__pageContent">
+        {user
+          ? <Routes>
+            {routes.map(({path, component, exact}) => (
+              <Route
+                key={path}
+                path={path}
+                element={component}
+                exact={exact}
+              />
+            ))}
+          </Routes>
+          : <Routes>
+            <Route path='*' element={<Login />} />
+            <Route path='/registration' element={<Registration />} />
+          </Routes>
+        }
+      </div>
+    </main>
+  );
+}

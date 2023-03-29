@@ -1,0 +1,28 @@
+.iss__filesUpload {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+.iss__filesUpload__form__border {
+  background-color: #62abff;
+  margin: -20px 0;
+  width: 1px;
+}
+.iss__filesUpload__sendButton {
+  border: 1px solid #62abff;
+  padding: 4px 8px;
+  background-color: #62abff;
+  color: white;
+  width: fit-content;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  font-size: 16px;
+}
+.iss__filesUpload__sendButton:hover {
+  color: #62abff;
+  background-color: white;
+}

@@ -1,0 +1,36 @@
+.iss__filesUpload__attributes {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  width: fit-content;
+  background-color: #62abff;
+  color: white;
+  gap: 20px;
+  min-width: 240px;
+  border: none;
+  height: fit-content;
+}
+.style--min {
+  min-width: initial;
+  width: 100%;
+  gap: 12px;
+  padding: 10px 0;
+  background-color: unset;
+}
+.iss__filesUpload__selectWrapper {
+  width: 100%;
+}
+.iss__filesUpload__button {
+  border: 1px solid white;
+  color: white;
+  background-color: #62abff;
+  padding: 4px 8px;
+  width: fit-content;
+  place-self: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iss__filesUpload__button:hover {
+  background-color: white;
+  color: #62abff;
+}

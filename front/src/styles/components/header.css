@@ -1,0 +1,22 @@
+.iss__header {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #62abff;
+  place-items: center;
+  position: sticky;
+  top: 0px;
+  background-color: white;
+  z-index: 1;
+}
+.iss__header__logoutButton {
+  background: none;
+  border: 1px solid #62abff;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.iss__header__logoutButton:hover {
+  background-color: #62abff;
+  color: white;
+}

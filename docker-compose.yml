@@ -1,0 +1,47 @@
+services:
+  iss_db:
+    container_name: iss_db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: iss_app_db
+      POSTGRES_HOST_AUTH_METHOD: trust  
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - iss_network
+
+  iss_back:
+    container_name: iss_back
+    image: iss_back
+    build:
+      context: ./back
+      dockerfile: DockerFile
+    restart: always
+    depends_on:
+      - iss_db
+    volumes:
+      - ./back/proj_back:/app
+    ports:
+      - 8000:8000
+    networks:
+      - iss_network    
+
+  iss_front:
+    container_name: iss_front
+    image: iss_front
+    build:
+      context: ./front
+      dockerfile: DockerFile
+    restart: always
+    depends_on:
+      - iss_back
+    volumes:
+      - ./front/:/app
+    ports:
+      - 3000:3000
+    networks:
+      - iss_network
+
+networks:
+  iss_network:

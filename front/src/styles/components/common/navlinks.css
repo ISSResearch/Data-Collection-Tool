@@ -1,0 +1,5 @@
+.iss__navLinks {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+}

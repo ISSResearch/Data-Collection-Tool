@@ -1,0 +1,66 @@
+.iss__attributeForm {
+  background-color: #62abff;
+  color: white;
+  user-select: none;
+  position: relative;
+  overflow-x: scroll;
+  margin-bottom: 8px;
+}
+.attribute--child {
+  padding: 10px 0 10px 40px;
+  border-left: 1px dashed white;
+  overflow: unset;
+  margin-bottom: 0px;
+  padding: 6px 40px;
+}
+.iss__attributeForm__tree {
+  position: absolute;
+  color: white;
+  left: 0;
+}
+.iss__attributeForm__inputWrap {
+  width: fit-content;
+  display: flex;
+  background-color: white;
+}
+.iss__attributeForm__inputWrap input {
+  border: none;
+  padding: 4px 8px;
+  outline: none;
+}
+.iss__attributeForm__inputButton {
+  display: flex;
+  width: fit-content;
+}
+.iss__attributeForm__inputButton button {
+  border: none;
+  position: relative;
+  background: none;
+  width: 24px;
+  cursor: pointer;
+  padding: 2px;
+}
+.inputButton--del span{
+  display: block;
+  width: 20px;
+  height: 4px;
+  background-color: #ff6262;
+}
+.inputButton--del:hover span {
+  background-color: #ff0000;
+}
+.inputButton--add span{
+  position: absolute;
+  top: 43%;
+  display: block;
+  width: 20px;
+  height: 4px;
+  background-color: #99ff62;
+
+}
+.inputButton--add:hover span {
+  background-color: #6db845;
+}
+.inputButton--add span:nth-child(1) {
+  rotate: 90deg;
+}

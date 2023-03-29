@@ -1,0 +1,32 @@
+.iss__titleSwitch {
+  display: flex;
+  margin-bottom: 40px;
+  gap: 40px;
+  width: fit-content;
+  border-bottom: 1px solid #62abff;
+}
+.iss__titleSwitch__radio {
+  display: flex;
+  width: fit-content;
+  border: unset;
+  user-select: none;
+  place-self: flex-end;
+}
+.iss__titleSwitch__radio input {
+  display: none;
+}
+.iss__titleSwitch__radioItem, .iss__titleSwitch__radioItem--active {
+  padding: 4px 8px;
+  outline: 1px solid #62abff00;
+  transition: outline 0.3s ease, color 0.3s ease;
+}
+.iss__titleSwitch__radioItem:hover {
+  outline-color: #62abff;
+  color: #62abff;
+  cursor: pointer;
+}
+.iss__titleSwitch__radioItem--active {
+  outline: 1px solid #62abff;
+  background-color: #62abff;
+  color: white;
+}
