@@ -40,7 +40,8 @@ services:
     depends_on:
       - iss_back
     volumes:
-      - ./front/:/app
+      - ./front/src:/app/src
+      - ./front/public:/app/public
     command: npm start
     ports:
       - 3000:3000
