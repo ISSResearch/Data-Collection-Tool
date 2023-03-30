@@ -14,9 +14,7 @@ services:
   iss_back:
     container_name: iss_back
     image: iss_back
-    build:
-      context: ./back
-      dockerfile: Dockerfile
+    build: ./back
     restart: always
     depends_on:
       - iss_db
@@ -37,14 +35,13 @@ services:
   iss_front:
     container_name: iss_front
     image: iss_front
-    build:
-      context: ./front
-      dockerfile: Dockerfile
+    build: ./front
     restart: always
     depends_on:
       - iss_back
     volumes:
       - ./front/:/app
+    command: npm start
     ports:
       - 3000:3000
     networks:

@@ -1,6 +1,6 @@
 {
   "name": "front",
-  "proxy": "http://172.19.0.3:8000",
+  "proxy": "http://iss_back:8000",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

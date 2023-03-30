@@ -28,10 +28,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+USE_X_FORWARDED_HOST = True
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ORIGIN_WHITELIST = [
+#		'http://localhost:3000',
+#		'http://127.0.01:3000'
 ]
 
 # Application definition
