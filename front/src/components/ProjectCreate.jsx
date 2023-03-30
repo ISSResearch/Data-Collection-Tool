@@ -4,7 +4,7 @@ import AttributesForm from './common/AttributesForm';
 import axios from 'axios';
 import '../styles/components/projectcreate.css';
 
-export default function ProjectCreate() {
+export default function ProjectCreate({ setOpt }) {
   const navigate = useNavigate();
   const { formHook, levelHook, attributeHook } = useAttributeManager();
   const { forms, addForm, deleteForm, gatherAttributes } = formHook;
@@ -28,7 +28,10 @@ export default function ProjectCreate() {
         }
       }
     )
-      .then(({status, data}) => {if (data.ok) navigate('/');})
+      .then(({status, data}) => {
+				//if (data.ok) navigate('/');
+				setOpt(true);
+			})
       .catch(err => console.log(err.message));
   }
 

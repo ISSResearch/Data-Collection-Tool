@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'iss_app_db',
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': 'iss_db',
         'PORT': '5432',
         'OPTIONS': {
             # 'service': 'my_service',

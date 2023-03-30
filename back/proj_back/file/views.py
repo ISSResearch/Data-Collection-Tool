@@ -43,7 +43,7 @@ class FilesViewSet(APIView):
         response, res_status = handle_upload(request, projectID)
         return Response(response, status=res_status)
 
-
+# TODO: move these out
 def handle_upload(request, projectID):
     response, res_status = {'ok': True}, status.HTTP_201_CREATED
 

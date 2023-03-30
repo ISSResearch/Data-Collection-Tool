@@ -13,7 +13,8 @@ export default function Home() {
     axios.get('/api/projects/')
       .then(({ status, data }) => { setProjects(data); })
       .catch(err => console.log('err', err.message));
-  }, [])
+			// TODO: remove opt dependecy after proper routing
+  }, [optionOne])
 
   return (
     <div className="iss__homePage">
@@ -23,7 +24,8 @@ export default function Home() {
         optionOne={optionOne}
         handler={setRadio}
       />
-      {optionOne ? <Projects items={projects}/> : <ProjectCreate/>}
+			{/*TODO: remove setoption prop after routing*/} 
+      {optionOne ? <Projects items={projects}/> : <ProjectCreate setOpt={setRadio}/>}
     </div>
   );
 }
