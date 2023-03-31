@@ -31,7 +31,12 @@ ALLOWED_HOSTS = ['*']
 USE_X_FORWARDED_HOST = True
 
 CORS_ALLOW_ALL_ORIGINS = False
+
+CSRF_TRUSTED_ORIGINS = ['http://iss_back:8000']
+
 CORS_ORIGIN_WHITELIST = [
+#		'http://localhost:8000',
+#		'http://iss_back:8000',
 #		'http://localhost:3000',
 #		'http://127.0.01:3000'
 ]
