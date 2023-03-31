@@ -4,17 +4,17 @@
   text-decoration: none;
   background-color: white;
   border-radius: 12px;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   padding: 12px 20px;
-  box-shadow: 1px 1px 2px #62abff;
+  box-shadow: 1px 1px 2px var(--issBrand);
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 .iss__projectCard:hover {
   transform: scale(1.01) translate(-6px, -6px);
-  box-shadow: 6px 6px 10px #62abff;
+  box-shadow: 6px 6px 10px var(--issBrand);
 }
 .iss__projectCard__name {
-  color: #62abff;
+  color: var(--issBrand);
   font-size: 24px;
   margin-bottom: 12px;
 }

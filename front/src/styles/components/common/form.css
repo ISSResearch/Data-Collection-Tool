@@ -1,7 +1,7 @@
 .iss__formContainer {
   max-width: 400px;
   width: 100%;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   padding: 40px 20px;
   position: relative;
 }
@@ -11,6 +11,11 @@
   gap: 20px;
   width: 100%;
 }
+.iss__formContainer__errors {
+  font-size: 16px;
+  color: red;
+  margin-bottom: 20px;
+}
 .iss__input {
   display: flex;
   flex-direction: column;
@@ -19,15 +24,16 @@
 }
 .iss__input input {
   padding: 4px 8px;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   background-color: #0077ff05;
+  outline: none;
 }
 .iss__formButton, .iss__regButton {
   padding: 8px 12px;
   width: fit-content;
   place-self: center;
-  background-color: #62abff;
-  border: 1px solid #62abff;
+  background-color: var(--issBrand);
+  border: 1px solid var(--issBrand);
   color: white;
   cursor: pointer;
   transition: color 0.3s ease, background-color 0.3s ease;
@@ -36,11 +42,11 @@
   color: white !important;
 }
 .iss__regButton:hover {
-  border-top: 1px solid #62abff;
-  border-left: 1px solid #62abff;
+  border-top: 1px solid var(--issBrand);
+  border-left: 1px solid var(--issBrand);
 }
 .iss__formButton:hover, .iss__regButton:hover {
-  color: #62abff;
+  color: var(--issBrand);
   background-color: white;
 }
 .iss__regButton {
@@ -50,5 +56,5 @@
   border: 0;
 }
 .iss__formContainer a:hover {
-  color: #62abff !important;
+  color: var(--issBrand) !important;
 }

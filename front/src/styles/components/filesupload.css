@@ -5,14 +5,14 @@
   position: relative;
 }
 .iss__filesUpload__form__border {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   margin: -20px 0;
   width: 1px;
 }
 .iss__filesUpload__sendButton {
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   padding: 4px 8px;
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
   width: fit-content;
   cursor: pointer;
@@ -23,6 +23,6 @@
   font-size: 16px;
 }
 .iss__filesUpload__sendButton:hover {
-  color: #62abff;
+  color: var(--issBrand);
   background-color: white;
 }

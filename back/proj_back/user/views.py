@@ -14,12 +14,13 @@ def login_user(request):
     if not request.user.is_authenticated:
         username, password = request.data.get('username'), request.data.get('password')
         user = authenticate(username=username, password=password)
+
         if user:
             login(request, user)
             serialized_user = UserSerializer(user)
             response['user'] = serialized_user.data
         else:
-            response['ok'] = False
+            response['isAuth'] = False
             response['message'] = 'No user found or wrong credentials'
 
     return Response(response)
@@ -35,7 +36,9 @@ def logout_user(request):
 def check_user(request):
     user = request.user
     response = {'isAuth': user.is_authenticated}
+
     if user.is_authenticated: response['user'] = UserSerializer(user).data
+
     return Response(response)
 
 
@@ -48,7 +51,8 @@ def create_user(request):
 
     response = {'isAuth': is_valid}
 
-    if is_valid: response['user'] = UserSerializer(form.instance).data
+    if is_valid:
+        response['user'] = UserSerializer(form.instance).data
     else: response['errors'] = form.errors
 
     return Response(response)

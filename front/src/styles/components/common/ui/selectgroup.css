@@ -3,7 +3,7 @@
   flex-direction: column;
   padding: 20px;
   width: fit-content;
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
   gap: 20px;
   min-width: 240px;
@@ -23,7 +23,7 @@
 .iss__filesUpload__button {
   border: 1px solid white;
   color: white;
-  background-color: #62abff;
+  background-color: var(--issBrand);
   padding: 4px 8px;
   width: fit-content;
   place-self: center;
@@ -32,5 +32,5 @@
 }
 .iss__filesUpload__button:hover {
   background-color: white;
-  color: #62abff;
+  color: var(--issBrand);
 }

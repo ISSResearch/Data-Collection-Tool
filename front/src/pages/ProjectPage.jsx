@@ -9,20 +9,19 @@ import axios from "axios";
 import '../styles/pages/project.css';
 
 export default function ProjectPage() {
-  const { user } = useContext(UserContext);
-  const { projectID } = useParams();
   const [project, setProject] = useState({});
   const [optionOne, setRadio] = useState(true);
+  const { user } = useContext(UserContext);
+  const { projectID } = useParams();
 
   useEffect(() => {
-    if (projectID) {
-      axios.get(`/api/projects/${projectID}/`)
-        .then(({status, data}) => {
-          const preparedData = attributeAdapter(data);
-          setProject(preparedData);
-        })
-        .catch(err => console.log('err', err.message));
-    }
+    if (!projectID) return;
+    axios.get(`/api/projects/${projectID}/`)
+      .then(({status, data}) => {
+        const preparedData = attributeAdapter(data);
+        setProject(preparedData);
+      })
+      .catch(err => console.log('err', err.message));
   }, [projectID]);
 
   return (

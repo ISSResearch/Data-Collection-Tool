@@ -1,6 +1,6 @@
 .iss__footer {
   padding: 20px;
-  border-top: 2px dashed #62abff;
+  border-top: 2px dashed var(--issBrand);
 }
 .iss__footer__contacts {
   list-style: none;

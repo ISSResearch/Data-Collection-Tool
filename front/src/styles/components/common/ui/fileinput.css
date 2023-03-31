@@ -1,5 +1,5 @@
 .iss__fileInput {
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   flex-grow: 1;
   padding: 44px 20px 20px;
   position: relative;
@@ -9,15 +9,15 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
   padding: 4px 8px;
   cursor: pointer;
-  outline: 1px solid #62abff;
+  outline: 1px solid var(--issBrand);
 }
 .iss__fileInput__upload:hover {
   background-color: white;
-  color: #62abff;
+  color: var(--issBrand);
 }
 .iss__fileInput__upload input {
   display: none;
@@ -33,7 +33,7 @@
 }
 .iss__fileInput__fileWrap {
   width: 100%;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   position: relative;
 }
 .iss__fileInput__file {
@@ -53,7 +53,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  outline: 1px solid #62abff;
+  outline: 1px solid var(--issBrand);
 }
 .iss__fileInput__fileWrap button {
   position: absolute;
@@ -72,7 +72,7 @@
   display: block;
   width: 22px;
   height: 4px;
-  background-color: #ff6262;
+  background-color: var(--issLightRed);
 }
 .iss__fileInput__fileWrap button span:nth-child(1) {
   rotate: 45deg;
@@ -81,7 +81,7 @@
   rotate: -45deg;
 }
 .iss__fileInput__fileWrap button:hover span {
-  background-color: #ff0000;
+  background-color: var(--issRed);
 }
 .iss__fileInput__selectorWrap {
   padding: 8px;

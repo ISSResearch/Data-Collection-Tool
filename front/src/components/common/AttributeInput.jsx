@@ -34,22 +34,24 @@ export default function AttributeInput({
                 type="button"
                 className="inputButton--del"
               ><span /></button>
-              {!lastLevel && <button
-                onClick={() => addAttribute(formId, path)}
-                type="button"
-                className="inputButton--add"
-              ><span /><span /></button>}
+              {!lastLevel &&
+                <button
+                  onClick={() => addAttribute(formId, path)}
+                  type="button"
+                  className="inputButton--add"
+                ><span /><span /></button>}
             </div>
           </div>
-          {Boolean(attributes.length) && <AttributeInput
-            formId={formId}
-            attributes={children}
-            depth={depth}
-            isChild={true}
-            delAttribute={delAttribute}
-            addAttribute={addAttribute}
-            handleChange={handleChange}
-          />}
+          {Boolean(attributes.length) &&
+            <AttributeInput
+              formId={formId}
+              attributes={children}
+              depth={depth}
+              isChild={true}
+              delAttribute={delAttribute}
+              addAttribute={addAttribute}
+              handleChange={handleChange}
+            />}
         </div>
       ))}
     </div>

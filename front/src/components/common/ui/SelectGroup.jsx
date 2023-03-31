@@ -40,11 +40,12 @@ export default function SelectGroup({
           />
         </div>
       ))}
-      {handleApply && <button
-        type="button"
-        onClick={() => handleApply(selectedOptions) }
-        className="iss__filesUpload__button"
-      >apply to all</button>}
+      {handleApply &&
+        <button
+          type="button"
+          onClick={() => handleApply(selectedOptions) }
+          className="iss__filesUpload__button"
+        >apply to all</button>}
     </fieldset>
   );
 }

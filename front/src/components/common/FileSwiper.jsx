@@ -12,7 +12,7 @@ export default function FileSwiper({fileManager, sliderManager}) {
       const target = document.getElementById('button--' + key);
       if (target) target.click();
     }
-   }
+  }
 
   const childRef = useRef();
   function handleRest() { childRef.current() }
@@ -33,17 +33,16 @@ export default function FileSwiper({fileManager, sliderManager}) {
           onClick={slideDec}
           type="button"
           className="slider-button slide-dec"
-        ><span /></button>
-        <button
-          onClick={handleRest}
-          className="slider-button slide-res"
-        >ZoomReset<br />(X)</button>
+        ><span/></button>
+        <button onClick={handleRest} className="slider-button slide-res">
+          ZoomReset<br/>(X)
+        </button>
         <button
           id='button--ArrowRight'
           onClick={slideInc}
           type="button"
           className="slider-button slide-inc"
-        ><span /><span /></button>
+        ><span/><span/></button>
       </div>
     </div>
   );

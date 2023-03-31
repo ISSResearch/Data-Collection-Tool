@@ -11,14 +11,13 @@ export default function FilesValidate({pathID, attributes}) {
   const sliderManager = useSwiper();
 
   useEffect(() => {
-    if (pathID) {
-      axios.get(`/api/files/project/${pathID}/`)
-        .then(({status, data}) => {
-          fileManager.setFiles(data);
-          sliderManager.setMax(data.length);
-        })
-        .catch(err => console.log('err', err.message));
-    }
+    if (!pathID) return;
+    axios.get(`/api/files/project/${pathID}/`)
+      .then(({status, data}) => {
+        fileManager.setFiles(data);
+        sliderManager.setMax(data.length);
+      })
+      .catch(err => console.log('err', err.message));
   }, [pathID]);
 
   return (

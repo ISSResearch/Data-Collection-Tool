@@ -22,13 +22,15 @@ export default function Header() {
   return (
     <header className='iss__header'>
       <Logo />
-      <div style={{display: "flex", gap: '20px', placeItems: 'center'}}>
-        <span>{user?.username || '!Logged'}</span>
+      <div className="iss__header__user">
         {user
-          ? <button
+          ? <>
+            <span>{user.username}</span>
+            <button
               onClick={logOutUser}
               className='iss__header__logoutButton'
             >Logout</button>
+          </>
           : <NavLinks links={linkSet} />
         }
       </div>

@@ -15,12 +15,12 @@
   place-content: center;
 }
 .iss__pageContent {
-  max-width: 1280px;
+  max-width: var(--maxWidth);
   width: 100%;
   padding: 40px 20px;
 }
 h1 {
-  color: #62abff;
+  color: var(--issBrand);
   font-size: 42px;
   line-height: 0.75;
 }

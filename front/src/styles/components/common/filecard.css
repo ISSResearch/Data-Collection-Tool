@@ -5,8 +5,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 10px;
-  border: 1px solid #62abff;
-  color: #62abff;
+  border: 1px solid var(--issBrand);
+  color: var(--issBrand);
   transition: 0.3s ease;
 }
 .iss__fileCard:hover {
@@ -14,13 +14,13 @@
 }
 .card--accepted {
   background-color: rgb(153, 255, 98, 0.2);
-  border: 1px solid #6db845;
-  color: #6db845;
+  border: 1px solid var(--issGreen);
+  color: var(--issGreen);
 }
 .card--rejected {
   background-color: rgba(255, 98, 98, 0.2);
-  border: 1px solid #ff0000;
-  color: #ff0000;
+  border: 1px solid var(--issRed);
+  color: var(--issRed);
 }
 .card--active {
   filter: none !important;

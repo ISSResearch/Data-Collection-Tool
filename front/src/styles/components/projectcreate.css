@@ -18,7 +18,7 @@
 }
 .iss__projectCreate__form__border {
   grid-area: form_border;
-  background-color: #62abff;
+  background-color: var(--issBrand);
   margin: -20px 0;
 }
 .iss__projectCreate__form__input {
@@ -27,7 +27,7 @@
   gap: 8px;
 }
 .iss__projectCreate__form__input textarea, .iss__projectCreate__form__input input {
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   padding: 12px;
 }
 .iss__projectCreate__form__input textarea {
@@ -36,13 +36,13 @@
 }
 .iss__projectCreate__form__createButton {
   background: none;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   cursor: pointer;
   padding: 4px 8px;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 .iss__projectCreate__form__createButton:hover {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
 }
 .iss__attributecreator {
@@ -57,13 +57,13 @@
 }
 .iss__attributecreator__addButton {
   background: none;
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   cursor: pointer;
   padding: 4px 8px;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 .iss__attributecreator__addButton:hover {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
 }
 .iss__attributecreator__addButton {
@@ -81,7 +81,7 @@
   display: block;
   width: 20px;
   height: 3px;
-  background-color: #99ff62;
+  background-color: var(--issLightGreen);
   position: absolute;
 }
 .addButton__cross span:nth-child(1) {

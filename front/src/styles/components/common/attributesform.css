@@ -1,5 +1,5 @@
 .iss__attributesForm {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
   padding: 20px;
   user-select: none;
@@ -49,17 +49,17 @@
   height: 4px;
 }
 .button-del span {
-  background-color: #ff6262;
+  background-color: var(--issLightRed);
 }
 .button-del:hover span {
-  background-color: #ff0000;
+  background-color: var(--issRed);
 }
 .button-add span {
   position: absolute;
-  background-color: #99ff62;
+  background-color: var(--issLightGreen);
 }
 .button-add:hover span {
-  background-color: #6db845;
+  background-color: var(--issGreen);
 }
 .button-add span:nth-child(1) {
   rotate: 90deg;

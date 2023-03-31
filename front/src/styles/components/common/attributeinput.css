@@ -1,5 +1,5 @@
 .iss__attributeForm {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
   user-select: none;
   position: relative;
@@ -44,10 +44,10 @@
   display: block;
   width: 20px;
   height: 4px;
-  background-color: #ff6262;
+  background-color: var(--issLightRed);
 }
 .inputButton--del:hover span {
-  background-color: #ff0000;
+  background-color: var(--issRed);
 }
 .inputButton--add span{
   position: absolute;
@@ -55,11 +55,11 @@
   display: block;
   width: 20px;
   height: 4px;
-  background-color: #99ff62;
+  background-color: var(--issLightGreen);
 
 }
 .inputButton--add:hover span {
-  background-color: #6db845;
+  background-color: var(--issGreen);
 }
 .inputButton--add span:nth-child(1) {
   rotate: 90deg;

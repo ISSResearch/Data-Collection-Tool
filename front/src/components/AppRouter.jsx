@@ -13,14 +13,9 @@ export default function AppRouter() {
       <div className="iss__pageContent">
         {user
           ? <Routes>
-            {routes.map(({path, component, exact}) => (
-              <Route
-                key={path}
-                path={path}
-                element={component}
-                exact={exact}
-              />
-            ))}
+            {routes.map(({ path, element, exact }) =>
+              <Route key={path} path={path} element={element} exact={exact} />
+            )}
           </Routes>
           : <Routes>
             <Route path='*' element={<Login />} />

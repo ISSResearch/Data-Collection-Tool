@@ -55,14 +55,15 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span /><span /></button>
         </div>
-        {attributes[formId].length > 0 && <AttributeInput
-          formId={formId}
-          attributes={attributes[formId]}
-          depth={levels[formId].length}
-          delAttribute={delAttribute}
-          addAttribute={addAttribute}
-          handleChange={handleChange}
-        />}
+        {attributes[formId].length > 0 &&
+          <AttributeInput
+            formId={formId}
+            attributes={attributes[formId]}
+            depth={levels[formId].length}
+            delAttribute={delAttribute}
+            addAttribute={addAttribute}
+            handleChange={handleChange}
+          />}
       </div>
     </div>
   );

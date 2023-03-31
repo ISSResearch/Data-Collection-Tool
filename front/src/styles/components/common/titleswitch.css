@@ -3,7 +3,7 @@
   margin-bottom: 40px;
   gap: 40px;
   width: fit-content;
-  border-bottom: 1px solid #62abff;
+  border-bottom: 1px solid var(--issBrand);
 }
 .iss__titleSwitch__radio {
   display: flex;
@@ -21,12 +21,12 @@
   transition: outline 0.3s ease, color 0.3s ease;
 }
 .iss__titleSwitch__radioItem:hover {
-  outline-color: #62abff;
-  color: #62abff;
+  outline-color: var(--issBrand);
+  color: var(--issBrand);
   cursor: pointer;
 }
 .iss__titleSwitch__radioItem--active {
-  outline: 1px solid #62abff;
-  background-color: #62abff;
+  outline: 1px solid var(--issBrand);
+  background-color: var(--issBrand);
   color: white;
 }

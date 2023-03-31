@@ -5,9 +5,9 @@ import axios from 'axios';
 import '../styles/components/projectcreate.css';
 
 export default function ProjectCreate({ setOpt }) {
-  const navigate = useNavigate();
   const { formHook, levelHook, attributeHook } = useAttributeManager();
   const { forms, addForm, deleteForm, gatherAttributes } = formHook;
+  const navigate = useNavigate();
 
   function getFormData({target}) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
@@ -32,7 +32,7 @@ export default function ProjectCreate({ setOpt }) {
 				//if (data.ok) navigate('/');
 				setOpt(true);
 			})
-      .catch(err => console.log(err.message));
+      .catch(err => console.log(err));
   }
 
   return (
@@ -58,7 +58,7 @@ export default function ProjectCreate({ setOpt }) {
             type="button"
             className='iss__attributecreator__addButton'
           >
-            <div className="addButton__cross"><span /><span /></div>
+            <div className="addButton__cross"><span/><span/></div>
             <span>Add Attribute</span>
           </button>
           <div className='iss__attributecreator__attributesForm'>

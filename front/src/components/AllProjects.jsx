@@ -1,7 +1,8 @@
 import ProjectCard from './common/ProjectCard';
 import '../styles/components/projects.css';
 
-export default function Projects({items}) {
+export default function Projects({ items }) {
+
   return (
     <div className='iss__projects'>
       {items.map(item => (

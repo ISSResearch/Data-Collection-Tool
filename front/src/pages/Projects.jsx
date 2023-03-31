@@ -24,7 +24,7 @@ export default function Home() {
         optionOne={optionOne}
         handler={setRadio}
       />
-			{/*TODO: remove setoption prop after routing*/} 
+			{/*TODO: remove setoption prop after routing*/}
       {optionOne ? <Projects items={projects}/> : <ProjectCreate setOpt={setRadio}/>}
     </div>
   );

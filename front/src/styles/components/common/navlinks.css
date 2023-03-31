@@ -3,3 +3,16 @@
   gap: 12px;
   list-style: none;
 }
+.iss__navLinks a {
+  background: none;
+  border: 1px solid var(--issBrand);
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--issBrand);
+  text-decoration: none;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.iss__navLinks a:hover {
+  background-color: var(--issBrand);
+  color: white;
+}

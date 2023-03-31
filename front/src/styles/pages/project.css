@@ -1,8 +1,8 @@
 .iss__projectPage__button {
   margin-bottom: 20px;
   text-decoration: none;
-  border: 1px solid #62abff;
-  background-color: #62abff;
+  border: 1px solid var(--issBrand);
+  background-color: var(--issBrand);
   color: white;
   padding: 2px 4px;
   width: fit-content;

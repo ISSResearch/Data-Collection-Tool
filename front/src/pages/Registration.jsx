@@ -1,11 +1,12 @@
 import { UserContext } from '../context/User';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/common/Form';
 import axios from 'axios';
 import '../styles/pages/registration.css';
 
 export default function Registration() {
+  const [errors, setErrors] = useState(null);
   const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -22,11 +23,16 @@ export default function Registration() {
       }
     )
       .then(({status, data}) => {
-        if (!data.isAuth) return console.log(data.errors);
+        if (!data.isAuth) throw data.errors;
         setUser(data.user);
         navigate('/');
       })
-      .catch(err => console.log(err.message));
+      .catch(err => {
+        const errorMessage = Object.entries(err)
+          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
+        setErrors(errorMessage);
+        setTimeout(() => setErrors(null), 5000);
+      });
   }
 
   const fieldSet = [
@@ -41,6 +47,7 @@ export default function Registration() {
     <div className="iss__registrationPage">
       <h1>Registration Page</h1>
       <Form
+        errors={errors}
         callback={sendForm}
         fields={fieldSet}
         link={bottomLink}

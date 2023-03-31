@@ -15,7 +15,7 @@
   left: 50%;
   padding: 8px;
   transform: translate(-50%, 100%);
-  border: 1px solid #62abff;
+  border: 1px solid var(--issBrand);
   display: flex;
   place-items: center;
   gap: 20px;
@@ -41,26 +41,26 @@
   height: fit-content;
   padding: 4px 8px;
   background-color: white;
-  color: #62abff;
+  color: var(--issBrand);
   border-radius: 6px;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 .slide-res:hover {
-  background-color: #62abff;
+  background-color: var(--issBrand);
   color: white;
 }
 .slide-dec span {
-  background-color: #ff6262;
+  background-color: var(--issLightRed);
 }
 .slide-dec:hover span {
-  background-color: #ff0000;
+  background-color: var(--issRed);
 }
 .slide-inc span{
-  background-color: #99ff62;
+  background-color: var(--issLightGreen);
 }
 .slide-inc span:nth-child(1) {
   rotate: 90deg;
 }
 .slide-inc:hover span {
-  background-color: #6db845;
+  background-color: var(--issGreen);
 }

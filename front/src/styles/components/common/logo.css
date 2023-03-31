@@ -10,7 +10,7 @@
 }
 .iss__brand__name {
   text-align: center;
-  color: #62abff;
+  color: var(--issBrand);
   transition: opacity 0.3s ease;
 }
 .iss__brand:hover .iss__brand__name {

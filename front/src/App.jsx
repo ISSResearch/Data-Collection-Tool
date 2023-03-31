@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import AppRouter from "./components/AppRouter";
 import axios from 'axios';
 import './styles/app.css';
+import './styles/variables.css';
 
 export default function App() {
   const [user, setUser] = useState(null);
