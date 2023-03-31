@@ -26,7 +26,7 @@ export default function useFileInput() {
 
   function attributeFile({ fileIndex, selectorIndex, value, clear, isNew }) {
     const target = files[fileIndex].atrsId;
-    if (isNew) return target[selectorIndex] = [isNew];
+    if (isNew) return target[selectorIndex] = [...isNew];
     if (clear) target[selectorIndex].splice(value, target[selectorIndex].length);
     else target[selectorIndex]
       ? target[selectorIndex].push(value)

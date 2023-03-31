@@ -13,7 +13,7 @@ export default function SelectGroup({
   const [selectedOptions, setSelected] = useState({});
 
   function setOption(option, selectorIndex) {
-    const newOptions = {...selectedOptions};
+    const newOptions = { ...selectedOptions };
     const [, , index] = option;
     const selectorSet = newOptions[selectorIndex]?.map(el => el) || [];
     if (index < selectorSet.length) selectorSet.splice(index, selectorSet.length);

@@ -12,13 +12,14 @@ export default function Selector({
   const [options, setOptions] = useState([item]);
 
   function handleSelect(selected, children, index) {
+    // todo: deppcopy
     const newOptions = [...options];
     const id = typeof selected === 'number' ? selected : Number(selected.value);
     const clear = !Boolean(id);
     newOptions.splice(index+1, newOptions.length);
     if (!clear && children) {
       const [child] = children;
-      const option = {...child};
+      const option = { ...child };
       option.attributes = option.attributes.filter(({parent}) => parent === id);
       newOptions.push(option);
     }
@@ -37,16 +38,14 @@ export default function Selector({
       // TODO: proper check
       // if (!children || id === item.id) return acc;
       if (!children) return acc;
-
       const [child] = children;
       const option = {...child};
       option.attributes = option.attributes.filter(({parent}) => parent === id);
-
       return [...acc, option];
     }, [item]);
-    const newOptIds = newOptions.map(({id}) => id);
-    // TODO: level id could be the same so it filters needed values
-    const newIds = options.map(([id]) => id).filter(id => !newOptIds.includes(id));
+    // const newLevelsIds = newOptions.map(({id}) => id);
+    // const newIds = options.map(([id]) => id).filter(id => !newLevelsIds.includes(id));
+    const newIds = options.reduce((acc, [id]) => id ? [...acc, id] : acc, []);
     if (attributeFile) attributeFile({fileIndex, selectorIndex, isNew: newIds});
     setOptions(newOptions);
   }
