@@ -18,4 +18,5 @@ class LevelSerializer(serializers.ModelSerializer):
 
     def get_attributes(self, instance):
         attributes = AttributeSerializer(instance.attribute_set.all(), many=True)
+
         return attributes.data

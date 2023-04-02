@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { deepCopy } from '../../../utils/utils';
 import '../../../styles/components/common/ui/selector.css';
 
 export default function Selector({
@@ -12,8 +13,7 @@ export default function Selector({
   const [options, setOptions] = useState([item]);
 
   function handleSelect(selected, children, index) {
-    // todo: deppcopy
-    const newOptions = [...options];
+    const newOptions = deepCopy(options);
     const id = typeof selected === 'number' ? selected : Number(selected.value);
     const clear = !Boolean(id);
     newOptions.splice(index+1, newOptions.length);
