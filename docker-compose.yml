@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: iss_app_db
-      POSTGRES_HOST_AUTH_METHOD: trust  
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./db:/var/lib/postgresql/data
     networks:
@@ -24,13 +24,11 @@ services:
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
              python manage.py makemigrations attribute &&
-             python manage.py makemigrations file && 
+             python manage.py makemigrations file &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-    ports:
-      - 8000:8000
     networks:
-      - iss_network    
+      - iss_network
 
   iss_front:
     container_name: iss_front
