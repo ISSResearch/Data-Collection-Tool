@@ -1,10 +1,5 @@
 from django.urls import path, include
 
-def q(request, path):
-    from django.http import HttpResponse
-    return HttpResponse('ok')
-
-
 
 urlpatterns = [
     path('users/', include('user.urls')),

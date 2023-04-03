@@ -97,3 +97,12 @@
   background-color: unset;
   padding: 0;
 }
+.iss__filesUpload__loadingWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+.iss__filesUpload__loadingWrap>div {
+  place-self: center;
+}

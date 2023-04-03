@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
+import { deepCopy } from '../utils/utils';
 import SelectGroup from './common/ui/SelectGroup';
 import FileInput from './common/ui/FileInput';
+import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/filesupload.css';
 
@@ -11,20 +13,23 @@ export default function FilesUpload({attributes, pathID}) {
   const navigate = useNavigate();
   const fileManager = useFileInput();
   const [applyOptions, setApplyOptions] = useState({});
+  const [uploading, setUploading] = useState(false);
 
   function handleApply(selected) { setApplyOptions(selected); }
 
   function gatherFiles() {
-    const {files} = fileManager;
-    files.forEach(file => {
+    const { files } = fileManager;
+    const filesToSend = deepCopy(files).slice(0, 100);
+    filesToSend.forEach(file => {
       const preparedAtrs = Object.values(file.atrsId)
         .reduce((acc, ids) => ids ? [...acc, ...ids] : acc, []);
       file.atrsId = preparedAtrs;
     })
-    return files;
+    return filesToSend;
   }
   function sendForm(event) {
     event.preventDefault();
+    setUploading(true);
     const files = gatherFiles();
     if (!files.length) return console.log('no values');
     const formData = new FormData();
@@ -45,16 +50,23 @@ export default function FilesUpload({attributes, pathID}) {
 
   return (
     <form className='iss__filesUpload'>
-      <button onClick={sendForm} className="iss__filesUpload__sendButton">
-        SEND ALL
-      </button>
+      {!uploading &&
+        <button onClick={sendForm} className="iss__filesUpload__sendButton">
+          SEND ALL
+        </button>}
       <SelectGroup attributes={attributes} handleApply={handleApply} />
       <div className='iss__filesUpload__form__border'/>
-      <FileInput
-        fileManager={fileManager}
-        attributes={attributes}
-        applyOptions={applyOptions}
-      />
+      {uploading
+        ? <div className='iss__filesUpload__loadingWrap'>
+            <span>Uploading Data...<br/><b>Maximum of 100</b> files will be sent!</span>
+            <Load/>
+          </div>
+        : <FileInput
+          fileManager={fileManager}
+          attributes={attributes}
+          applyOptions={applyOptions}
+        />
+      }
     </form>
   );
 }

@@ -102,10 +102,6 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'iss_db',
         'PORT': '5432',
-        'OPTIONS': {
-            # 'service': 'my_service',
-            # 'passfile': '.my_pgpass',
-        },
     }
 }
 
@@ -154,6 +150,8 @@ MEDIA_ROOT = 'file_store/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

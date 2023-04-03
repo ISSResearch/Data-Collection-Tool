@@ -9,7 +9,7 @@ from django.http import JsonResponse
 
 @api_view(('POST',))
 def login_user(request):
-    response = {'isAuth': True}
+    response = {'isAuth': False}
 
     if not request.user.is_authenticated:
         username, password = request.data.get('username'), request.data.get('password')
@@ -19,9 +19,8 @@ def login_user(request):
             login(request, user)
             serialized_user = UserSerializer(user)
             response['user'] = serialized_user.data
-        else:
-            response['isAuth'] = False
-            response['message'] = 'No user found or wrong credentials'
+            response['isAuth'] = True
+        else: response['message'] = 'No user found or wrong credentials'
 
     return Response(response)
 
@@ -51,8 +50,7 @@ def create_user(request):
 
     response = {'isAuth': is_valid}
 
-    if is_valid:
-        response['user'] = UserSerializer(form.instance).data
+    if is_valid: response['user'] = UserSerializer(form.instance).data
     else: response['errors'] = form.errors
 
     return Response(response)
@@ -62,7 +60,9 @@ class User(APIView):
     http_method_names = ('get', 'put', 'path')
 
     def get(self, request, user_id):
-        user = CustomUser.objects.get(id=user_id)
+        user = CustomUser.objects \
+          .values('id', 'username', 'user_role') \
+          .get(id=user_id)
         response = UserSerializer(user)
         return Response(response.data)
 
