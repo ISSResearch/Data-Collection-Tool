@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
-import { deepCopy } from '../utils/utils';
 import SelectGroup from './common/ui/SelectGroup';
 import FileInput from './common/ui/FileInput';
 import Load from './common/Load';
@@ -19,7 +18,7 @@ export default function FilesUpload({attributes, pathID}) {
 
   function gatherFiles() {
     const { files } = fileManager;
-    const filesToSend = deepCopy(files).slice(0, 100);
+    const filesToSend = files.slice(0, 100);
     filesToSend.forEach(file => {
       const preparedAtrs = Object.values(file.atrsId)
         .reduce((acc, ids) => ids ? [...acc, ...ids] : acc, []);
