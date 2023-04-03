@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../context/User';
 import Projects from '../components/AllProjects';
 import ProjectCreate from '../components/ProjectCreate';
 import TitleSwitch from "../components/common/TitleSwitch";
@@ -8,6 +9,7 @@ import '../styles/pages/projects.css';
 export default function Home() {
   const [projects, setProjects] = useState([]);
   const [optionOne, setRadio] = useState(true);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     axios.get('/api/projects/')
@@ -20,7 +22,7 @@ export default function Home() {
     <div className="iss__homePage">
       <TitleSwitch
         title='Projects Page'
-        options={['all projects', 'create project']}
+        options={['all projects', user.user_role === 'a' ? 'create project' : '']}
         optionOne={optionOne}
         handler={setRadio}
       />
