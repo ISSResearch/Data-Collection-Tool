@@ -1,5 +1,8 @@
 FROM python:latest
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONUNBUFFERED=1
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
         postgresql-client \
@@ -10,7 +13,5 @@ RUN apt-get update \
 
 WORKDIR /app
 COPY requirements.txt ./
-RUN pip install -r requirements.txt
-EXPOSE 8000
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -41,8 +41,18 @@ services:
       - ./front/src:/app/src
       - ./front/public:/app/public
     command: npm start
+    networks:
+      - iss_network
+
+  iss_proxy:
+    container_name: iss_proxy
+    image: nginx
+    depends_on:
+      - iss_front
     ports:
-      - 3000:3000
+      - 80:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
     networks:
       - iss_network
 

@@ -1,13 +1,14 @@
-from django.contrib.auth import authenticate, login, logout
-from user.forms import CreateUserForm
 from rest_framework.views import Response, APIView
-from rest_framework.decorators import api_view
-from .serializers import CustomUser, UserSerializer
+from rest_framework.decorators import api_view, permission_classes
+from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
+from .serializers import CustomUser, UserSerializer
+from user.forms import CreateUserForm
 
 
 @api_view(('POST',))
+@permission_classes([])
 def login_user(request):
     response = {'isAuth': False}
 
@@ -32,6 +33,7 @@ def logout_user(request):
 
 
 @api_view(('GET',))
+@permission_classes([])
 def check_user(request):
     user = request.user
     response = {'isAuth': user.is_authenticated}
@@ -42,6 +44,7 @@ def check_user(request):
 
 
 @api_view(('POST',))
+@permission_classes([])
 def create_user(request):
     form = CreateUserForm(request.data)
 
