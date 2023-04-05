@@ -11,6 +11,7 @@
   border: none;
   display: flex;
   flex-direction: column;
+  place-items: center;
   gap: 20px;
 }
 .iss__projectCreate__form__set:nth-child(1) {
@@ -24,6 +25,7 @@
 .iss__projectCreate__form__input {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 8px;
 }
 .iss__projectCreate__form__input textarea, .iss__projectCreate__form__input input {

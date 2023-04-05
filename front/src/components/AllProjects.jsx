@@ -1,15 +1,23 @@
 import ProjectCard from './common/ProjectCard';
+import Load from './common/Load';
 import '../styles/components/projects.css';
 
 export default function Projects({ items }) {
 
+  if (!items) return <div className='iss__projects__loading'><Load/></div>
+
   return (
-    <div className='iss__projects'>
-      {items.map(item => (
-        <div key={item.id} className='iss__projects__card'>
-          <ProjectCard item={item} />
+    <>
+      {items.length
+        ? <div className='iss__projects'>
+          {items.map(item => (
+            <div key={item.id} className='iss__projects__card'>
+              <ProjectCard item={item} />
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+        : <span>No projects yet. Create one!</span>
+      }
+    </>
   )
 }

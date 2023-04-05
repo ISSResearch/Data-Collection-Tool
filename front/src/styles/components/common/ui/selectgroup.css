@@ -28,9 +28,16 @@
   width: fit-content;
   place-self: center;
   cursor: pointer;
+  user-select: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .iss__filesUpload__button:hover {
   background-color: white;
   color: var(--issBrand);
+}
+.button--disabled {
+  cursor: pointer;
+  pointer-events: none;
+  filter: grayscale(1);
+  opacity: 0.5;
 }

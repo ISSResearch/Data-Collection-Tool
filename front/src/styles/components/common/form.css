@@ -8,6 +8,7 @@
 .iss__form {
   display: flex;
   flex-direction: column;
+  place-items: center;
   gap: 20px;
   width: 100%;
 }
@@ -21,6 +22,7 @@
   flex-direction: column;
   gap: 8px;
   font-size: 16px;
+  width: 100%;
 }
 .iss__input input {
   padding: 4px 8px;
@@ -57,4 +59,7 @@
 }
 .iss__formContainer a:hover {
   color: var(--issBrand) !important;
+}
+.iss__formLoad {
+  margin: 0 auto;
 }

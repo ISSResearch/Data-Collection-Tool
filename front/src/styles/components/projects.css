@@ -8,3 +8,8 @@
   padding: 6px;
   width: 33%;
 }
+.iss__projects__loading {
+  width: 100%;
+  display: flex;
+  place-content: center;
+}

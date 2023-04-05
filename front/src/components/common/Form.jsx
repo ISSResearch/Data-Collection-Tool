@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import '../../styles/components/common/form.css';
+import Load from './Load';
 
-export default function Form({errors, callback, fields, buttonText, link}) {
+export default function Form({errors, callback, fields, loading, link}) {
 
   return (
     <div className='iss__formContainer'>
@@ -21,7 +22,10 @@ export default function Form({errors, callback, fields, buttonText, link}) {
             />
           </label>
         ))}
-        <button className='iss__formButton'>{buttonText}</button>
+        {loading
+          ? <Load isInline/>
+          : <button className='iss__formButton'>submit</button>
+        }
       </form>
       {link && <Link className="iss__regButton" to={link.to}>{link.text}</Link>}
     </div>

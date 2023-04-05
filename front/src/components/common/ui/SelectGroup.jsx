@@ -4,6 +4,7 @@ import '../../../styles/components/common/ui/selectgroup.css';
 
 export default function SelectGroup({
   attributes,
+  isFiles,
   handleApply,
   applyOptions,
   attributeFile,
@@ -44,7 +45,9 @@ export default function SelectGroup({
         <button
           type="button"
           onClick={() => handleApply(selectedOptions) }
-          className="iss__filesUpload__button"
+          className={
+            `iss__filesUpload__button ${!isFiles ? 'button--disabled' : ''}`
+          }
         >apply to all</button>}
     </fieldset>
   );

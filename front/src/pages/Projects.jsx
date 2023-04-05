@@ -7,7 +7,7 @@ import axios from 'axios';
 import '../styles/pages/projects.css';
 
 export default function Home() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(null);
   const [optionOne, setRadio] = useState(true);
   const { user } = useContext(UserContext);
 

@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
 import AttributesForm from './common/AttributesForm';
+import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/projectcreate.css';
 
 export default function ProjectCreate({ setOpt }) {
+  const [loading, setLoading] = useState(false);
   const { formHook, levelHook, attributeHook } = useAttributeManager();
   const { forms, addForm, deleteForm, gatherAttributes } = formHook;
   const navigate = useNavigate();
@@ -18,6 +21,7 @@ export default function ProjectCreate({ setOpt }) {
 
   function sendForm(event) {
     event.preventDefault();
+    setLoading(true);
     const {name, description, attributes} = getFormData(event);
     axios.request('/api/projects/',
       {
@@ -32,7 +36,10 @@ export default function ProjectCreate({ setOpt }) {
 				//if (data.ok) navigate('/');
 				setOpt(true);
 			})
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err)
+        setLoading(false);
+      });
   }
 
   return (
@@ -47,9 +54,12 @@ export default function ProjectCreate({ setOpt }) {
             Project description:
             <textarea autoComplete='off' placeholder='Enter project description'/>
           </label>
-          <button className='iss__projectCreate__form__createButton'>
-            Create Project
-          </button>
+          {loading
+            ? <Load isInline/>
+            : <button className='iss__projectCreate__form__createButton'>
+              Create Project
+            </button>
+          }
         </fieldset>
         <div className='iss__projectCreate__form__border'/>
         <fieldset className='iss__attributecreator'>

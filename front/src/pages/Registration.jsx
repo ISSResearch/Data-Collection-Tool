@@ -6,12 +6,14 @@ import axios from 'axios';
 import '../styles/pages/registration.css';
 
 export default function Registration() {
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const {setUser} = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   function sendForm(event) {
     event.preventDefault();
+    setLoading(true);
     const [name, pass1, pass2] = event.target;
     axios.request('/api/users/create/',
       {
@@ -31,6 +33,7 @@ export default function Registration() {
         const errorMessage = Object.entries(err)
           .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
         setErrors(errorMessage);
+        setLoading(false);
         setTimeout(() => setErrors(null), 5000);
       });
   }
@@ -41,17 +44,15 @@ export default function Registration() {
     {label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true},
   ]
 
-  const bottomLink = { to: '/login', text: 'Or Login' }
-
   return (
     <div className="iss__registrationPage">
       <h1>Registration Page</h1>
       <Form
+        loading={loading}
         errors={errors}
         callback={sendForm}
         fields={fieldSet}
-        link={bottomLink}
-        buttonText="Register"
+        link={{ to: '/login', text: 'Or Login' }}
       />
     </div>
   );

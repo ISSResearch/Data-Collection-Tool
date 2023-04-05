@@ -16,9 +16,14 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
         UPLOAD
         <input type="file" multiple onChange={handleUpload} />
       </label>
+      <div className='iss__fileInput__note'>
+        Selected: {files.length} item{Boolean(files.length !== 1) && 's'}.<br/>
+        Note that maximum of 100 files will be sent.
+      </div>
       <div className='iss__fileInput__filesUploaded'>
+        {/* todo changed key watchh him in long distance */}
         {files.map(({file, name, type}, index) => (
-          <div key={file.lastModified} className='iss__fileInput__fileCard'>
+          <div key={index + file.lastModified} className='iss__fileInput__fileCard'>
             <div className='iss__fileInput__fileWrap'>
               {type === 'image'
                 ? <div

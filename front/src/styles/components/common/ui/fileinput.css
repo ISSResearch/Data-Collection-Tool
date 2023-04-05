@@ -1,9 +1,12 @@
 .iss__fileInput {
   border: 1px solid var(--issBrand);
   flex-grow: 1;
-  padding: 44px 20px 20px;
+  padding: 40px 20px 20px;
   position: relative;
   width: 100%;
+}
+.iss__fileInput__note {
+  margin-bottom: 12px;
 }
 .iss__fileInput__upload {
   position: absolute;

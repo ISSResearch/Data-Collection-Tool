@@ -6,14 +6,15 @@ import axios from 'axios';
 import '../styles/pages/login.css';
 
 export default function Login() {
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   function sendForm(event) {
     event.preventDefault();
+    setLoading(true);
     const [name, pass] = event.target;
-
     axios.request('/api/users/login/',
       {
         method: 'post',
@@ -30,6 +31,7 @@ export default function Login() {
       })
       .catch(err => {
         setErrors(err);
+        setLoading(false);
         setTimeout(() => setErrors(null), 5000);
       });
   }
@@ -39,16 +41,15 @@ export default function Login() {
     {label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true},
   ]
 
-  const bottomLink = { to: '/registration', text: 'Or Registry' }
-
   return (
     <div className="iss__loginPage">
       <h1>Login Page</h1>
-      <Form callback={sendForm}
+      <Form
+        callback={sendForm}
+        loading={loading}
         errors={errors}
         fields={fieldSet}
-        link={bottomLink}
-        buttonText="Login"
+        link={{ to: '/registration', text: 'Or Registry' }}
       />
     </div>
   );

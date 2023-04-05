@@ -1,5 +1,5 @@
 import '../../styles/components/common/load.css';
 
-export default function Load() {
-  return <div className="iss__loading" />
+export default function Load({isInline}) {
+  return <div className={isInline ? 'iss__loadingMin' : 'iss__loading'} />
 }

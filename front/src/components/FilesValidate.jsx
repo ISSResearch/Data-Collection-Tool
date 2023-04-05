@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSwiper, useFiles } from '../hooks';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileInfo from './common/FIleInfo';
+import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/filesvalidate.css';
 
 export default function FilesValidate({pathID, attributes}) {
+  const [loading, setLoading] = useState(true);
   const fileManager = useFiles();
   const sliderManager = useSwiper();
 
@@ -18,7 +20,10 @@ export default function FilesValidate({pathID, attributes}) {
         sliderManager.setMax(data.length);
       })
       .catch(err => console.log('err', err.message));
+    setLoading(false);
   }, [pathID]);
+
+  if (loading) return <div className='iss__validation__load'><Load /></div>
 
   return (
     <div className='iss__validation'>

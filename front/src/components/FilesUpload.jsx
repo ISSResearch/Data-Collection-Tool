@@ -9,10 +9,10 @@ import '../styles/components/filesupload.css';
 
 // TODO: refactor
 export default function FilesUpload({attributes, pathID}) {
-  const navigate = useNavigate();
-  const fileManager = useFileInput();
   const [applyOptions, setApplyOptions] = useState({});
   const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
+  const fileManager = useFileInput();
 
   function handleApply(selected) { setApplyOptions(selected); }
 
@@ -53,19 +53,24 @@ export default function FilesUpload({attributes, pathID}) {
         <button onClick={sendForm} className="iss__filesUpload__sendButton">
           SEND ALL
         </button>}
-      <SelectGroup attributes={attributes} handleApply={handleApply} />
+      <SelectGroup
+        attributes={attributes}
+        handleApply={handleApply}
+        isFiles={Boolean(fileManager.files?.length)}
+      />
       <div className='iss__filesUpload__form__border'/>
       {uploading
         ? <div className='iss__filesUpload__loadingWrap'>
-            <span>Uploading Data...<br/><b>Maximum of 100</b> files will be sent!</span>
+            <span>
+              Uploading Data...<br/><b>Maximum of 100</b> files will be sent!
+            </span>
             <Load/>
           </div>
         : <FileInput
           fileManager={fileManager}
           attributes={attributes}
           applyOptions={applyOptions}
-        />
-      }
+        />}
     </form>
   );
 }
