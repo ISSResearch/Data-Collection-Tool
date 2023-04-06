@@ -3,8 +3,8 @@ import { useState } from 'react';
 export default function useFileInput() {
   const [files, setFiles] = useState([]);
 
-  function handleUpload({target}) {
-    const newFiles = Object.values(target.files).map((file) => {
+  function handleUpload(uploaded) {
+    const newFiles = uploaded.map((file) => {
       const [name, extension] = file.name.split('.');
       const [type] = file.type.split('/');
       return { file, name, extension, type, atrsId: {} };

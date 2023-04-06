@@ -6,17 +6,30 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
 
+  function MediaItem() {
+    return typeVideo
+      ? <video
+        muted
+        controls
+        playsInline
+        loop
+        src={fileUrl}
+        className="mediaFile"
+      />
+      : <img
+        alt="validate_item"
+        loading='lazy'
+        decoding="async"
+        src={fileUrl}
+        className='mediaFile'
+      />
+  }
+
   function setUrl() {
     if (!files[slide]) return setFileUrl(null);
     const { id, file_type } = files[slide];
     setFileUrl(id ? `/api/files/${id}/` : null);
     setTypeVideo(file_type === 'video');
-  }
-
-  function MediaItem() {
-    return typeVideo
-      ? <video src={fileUrl} muted controls playsInline loop className="mediaFile" />
-      : <img src={fileUrl} alt="media_image" loading='lazy' decoding="async" className='mediaFile' />
   }
 
   let scale = 1,

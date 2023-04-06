@@ -10,11 +10,24 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
     attributeFile
   } = fileManager;
 
+  const handleDrop = (ev) => {
+    ev.preventDefault();
+    handleUpload([...ev.dataTransfer.files]);
+  }
+
   return (
-    <fieldset className='iss__fileInput'>
+    <fieldset
+      onDrop={handleDrop}
+      onDragOver={(ev) => ev.preventDefault()}
+      className='iss__fileInput'
+    >
       <label className='iss__fileInput__upload'>
         UPLOAD
-        <input type="file" multiple onChange={handleUpload} />
+        <input
+          type="file"
+          multiple
+          onChange={({target}) => handleUpload(Object.values(target.files))}
+        />
       </label>
       <div className='iss__fileInput__note'>
         Selected: {files.length} item{Boolean(files.length !== 1) && 's'}.<br/>

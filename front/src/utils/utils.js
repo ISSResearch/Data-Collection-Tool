@@ -38,7 +38,7 @@ export function refreshPath(node, parentPath=null, changeIndex=null) {
     if (changeIndex && index < changeIndex) return;
     const newPath = (parentPath || item.path).split('_');
     if (parentPath) newPath.push(String(index));
-    else newPath[newPath.length - 1 ] = String(index);
+    else newPath[newPath.length - 1] = String(index);
     item.path = newPath.join('_');
     if(item.children.length) refreshPath(item.children, item.path);
   });
