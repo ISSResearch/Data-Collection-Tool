@@ -18,9 +18,9 @@ export default function FilesValidate({pathID, attributes}) {
       .then(({status, data}) => {
         fileManager.setFiles(data);
         sliderManager.setMax(data.length);
+        setLoading(false);
       })
       .catch(err => console.log('err', err.message));
-    setLoading(false);
   }, [pathID]);
 
   if (loading) return <div className='iss__validation__load'><Load /></div>

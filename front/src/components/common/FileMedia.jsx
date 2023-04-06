@@ -15,7 +15,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
 
   function MediaItem() {
     return typeVideo
-      ? <video src={fileUrl} muted controls playsinline loop className="mediaFile" />
+      ? <video src={fileUrl} muted controls playsInline loop className="mediaFile" />
       : <img src={fileUrl} alt="media_image" loading='lazy' decoding="async" className='mediaFile' />
   }
 
