@@ -3,7 +3,7 @@
   color: white;
   user-select: none;
   position: relative;
-  overflow-x: scroll;
+  overflow-x: auto;
   margin-bottom: 8px;
 }
 .attribute--child {

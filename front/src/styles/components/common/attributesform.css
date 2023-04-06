@@ -4,7 +4,6 @@
   padding: 20px;
   user-select: none;
   position: relative;
-  overflow-x: scroll;
   margin-bottom: 20px;
 }
 .iss__attributesForm__levels {
