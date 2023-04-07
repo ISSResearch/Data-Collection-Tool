@@ -121,7 +121,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-LOGGING = None and {
+LOGGING = {
     'version': 1,
     'filters': {
         'require_debug_true': {

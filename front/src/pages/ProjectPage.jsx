@@ -27,6 +27,19 @@ export default function ProjectPage() {
       .catch(err => console.log('err', err.message));
   }, [projectID]);
 
+  const f = () => {
+    axios.get(`/api/files/download/project/${projectID}/`, {responseType: 'blob',})
+      .then(r =>{
+        const url = window.URL.createObjectURL(new Blob([r.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', project.name + '.zip');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch(err => console.log(err))
+  }
+
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
       <Link to="/" className="iss__projectPage__button">back to</Link>

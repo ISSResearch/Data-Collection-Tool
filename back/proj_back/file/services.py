@@ -3,8 +3,22 @@ from django.core.files.base import ContentFile
 from django.db import connection
 from .serializers import File
 from hashlib import md5
-from os import path
+from os import path, mkdir
 from json import loads
+from zipfile import ZipFile, ZIP_DEFLATED
+
+
+def prepare_zip_data(files, zip_name):
+    store_location = default_storage.location + '/temp/'
+
+    if not path.exists(store_location): mkdir(store_location)
+
+    zip_location = store_location + zip_name
+
+    with ZipFile(zip_location, mode="w", compression=ZIP_DEFLATED) as zp:
+        for file in files: zp.write(file.path.path, arcname=file.file_name)
+
+    return zip_location
 
 
 # TODO: handle errors and think 'bout how (atomic-like or skip failed ones)
