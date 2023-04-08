@@ -54,19 +54,25 @@ class FilesViewSet(APIView):
 # todo: perform a better way/class based if versatile will be needed
 @api_view(('GET',))
 def download_project_data(request, projectID):
+    files_query = request.query_params.get('files')
+    files_filter = {'', 'a', 'd'}
+
+    if files_query in {'validation', 'accepted', 'declined'}:
+        files_filter = {'' if files_query == 'validation' else files_query[0]}
+
     files = File.objects \
         .select_related('author', 'project') \
         .prefetch_related('attribute') \
-        .filter(project_id=projectID)
+        .filter(project_id=projectID, status__in=files_filter)
 
-    serialized_files = FileSerializer(files, many=True)
+    if not len(files): return Response(status=status.HTTP_204_NO_CONTENT)
 
-    zip_name = f"proj_{projectID}_{int(time()%1)}_data_set.zip"
+    serialized_data = FileSerializer(files, many=True).data
+    zip_name = f"proj_{projectID}_{int(time())}_data_set.zip"
 
-    zip_location = prepare_zip_data(files, zip_name)
+    zip_location = prepare_zip_data(files, serialized_data, zip_name)
 
     response = HttpResponse(content_type="application/zip")
-
     with open(zip_location, "rb") as new_zip: response.write(new_zip.read())
 
     remove(zip_location)

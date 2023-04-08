@@ -1,0 +1,100 @@
+.iss__filesDownload {
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid var(--issBrand);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+}
+.iss__filesDownload__caption {
+  font-size: 20px;
+}
+.iss__filesDownload__selector {
+  border: 1px solid var(--issBrand);
+  position: relative;
+  place-self: center;
+  max-width: 240px;
+  width: 100%;
+}
+.iss__filesDownload__selected {
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  position: relotive;
+}
+.arrow__pic {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  fill: var(--issBrand);
+}
+.iss__filesDownload__options__wrap {
+  overflow-y: hidden;
+  max-height: 0;
+  position: absolute;
+  width: 100%;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  left: 0;
+  bottom: 0;
+  transform: translateY(100%);
+  background-color: white;
+  border: 1px solid var(--issBrand);
+  box-shadow: 1px 1px 2px var(--issBrand);
+}
+.options--open {
+  max-height: 500px;
+}
+.iss__filesDownload__options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.option--validation {
+  color: var(--issBrand);
+}
+.option--validation:hover {
+  background-color: var(--issLightBrand);
+}
+.option--accepted {
+  color: var(--issGreen);
+}
+.option--accepted:hover {
+  background-color: var(--issLightGreen);
+}
+.option--declined {
+  color: var(--issRed);
+}
+.option--declined:hover {
+  background-color: var(--issLightRed);
+}
+.iss__filesDownload__button {
+  max-width: 120px;
+  width: 100%;
+  place-self: center;
+  background: none;
+  border: 1px solid var(--issBrand);
+  color: var(--issBrand);
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: none;
+  display: flex;
+  place-content: center;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.iss__filesDownload__button:hover {
+  background-color: var(--issBrand);
+  color: white;
+}
+.block--button {
+  pointer-events: none;
+}
+.iss__filesDownload__options>span {
+  cursor: pointer;
+}

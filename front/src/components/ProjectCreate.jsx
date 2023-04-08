@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
 import AttributesForm from './common/AttributesForm';
@@ -6,11 +5,10 @@ import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/projectcreate.css';
 
-export default function ProjectCreate({ setOpt }) {
+export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const { formHook, levelHook, attributeHook } = useAttributeManager();
   const { forms, addForm, deleteForm, gatherAttributes } = formHook;
-  const navigate = useNavigate();
 
   function getFormData({target}) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
@@ -26,16 +24,11 @@ export default function ProjectCreate({ setOpt }) {
     axios.request('/api/projects/',
       {
         method: 'post',
-        data: {name, description, attributes},
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        data: { name, description, attributes },
+        headers: { 'Content-Type': 'application/json' }
       }
     )
-      .then(({status, data}) => {
-				//if (data.ok) navigate('/');
-				setOpt(true);
-			})
+      .then(({status, data}) => window.location.reload())
       .catch(err => {
         console.log(err)
         setLoading(false);

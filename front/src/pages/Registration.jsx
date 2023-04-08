@@ -25,14 +25,16 @@ export default function Registration() {
       }
     )
       .then(({status, data}) => {
-        if (!data.isAuth) throw data.errors;
+        if (!data.isAuth) {
+          const errorMessage = Object.entries(data.errors)
+          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
+          throw new Error(errorMessage);
+        }
         setUser(data.user);
         navigate('/');
       })
-      .catch(err => {
-        const errorMessage = Object.entries(err)
-          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
-        setErrors(errorMessage);
+      .catch(({ message }) => {
+        setErrors(message);
         setLoading(false);
         setTimeout(() => setErrors(null), 5000);
       });

@@ -1,3 +1,7 @@
+.iss__projectPage {
+  display: flex;
+  flex-direction: column;
+}
 .iss_projectPage__load {
   width: 100%;
   display: flex;

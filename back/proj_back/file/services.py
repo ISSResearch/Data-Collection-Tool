@@ -4,11 +4,12 @@ from django.db import connection
 from .serializers import File
 from hashlib import md5
 from os import path, mkdir
-from json import loads
+from json import loads, dumps
+from tempfile import NamedTemporaryFile
 from zipfile import ZipFile, ZIP_DEFLATED
 
 
-def prepare_zip_data(files, zip_name):
+def prepare_zip_data(files, serialized_data, zip_name):
     store_location = default_storage.location + '/temp/'
 
     if not path.exists(store_location): mkdir(store_location)
@@ -17,6 +18,13 @@ def prepare_zip_data(files, zip_name):
 
     with ZipFile(zip_location, mode="w", compression=ZIP_DEFLATED) as zp:
         for file in files: zp.write(file.path.path, arcname=file.file_name)
+
+        json_data = dumps(serialized_data, indent=4).encode('utf-8')
+
+        with NamedTemporaryFile() as temp_json:
+          temp_json.write(json_data)
+          temp_json.seek(0)
+          zp.write(temp_json.name, arcname='annotation.json')
 
     return zip_location
 

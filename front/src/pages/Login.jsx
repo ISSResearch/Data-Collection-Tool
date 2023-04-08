@@ -25,12 +25,12 @@ export default function Login() {
       }
     )
       .then(({status, data}) => {
-        if (!data.isAuth) throw data.message;
+        if (!data.isAuth) throw new Error(data.message);
         setUser(data.user);
         if (window.location.pathname  === '/login') navigate('/');
       })
-      .catch(err => {
-        setErrors(err);
+      .catch(({ message }) => {
+        setErrors(message);
         setLoading(false);
         setTimeout(() => setErrors(null), 5000);
       });

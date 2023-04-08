@@ -4,6 +4,7 @@ import { attributeAdapter } from '../utils/adapters';
 import { UserContext } from '../context/User';
 import FilesValidate from "../components/FilesValidate";
 import FilesUpload from "../components/FilesUpload";
+import FilesDownload from "../components/FilesDownload";
 import TitleSwitch from "../components/common/TitleSwitch";
 import Load from '../components/common/Load';
 import axios from "axios";
@@ -12,9 +13,16 @@ import '../styles/pages/project.css';
 export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState({});
-  const [optionOne, setRadio] = useState(true);
+  const [pageOption, setOption] = useState('upload');
   const { user } = useContext(UserContext);
   const { projectID } = useParams();
+
+  const commonOptions = [{ name: 'upload data', value: 'upload' }];
+  const adminOptions = [
+    ...commonOptions,
+    { name: 'validate data', value: 'validate' },
+    { name: 'download data', value: 'download' }
+  ]
 
   useEffect(() => {
     if (!projectID) return;
@@ -27,36 +35,25 @@ export default function ProjectPage() {
       .catch(err => console.log('err', err.message));
   }, [projectID]);
 
-  const f = () => {
-    axios.get(`/api/files/download/project/${projectID}/`, {responseType: 'blob',})
-      .then(r =>{
-        const url = window.URL.createObjectURL(new Blob([r.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', project.name + '.zip');
-        document.body.appendChild(link);
-        link.click();
-      })
-      .catch(err => console.log(err))
-  }
-
   return (
-    <div style={{display: 'flex', flexDirection: 'column'}}>
+    <div className='iss__projectPage'>
       <Link to="/" className="iss__projectPage__button">back to</Link>
       <TitleSwitch
         title={project.name}
-        options={['upload data', user.user_role === 'a' ? 'validate data' : '']}
-        optionOne={optionOne}
-        handler={setRadio}
+        options={user.user_role === 'a' ? adminOptions : commonOptions}
+        currentOption={pageOption}
+        handler={setOption}
       />
       {loading
         ? <div className="iss_projectPage__load"><Load/></div>
         : <>
           <p className="iss__projectPage__description">{project.description}</p>
-          {optionOne
-            ? <FilesUpload attributes={project.attributes} pathID={projectID} />
-            : <FilesValidate pathID={projectID} attributes={project.attributes} />
-          }
+          {(pageOption !== 'validate' && pageOption !== 'download') &&
+            <FilesUpload attributes={project.attributes} pathID={projectID} />}
+          {pageOption === 'validate' &&
+            <FilesValidate pathID={projectID} attributes={project.attributes} />}
+          {pageOption === 'download' &&
+            <FilesDownload pathID={projectID} projectName={project.name} />}
         </>}
     </div>
   );

@@ -9,7 +9,7 @@ export default function Projects({ items }) {
   return (
     <>
       {items.length
-        ? <div className='iss__projects'>
+        ? <div className='iss__allProjects'>
           {items.map(item => (
             <div key={item.id} className='iss__projects__card'>
               <ProjectCard item={item} />
