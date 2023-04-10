@@ -1,4 +1,3 @@
-import { redirect } from 'react-router-dom'
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
 import SelectGroup from './common/ui/SelectGroup';
@@ -42,7 +41,7 @@ export default function FilesUpload({attributes, pathID}) {
         headers: { 'Content-Type': 'multipart/form-data' },
       }
     )
-      .then(({status, data}) => redirect('/'))
+      .then(({status, data}) => window.location.reload())
       .catch(err => console.log(err.message));
   }
 

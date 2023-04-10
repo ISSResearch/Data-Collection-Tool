@@ -5,6 +5,7 @@ import { UserContext } from '../context/User';
 import FilesValidate from "../components/FilesValidate";
 import FilesUpload from "../components/FilesUpload";
 import FilesDownload from "../components/FilesDownload";
+import FilesStatistics from "../components/common/FilesStats";
 import TitleSwitch from "../components/common/TitleSwitch";
 import Load from '../components/common/Load';
 import axios from "axios";
@@ -21,7 +22,8 @@ export default function ProjectPage() {
   const adminOptions = [
     ...commonOptions,
     { name: 'validate data', value: 'validate' },
-    { name: 'download data', value: 'download' }
+    { name: 'download data', value: 'download' },
+    { name: 'statistics', value: 'stats' },
   ];
 
   useEffect(() => {
@@ -48,12 +50,14 @@ export default function ProjectPage() {
         ? <div className="iss_projectPage__load"><Load/></div>
         : <>
           <p className="iss__projectPage__description">{project.description}</p>
-          {(pageOption !== 'validate' && pageOption !== 'download') &&
-            <FilesUpload attributes={project.attributes} pathID={projectID} />}
           {pageOption === 'validate' &&
             <FilesValidate pathID={projectID} attributes={project.attributes} />}
           {pageOption === 'download' &&
             <FilesDownload pathID={projectID} projectName={project.name} />}
+          {pageOption === 'stats' &&
+            <FilesStatistics pathID={projectID} />}
+          {pageOption === 'upload' &&
+            <FilesUpload attributes={project.attributes} pathID={projectID} />}
         </>}
     </div>
   );

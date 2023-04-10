@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db.models import Count
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -49,6 +50,16 @@ class FilesViewSet(APIView):
         proceed_upload(request, projectID)
 
         return Response(response, status=res_status)
+
+
+@api_view(('GET',))
+def get_stats(request, projectID):
+    stats = File.objects \
+      .prefetch_related('attribute') \
+      .filter(project_id=projectID) \
+      .values('attribute__id', 'attribute__name', 'attribute__parent', 'status') \
+      .annotate(count=Count('status'))
+    return Response(stats, status=status.HTTP_200_OK)
 
 
 # todo: perform a better way/class based if versatile will be needed

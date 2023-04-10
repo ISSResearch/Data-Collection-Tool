@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSwiper, useFiles } from '../hooks';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
-import FileInfo from './common/FIleInfo';
+import FileInfo from './common/FileInfo';
 import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/filesvalidate.css';

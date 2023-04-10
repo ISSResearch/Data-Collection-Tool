@@ -1,0 +1,5 @@
+.iss__stats__load {
+  width: 100%;
+  display: flex;
+  place-content: center;
+}
