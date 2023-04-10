@@ -15,14 +15,14 @@ export default function ProjectPage() {
   const [project, setProject] = useState({});
   const [pageOption, setOption] = useState('upload');
   const { user } = useContext(UserContext);
-  const { projectID } = useParams();
+  const { projectID, action } = useParams();
 
   const commonOptions = [{ name: 'upload data', value: 'upload' }];
   const adminOptions = [
     ...commonOptions,
     { name: 'validate data', value: 'validate' },
     { name: 'download data', value: 'download' }
-  ]
+  ];
 
   useEffect(() => {
     if (!projectID) return;

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
 import SelectGroup from './common/ui/SelectGroup';
@@ -11,7 +11,6 @@ import '../styles/components/filesupload.css';
 export default function FilesUpload({attributes, pathID}) {
   const [applyOptions, setApplyOptions] = useState({});
   const [uploading, setUploading] = useState(false);
-  const navigate = useNavigate();
   const fileManager = useFileInput();
 
   function handleApply(selected) { setApplyOptions(selected); }
@@ -43,7 +42,7 @@ export default function FilesUpload({attributes, pathID}) {
         headers: { 'Content-Type': 'multipart/form-data' },
       }
     )
-      .then(({status, data}) => navigate('/'))
+      .then(({status, data}) => redirect('/'))
       .catch(err => console.log(err.message));
   }
 

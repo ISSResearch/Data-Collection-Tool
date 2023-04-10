@@ -2,7 +2,7 @@ import ProjectCard from './common/ProjectCard';
 import Load from './common/Load';
 import '../styles/components/projects.css';
 
-export default function Projects({ items }) {
+export default function AllProjects({ items }) {
 
   if (!items) return <div className='iss__projects__loading'><Load/></div>
 
