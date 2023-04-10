@@ -42,7 +42,10 @@ export default function FilesUpload({attributes, pathID}) {
       }
     )
       .then(({status, data}) => window.location.reload())
-      .catch(err => console.log(err.message));
+      .catch(err => {
+        alert(err.message);
+        window.location.reload();
+      });
   }
 
   return (

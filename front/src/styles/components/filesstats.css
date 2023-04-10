@@ -3,3 +3,21 @@
   display: flex;
   place-content: center;
 }
+.iss__stats__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.iss__stats__item {
+  display: flex;
+  gap: 8px;
+}
+.iss__stats__item span:nth-child(3) {
+  color: var(--issBrand);
+}
+.iss__stats__item span:nth-child(4) {
+  color: var(--issGreen);
+}
+.iss__stats__item span:nth-child(5) {
+  color: var(--issRed)
+}
