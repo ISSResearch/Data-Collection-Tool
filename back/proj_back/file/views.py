@@ -59,8 +59,8 @@ def get_stats(request, projectID):
       .prefetch_related('attribute') \
       .filter(project_id=projectID) \
       .order_by('attribute__id') \
-      .values('attribute__id', 'attribute__name', 'attribute__parent', 'status') \
-      .annotate(count=Count('status'))
+      .values('attribute__id', 'attribute__name', 'attribute__parent', 'status', 'file_type') \
+      .annotate(count=Count('file_type'))
 
     return Response(stats, status=status.HTTP_200_OK)
 
