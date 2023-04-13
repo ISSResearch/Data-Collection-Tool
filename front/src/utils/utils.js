@@ -24,15 +24,6 @@ export function deepFind(arr, indexes, pointer=0) {
     : arr[indexes[pointer]];
 }
 
-export function createAttributesTree(data) {
-  const attributes = deepCopy(data);
-  attributes.forEach(el => {
-    const parent = attributes.find(({id}) => el.parent === id);
-    if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
-  })
-  return attributes.filter(({parent}) => !parent);
-}
-
 export function refreshPath(node, parentPath=null, changeIndex=null) {
   node.forEach((item, index) => {
     if (changeIndex && index < changeIndex) return;

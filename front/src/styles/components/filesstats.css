@@ -7,7 +7,7 @@
   width: 100%;
   border-collapse: collapse;
 }
-.iss__stats__table-row th, td  {
+.iss__stats__table-row th  {
   border: 1px solid var(--issBrand);
   padding: 4px;
 }
@@ -17,24 +17,6 @@
 .iss__stats__table-row>th:last-child {
   width: fit-content;
   font-size: 12px;
-  background-color: rgb(216, 234, 255, 0.1);
-}
-.iss__stats__table-row td>div  {
-  display: flex;
-  justify-content: space-evenly;
-}
-.row-v {
-  background-color: rgb(216, 234, 255, 0.3);
-}
-.row-a {
-  background-color: rgb(153, 255, 98, 0.3);
-}
-.row-d {
-  background-color: rgb(255, 98, 98, 0.3);
-}
-.row-cnt {
-  font-size: 12px;
-  text-align: center;
   background-color: rgb(216, 234, 255, 0.1);
 }
 .iss__stats__table-footer td {

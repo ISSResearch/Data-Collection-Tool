@@ -1,6 +1,41 @@
-import { createAttributesTree } from "./utils";
+import { deepCopy } from "./utils";
 
 export function attributeAdapter(data) {
-  const attributesTree = createAttributesTree(data.attributes);
-  return { ...data, attributes: attributesTree };
+  const preparedData = deepCopy(data)
+  const attributes = preparedData.attributes;
+
+  attributes.forEach(el => {
+    const parent = attributes.find(({id}) => el.parent === id);
+    if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
+  })
+
+  return { ...preparedData, attributes: attributes.filter(({parent}) => !parent) };
+}
+
+export function statsAdapter(data) {
+  const preparedData = deepCopy(data).reduce((acc, item) => {
+    const target = acc[item.attribute__name || 'atr not set'];
+    if (!target) {
+      acc[item.attribute__name || 'atr not set'] = {
+        id: item.attribute__id || 'no_atr_id',
+        name: item.attribute__name || 'atr not set',
+        parent: item.attribute__parent,
+        [item.status || 'v']: { [item.file_type]: item.count }
+      };
+    }
+    else if ((target[item.status || 'v'])) {
+      target[item.status || 'v'][item.file_type] = item.count
+    }
+    else target[item.status] = { [item.file_type]: item.count };
+    return acc;
+  }, {});
+
+  Object.values(preparedData).forEach(el => {
+    const parent = Object.values(preparedData).find(({ id }) => {
+      return el.parent  === id;
+    });
+    if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
+  });
+
+  return Object.values(preparedData).filter(({parent}) => !parent);
 }

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { statsAdapter } from '../../utils/adapters';
+import TableBodySet from './TableBodySet';
 import Load from './Load';
 import axios from 'axios';
 import '../../styles/components/filesstats.css';
@@ -23,21 +25,8 @@ export default function FilesStatistics({pathID}) {
   useEffect(() => {
     axios.get(`/api/files/stats/project/${pathID}/`)
       .then(({status, data}) => {
-        const prepareData = data.reduce((acc, item) => {
-          const target = acc[item.attribute__name || 'atr not set'];
-          if (!target) {
-            acc[item.attribute__name || 'atr not set'] = {
-              [item.status || 'v']: { [item.file_type]: item.count }
-            };
-          }
-          else if ((target[item.status || 'v'])) {
-            target[item.status || 'v'][item.file_type] = item.count
-          }
-          else target[item.status] = { [item.file_type]: item.count };
-          return acc;
-        }, {});
-
-        setStats(prepareData);
+        const prepared = statsAdapter(data)
+        setStats(prepared);
       })
       .catch(err => {
         console.log('err', err.message);
@@ -58,32 +47,9 @@ export default function FilesStatistics({pathID}) {
           <th>total</th>
         </tr>
       </thead>
-      {Object.entries(stats).map(([name, { a, d, v}]) => (
-        <tbody key={name} className='iss__stats__table-body'>
-          <tr className='iss__stats__table-row'>
-            <td>{name}</td>
-            <td className='row-v'>
-              <div>
-                <span>images: { v?.image || 0 }</span>
-                <span>videos: { v?.video || 0 }</span>
-              </div>
-            </td>
-            <td className='row-a'>
-              <div>
-                <span>images: { a?.image || 0 }</span>
-                <span>videos: { a?.video || 0 }</span>
-              </div>
-            </td>
-            <td className='row-d'>
-              <div>
-                <span>images: { d?.image || 0}</span>
-                <span>videos: { d?.video || 0 }</span>
-              </div>
-            </td>
-            <td className='row-cnt'>{countItem(a, d, v)}</td>
-          </tr>
-        </tbody>
-      ))}
+      <tbody className='iss__stats__table-body'>
+        <TableBodySet bodySet={stats} countCallback={countItem} parent/>
+      </tbody>
       <tfoot className='iss__stats__table-footer'>
         <tr className='iss__stats__table-row'>
           <td><b>total</b></td>
