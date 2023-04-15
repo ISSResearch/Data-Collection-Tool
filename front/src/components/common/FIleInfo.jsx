@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { formApplyOption } from '../../utils/utils';
+import { formApplyOption, compareArrays } from '../../utils/utils';
 import { useFile } from '../../hooks'
 import SelectGroup from './ui/SelectGroup';
 import axios from 'axios';
@@ -19,12 +19,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
     }
   }
 
-  function updateFile(status) {
-    if (status === file.status) return;
-    const newFiles = [...files];
-    const newAttributes = Object.values(file.atrsId)
-      .reduce((acc, ids) =>  ids ? [...acc, ...ids] : acc, []);
-    const updatedFile = {...file, status, attributes: newAttributes};
+  function fetchUpdateFile(status, newAttributes) {
     axios.request(`/api/files/${file.id}/`,
       {
         method: 'patch',
@@ -32,8 +27,17 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
         headers: { 'Content-Type': 'application/json' },
       }
     )
-      .then(({status, data}) => console.log(data))
+      .then(({status, data}) => 1)
       .catch(err => console.log(err.message));
+  }
+
+  function updateFile(status) {
+    if (status === file.status) return;
+    const newFiles = [...files];
+    const newAttributes = Object.values(file.atrsId)
+      .reduce((acc, ids) =>  ids ? [...acc, ...ids] : acc, []);
+    const updatedFile = {...file, status, attributes: newAttributes};
+    fetchUpdateFile(status, newAttributes);
     newFiles[slide] = {...updatedFile};
     setFiles(newFiles);
     slideInc();
@@ -76,7 +80,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
             className={
               `button--accept ${file.status === 'a' ? 'button--block' : ''}`
             }
-          >Accept<br />(A)</button>
+          >Accept<br/>(A)</button>
         </div>}
     </div>
   );

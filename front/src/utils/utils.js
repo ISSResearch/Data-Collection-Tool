@@ -1,26 +1,24 @@
 export function deepCopy(obj) {
   if (typeof obj !== 'object' || obj === null) return obj;
-  let result = Array.isArray(obj) ? [] : {}
+  const res = Array.isArray(obj) ? [] : {};
   if (Array.isArray(obj)) {
-    for (let i = 0; i < obj.length; i++) {
-      if (typeof obj[i] === 'object') result[i] = deepCopy(obj[i]);
-      else result[i] = obj[i];
+    for (let i=0; i < obj.length; i++) {
+      res[i] = typeof obj[i] === 'object' ? deepCopy(obj[i]) : obj[i];
     }
   }
   else {
     for (let key in obj) {
       if (obj.hasOwnProperty(key)) {
-        if (typeof obj[key] === 'object') result[key] = deepCopy(obj[key]);
-        else result[key] = obj[key];
+        res[key] = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
       }
     }
   }
-  return result;
+  return res;
 }
 
 export function deepFind(arr, indexes, pointer=0) {
 	return pointer < indexes.length - 1
-    ? deepFind(arr[indexes[pointer]].children, indexes, pointer+1)
+    ? deepFind(arr[indexes[pointer]].children, indexes, pointer + 1)
     : arr[indexes[pointer]];
 }
 
@@ -38,12 +36,9 @@ export function refreshPath(node, parentPath=null, changeIndex=null) {
 // TODO: refactor
 export function formApplyOption(attrs, fileAttrs) {
   if (!attrs?.length || !fileAttrs?.length) return [];
-  const attrsID = Array.isArray(fileAttrs[0])
-    ? fileAttrs
-    : fileAttrs.map(({id}) => id);
   const applyOptions = [];
   const lookUpAttrs = deepCopy(attrs);
-  attrsID.forEach( lookUpdId => {
+  fileAttrs.forEach( lookUpdId => {
     for (const index in lookUpAttrs) {
       const {children, attributes, selectIndex} = lookUpAttrs[index];
       if (children) lookUpAttrs.push(
@@ -62,4 +57,9 @@ export function formApplyOption(attrs, fileAttrs) {
     }
   });
   return applyOptions;
+}
+
+export function compareArrays(arr1, arr2) {
+  return arr1.length === arr2.length
+    && arr1.every((value, index) => value === arr2[index]);
 }

@@ -34,7 +34,6 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
         Note that maximum of 100 files will be sent.
       </div>
       <div className='iss__fileInput__filesUploaded'>
-        {/* todo changed key watchh him in long distance */}
         {files.map(({file, name, type}, index) => (
           <div key={index + file.lastModified} className='iss__fileInput__fileCard'>
             <div className='iss__fileInput__fileWrap'>

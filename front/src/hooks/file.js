@@ -16,13 +16,14 @@ export default function useFile() {
     setFile(updatedFile);
   }
 
-  function attributeFile({ selectorIndex, value, clear, isNew }) {
-    const target = file.atrsId;
-    if (isNew) target[selectorIndex] = [...isNew];
-    else if (clear) target[selectorIndex].splice(value, target[selectorIndex].length);
-    else target[selectorIndex]
-      ? target[selectorIndex].push(value)
-      : target[selectorIndex] = [value];;
+  function attributeFile({ selectorIndex, id, clear, isNew, index }) {
+    const {atrsId: target} = file;
+    if (isNew) return target[selectorIndex] = [...isNew];
+    if (target[selectorIndex]) {
+      target[selectorIndex].splice(index, target[selectorIndex].length);
+      if (!clear) target[selectorIndex].push(id);
+    }
+    else target[selectorIndex] = [id];
   }
 
   return { file, initFile, changeName, attributeFile };

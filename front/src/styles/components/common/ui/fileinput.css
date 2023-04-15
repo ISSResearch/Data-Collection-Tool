@@ -58,7 +58,7 @@
   left: 0;
   outline: 1px solid var(--issBrand);
 }
-.iss__fileInput__fileWrap button {
+.iss__fileInput__fileWrap>button {
   position: absolute;
   top: 0;
   right: 0;
@@ -68,7 +68,7 @@
   background-color: unset;
   cursor: pointer;
 }
-.iss__fileInput__fileWrap button span {
+.iss__fileInput__fileWrap>button span {
   position: absolute;
   top: 9px;
   left: 0px;
@@ -77,13 +77,13 @@
   height: 4px;
   background-color: var(--issLightRed);
 }
-.iss__fileInput__fileWrap button span:nth-child(1) {
+.iss__fileInput__fileWrap>button span:nth-child(1) {
   rotate: 45deg;
 }
-.iss__fileInput__fileWrap button span:nth-child(2) {
+.iss__fileInput__fileWrap>button span:nth-child(2) {
   rotate: -45deg;
 }
-.iss__fileInput__fileWrap button:hover span {
+.iss__fileInput__fileWrap>button:hover span {
   background-color: var(--issRed);
 }
 .iss__fileInput__selectorWrap {
@@ -97,8 +97,10 @@
 }
 .iss__fileInput__selectorWrap fieldset {
   width: 100%;
+  min-width: unset;
   background-color: unset;
   padding: 0;
+  gap: 12px;
 }
 .iss__filesUpload__loadingWrap {
   display: flex;

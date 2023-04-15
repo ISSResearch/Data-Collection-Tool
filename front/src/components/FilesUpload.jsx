@@ -24,6 +24,7 @@ export default function FilesUpload({attributes, pathID}) {
     })
     return filesToSend;
   }
+
   function sendForm(event) {
     event.preventDefault();
     setUploading(true);
@@ -33,7 +34,7 @@ export default function FilesUpload({attributes, pathID}) {
     files.forEach(({file, name, extension, type, atrsId}) => {
       formData.append('files[]', file);
       formData.append('meta[]', JSON.stringify({name, extension, type, atrsId}));
-    })
+    });
     axios.request(`/api/files/project/${pathID}/`,
       {
         method: 'post',

@@ -24,13 +24,14 @@ export default function useFileInput() {
     setFiles(newFiles);
   }
 
-  function attributeFile({ fileIndex, selectorIndex, value, clear, isNew }) {
-    const target = files[fileIndex].atrsId;
+  function attributeFile({ fileIndex, selectorIndex, id, clear, isNew, index }) {
+    const {atrsId: target} = files[fileIndex];
     if (isNew) return target[selectorIndex] = [...isNew];
-    if (clear) target[selectorIndex].splice(value, target[selectorIndex].length);
-    else target[selectorIndex]
-      ? target[selectorIndex].push(value)
-      : target[selectorIndex] = [value];
+    if (target[selectorIndex]) {
+      target[selectorIndex].splice(index, target[selectorIndex].length);
+      if (!clear) target[selectorIndex].push(id);
+    }
+    else target[selectorIndex] = [id];
   }
 
   return { files, handleUpload, handleNameChange, handleDelete, attributeFile };
