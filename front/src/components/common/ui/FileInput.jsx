@@ -62,6 +62,7 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
                   applyOptions={applyOptions}
                   attributeFile={attributeFile}
                   fileIndex={index}
+                  card
                 />
               </div>
             </div>

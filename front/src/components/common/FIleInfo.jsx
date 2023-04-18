@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { formApplyOption, compareArrays } from '../../utils/utils';
+import { formApplyOption } from '../../utils/utils';
 import { useFile } from '../../hooks'
 import SelectGroup from './ui/SelectGroup';
 import axios from 'axios';
@@ -9,7 +9,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
-  const { file, initFile, attributeFile } = useFile();
+  const { file, initFile, attributeFile, addAdditional } = useFile();
 
   function handleKeyPressed(key) {
     if (key === file.status) return;
@@ -59,9 +59,10 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
       <SelectGroup
         attributes={attributes}
-        minStyle={true}
         applyOptions={formApplyOption(attributes, file.attributes)}
         attributeFile={attributeFile}
+        fileIndex={slide}
+        addAdditional={addAdditional}
       />
       {file?.id &&
         <div className='iss__fileInfo__buttonsWrap'>

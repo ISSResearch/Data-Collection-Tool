@@ -29,7 +29,7 @@ export default function Selector({
   }
 
   const isSelected = (index, id) => {
-    return applyOptions && applyOptions[index] && applyOptions[index][0] === id
+    return applyOptions && applyOptions[index] && applyOptions[index][0] === id;
   }
 
   function addSelected(options) {
@@ -49,15 +49,15 @@ export default function Selector({
 
   useEffect(() => {
     if (applyOptions) addSelected(applyOptions);
-  }, [applyOptions]);
+    else setOptions([item]);
+  }, [applyOptions, fileIndex]);
 
   return (
     <>
       {options.map(({ id, name, children, attributes }, index) => (
         <select
-          key={id}
+          key={`${id}_${fileIndex}`}
           onChange={({target}) => handleSelect(target, children, index)}
-          multiple
           className="iss__selector"
         >
           <option value="clear">--{name}--</option>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Selector from "./Selector";
+import AttributeCardSelector from "./AttributeCardSelector";
 import '../../../styles/components/common/ui/selectgroup.css';
 
 export default function SelectGroup({
@@ -9,7 +10,7 @@ export default function SelectGroup({
   applyOptions,
   attributeFile,
   fileIndex,
-  minStyle,
+  addAdditional,
 }) {
   const [selectedOptions, setSelected] = useState({});
 
@@ -26,7 +27,7 @@ export default function SelectGroup({
   return (
     <fieldset
       className={
-        `iss__filesUpload__attributes ${minStyle ? 'style--min' : ''}`
+        `iss__filesUpload__attributes ${addAdditional ? 'style--min' : ''}`
       }
     >
       {attributes?.map((attribute, index) => (
@@ -41,6 +42,12 @@ export default function SelectGroup({
           />
         </div>
       ))}
+      {fileIndex !== undefined &&
+        <AttributeCardSelector
+          attributes={attributes}
+          fileIndex={fileIndex}
+          addAdditional={addAdditional}
+        />}
       {handleApply &&
         <button
           type="button"

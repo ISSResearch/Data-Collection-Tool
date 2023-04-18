@@ -7,6 +7,7 @@ export default function useFile() {
   function initFile(entry) {
     const newFile = deepCopy(entry);
     newFile.atrsId = {};
+    newFile.additionalAttrs = {};
     setFile(newFile);
   }
 
@@ -26,5 +27,17 @@ export default function useFile() {
     else target[selectorIndex] = [id];
   }
 
-  return { file, initFile, changeName, attributeFile };
+  function addAdditional(ids, selectorIndex, index) {
+    const {additionalAttrs: target} = file;
+    target[selectorIndex] = ids;
+
+    console.log(file)
+    // if (target[selectorIndex]) {
+    //   target[selectorIndex].splice(index, target[selectorIndex].length);
+    //   target[selectorIndex].push(...ids);
+    // }
+    // else target[selectorIndex] = ids;
+  }
+
+  return { file, initFile, changeName, attributeFile, addAdditional };
 }
