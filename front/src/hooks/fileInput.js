@@ -34,5 +34,19 @@ export default function useFileInput() {
     else target[selectorIndex] = [id];
   }
 
-  return { files, handleUpload, handleNameChange, handleDelete, attributeFile };
+  function addAdditional({ fileIndex, ids, selectorIndex, selInd, del }) {
+    const {additionalAttrs: target} = files[fileIndex];
+    if (del) return delete target[selectorIndex];
+    if (!target[selectorIndex]) target[selectorIndex] = {};
+    target[selectorIndex][selInd] = [...ids];
+  }
+
+  return {
+    files,
+    handleUpload,
+    handleNameChange,
+    handleDelete,
+    attributeFile,
+    addAdditional
+  };
 }

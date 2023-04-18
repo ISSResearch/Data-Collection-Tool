@@ -27,16 +27,11 @@ export default function useFile() {
     else target[selectorIndex] = [id];
   }
 
-  function addAdditional(ids, selectorIndex, index) {
+  function addAdditional({ ids, selectorIndex, selInd, del }) {
     const {additionalAttrs: target} = file;
-    target[selectorIndex] = ids;
-
-    console.log(file)
-    // if (target[selectorIndex]) {
-    //   target[selectorIndex].splice(index, target[selectorIndex].length);
-    //   target[selectorIndex].push(...ids);
-    // }
-    // else target[selectorIndex] = ids;
+    if (del) return delete target[selectorIndex];
+    if (!target[selectorIndex]) target[selectorIndex] = {};
+    target[selectorIndex][selInd] = [...ids];
   }
 
   return { file, initFile, changeName, attributeFile, addAdditional };

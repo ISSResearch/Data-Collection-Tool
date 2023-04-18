@@ -19,13 +19,15 @@ export default function AttributeCardSelector({
     const newGroups = {...groups};
     delete newGroups[key]
     setGroups(newGroups);
+    addAdditional({selectorIndex: key, del: true});
   }
 
-  function setOption({ selectorIndex, id, index }) {
+  function setOption({ selectorIndex, id, index }, selInd) {
     const target = groups[selectorIndex];
-    target.splice(index, target.length);
-    if (id) target.push(id);
-    addAdditional(target, selectorIndex, index);
+    if (!target[selInd]) target[selInd] = [];
+    target[selInd].splice(index, target.length);
+    if (id) target[selInd].push(id);
+    addAdditional({ fileIndex, ids: target[selInd], selectorIndex, selInd });
   };
 
   return (
@@ -34,7 +36,7 @@ export default function AttributeCardSelector({
         onClick={addGroup}
         type='button'
         className='iss__cardSelector__button add--group'
-      >v add layer</button>
+      >v add attributes</button>
       {Object.entries(groups).map(([key, _]) => (
         <div key={key} className='iss__cardSelector__layer'>
           {attributes?.map((attribute, index) => (
@@ -42,7 +44,7 @@ export default function AttributeCardSelector({
               key={attribute.id}
               item={attribute}
               fileIndex={fileIndex}
-              attributeFile={setOption}
+              attributeFile={(data) => setOption(data, index)}
               selectorIndex={key}
             />
           ))}
@@ -50,7 +52,7 @@ export default function AttributeCardSelector({
             onClick={() => deleteGroup(key)}
             type='button'
             className='iss__cardSelector__button del--group'
-          >delete layer ^</button>
+          >delete attributes ^</button>
         </div>
       ))}
     </div>

@@ -36,6 +36,11 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
     const newFiles = [...files];
     const newAttributes = Object.values(file.atrsId)
       .reduce((acc, ids) =>  ids ? [...acc, ...ids] : acc, []);
+    const additionalAttrs = Object.values(file.additionalAttrs)
+      .reduce((acc, el) => {
+        const ids = Object.values(el).reduce((a, b) => [...a, ...b], []);
+        return [...acc, ...ids];
+      }, [])
     const updatedFile = {...file, status, attributes: newAttributes};
     fetchUpdateFile(status, newAttributes);
     newFiles[slide] = {...updatedFile};

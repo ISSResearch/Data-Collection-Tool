@@ -7,7 +7,8 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
     handleUpload,
     handleNameChange,
     handleDelete,
-    attributeFile
+    attributeFile,
+    addAdditional
   } = fileManager;
 
   const handleDrop = (ev) => {
@@ -62,7 +63,7 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
                   applyOptions={applyOptions}
                   attributeFile={attributeFile}
                   fileIndex={index}
-                  card
+                  addAdditional={addAdditional}
                 />
               </div>
             </div>
