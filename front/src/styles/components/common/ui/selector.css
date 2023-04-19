@@ -3,4 +3,5 @@
   border: 1px solid var(--issBrand);
   width: 100%;
   cursor: pointer;
+  outline: none;
 }

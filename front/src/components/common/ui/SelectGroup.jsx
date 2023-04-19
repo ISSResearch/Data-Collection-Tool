@@ -42,12 +42,12 @@ export default function SelectGroup({
           />
         </div>
       ))}
-      {fileIndex !== undefined &&
+      {/* {fileIndex !== undefined &&
         <AttributeCardSelector
           attributes={attributes}
           fileIndex={fileIndex}
           addAdditional={addAdditional}
-        />}
+        />} */}
       {handleApply &&
         <button
           type="button"
