@@ -1,39 +1,32 @@
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
+import { deepCopy } from '../utils/utils';
 import SelectGroup from './common/ui/SelectGroup';
 import FileInput from './common/ui/FileInput';
 import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/filesupload.css';
 
-// TODO: refactor
 export default function FilesUpload({attributes, pathID}) {
-  const [applyOptions, setApplyOptions] = useState({});
+  const [applyGroups, setApplyGroups] = useState({});
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();
 
-  function handleApply(selected) { setApplyOptions(selected); }
-
-  function gatherFiles() {
-    const { files } = fileManager;
-    const filesToSend = files.slice(0, 100);
-    filesToSend.forEach(file => {
-      const preparedAtrs = Object.values(file.atrsId)
-        .reduce((acc, ids) => ids ? [...acc, ...ids] : acc, []);
-      file.atrsId = preparedAtrs;
-    })
-    return filesToSend;
-  }
+  function handleApply(groups) { setApplyGroups(deepCopy(groups)); }
 
   function sendForm(event) {
     event.preventDefault();
     setUploading(true);
-    const files = gatherFiles();
-    if (!files.length) return console.log('no values');
+    const files = fileManager.gatherFiles();
+    if (!files.length) {
+      alert('no values');
+      setUploading(false);
+      return;
+    }
     const formData = new FormData();
-    files.forEach(({file, name, extension, type, atrsId}) => {
+    files.forEach(({file, name, extension, type, atrsGroups}) => {
       formData.append('files[]', file);
-      formData.append('meta[]', JSON.stringify({name, extension, type, atrsId}));
+      formData.append('meta[]', JSON.stringify({name, extension, type, atrsGroups}));
     });
     axios.request(`/api/files/project/${pathID}/`,
       {
@@ -71,7 +64,7 @@ export default function FilesUpload({attributes, pathID}) {
         : <FileInput
           fileManager={fileManager}
           attributes={attributes}
-          applyOptions={applyOptions}
+          applyGroups={applyGroups}
         />}
     </form>
   );

@@ -13,6 +13,7 @@
   display: flex;
   gap: 20px;
   place-items: center;
+  color: var(--issBrand);
 }
 .iss__header__logoutButton {
   background: none;

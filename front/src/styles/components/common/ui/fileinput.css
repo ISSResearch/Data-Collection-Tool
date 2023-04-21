@@ -96,11 +96,8 @@
   width: 100%;
 }
 .iss__fileInput__selectorWrap fieldset {
-  width: 100%;
-  min-width: unset;
-  background-color: unset;
   padding: 0;
-  gap: 12px;
+  place-self: center;
 }
 .iss__filesUpload__loadingWrap {
   display: flex;

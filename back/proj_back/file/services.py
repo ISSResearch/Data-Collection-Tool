@@ -2,6 +2,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db import connection
 from .serializers import File
+from attribute.models import AttributeGroup as AGroup
 from hashlib import md5
 from os import path, mkdir
 from json import loads, dumps
@@ -47,24 +48,40 @@ def gather_instances(files, meta, package_meta):
     project_id = package_meta['project']
     author_id = package_meta['author']
 
-    package = zip(files, meta)
+    attribute_groups = get_attribute_groups(len(files))
+
+    package = zip(files, attribute_groups, meta)
 
     return [
-        upload_file(file, meta, project_id, author_id)
+        upload_file(file, attribute_groups.pop(), meta, project_id, author_id)
         for file, meta in package
     ]
+
+
+def get_attribute_groups(length):
+    free_groups = AGroup.get_free_groups()
+
+    new_groups = AGroup.objects.bulk_create(
+        {AGroup() for _ in range(length - free_groups.count())}
+    )
+
+    return set(free_groups).union(new_groups)
 
 
 def create_files(file_instances):
     filtered_files = list(filter(lambda instace: bool(instace[0]), file_instances))
 
     created_files = File.objects.bulk_create(
-        [file for file, _ in filtered_files]
+        [file for file, _, _ in filtered_files]
+    )
+
+    created_groups = AGroup.objects.bulk_create(
+        [group for _, group, _ in filtered_files]
     )
 
     process_data = zip(
         [file.id for file in created_files],
-        [meta['atrsId'] for _, meta in filtered_files]
+        [meta['atrsId'] for _, _, meta in filtered_files]
     )
 
     query = """
@@ -82,7 +99,7 @@ def create_files(file_instances):
     with connection.cursor() as cur: cur.executemany(query, query_values)
 
 
-def upload_file(file, meta, project_id, author_id):
+def upload_file(file, group, meta, project_id, author_id):
     byte_file = file.read()
     new_hash = md5(byte_file).digest()
     # if (len(File.objects.filter(hash_name=new_hash))): return
@@ -92,11 +109,14 @@ def upload_file(file, meta, project_id, author_id):
     save_path = path.join(str(project_id), file_name)
     file_path = default_storage.save(save_path, ContentFile(byte_file))
 
-    return File(
+    file = File(
         path=file_path,
         hash_name=new_hash,
         file_name=file_name,
         file_type=prepared_meta["type"],
         project_id=project_id,
-        author_id=author_id
-    ), prepared_meta
+        author_id=author_id,
+    )
+    group.file = file
+
+    return file, group, prepared_meta

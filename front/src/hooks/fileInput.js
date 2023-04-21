@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { deepCopy } from '../utils/utils';
 
 export default function useFileInput() {
   const [files, setFiles] = useState([]);
@@ -7,9 +8,13 @@ export default function useFileInput() {
     const newFiles = uploaded.map((file) => {
       const [name, extension] = file.name.split('.');
       const [type] = file.type.split('/');
-      return { file, name, extension, type, atrsId: {} };
+      return { file, name, extension, type, attributeGroups: {} };
     });
-    setFiles([...files, ...newFiles]);
+    const threshold = 100 - files.length;
+    setFiles([
+      ...files,
+      ...(newFiles.length <= threshold ? newFiles : newFiles.splice(0, threshold))
+    ]);
   }
 
   function handleNameChange({value}, index) {
@@ -24,21 +29,24 @@ export default function useFileInput() {
     setFiles(newFiles);
   }
 
-  function attributeFile({ fileIndex, selectorIndex, id, clear, isNew, index }) {
-    const {atrsId: target} = files[fileIndex];
-    if (isNew) return target[selectorIndex] = [...isNew];
-    if (target[selectorIndex]) {
-      target[selectorIndex].splice(index, target[selectorIndex].length);
-      if (!clear) target[selectorIndex].push(id);
-    }
-    else target[selectorIndex] = [id];
-  }
-
-  function addAdditional({ fileIndex, ids, selectorIndex, selInd, del }) {
-    const {additionalAttrs: target} = files[fileIndex];
+  function setAttributeGroups({ fileIndex, ids, selectorIndex, selInd, del, set }) {
+    if (set) return files[fileIndex].attributeGroups = ids;
+    const {attributeGroups: target} = files[fileIndex];
     if (del) return delete target[selectorIndex];
     if (!target[selectorIndex]) target[selectorIndex] = {};
     target[selectorIndex][selInd] = [...ids];
+  }
+
+  function gatherFiles() {
+    const filesToSend = deepCopy(files).slice(0, 100);
+    filesToSend.forEach(file => {
+      const preparedAtrs = Object.values(file.attributeGroups)
+        .reduce((acc, ids) => {
+          return [...acc, ids.reduce((a, b) => [...a, ...b], [])]
+        }, []);
+      file.atrsGroups = preparedAtrs;
+    });
+    return filesToSend;
   }
 
   return {
@@ -46,7 +54,7 @@ export default function useFileInput() {
     handleUpload,
     handleNameChange,
     handleDelete,
-    attributeFile,
-    addAdditional
+    setAttributeGroups,
+    gatherFiles
   };
 }

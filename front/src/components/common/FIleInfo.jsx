@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { formApplyOption } from '../../utils/utils';
 import { useFile } from '../../hooks'
 import SelectGroup from './ui/SelectGroup';
 import axios from 'axios';
@@ -9,7 +8,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
-  const { file, initFile, attributeFile, addAdditional } = useFile();
+  const { file, initFile, setAttributeGroups, formApplyOption } = useFile();
 
   function handleKeyPressed(key) {
     if (key === file.status) return;
@@ -34,15 +33,10 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   function updateFile(status) {
     if (status === file.status) return;
     const newFiles = [...files];
-    const newAttributes = Object.values(file.atrsId)
-      .reduce((acc, ids) =>  ids ? [...acc, ...ids] : acc, []);
-    const additionalAttrs = Object.values(file.additionalAttrs)
-      .reduce((acc, el) => {
-        const ids = Object.values(el).reduce((a, b) => [...a, ...b], []);
-        return [...acc, ...ids];
-      }, [])
-    const updatedFile = {...file, status, attributes: newAttributes};
-    fetchUpdateFile(status, newAttributes);
+    const preparedAtrs = Object.values(file.attributeGroups)
+      .reduce((acc, ids) => [...acc, ids.reduce((a, b) => [...a, ...b], [])], []);
+    const updatedFile = {...file, status, attributes: preparedAtrs};
+    fetchUpdateFile(status, preparedAtrs);
     newFiles[slide] = {...updatedFile};
     setFiles(newFiles);
     slideInc();
@@ -64,10 +58,9 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
       <SelectGroup
         attributes={attributes}
-        applyOptions={formApplyOption(attributes, file.attributes)}
-        attributeFile={attributeFile}
+        // applyGroups={formApplyOption(attributes)}
         fileIndex={slide}
-        addAdditional={addAdditional}
+        setAttributeGroups={setAttributeGroups}
       />
       {file?.id &&
         <div className='iss__fileInfo__buttonsWrap'>

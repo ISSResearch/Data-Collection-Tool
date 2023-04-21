@@ -1,4 +1,4 @@
-.iss__filesUpload__attributes {
+.iss__selectGroup {
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -6,21 +6,20 @@
   background-color: var(--issBrand);
   color: white;
   gap: 12px;
-  min-width: 240px;
+  max-width: 240px;
+  width: 100%;
   border: none;
   height: fit-content;
 }
 .style--min {
-  min-width: initial;
-  width: 100%;
-  gap: 12px;
   padding: 10px 0;
   background-color: unset;
 }
-.iss__filesUpload__selectWrapper {
+.iss__selectGroup__selectWrapper {
   width: 100%;
+  margin-bottom: 8px;
 }
-.iss__filesUpload__button {
+.iss__selectGroup__button {
   border: 1px solid white;
   color: white;
   background-color: var(--issBrand);
@@ -31,7 +30,7 @@
   user-select: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.iss__filesUpload__button:hover {
+.iss__selectGroup__button:hover {
   background-color: white;
   color: var(--issBrand);
 }
@@ -40,4 +39,25 @@
   pointer-events: none;
   filter: grayscale(1);
   opacity: 0.5;
+}
+.add--group {
+  background-color: var(--issLightGreen);
+  border: none;
+  color: var(--issGreen);
+  width: 100%;
+  margin-bottom: 12px;
+}
+.add--group:hover {
+  background-color: var(--issGreen);
+  color: white;
+}
+.del--group {
+  border: none;
+  width: 100%;
+  background-color: var(--issLightRed);
+  color: var(--issRed);
+}
+.del--group:hover {
+  background-color: var(--issRed);
+  color: white;
 }

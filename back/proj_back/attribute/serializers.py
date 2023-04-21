@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Attribute, Level
+from .models import Attribute, Level, AttributeGroup
 
 
 class AttributeSerializer(serializers.ModelSerializer):
@@ -20,3 +20,14 @@ class LevelSerializer(serializers.ModelSerializer):
         attributes = AttributeSerializer(instance.attribute_set.all(), many=True)
 
         return attributes.data
+
+
+class AttributeGroupSerializer(serializers.ModelSerializer):
+    attributes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AttributeGroup
+        exclude = ('file', 'attribute')
+
+    def get_attributes(self, instance):
+        return instance.attribute.values_list('id', flat=True)

@@ -19,7 +19,7 @@ export default function AttributeCardSelector({
     const newGroups = {...groups};
     delete newGroups[key]
     setGroups(newGroups);
-    addAdditional({selectorIndex: key, del: true});
+    if (addAdditional) addAdditional({selectorIndex: key, del: true});
   }
 
   function setOption({ selectorIndex, id, index }, selInd) {
@@ -27,7 +27,7 @@ export default function AttributeCardSelector({
     if (!target[selInd]) target[selInd] = [];
     target[selInd].splice(index, target.length);
     if (id) target[selInd].push(id);
-    addAdditional({ fileIndex, ids: target[selInd], selectorIndex, selInd });
+    if (addAdditional) addAdditional({ fileIndex, ids: target[selInd], selectorIndex, selInd });
   };
 
   return (

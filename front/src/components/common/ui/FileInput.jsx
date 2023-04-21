@@ -1,14 +1,13 @@
 import SelectGroup from './SelectGroup';
 import '../../../styles/components/common/ui/fileinput.css';
 
-export default function FileInput({ fileManager, attributes, applyOptions }) {
+export default function FileInput({ fileManager, attributes, applyGroups }) {
   const {
     files,
     handleUpload,
     handleNameChange,
     handleDelete,
-    attributeFile,
-    addAdditional
+    setAttributeGroups
   } = fileManager;
 
   const handleDrop = (ev) => {
@@ -60,10 +59,9 @@ export default function FileInput({ fileManager, attributes, applyOptions }) {
               <div className='iss__fileInput__selectorWrap'>
                 <SelectGroup
                   attributes={attributes}
-                  applyOptions={applyOptions}
-                  attributeFile={attributeFile}
+                  applyGroups={applyGroups}
                   fileIndex={index}
-                  addAdditional={addAdditional}
+                  setAttributeGroups={setAttributeGroups}
                 />
               </div>
             </div>

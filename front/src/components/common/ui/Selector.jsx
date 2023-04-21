@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import '../../../styles/components/common/ui/selector.css';
 
 export default function Selector({
-  selectorIndex,
+  selectorKey,
   item,
   setOption,
-  applyOptions,
-  attributeFile,
+  applyGroups,
   fileIndex,
 }) {
   const [options, setOptions] = useState([item]);
@@ -23,34 +22,27 @@ export default function Selector({
       newOptions.push(option);
     }
     setOptions(newOptions);
-    attributeFile
-      ? attributeFile({fileIndex, selectorIndex, id, clear, index})
-      : setOption([id, children, index], selectorIndex);
+    setOption({ selectorKey, id, index });
   }
 
-  const isSelected = (index, id) => {
-    return applyOptions && applyOptions[index] && applyOptions[index][0] === id;
-  }
+  const isSelected = (index, id) => applyGroups && applyGroups[index] === id;
 
-  function addSelected(options) {
-    const newOptions = options.reduce((acc, [id, children]) => {
-      // TODO: proper check
-      // if (!children || id === item.id) return acc;
+  function addSelected(group) {
+     const newOptions = group.reduce((acc, id) => {
+      const { children } = acc[acc.length-1];
       if (!children) return acc;
       const [child] = children;
       const option = {...child};
       option.attributes = option.attributes.filter(({parent}) => parent === id);
       return [...acc, option];
     }, [item]);
-    const newIds = options.reduce((acc, [id]) => id ? [...acc, id] : acc, []);
-    if (attributeFile) attributeFile({fileIndex, selectorIndex, isNew: newIds});
     setOptions(newOptions);
   }
 
   useEffect(() => {
-    if (applyOptions) addSelected(applyOptions);
+    if (applyGroups) addSelected(applyGroups);
     else setOptions([item]);
-  }, [applyOptions, fileIndex]);
+  }, [applyGroups, fileIndex]);
 
   return (
     <>

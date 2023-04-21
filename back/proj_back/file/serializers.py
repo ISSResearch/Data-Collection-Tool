@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from attribute.serializers import AttributeSerializer
 from .models import File
-
+from attribute.serializers import AttributeGroupSerializer
 
 class FileSerializer(serializers.ModelSerializer):
     attributes = serializers.SerializerMethodField()
@@ -13,6 +12,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_attributes(self, instance):
         return instance.attribute.values_list('id', flat=True)
+        # return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
 
     def get_author_name(self, instance): return instance.author.username
 
@@ -23,4 +23,3 @@ class FileSerializer(serializers.ModelSerializer):
         self.instance.attribute.set(newAttributes)
 
         return self.instance
-

@@ -38,7 +38,7 @@ class FilesViewSet(APIView):
     def get(self, request, projectID):
         files = File.objects \
             .select_related('author') \
-            .prefetch_related('attribute') \
+            .prefetch_related('attribute', 'attributegroup_set') \
             .order_by('status') \
             .filter(project_id=projectID)
 
