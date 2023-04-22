@@ -7,7 +7,7 @@
   position: sticky;
   top: 0px;
   background-color: white;
-  z-index: 1;
+  z-index: 10;
 }
 .iss__header__user{
   display: flex;

@@ -11,8 +11,7 @@ class FileSerializer(serializers.ModelSerializer):
         exclude = ['hash_name', 'project', 'attribute', 'author']
 
     def get_attributes(self, instance):
-        return instance.attribute.values_list('id', flat=True)
-        # return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
+        return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
 
     def get_author_name(self, instance): return instance.author.username
 

@@ -58,7 +58,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
       <SelectGroup
         attributes={attributes}
-        // applyGroups={formApplyOption(attributes)}
+        applyGroups={file.attributeGroups}
         fileIndex={slide}
         setAttributeGroups={setAttributeGroups}
       />

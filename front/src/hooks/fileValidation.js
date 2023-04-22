@@ -2,5 +2,16 @@ import { useState } from "react";
 
 export default function useFiles() {
   const [files, setFiles] = useState([]);
-  return { files, setFiles };
+
+  function initFiles(filesData) {
+    filesData.forEach(file => {
+      const { attributes } = file;
+      file.attributeGroups = {};
+      attributes.forEach(({ uid, attributes}) => {
+        file.attributeGroups[uid] = attributes;
+      })
+    });
+    setFiles(filesData);
+  }
+  return { files, initFiles };
 }

@@ -4,7 +4,7 @@ from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import File, FileSerializer
-from .services import proceed_upload, prepare_zip_data
+from .services import FileUploader, prepare_zip_data
 from os import remove
 from time import time
 
@@ -12,7 +12,7 @@ from time import time
 class FileViewSet(APIView):
     http_method_names = ('get', 'patch')
 
-    def get(self, request, fileID):
+    def get(self, _, fileID):
         file = File.objects.get(id=fileID)
 
         return HttpResponse(file.path.read(), content_type='image/jpeg')
@@ -35,10 +35,10 @@ class FileViewSet(APIView):
 class FilesViewSet(APIView):
     http_method_names = ('get', 'post')
 
-    def get(self, request, projectID):
+    def get(self, _, projectID):
         files = File.objects \
             .select_related('author') \
-            .prefetch_related('attribute', 'attributegroup_set') \
+            .prefetch_related('attributegroup_set') \
             .order_by('status') \
             .filter(project_id=projectID)
 
@@ -48,13 +48,14 @@ class FilesViewSet(APIView):
     def post(self, request, projectID):
         response, res_status = {'ok': True}, status.HTTP_201_CREATED
 
-        proceed_upload(request, projectID)
+        uploader = FileUploader(request, projectID)
+        uploader.proceed_upload()
 
         return Response(response, status=res_status)
 
 
 @api_view(('GET',))
-def get_stats(request, projectID):
+def get_stats(_, projectID):
     stats = File.objects \
       .prefetch_related('attribute') \
       .filter(project_id=projectID) \

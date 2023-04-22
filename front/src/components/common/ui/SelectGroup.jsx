@@ -58,7 +58,7 @@ export default function SelectGroup({
         onClick={addGroup}
         type='button'
         className='iss__selectGroup__button add--group'
-      >+ add attribute group</button>
+      >add object</button>
       {Object.entries(groups).map(([key, data]) => (
         <div key={key} className='iss__selectGroup__selectWrapper'>
           {attributes?.map((attribute, index) => (
@@ -75,7 +75,7 @@ export default function SelectGroup({
             onClick={() => deleteGroup(key)}
             type='button'
             className='iss__selectGroup__button del--group'
-          >- delete attributes</button>
+          >delete</button>
         </div>
       ))}
       {handleApply &&

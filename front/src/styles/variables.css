@@ -1,16 +1,16 @@
 :root {
-  --issBrand: #004077;
-  --issLightBrand: #01a4e0;
-  /* --issBrand: #62abff;
-  --issLightBrand: #d8eaff; */
+  --issBrand: #62abff;
+  --issLightBrand: #d8eaff;
   --issRed: #770000;
   --issLightRed: #ff6262;
   --issGreen: #1a7700;
   --issLightGreen: #2fcc05;
-  /* --issRed: #ff0000;
-  --issGreen: #6db845;
-  --issLightRed: #ff6262;
-  --issLightGreen: #99ff62; */
+  /* --issRed: #ff0000; */
+  /* --issGreen: #6db845; */
+  /* --issLightRed: #ff6262; */
+  /* --issLightGreen: #99ff62; */
+  /* --issBrand: #004077; */
+  /* --issLightBrand: #01a4e0; */
 
   --maxWidth: 1280px;
 }

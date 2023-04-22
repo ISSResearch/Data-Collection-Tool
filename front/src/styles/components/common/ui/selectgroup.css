@@ -15,6 +15,12 @@
   padding: 10px 0;
   background-color: unset;
 }
+.style--min .add--group {
+  background-color: rgb(153, 255, 98, 0.2);
+}
+.style--min .del--group {
+  background-color: rgb(255, 98, 98, 0.2);
+}
 .iss__selectGroup__selectWrapper {
   width: 100%;
   margin-bottom: 8px;
@@ -41,8 +47,9 @@
   opacity: 0.5;
 }
 .add--group {
-  background-color: var(--issLightGreen);
+  background-color: rgb(153, 255, 98);
   border: none;
+  border: 1px solid var(--issGreen);
   color: var(--issGreen);
   width: 100%;
   margin-bottom: 12px;
@@ -54,7 +61,8 @@
 .del--group {
   border: none;
   width: 100%;
-  background-color: var(--issLightRed);
+  background-color: rgb(255, 98, 98);
+  border: 1px solid var(--issRed);
   color: var(--issRed);
 }
 .del--group:hover {

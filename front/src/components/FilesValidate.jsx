@@ -16,7 +16,7 @@ export default function FilesValidate({pathID, attributes}) {
     if (!pathID) return;
     axios.get(`/api/files/project/${pathID}/`)
       .then(({status, data}) => {
-        fileManager.setFiles(data);
+        fileManager.initFiles(data);
         sliderManager.setMax(data.length);
         setLoading(false);
       })
