@@ -46,10 +46,11 @@ class FilesViewSet(APIView):
         return Response(response.data, status=status.HTTP_200_OK)
 
     def post(self, request, projectID):
-        response, res_status = {'ok': True}, status.HTTP_201_CREATED
-
         uploader = FileUploader(request, projectID)
         uploader.proceed_upload()
+
+        response = {'ok': uploader.status}
+        res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_500_INTERNAL_SERVER_ERROR
 
         return Response(response, status=res_status)
 

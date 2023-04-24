@@ -40,9 +40,10 @@ export default function SelectGroup({
 
   useEffect(() => {
     if (Object.keys(applyGroups || {}).length) {
-      setGroups(deepCopy(applyGroups));
+      const newGroups = deepCopy(applyGroups);
+      setGroups(newGroups);
       if (setAttributeGroups) setAttributeGroups({
-        fileIndex, ids: applyGroups, set: true
+        fileIndex, ids: newGroups, set: true
       });
     }
     else setGroups({[Date.now()]: []});

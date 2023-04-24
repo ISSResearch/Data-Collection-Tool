@@ -17,7 +17,7 @@ export default function useFile() {
   }
 
   function setAttributeGroups({ ids, selectorKey, selInd, del, set }) {
-    // if (set) return files[fileIndex].attributeGroups = ids;
+    if (set) return file.attributeGroups = ids;
     const {attributeGroups: target} = file;
     if (del) return delete target[selectorKey];
     if (!target[selectorKey]) target[selectorKey] = {};
@@ -50,5 +50,25 @@ export default function useFile() {
     return applyOptions;
   }
 
-  return { file, initFile, changeName, setAttributeGroups, formApplyOption };
+  function validate() {
+    const error = { isValid: false, message: 'File attributes cannot be empty!' };
+
+    const { attributeGroups } = file;
+
+    if (!attributeGroups || !Object.values(attributeGroups).length ) return error
+    for (const group of Object.values(attributeGroups)) {
+      if (!Object.values(group).reduce((a, b) => a + b.length, 0)) return error;
+    }
+
+    return { isValid: true, message: 'ok' };
+  }
+
+  return {
+    file,
+    initFile,
+    changeName,
+    setAttributeGroups,
+    formApplyOption,
+    validate
+  };
 }

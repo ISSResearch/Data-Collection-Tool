@@ -6,25 +6,13 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
 
-  function MediaItem() {
+  function MediaItem(props) {
     return typeVideo
-      ? <video
-        muted
-        controls
-        playsInline
-        loop
-        src={fileUrl}
-        className="mediaFile"
-      />
-      : <img
-        alt="validate_item"
-        loading='lazy'
-        decoding="async"
-        src={fileUrl}
-        className='mediaFile'
-      />
+      ? <video muted controls playsInline loop {...props}/>
+      : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
   }
 
+  // TODO: when slide is change it triggers twice so im fetching old one
   function setUrl() {
     if (!files[slide]) return setFileUrl(null);
     const { id, file_type } = files[slide];
@@ -83,6 +71,9 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   useEffect(() => {
     const media = document.getElementById("mediaItem");
     media.addEventListener('wheel', e => e.preventDefault());
+    return () => {
+      media.removeEventListener('wheel', e => e.preventDefault());
+    }
   }, []);
 
   useEffect(() => {
@@ -98,7 +89,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
-      >{fileUrl && <MediaItem />}</div>
+      >{fileUrl && <MediaItem src={fileUrl} className='mediaFile'/>}</div>
     </div>
   );
 });

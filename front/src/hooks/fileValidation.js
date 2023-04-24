@@ -13,5 +13,6 @@ export default function useFiles() {
     });
     setFiles(filesData);
   }
-  return { files, initFiles };
+
+  return { files, setFiles, initFiles };
 }

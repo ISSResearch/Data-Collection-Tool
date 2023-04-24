@@ -8,7 +8,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
-  const { file, initFile, setAttributeGroups, formApplyOption } = useFile();
+  const { file, initFile, setAttributeGroups, validate } = useFile();
 
   function handleKeyPressed(key) {
     if (key === file.status) return;
@@ -22,7 +22,8 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
     axios.request(`/api/files/${file.id}/`,
       {
         method: 'patch',
-        data: { status, attribute: newAttributes },
+        data: { status },
+        // data: { status, attribute: newAttributes },
         headers: { 'Content-Type': 'application/json' },
       }
     )
@@ -32,6 +33,8 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
 
   function updateFile(status) {
     if (status === file.status) return;
+    const { isValid, message } = validate();
+    // if (!isValid) return alert(message);
     const newFiles = [...files];
     const preparedAtrs = Object.values(file.attributeGroups)
       .reduce((acc, ids) => [...acc, ids.reduce((a, b) => [...a, ...b], [])], []);

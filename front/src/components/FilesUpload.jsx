@@ -17,12 +17,14 @@ export default function FilesUpload({attributes, pathID}) {
   function sendForm(event) {
     event.preventDefault();
     setUploading(true);
-    const files = fileManager.gatherFiles();
-    if (!files.length) {
-      alert('no values');
+
+    const { isValid, message } = fileManager.validate();
+    if (!isValid) {
+      alert(message);
       setUploading(false);
       return;
     }
+    const files = fileManager.gatherFiles();
     const formData = new FormData();
     files.forEach(({file, name, extension, type, atrsGroups}) => {
       formData.append('files[]', file);

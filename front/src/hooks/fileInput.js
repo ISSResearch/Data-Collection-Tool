@@ -29,24 +29,45 @@ export default function useFileInput() {
     setFiles(newFiles);
   }
 
-  function setAttributeGroups({ fileIndex, ids, selectorIndex, selInd, del, set }) {
+  function setAttributeGroups({ fileIndex, ids, selectorKey, selInd, del, set }) {
     if (set) return files[fileIndex].attributeGroups = ids;
     const {attributeGroups: target} = files[fileIndex];
-    if (del) return delete target[selectorIndex];
-    if (!target[selectorIndex]) target[selectorIndex] = {};
-    target[selectorIndex][selInd] = [...ids];
+    if (del) return delete target[selectorKey];
+    if (!target[selectorKey]) target[selectorKey] = {};
+    target[selectorKey][selInd] = [...ids];
   }
 
+  // TODO: fix structure difference and b undefined issue
   function gatherFiles() {
-    const filesToSend = deepCopy(files).slice(0, 100);
-    filesToSend.forEach(file => {
+    files.forEach(file => {
       const preparedAtrs = Object.values(file.attributeGroups)
         .reduce((acc, ids) => {
-          return [...acc, ids.reduce((a, b) => [...a, ...b], [])]
+          return [
+            ...acc,
+            Array.isArray(ids)
+              ? ids.reduce((a, b) => [...a, ...(b || [])], [])
+              : Object.values(ids).reduce((a, b) => [...a, ...(b || [])], [])
+          ]
         }, []);
       file.atrsGroups = preparedAtrs;
     });
-    return filesToSend;
+    return files;
+  }
+
+  // TODO: fix 'b' undefined issue
+  function validate() {
+    if (!files.length) return { isValid: false, message: 'No files attached!'};
+    for (const file of files) {
+      const error = { isValid: false, message: 'File attributes cannot be empty!' };
+
+      const { attributeGroups } = file;
+
+      if (!attributeGroups || !Object.values(attributeGroups).length ) return error
+      for (const group of Object.values(attributeGroups)) {
+        if (!Object.values(group).reduce((a, b) => a + (b?.length || 0), 0)) return error;
+      }
+    }
+    return { isValid: true, message: 'ok' };
   }
 
   return {
@@ -55,6 +76,7 @@ export default function useFileInput() {
     handleNameChange,
     handleDelete,
     setAttributeGroups,
-    gatherFiles
+    gatherFiles,
+    validate
   };
 }

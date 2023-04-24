@@ -30,6 +30,7 @@ def prepare_zip_data(files, serialized_data, zip_name):
     return zip_location
 
 
+# TODO: handle errors and think 'bout how (atomic-like or skip failed ones)
 class FileUploader:
     __slots__ = {
         'project_id',
@@ -38,14 +39,20 @@ class FileUploader:
         'files_meta',
         'attribute_groups_instances',
         'groups_taken',
-        'new_instances'
+        'new_instances',
+        'status'
     }
 
     def __init__(self, request, project_id):
+        self.status = False
+
         self.project_id = project_id
         self.author_id = request.user.id
         self.files_data = request.FILES.getlist('files[]')
-        self.files_meta = request.POST.getlist('meta[]')
+        self.files_meta = [
+            loads(item)
+            for item in request.POST.getlist('meta[]')
+        ]
 
         self.attribute_groups_instances = list()
         self.groups_taken = 0
@@ -53,22 +60,23 @@ class FileUploader:
 
     def proceed_upload(self):
         try:
-          self.get_attribute_groups_instances() \
-            .get_file_instances() \
-            .write_files() \
-            .assign_attributes()
-          return True
-        except: return False
+            self \
+              .get_attribute_groups_instances() \
+              .get_file_instances() \
+              .write_files() \
+              .assign_attributes()
+            self.status = True
+        except: ...
 
     def get_attribute_groups_instances(self):
         required_length = self._get_attributes_groups_amount()
 
-        free_groups = AGroup.get_free_groups()
+        free_groups = list(AGroup.get_free_groups())
         new_groups = AGroup.objects.bulk_create(
-            {AGroup() for _ in range(required_length - free_groups.count())}
+            [AGroup() for _ in range(required_length - len(free_groups))]
         )
 
-        self.attribute_groups_instances = free_groups.union(new_groups)
+        self.attribute_groups_instances = free_groups + new_groups
 
         return self
 
@@ -78,14 +86,9 @@ class FileUploader:
         file_instances = [
             self._upload_file(file, meta)
             for file, meta in package_data
+            if bool(file)
         ]
-
-        filtered_instances = filter(
-            lambda instance: bool(instance[0]),
-            file_instances
-        )
-
-        self.file_instances.extend(filtered_instances)
+        self.new_instances.extend(file_instances)
 
         return self
 
@@ -101,154 +104,154 @@ class FileUploader:
             values (%s, %s)
             on conflict do nothing;
         """
+
         prepared_query = [
             (file_groups[i], file_meta[i])
             for _, file_groups, file_meta in self.new_instances
             for i in range(len(file_groups))
         ]
+
         query_values = [
-            (group_id, attribute_id)
+            (group_id.uid, attribute_id)
             for group_id, attributes in prepared_query
             for attribute_id in attributes
         ]
+
         with connection.cursor() as cur: cur.executemany(query, query_values)
 
     def _get_attributes_groups_amount(self):
-        prepared_meta = loads(self.files_meta)
-        groups = {meta.get('atrsGroups', {}).length for meta in prepared_meta}
-
-        return sum(groups)
+        return sum({len(meta.get('atrsGroups', [])) for meta in self.files_meta})
 
     def _upload_file(self, file, meta):
         byte_file = file.read()
         new_hash = md5(byte_file).digest()
         # if (len(File.objects.filter(hash_name=new_hash))): return
 
-        prepared_meta = loads(meta)
-        file_name = f'{prepared_meta["name"]}.{prepared_meta["extension"]}'
+        file_name = f'{meta["name"]}.{meta["extension"]}'
         save_path = path.join(str(self.project_id), file_name)
         file_path = default_storage.save(save_path, ContentFile(byte_file))
 
-        file_groups_count = len(prepared_meta.get('atrsGroups', []))
+        file_groups_count = len(meta.get('atrsGroups', []))
 
         file = File(
             path=file_path,
             hash_name=new_hash,
             file_name=file_name,
-            file_type=prepared_meta["type"],
+            file_type=meta["type"],
             project_id=self.project_id,
             author_id=self.author_id,
         )
 
         file_groups = self._assign_groups(file, file_groups_count)
 
-        return file, file_groups, prepared_meta.get('atrsGroups', [])
+        return file, file_groups, meta.get('atrsGroups', [])
 
     def _assign_groups(self, file, groups_count):
-        file_groups = set()
-        for group in self.attribute_groups_instances[self.groups_taken, groups_count]:
+        file_groups = list()
+
+        for group in self.attribute_groups_instances[self.groups_taken:groups_count]:
             group.file = file
-            file_groups.add(group)
+            file_groups.append(group)
 
         self.groups_taken = groups_count
 
         return file_groups
 
-# TODO: handle errors and think 'bout how (atomic-like or skip failed ones)
-def proceed_upload(request, projectID):
-    package_meta = {
-        'project': projectID,
-        'author': request.user.id,
-    }
-    files_data = request.FILES.getlist('files[]')
-    files_meta = request.POST.getlist('meta[]')
 
-    file_instances = gather_instances(files_data, files_meta, package_meta)
+# def proceed_upload(request, projectID):
+#     package_meta = {
+#         'project': projectID,
+#         'author': request.user.id,
+#     }
+#     files_data = request.FILES.getlist('files[]')
+#     files_meta = request.POST.getlist('meta[]')
 
-    create_files(file_instances)
+#     file_instances = gather_instances(files_data, files_meta, package_meta)
 
-
-def gather_instances(files, meta, package_meta):
-    project_id = package_meta['project']
-    author_id = package_meta['author']
-
-    required_attributes_groups = get_attributes_groups_amount(meta)
-
-    attribute_groups = get_attribute_groups(required_attributes_groups)
-
-    package = zip(files, attribute_groups, meta)
-
-    return [
-        upload_file(file, attribute_groups.pop(), meta, project_id, author_id)
-        for file, meta in package
-    ]
+#     create_files(file_instances)
 
 
-def get_attributes_groups_amount(meta):
-    prepared_meta = loads(meta)
-    groups = prepared_meta.get('atrsGroups', {})
-    return len(groups)
+# def gather_instances(files, meta, package_meta):
+#     project_id = package_meta['project']
+#     author_id = package_meta['author']
+
+#     required_attributes_groups = get_attributes_groups_amount(meta)
+
+#     attribute_groups = get_attribute_groups(required_attributes_groups)
+
+#     package = zip(files, attribute_groups, meta)
+
+#     return [
+#         upload_file(file, attribute_groups.pop(), meta, project_id, author_id)
+#         for file, meta in package
+#     ]
 
 
-def get_attribute_groups(length):
-    free_groups = AGroup.get_free_groups()
-
-    new_groups = AGroup.objects.bulk_create(
-        {AGroup() for _ in range(length - free_groups.count())}
-    )
-
-    return set(free_groups).union(new_groups)
+# def get_attributes_groups_amount(meta):
+#     prepared_meta = loads(meta)
+#     groups = prepared_meta.get('atrsGroups', {})
+#     return len(groups)
 
 
-def create_files(file_instances):
-    filtered_files = list(filter(lambda instace: bool(instace[0]), file_instances))
+# def get_attribute_groups(length):
+#     free_groups = AGroup.get_free_groups()
 
-    created_files = File.objects.bulk_create(
-        [file for file, _, _ in filtered_files]
-    )
+#     new_groups = AGroup.objects.bulk_create(
+#         {AGroup() for _ in range(length - free_groups.count())}
+#     )
 
-    created_groups = AGroup.objects.bulk_create(
-        [group for _, group, _ in filtered_files]
-    )
-
-    process_data = zip(
-        [file.id for file in created_files],
-        [meta['atrsId'] for _, _, meta in filtered_files]
-    )
-
-    query = """
-        insert into file_attribute
-        (file_id, attribute_id)
-        values (%s, %s)
-        on conflict do nothing;
-    """
-    query_values = [
-        (file_id, attribute_id)
-        for file_id, attributes in process_data
-        for attribute_id in attributes
-    ]
-
-    with connection.cursor() as cur: cur.executemany(query, query_values)
+#     return set(free_groups).union(new_groups)
 
 
-def upload_file(file, group, meta, project_id, author_id):
-    byte_file = file.read()
-    new_hash = md5(byte_file).digest()
-    # if (len(File.objects.filter(hash_name=new_hash))): return
+# def create_files(file_instances):
+#     filtered_files = list(filter(lambda instace: bool(instace[0]), file_instances))
 
-    prepared_meta = loads(meta)
-    file_name = f'{prepared_meta["name"]}.{prepared_meta["extension"]}'
-    save_path = path.join(str(project_id), file_name)
-    file_path = default_storage.save(save_path, ContentFile(byte_file))
+#     created_files = File.objects.bulk_create(
+#         [file for file, _, _ in filtered_files]
+#     )
 
-    file = File(
-        path=file_path,
-        hash_name=new_hash,
-        file_name=file_name,
-        file_type=prepared_meta["type"],
-        project_id=project_id,
-        author_id=author_id,
-    )
-    group.file = file
+#     created_groups = AGroup.objects.bulk_create(
+#         [group for _, group, _ in filtered_files]
+#     )
 
-    return file, group, prepared_meta
+#     process_data = zip(
+#         [file.id for file in created_files],
+#         [meta['atrsId'] for _, _, meta in filtered_files]
+#     )
+
+#     query = """
+#         insert into file_attribute
+#         (file_id, attribute_id)
+#         values (%s, %s)
+#         on conflict do nothing;
+#     """
+#     query_values = [
+#         (file_id, attribute_id)
+#         for file_id, attributes in process_data
+#         for attribute_id in attributes
+#     ]
+
+#     with connection.cursor() as cur: cur.executemany(query, query_values)
+
+
+# def upload_file(file, group, meta, project_id, author_id):
+#     byte_file = file.read()
+#     new_hash = md5(byte_file).digest()
+#     # if (len(File.objects.filter(hash_name=new_hash))): return
+
+#     prepared_meta = loads(meta)
+#     file_name = f'{prepared_meta["name"]}.{prepared_meta["extension"]}'
+#     save_path = path.join(str(project_id), file_name)
+#     file_path = default_storage.save(save_path, ContentFile(byte_file))
+
+#     file = File(
+#         path=file_path,
+#         hash_name=new_hash,
+#         file_name=file_name,
+#         file_type=prepared_meta["type"],
+#         project_id=project_id,
+#         author_id=author_id,
+#     )
+#     group.file = file
+
+#     return file, group, prepared_meta
