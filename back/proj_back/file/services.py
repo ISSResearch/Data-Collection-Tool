@@ -71,12 +71,13 @@ class FileUploader:
     def get_attribute_groups_instances(self):
         required_length = self._get_attributes_groups_amount()
 
-        free_groups = list(AGroup.get_free_groups())
+        available_groups = list(AGroup.get_free_groups())
         new_groups = AGroup.objects.bulk_create(
-            [AGroup() for _ in range(required_length - len(free_groups))]
+            [AGroup() for _ in range(required_length - len(available_groups))]
         )
+        available_groups.extend(new_groups)
 
-        self.attribute_groups_instances = free_groups + new_groups
+        self.attribute_groups_instances = available_groups[:required_length]
 
         return self
 
@@ -94,7 +95,14 @@ class FileUploader:
 
     def write_files(self):
         File.objects.bulk_create([file for file, _, _ in self.new_instances])
-
+        AGroup.objects.bulk_update(
+            [
+                group
+                for _, file_groups, _ in self.new_instances
+                for group in file_groups
+            ],
+            ['file_id']
+        )
         return self
 
     def assign_attributes(self):
@@ -120,7 +128,7 @@ class FileUploader:
         with connection.cursor() as cur: cur.executemany(query, query_values)
 
     def _get_attributes_groups_amount(self):
-        return sum({len(meta.get('atrsGroups', [])) for meta in self.files_meta})
+        return sum([len(meta.get('atrsGroups', [])) for meta in self.files_meta])
 
     def _upload_file(self, file, meta):
         byte_file = file.read()
@@ -149,11 +157,11 @@ class FileUploader:
     def _assign_groups(self, file, groups_count):
         file_groups = list()
 
-        for group in self.attribute_groups_instances[self.groups_taken:groups_count]:
+        for group in self.attribute_groups_instances[self.groups_taken:self.groups_taken+groups_count]:
             group.file = file
             file_groups.append(group)
 
-        self.groups_taken = groups_count
+        self.groups_taken += groups_count
 
         return file_groups
 

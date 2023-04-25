@@ -12,7 +12,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
       : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
   }
 
-  // TODO: when slide is change it triggers twice so im fetching old one
+  // TODO: when slide is change it triggers twice so im fetching old one (uselayouteffect)
   function setUrl() {
     if (!files[slide]) return setFileUrl(null);
     const { id, file_type } = files[slide];
