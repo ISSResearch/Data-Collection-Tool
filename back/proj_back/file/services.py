@@ -73,7 +73,8 @@ class FileUploader:
 
         available_groups = list(AGroup.get_free_groups())
         new_groups = AGroup.objects.bulk_create(
-            [AGroup() for _ in range(required_length - len(available_groups))]
+            [AGroup() for _ in range(required_length - len(available_groups))],
+            batch_size=400
         )
         available_groups.extend(new_groups)
 
@@ -94,14 +95,18 @@ class FileUploader:
         return self
 
     def write_files(self):
-        File.objects.bulk_create([file for file, _, _ in self.new_instances])
+        File.objects.bulk_create(
+            [file for file, _, _ in self.new_instances],
+            batch_size=100
+        )
         AGroup.objects.bulk_update(
             [
                 group
                 for _, file_groups, _ in self.new_instances
                 for group in file_groups
             ],
-            ['file_id']
+            ['file_id'],
+            batch_size=300
         )
         return self
 
