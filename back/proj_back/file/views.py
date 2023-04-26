@@ -18,7 +18,10 @@ class FileViewSet(APIView):
         return HttpResponse(file.path.read(), content_type='image/jpeg')
 
     def patch(self, request, fileID):
-        file = File.objects.get(id=fileID)
+        file = File.objects \
+            .select_related('author') \
+            .prefetch_related('attributegroup_set') \
+            .get(id=fileID)
         updated_file = FileSerializer(file, request.data, partial=True)
         update_valid = updated_file.is_valid()
 

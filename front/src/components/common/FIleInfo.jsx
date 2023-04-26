@@ -22,8 +22,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
     axios.request(`/api/files/${file.id}/`,
       {
         method: 'patch',
-        data: { status },
-        // data: { status, attribute: newAttributes },
+        data: { status, attribute: newAttributes },
         headers: { 'Content-Type': 'application/json' },
       }
     )
@@ -34,10 +33,16 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   function updateFile(status) {
     if (status === file.status) return;
     const { isValid, message } = validate();
-    // if (!isValid) return alert(message);
+    if (!isValid) return alert(message);
     const newFiles = [...files];
-    const preparedAtrs = Object.values(file.attributeGroups)
-      .reduce((acc, ids) => [...acc, ids.reduce((a, b) => [...a, ...b], [])], []);
+    const preparedAtrs = Object.entries(file.attributeGroups)
+      .reduce((acc, [key, val]) => {
+        return {
+          ...acc,
+          [key]: (Array.isArray(val) ? val : Object.values(val))
+            .reduce((newacc, ids) => [...newacc, ...ids], [])
+        }
+      }, {});
     const updatedFile = {...file, status, attributes: preparedAtrs};
     fetchUpdateFile(status, preparedAtrs);
     newFiles[slide] = {...updatedFile};

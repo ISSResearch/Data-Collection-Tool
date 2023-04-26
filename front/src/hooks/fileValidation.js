@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { attributeGroupsAdapter } from "../utils/adapters";
 
 export default function useFiles() {
   const [files, setFiles] = useState([]);
@@ -6,10 +7,7 @@ export default function useFiles() {
   function initFiles(filesData) {
     filesData.forEach(file => {
       const { attributes } = file;
-      file.attributeGroups = {};
-      attributes.forEach(({ uid, attributes}) => {
-        file.attributeGroups[uid] = attributes;
-      })
+      file.attributeGroups = attributeGroupsAdapter(attributes);
     });
     setFiles(filesData);
   }

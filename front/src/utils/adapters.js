@@ -1,15 +1,27 @@
 import { deepCopy } from "./utils";
 
 export function attributeAdapter(data) {
-  const preparedData = deepCopy(data)
+  const preparedData = deepCopy(data);
   const attributes = preparedData.attributes;
-
   attributes.forEach(el => {
     const parent = attributes.find(({id}) => el.parent === id);
     if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
   })
-
   return { ...preparedData, attributes: attributes.filter(({parent}) => !parent) };
+}
+
+export function attributeGroupsAdapter(data) {
+  const attributes = deepCopy(data);
+  return attributes.reduce((acc, {uid, attributes}) => {
+    return {
+      ...acc,
+      [uid]: attributes.reduce((newacc, [id, parent]) => {
+        if (parent === null) newacc.push([id]);
+        else newacc[newacc.length-1].push(id);
+        return newacc;
+      }, [])
+    };
+  }, {});
 }
 
 export function statsAdapter(data) {

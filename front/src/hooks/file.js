@@ -6,7 +6,6 @@ export default function useFile() {
 
   function initFile(entry) {
     const newFile = deepCopy(entry);
-    newFile.attributeGroups = {};
     setFile(newFile);
   }
 
@@ -26,10 +25,10 @@ export default function useFile() {
 
   // TODO: refactor
   function formApplyOption(attrs) {
-    if (!attrs?.length || !file.attributes?.length) return [];
+    if (!attrs?.length || !file.attributeGroups?.length) return [];
     const applyOptions = [];
     const lookUpAttrs = deepCopy(attrs);
-    file.attributes.forEach( lookUpdId => {
+    file.attributeGroups.forEach( lookUpdId => {
       for (const index in lookUpAttrs) {
         const {children, attributes, selectIndex} = lookUpAttrs[index];
         if (children) lookUpAttrs.push(
@@ -52,14 +51,11 @@ export default function useFile() {
 
   function validate() {
     const error = { isValid: false, message: 'File attributes cannot be empty!' };
-
     const { attributeGroups } = file;
-
     if (!attributeGroups || !Object.values(attributeGroups).length ) return error
     for (const group of Object.values(attributeGroups)) {
       if (!Object.values(group).reduce((a, b) => a + b.length, 0)) return error;
     }
-
     return { isValid: true, message: 'ok' };
   }
 

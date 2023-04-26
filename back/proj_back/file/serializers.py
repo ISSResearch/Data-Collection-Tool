@@ -18,7 +18,34 @@ class FileSerializer(serializers.ModelSerializer):
     def update_file(self):
         super().save()
 
-        newAttributes = self.initial_data.get('attribute', [])
-        self.instance.attribute.set(newAttributes)
+        self.update_attributes()
 
         return self.instance
+
+    def update_attributes(self):
+        new_attributes = self.initial_data.get('attribute', {})
+
+        current_attributes = self.instance.attributegroup_set.all()
+
+        new_groups = [
+            self._handle_group_change(group, current_attributes)
+            for group in new_attributes
+        ]
+
+        # self.instance.attributegroup_set.set(filter(lambda el: el, new_groups))
+
+    def _handle_group_change(self, group, current_groups):
+        key, new_ids = group
+
+        model = set(filter(lambda obj: str(obj.uid) == key, current_groups))
+
+        if model:
+            upd_group, *_ = model
+            current_ids = set(upd_group.attribute.values_list('id', flat=True))
+            if set(new_ids) != current_ids: model.attribute.set(new_ids)
+
+        else:
+            new_group = self.instance.attributegroup_set.create()
+            new_group.attribute.set(new_ids)
+            return str(new_group.uid)
+

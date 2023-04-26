@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { deepCopy } from '../utils/utils';
 
 export default function useFileInput() {
   const [files, setFiles] = useState([]);
@@ -37,16 +36,15 @@ export default function useFileInput() {
     target[selectorKey][selInd] = [...ids];
   }
 
-  // TODO: fix structure difference and b undefined issue
+  // TODO: fix structure difference and (b undefined issue)?
   function gatherFiles() {
     files.forEach(file => {
       const preparedAtrs = Object.values(file.attributeGroups)
         .reduce((acc, ids) => {
           return [
             ...acc,
-            Array.isArray(ids)
-              ? ids.reduce((a, b) => [...a, ...(b || [])], [])
-              : Object.values(ids).reduce((a, b) => [...a, ...(b || [])], [])
+            (Array.isArray(ids) ? ids : Object.values(ids))
+              .reduce((a, b) => [...a, ...(b || [])], [])
           ]
         }, []);
       file.atrsGroups = preparedAtrs;
@@ -56,12 +54,10 @@ export default function useFileInput() {
 
   // TODO: fix 'b' undefined issue
   function validate() {
-    if (!files.length) return { isValid: false, message: 'No files attached!'};
+    if (!files.length) return {isValid: false, message: 'No files attached!'};
     for (const file of files) {
       const error = { isValid: false, message: 'File attributes cannot be empty!' };
-
       const { attributeGroups } = file;
-
       if (!attributeGroups || !Object.values(attributeGroups).length ) return error
       for (const group of Object.values(attributeGroups)) {
         if (!Object.values(group).reduce((a, b) => a + (b?.length || 0), 0)) return error;
