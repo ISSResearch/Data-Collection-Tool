@@ -27,25 +27,29 @@ class FileSerializer(serializers.ModelSerializer):
 
         current_attributes = self.instance.attributegroup_set.all()
 
-        new_groups = [
+        new_groups = {
             self._handle_group_change(group, current_attributes)
-            for group in new_attributes
-        ]
+            for group in new_attributes.items()
+        }
 
-        # self.instance.attributegroup_set.set(filter(lambda el: el, new_groups))
+        delete_groups = set(str(group.uid) for group in current_attributes) - new_groups
+
+        current_attributes.filter(uid__in = delete_groups).delete()
 
     def _handle_group_change(self, group, current_groups):
         key, new_ids = group
+        newKey = None
 
         model = set(filter(lambda obj: str(obj.uid) == key, current_groups))
 
         if model:
             upd_group, *_ = model
             current_ids = set(upd_group.attribute.values_list('id', flat=True))
-            if set(new_ids) != current_ids: model.attribute.set(new_ids)
+            if set(new_ids) != current_ids: upd_group.attribute.set(new_ids)
 
         else:
             new_group = self.instance.attributegroup_set.create()
             new_group.attribute.set(new_ids)
-            return str(new_group.uid)
+            newKey = str(new_group.uid)
 
+        return newKey or key
