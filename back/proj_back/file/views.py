@@ -4,6 +4,7 @@ from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import File, FileSerializer
+from attribute.models import AttributeGroup
 from .services import FileUploader, prepare_zip_data
 from os import remove
 from time import time
@@ -60,12 +61,19 @@ class FilesViewSet(APIView):
 
 @api_view(('GET',))
 def get_stats(_, projectID):
-    stats = File.objects \
+    stats = AttributeGroup.objects \
       .prefetch_related('attribute') \
-      .filter(project_id=projectID) \
+      .select_related('file') \
+      .filter(file__project_id=projectID) \
       .order_by('attribute__id') \
-      .values('attribute__id', 'attribute__name', 'attribute__parent', 'status', 'file_type') \
-      .annotate(count=Count('file_type'))
+      .values(
+          'attribute__id',
+          'attribute__name',
+          'attribute__parent',
+          'file__status',
+          'file__file_type'
+      ) \
+      .annotate(count=Count('file__file_type'))
 
     return Response(stats, status=status.HTTP_200_OK)
 
@@ -97,3 +105,4 @@ def download_project_data(request, projectID):
     remove(zip_location)
 
     return response
+

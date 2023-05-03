@@ -42,11 +42,27 @@ class Command(BaseCommand):
             with transaction.atomic():
                 self.assign_attributes_groups()
                 self.unlink_attirbute()
+                self.handle_empty_attributes_files()
             self.stdout.write('Migration completed!')
 
         except IntegrityError as err:
             self.stdout.write(err)
             self.stdout.write('Breaking process...')
+
+    def handle_empty_attributes_files(self):
+        self.stdout.write('Assigning attribute group to empty attr files...')
+
+        files_with_empty_attirubtes = File.objects \
+            .filter(attribute__isnull=True, attributegroup__isnull=True) \
+            .values_list('id', flat=True)
+
+        self._gather_attributes_group(files_with_empty_attirubtes.count())
+        free_groups_ids = {group.uid for group in self.attribute_group_instances}
+
+        query_values = set(zip(files_with_empty_attirubtes, free_groups_ids))
+
+        with connection.cursor() as cursor:
+            cursor.executemany(self._set_group_file_query, query_values)
 
     def assign_attributes_groups(self):
         self.stdout.write('Assigning Attribute Groups...')
@@ -97,7 +113,7 @@ class Command(BaseCommand):
             .prefetch_related('attribute') \
             .filter(attribute__isnull=False, attributegroup__isnull=True)
 
-    def _gather_attributes_group(self):
+    def _gather_attributes_group(self, ln=None):
         self.stdout.write('Forming new attirubte groups...')
 
         available_groups = list(AGroup.get_free_groups())
@@ -105,7 +121,7 @@ class Command(BaseCommand):
         new_groups = AGroup.objects.bulk_create(
             [
                 AGroup() for _
-                in range(self.migration_data.count() - len(available_groups))
+                in range((ln or self.migration_data.count()) - len(available_groups))
             ],
             batch_size=400
         )

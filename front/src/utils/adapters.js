@@ -32,13 +32,13 @@ export function statsAdapter(data) {
         id: item.attribute__id || 'no_atr_id',
         name: item.attribute__name || 'atr not set',
         parent: item.attribute__parent,
-        [item.status || 'v']: { [item.file_type]: item.count }
+        [item.file__status || 'v']: { [item.file__file_type]: item.count }
       };
     }
-    else if ((target[item.status || 'v'])) {
-      target[item.status || 'v'][item.file_type] = item.count
+    else if ((target[item.file__status || 'v'])) {
+      target[item.file__status || 'v'][item.file__file_type] = item.count
     }
-    else target[item.status] = { [item.file_type]: item.count };
+    else target[item.file__status] = { [item.file__file_type]: item.count };
     return acc;
   }, {});
 
