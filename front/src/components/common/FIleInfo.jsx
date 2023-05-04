@@ -32,7 +32,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
 
   function updateFile(status) {
     if (status === file.status) return;
-    const { isValid, message } = validate();
+    const { isValid, message } = validate(attributes);
     if (!isValid) return alert(message);
     const newFiles = [...files];
     const preparedAtrs = Object.entries(file.attributeGroups)

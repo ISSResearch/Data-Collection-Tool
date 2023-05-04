@@ -7,6 +7,7 @@ import FilesUpload from "../components/FilesUpload";
 import FilesDownload from "../components/FilesDownload";
 import FilesStatistics from "../components/common/FilesStats";
 import TitleSwitch from "../components/common/TitleSwitch";
+import ProjectEdit from "../components/ProjectEdit";
 import Load from '../components/common/Load';
 import axios from "axios";
 import '../styles/pages/project.css';
@@ -24,6 +25,7 @@ export default function ProjectPage() {
     { name: 'validate data', value: 'validate' },
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
+    { name: 'editing', value: 'edit' },
   ];
 
   useEffect(() => {
@@ -37,6 +39,18 @@ export default function ProjectPage() {
       .catch(err => console.log('err', err.message));
   }, [projectID]);
 
+  const PageVariant = (props) => {
+    const variants = {
+      validate: FilesValidate,
+      download: FilesDownload,
+      stats: FilesStatistics,
+      upload: FilesUpload,
+      edit: ProjectEdit,
+    }
+    const Component = variants[pageOption] || FilesUpload;
+    return <Component {...props}/>;
+  }
+
   return (
     <div className='iss__projectPage'>
       <Link to="/" className="iss__projectPage__button">back to</Link>
@@ -49,15 +63,13 @@ export default function ProjectPage() {
       {loading
         ? <div className="iss_projectPage__load"><Load/></div>
         : <>
-          <p className="iss__projectPage__description">{project.description}</p>
-          {pageOption === 'validate' &&
-            <FilesValidate pathID={projectID} attributes={project.attributes} />}
-          {pageOption === 'download' &&
-            <FilesDownload pathID={projectID} projectName={project.name} />}
-          {pageOption === 'stats' &&
-            <FilesStatistics pathID={projectID} />}
-          {pageOption === 'upload' &&
-            <FilesUpload attributes={project.attributes} pathID={projectID} />}
+          {pageOption !== 'edit' && <p className="iss__projectPage__description">Description: {project.description}</p>}
+          <PageVariant
+            attributes={project.attributes}
+            projectName={project.name}
+            projectDescription={project.description}
+            pathID={projectID}
+          />
         </>}
     </div>
   );

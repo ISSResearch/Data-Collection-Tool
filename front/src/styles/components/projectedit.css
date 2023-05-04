@@ -1,0 +1,49 @@
+.iss__projectEdit__title {
+  font-size: 24px;
+  color: var(--issBlack);
+  margin-bottom: 40px;
+}
+.iss__projectEdit__content {
+  display: flex;
+  gap: 12px;
+}
+.iss__projectEdit__side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.iss__projectEdit__side>span {
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.iss__projectEdit__side>span:hover {
+  color: var(--issBrand);
+}
+.iss__projectEdit__action--chosen {
+  pointer-events: none;
+  color: var(--issBrand);
+}
+.iss__projectEdit__deleteButton {
+  margin-top: 40px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  background: none;
+  border: 1px solid var(--issRed);
+  color: var(--issRed);
+  transition: background-color 0.3s ease;
+}
+.iss__projectEdit__deleteButton:hover {
+  background-color: var(--issLightRed);
+}
+.iss__projectEdit__divider {
+  background-color: var(--issBrand);
+  margin: -20px 0;
+  width: 1px;
+}
+.iss__projectEdit__editor {
+  opacity: 0.2;
+}

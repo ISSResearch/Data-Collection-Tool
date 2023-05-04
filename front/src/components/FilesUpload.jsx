@@ -17,8 +17,7 @@ export default function FilesUpload({attributes, pathID}) {
   function sendForm(event) {
     event.preventDefault();
     setUploading(true);
-
-    const { isValid, message } = fileManager.validate();
+    const { isValid, message } = fileManager.validate(attributes);
     if (!isValid) {
       alert(message);
       setUploading(false);
@@ -47,7 +46,10 @@ export default function FilesUpload({attributes, pathID}) {
   return (
     <form className='iss__filesUpload'>
       {!uploading &&
-        <button onClick={sendForm} className="iss__filesUpload__sendButton">
+        <button
+          onClick={sendForm}
+          className={`iss__filesUpload__sendButton${fileManager.files?.length ? '': ' send--disabled'}`}
+        >
           SEND ALL
         </button>}
       <SelectGroup

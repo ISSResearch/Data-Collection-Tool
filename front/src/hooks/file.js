@@ -49,12 +49,16 @@ export default function useFile() {
     return applyOptions;
   }
 
-  function validate() {
-    const error = { isValid: false, message: 'File attributes cannot be empty!' };
+  function validate(attributes) {
+    const error = { isValid: false, message: 'File attributes are supposed to be set at least on first levels!' };
     const { attributeGroups } = file;
     if (!attributeGroups || !Object.values(attributeGroups).length ) return error
     for (const group of Object.values(attributeGroups)) {
-      if (!Object.values(group).reduce((a, b) => a + b.length, 0)) return error;
+      const groupData = Object.values(group);
+      if (
+          groupData.length < Object.values(attributes).length
+          || !groupData.reduce((a, b) => a + b.length, 0)
+      ) return error;
     }
     return { isValid: true, message: 'ok' };
   }
