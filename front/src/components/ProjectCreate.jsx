@@ -1,19 +1,18 @@
 import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
-import AttributesForm from './common/AttributesForm';
+import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/projectcreate.css';
 
 export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
-  const { formHook, levelHook, attributeHook } = useAttributeManager();
-  const { forms, addForm, deleteForm, gatherAttributes } = formHook;
+  const attributeManager = useAttributeManager();
 
   function getFormData({target}) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
     const description = target.querySelector('.iss__projectCreate__form__input textarea');
-    const attributes = gatherAttributes() ;
+    const attributes = attributeManager.formHook.gatherAttributes();
     return { name: name.value , description: description.value, attributes };
   }
 
@@ -55,27 +54,7 @@ export default function ProjectCreate() {
           }
         </fieldset>
         <div className='iss__projectCreate__form__border'/>
-        <fieldset className='iss__attributecreator'>
-          <button
-            onClick={addForm}
-            type="button"
-            className='iss__attributecreator__addButton'
-          >
-            <div className="addButton__cross"><span/><span/></div>
-            <span>Add Attribute</span>
-          </button>
-          <div className='iss__attributecreator__attributesForm'>
-          {Object.entries(forms).map(([formId]) => (
-            <AttributesForm
-              key={formId}
-              formId={formId}
-              deleteForm={deleteForm}
-              levelHook={levelHook}
-              attributeHook={attributeHook}
-            />
-          ))}
-          </div>
-        </fieldset>
+        <AttributeCreatorForm attributeManager={attributeManager}/>
       </form>
     </div>
   );

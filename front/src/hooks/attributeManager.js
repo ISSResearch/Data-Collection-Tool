@@ -22,6 +22,8 @@ export default function useAttributeManager() {
     setForms(newForms);
   }
 
+  function clearForms() { setForms({}); }
+
   function gatherAttributes() {
     return Object.keys(forms).map( key => {
       return {
@@ -32,8 +34,8 @@ export default function useAttributeManager() {
   }
 
   return {
-    formHook: { forms, addForm, deleteForm, gatherAttributes },
+    formHook: { forms, addForm, deleteForm, gatherAttributes, clearForms},
     levelHook,
-    attributeHook
+    attributeHook,
   };
 }
