@@ -26,7 +26,7 @@ services:
              python manage.py makemigrations attribute &&
              python manage.py makemigrations file &&
              python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
     networks:
       - iss_network
 
