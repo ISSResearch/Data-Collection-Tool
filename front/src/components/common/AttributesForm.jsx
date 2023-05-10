@@ -16,7 +16,7 @@ export default function AttributesForm({
     else delLevel(formId, index);
   }
 
-  useEffect(() => addLevel(formId), []);
+  useEffect(() => { addLevel(formId) }, []);
 
   return (
     <div className='iss__attributesForm'>

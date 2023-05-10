@@ -32,26 +32,13 @@ class ProjectsViewSet(APIView):
 
 
 class ProjectViewSet(APIView):
-    http_method_names = ['get', 'put', 'patch']
+    http_method_names = ['get', 'patch']
 
     def get(self, request, pk):
         project = Project.objects.prefetch_related('attribute_set').get(id=pk)
         response = ProjectSerializer(project)
 
         return Response(response.data)
-
-    def put(self, request, pk):
-        succeed, errors = update_project(request, pk)
-
-        response_data = {'ok': succeed}
-        if errors: response_data['errors'] = errors
-
-        response_status = (
-            status.HTTP_202_ACCEPTED if succeed
-            else status.HTTP_400_BAD_REQUEST
-        )
-
-        return  Response(response_data, status=response_status)
 
     def patch(self, request, pk):
         succeed, errors = update_project(request, pk)
@@ -65,4 +52,3 @@ class ProjectViewSet(APIView):
         )
 
         return  Response(response_data, status=response_status)
-

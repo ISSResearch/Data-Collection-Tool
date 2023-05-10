@@ -1,3 +1,107 @@
 .iss__changeAttributes {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+}
+.iss__changeAttributes__button:last-of-type {
+  margin-top: 40px;
+}
+.iss__changeAttributes__button {
+  padding: 2px 4px;
+  font-size: 16px;
+  width: fit-content;
+  border: none;
+  background-color: unset;
+  cursor: pointer;
+  display: flex;
+  place-items: center;
+  gap: 12px;
+  transition: background-color 0.3s ease;
+}
+.iss__changeAttributes__button>span {
+  transition: color 0.3s ease;
+}
+.iss__changeAttributes__button>svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--issBrand);
+  transition: fill 0.3s ease;
+}
+.iss__changeAttributes__button:hover {
+  background-color: var(--issBrand);
+}
+.iss__changeAttributes__button:hover>span {
+  color: white;
+}
+.iss__changeAttributes__button:hover>svg {
+  fill: white;
+}
+.point--up {
+  rotate: 180deg;
+}
+.iss__changeAttributes__edit {
+  max-height: 0;
+  height: fit-content;
+  border: 1px solid var(--issBrand);
+  overflow-y: hidden;
+  overflow-x: scroll;
+  position: relative;
+  transition: max-height 0.3s ease;
+}
+.edit--open {
+  max-height: 100%;
+}
+.iss__changeAttributes__edit:first-of-type>span {
+  height: 200px;
+  display: inline-block;
   opacity: 0.2;
+}
+.iss__changeAttributes__edit__new {
+  padding: 20px;
+}
+.iss__changeAttributes__edit__new .iss__attributecreator__attributesForm {
+  max-width: 100%;
+  min-height: 180px;
+}
+.iss__changeAttributes__edit__new .iss__attributesForm {
+  padding: 0;
+  width: 100%;
+  background-color: unset;
+  border-bottom: 1px dashed var(--issBrand);
+  padding-bottom: 12px;
+  margin-bottom: 40px;
+}
+.iss__changeAttributes__edit__new .iss__attributesForm h2,h3 {
+  color: var(--issBlack);
+}
+.iss__changeAttributes__edit__new .iss__attributesForm input {
+  border: 1px solid var(--issBrand);
+}
+.iss__changeAttributes__edit__new .iss__attributeForm__tree {
+  color: var(--issBrand);
+}
+.iss__changeAttributes__edit__new .attribute--child {
+  border-left: 1px dashed var(--issBrand);
+}
+.iss__changeAttributes__edit__new .iss__attributeForm {
+  background: unset;
+}
+.iss__changeAttributes__edit>button {
+  border: 1px solid var(--issBrand);
+  padding: 4px 8px;
+  background-color: var(--issBrand);
+  color: white;
+  width: -moz-fit-content;
+  width: fit-content;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  font-size: 16px;
+  transform: translate(1px, -1px);
+}
+.iss__changeAttributes__edit>button:hover {
+  color: var(--issBrand);
+  background-color: white;
 }

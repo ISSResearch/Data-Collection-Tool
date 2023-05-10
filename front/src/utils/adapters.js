@@ -7,7 +7,7 @@ export function attributeAdapter(data) {
     const parent = attributes.find(({id}) => el.parent === id);
     if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
   })
-  return { ...preparedData, attributes: attributes.filter(({parent}) => !parent) };
+  return { ...preparedData, preparedAttributes: attributes.filter(({parent}) => !parent) };
 }
 
 export function attributeGroupsAdapter(data) {
