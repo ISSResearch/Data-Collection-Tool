@@ -4,7 +4,7 @@ import AttributeCreatorForm from './ui/AttributeCreatorForm';
 import axios from 'axios';
 import '../../styles/components/common/changeattributes.css';
 
-export default function ChangeAttributes ({ originalAtrs }) {
+export default function ChangeAttributes ({ originalAtrs, pathID }) {
   const [choiceOpen, setChoiceOpen] = useState(null);
   const [loading, setLoading] = useState(false);
   const attributeManager = useAttributeManager();
@@ -13,18 +13,13 @@ export default function ChangeAttributes ({ originalAtrs }) {
     setChoiceOpen(choice === choiceOpen ? null : choice);
   }
 
-  function handleEditAttributes() {
-    return Promise.resolve({data:'edit back'})
-    const attributes = attributeManager.formHook.gatherAttributes();
-    return axios.request('/api/projects/',
-      {
-        method: 'post',
-        data: { attributes },
-        headers: { 'Content-Type': 'application/json' }
-      })
+  function validateNewAttributes(newAttributes) {
+    if (!newAttributes || !newAttributes.length) return;
+    for (const { attributes } of newAttributes) if (!attributes.length) return;
+    return true;
   }
 
-  function handleNewAttributes() {
+  function handleEditAttributes() {
     return Promise.resolve({data: 'new back'})
     const attributes = attributeManager.formHook.gatherAttributes();
     return axios.request('/api/projects/',
@@ -35,13 +30,25 @@ export default function ChangeAttributes ({ originalAtrs }) {
       })
   }
 
+  function handleNewAttributes() {
+    const attributes = attributeManager.formHook.gatherAttributes();
+    return validateNewAttributes(attributes)
+      ? axios.request('/api/projects/' + pathID,
+        {
+          method: 'patch',
+          data: { attributes },
+          headers: { 'Content-Type': 'application/json' }
+        })
+      : Promise.reject('No attributes specified');
+  }
+
   function sendForm(event) {
     event.preventDefault();
     setLoading(true);
     (choiceOpen === 'edit' ? handleEditAttributes : handleNewAttributes)()
-      .then(({status, data}) => {console.log(data);return setLoading(false);;window.location.reload()})
+      .then(({status, data}) => {window.location.reload()})
       .catch(err => {
-        console.log(err)
+        alert(err);
         setLoading(false);
       });
   }
