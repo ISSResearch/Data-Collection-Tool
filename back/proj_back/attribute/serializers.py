@@ -30,4 +30,4 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
         exclude = ('file', 'attribute')
 
     def get_attributes(self, instance):
-        return instance.attribute.values_list('id', 'parent_id')
+        return tuple(instance.attribute.values_list('id', 'parent_id', 'name'))

@@ -77,8 +77,23 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   }, []);
 
   useEffect(() => {
-    setUrl();
+    // setUrl();
     resetZoom();
+    const { id, file_type } = files[slide];
+    const controller = new AbortController();
+    fetch(`/api/files/${id}/`, { signal: controller.signal })
+      .then(response => response.blob())
+      .then(blob => URL.createObjectURL(blob))
+      .then(url => {
+        setFileUrl(url);
+        setTypeVideo(file_type === 'video');
+      })
+      .catch(err => console.error(err));
+
+    return () => {
+      controller.abort();
+      URL.revokeObjectURL(fileUrl);
+    }
   }, [files, slide]);
 
   return (

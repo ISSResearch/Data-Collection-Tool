@@ -14,13 +14,14 @@ export default function FilesStatistics({pathID}) {
     const val = (c?.image || 0) + (c?.video || 0);
     return acc + dec + val;
   };
+
   const countStatus = (status) => {
     return Object.values(stats).reduce((sum, item) => sum + countItem(item[status]), 0);
   };
 
   const countTotal = () => {
     return Object.values(stats).reduce((sum, {a, d, v}) => sum + countItem(a, d, v), 0);
-  }
+  };
 
   useEffect(() => {
     axios.get(`/api/files/stats/project/${pathID}/`)
