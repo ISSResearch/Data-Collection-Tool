@@ -42,7 +42,7 @@ export default function AttributeInput({
                 ><span /><span /></button>}
             </div>
           </div>
-          {Boolean(attributes.length) &&
+          {Boolean(children.length) &&
             <AttributeInput
               formId={formId}
               attributes={children}
