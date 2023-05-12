@@ -71,7 +71,8 @@
   padding-bottom: 12px;
   margin-bottom: 40px;
 }
-.iss__changeAttributes__edit__new .iss__attributesForm h2,h3 {
+.iss__changeAttributes__edit__new .iss__attributesForm h2,
+.iss__changeAttributes__edit__new .iss__attributesForm h3 {
   color: var(--issBlack);
 }
 .iss__changeAttributes__edit__new .iss__attributesForm input {

@@ -80,14 +80,12 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     // setUrl();
     resetZoom();
     const { id, file_type } = files[slide];
+    setTypeVideo(file_type === 'video');
     const controller = new AbortController();
     fetch(`/api/files/${id}/`, { signal: controller.signal })
       .then(response => response.blob())
       .then(blob => URL.createObjectURL(blob))
-      .then(url => {
-        setFileUrl(url);
-        setTypeVideo(file_type === 'video');
-      })
+      .then(url => setFileUrl(url))
       .catch(err => console.error(err));
 
     return () => {

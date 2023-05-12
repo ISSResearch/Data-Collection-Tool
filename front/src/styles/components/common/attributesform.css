@@ -15,7 +15,8 @@
   place-items: center;
   margin-bottom: 8px;
 }
-.iss__attributeForm__titleWrap h2,h3 {
+.iss__attributeForm__titleWrap>h2,
+.iss__attributeForm__titleWrap>h3 {
   color: white;
 }
 .iss__attributesForm__levelWrap {
