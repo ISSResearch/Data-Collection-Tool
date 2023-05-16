@@ -106,3 +106,14 @@ def download_project_data(request, projectID):
 
     return response
 
+
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+@api_view(('POST',))
+def test(request, pId):
+    file = request.data.get('file')
+    name = request.data.get('name')
+    p = '/temp/' + name
+    with open(default_storage.location + p, 'ba') as f: f.write(file.read())
+
+    return HttpResponse('ok')
