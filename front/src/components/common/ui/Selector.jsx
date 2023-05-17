@@ -51,15 +51,11 @@ export default function Selector({
           key={`${id}_${fileIndex}`}
           onChange={({target}) => handleSelect(target, children, index)}
           className="iss__selector"
+          defaultValue={applyGroups && applyGroups[index]}
         >
           <option value="clear">--{name}--</option>
-          {/* TODO resolve selected problem */}
           {attributes?.map(({name, id}) => (
-            <option
-              key={id}
-              value={id}
-              selected={isSelected(index, id)}
-            >{name}</option>
+            <option key={id} value={id}>{name}</option>
           ))}
         </select>
       ))}

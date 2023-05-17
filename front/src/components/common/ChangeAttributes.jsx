@@ -7,33 +7,32 @@ export default function ChangeAttributes ({ pathID, attributes }) {
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
 
-  function validateNewAttributes(newAttributes) {
-    if (!newAttributes || !newAttributes.length) return;
-    for (const { attributes } of newAttributes) if (!attributes.length) return;
+  function validateNewAttributes() {
+    for (
+      const attributes
+      of Object.values(attributeManagerNew.attributeHook.attributes)
+    ) if (!attributes.length) return false;
     return true;
   }
 
   function gatherForm() {
-    const edit = attributeManager.formHook.gatherAttributes();
-    const newAttributes = attributeManager.formHook.gatherAttributes();
-    return {};
+    return [
+      ...attributeManager.formHook.gatherAttributes(),
+      ...attributeManagerNew.formHook.gatherAttributes()
+    ];
   }
 
   function sendForm(event) {
     event.preventDefault();
-    // setLoading(true);
-    // validateNewAttributes(attributes)
-    // axios.request('/api/projects/' + pathID,
-    //   {
-    //     method: 'post',
-    //     data: { attributes },
-    //     headers: { 'Content-Type': 'application/json' }
-    // })
-    //   .then(({status, data}) => {window.location.reload()})
-    //   .catch(err => {
-    //     alert(err);
-    //     setLoading(false);
-    //   });
+    if (!validateNewAttributes()) return alert('Some attributes form are missed.')
+    axios.request(`/api/projects/${pathID}/`,
+      {
+        method: 'patch',
+        data: { attributes: gatherForm() },
+        headers: { 'Content-Type': 'application/json' }
+    })
+      .then(({status, data}) => window.location.reload())
+      .catch(err => alert(err));
   }
 
   return (

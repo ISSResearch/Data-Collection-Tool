@@ -22,19 +22,40 @@ class Project(models.Model):
         parent_level=None
     ):
         current_level, *rest = levels
-        LEVEL, _ = self.level_set.get_or_create(
-            uid=current_level['id'],
-            name=current_level['name'],
-            parent=parent_level
-        )
+
+        try:
+          LEVEL, _ = self.level_set.update_or_create(
+              id=current_level['id'],
+              defaults={
+                  'uid': current_level['id'],
+                  'name': current_level['name'],
+                  'parent': parent_level
+              }
+          )
+        except:
+           LEVEL = self.level_set.create(
+                uid=current_level['id'],
+                name=current_level['name'],
+                parent=parent_level
+            )
 
         for attribute in attributes:
             name, children = attribute['name'], attribute['children']
 
-            PARENT = self.attribute_set.create(
-                name=name,
-                parent=parent_attribute,
-                level=LEVEL
-            )
+            try:
+                PARENT, _ = self.attribute_set.update_or_create(
+                    id=attribute['id'],
+                    defaults={
+                        'name': name,
+                        'parent': parent_attribute,
+                        'level': LEVEL
+                    }
+                )
+            except:
+                PARENT = self.attribute_set.create(
+                    name=name,
+                    parent=parent_attribute,
+                    level=LEVEL
+                )
 
             if children: self._create_attributes(children, rest, PARENT, LEVEL)

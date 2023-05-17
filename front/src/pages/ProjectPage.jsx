@@ -25,8 +25,8 @@ export default function ProjectPage() {
     { name: 'validate data', value: 'validate' },
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
-    { name: 'editing', value: 'edit' },
   ];
+  if (user.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' },);
 
   useEffect(() => {
     if (!projectID) return;
@@ -63,7 +63,10 @@ export default function ProjectPage() {
       {loading
         ? <div className="iss_projectPage__load"><Load/></div>
         : <>
-          {pageOption !== 'edit' && <p className="iss__projectPage__description">Description: {project.description}</p>}
+          {pageOption !== 'edit' &&
+            <p className="iss__projectPage__description">
+              Description: {project.description}
+            </p>}
           <PageVariant
             attributes={project.preparedAttributes}
             projectName={project.name}

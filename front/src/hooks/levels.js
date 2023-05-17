@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { formUID } from '../utils/utils';
 
 export default function useLevels() {
   const [levels, setLevels] = useState({});
 
-  function initLevel(formId, initData=[]) { setLevels({...levels, [formId]: initData}); }
+  function initLevel(formId, initData=[]) {
+    setLevels((prev) => {
+      return {...prev, [formId]: initData}
+    });
+  }
 
   function destroyLevel(formId) {
     const newLevels = {...levels};
@@ -14,7 +19,7 @@ export default function useLevels() {
   function addLevel(formId) {
     const newLevels = {...levels};
     const prevValues = [...newLevels[formId]];
-    newLevels[formId] = [ ...prevValues, { id: Date.now(), name: '' } ];
+    newLevels[formId] = [ ...prevValues, { id: formUID(), name: '' } ];
     setLevels(newLevels);
   }
 

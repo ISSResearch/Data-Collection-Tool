@@ -11,7 +11,8 @@ export default function AttributesForm({
   const { levels, addLevel, changeLevel, delLevel } = levelHook;
   const { attributes, addAttribute, delAttribute, handleChange } = attributeHook;
 
-  function handleLevelDelete(index) {
+  function handleLevelDelete(index, orig) {
+    if (orig) return alert('This is an original level. Delete is not supported right now')
     if (index === 0) deleteForm(formId);
     else delLevel(formId, index);
   }
@@ -29,7 +30,7 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span/><span/></button>
         </div>
-        {levels[formId].map(({id, name}, index) => (
+        {levels[formId].map(({id, name, orig}, index) => (
           <div key={id} className='iss__attributesForm__levelWrap'>
             <input
               placeholder="Level name"
@@ -39,7 +40,7 @@ export default function AttributesForm({
             />
             <button
               type="button"
-              onClick={() => handleLevelDelete(index)}
+              onClick={() => handleLevelDelete(index, orig)}
               className='iss__attributesForm__button button-del'
             ><span /></button>
           </div>
