@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { deepCopy, refreshPath } from "../utils/utils";
 import useAttributes from "./attributes";
 import useLevels from "./levels";
 
@@ -7,11 +8,11 @@ export default function useAttributeManager() {
   const levelHook = useLevels();
   const attributeHook = useAttributes();
 
-  function addForm() {
+  function addForm(data) {
     const formId = Date.now();
-    setForms({ ...forms, [formId]: { levels: null, attributes: null} });
-    levelHook.initLevel(formId);
-    attributeHook.initAttribute(formId);
+    setForms({ ...forms, [formId]: { levels: null, attributes: null } });
+    levelHook.initLevel(formId, data?.levels || []);
+    attributeHook.initAttribute(formId, data?.attributes || []);
   }
 
   function deleteForm(formId) {
@@ -30,11 +31,41 @@ export default function useAttributeManager() {
         levels: levelHook.levels[key],
         attributes: attributeHook.attributes[key],
       }
-    })
+    });
+  }
+
+  function boundAttributes(boundAttributes) {
+    const preparedData = deepCopy(boundAttributes).reduce((acc, item) => {
+      const boundForm = { levels: [], attributes: [] };
+      const attributes = [];
+      const levelStack = [item];
+      while (levelStack.length) {
+        const level = levelStack.pop();
+        boundForm.levels.push(level);
+        if (level.children?.length) levelStack.push(level.children[0]);
+        if (level.attributes) attributes.push(...level.attributes);
+      }
+      attributes.forEach(el => {
+        const parent = attributes.find(({id}) => el.parent === id);
+        if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
+      });
+      boundForm.attributes = attributes.filter(({parent}) => !parent);
+      boundForm.attributes.forEach((item, index) => item.path = String(index));
+      refreshPath(boundForm.attributes);
+      return [...acc, boundForm];
+    }, []);
+    preparedData.forEach(item => addForm(item));
   }
 
   return {
-    formHook: { forms, addForm, deleteForm, gatherAttributes, clearForms},
+    formHook: {
+      forms,
+      addForm,
+      deleteForm,
+      gatherAttributes,
+      clearForms,
+      boundAttributes
+    },
     levelHook,
     attributeHook,
   };

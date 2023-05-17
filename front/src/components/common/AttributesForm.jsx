@@ -16,7 +16,7 @@ export default function AttributesForm({
     else delLevel(formId, index);
   }
 
-  useEffect(() => { addLevel(formId) }, []);
+  useEffect(() => { if (!levels[formId].length) addLevel(formId); }, []);
 
   return (
     <div className='iss__attributesForm'>
@@ -27,22 +27,21 @@ export default function AttributesForm({
             onClick={() => addLevel(formId)}
             type="button"
             className='iss__attributesForm__button button-add'
-          ><span /><span /></button>
+          ><span/><span/></button>
         </div>
-        {levels[formId].map(({id}, index) => (
+        {levels[formId].map(({id, name}, index) => (
           <div key={id} className='iss__attributesForm__levelWrap'>
             <input
               placeholder="Level name"
               required
               onBlur={({target}) => changeLevel(formId, target, index)}
+              defaultValue={name}
             />
-            <div className="iss__attributesForm__delButton">
-              <button
-                type="button"
-                onClick={() => handleLevelDelete(index)}
-                className='iss__attributesForm__button button-del'
-              ><span /></button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleLevelDelete(index)}
+              className='iss__attributesForm__button button-del'
+            ><span /></button>
           </div>
         ))}
       </div>
@@ -55,7 +54,7 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span /><span /></button>
         </div>
-        {attributes[formId].length > 0 &&
+        {Boolean(attributes[formId].length) &&
           <AttributeInput
             formId={formId}
             attributes={attributes[formId]}

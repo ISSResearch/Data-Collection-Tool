@@ -32,11 +32,6 @@
   padding: 4px 8px;
   outline: none;
 }
-
-.iss__attributesForm__delButton {
-  display: flex;
-  width: fit-content;
-}
 .iss__attributesForm__button {
   border: none;
   position: relative;

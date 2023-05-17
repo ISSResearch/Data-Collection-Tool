@@ -3,7 +3,7 @@ import { useState } from 'react';
 export default function useLevels() {
   const [levels, setLevels] = useState({});
 
-  function initLevel(formId) { setLevels({...levels, [formId]: []}); }
+  function initLevel(formId, initData=[]) { setLevels({...levels, [formId]: initData}); }
 
   function destroyLevel(formId) {
     const newLevels = {...levels};

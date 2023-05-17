@@ -66,7 +66,6 @@ export default function ProjectPage() {
           {pageOption !== 'edit' && <p className="iss__projectPage__description">Description: {project.description}</p>}
           <PageVariant
             attributes={project.preparedAttributes}
-            originalAtrs={project.attributes}
             projectName={project.name}
             projectDescription={project.description}
             pathID={projectID}

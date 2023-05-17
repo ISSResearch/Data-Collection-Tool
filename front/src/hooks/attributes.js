@@ -4,7 +4,7 @@ import { deepFind, refreshPath } from '../utils/utils';
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
 
-  function initAttribute(formId) {setAttributes({...attributes, [formId]: []});}
+  function initAttribute(formId, initData=[]) {setAttributes({...attributes, [formId]: initData});}
 
   function destroyAttribute(formId) {
     const newAttributes = {...attributes};
