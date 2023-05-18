@@ -6,8 +6,6 @@ export default function SelectorItem({
   name,
   attributes,
   handleSelect,
-  isOpened,
-  setOpened
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useCallback, useState, useMemo } from 'react';
 import '../styles/pages/test.css';
-
+import SelectorItem from '../components/common/ui/SelectorItem';
 // export default function Test() {
 //   const [file, setFile] = useState(null);
 //   const [prog, setProg] = useState(0);
@@ -80,6 +80,7 @@ export default function UploadProgress() {
   const clear = () => setData(data.map(el => {el.prog = 0; delete el.status; return el}));
   return (
     <>
+      {/* <SelectorItem /> */}
       <button onClick={run}>run mock</button>
       <button onClick={clear}>clear</button>
       {data.map(({ name, prog, status }, index) => (

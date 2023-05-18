@@ -25,8 +25,6 @@ export default function Selector({
     setOption({ selectorKey, id, index });
   }
 
-  const isSelected = (index, id) => applyGroups && applyGroups[index] === id;
-
   function addSelected(group) {
      const newOptions = group.reduce((acc, id) => {
       const { children } = acc[acc.length-1];
@@ -45,7 +43,7 @@ export default function Selector({
   }, [applyGroups, fileIndex]);
 
   return (
-    <>
+    <div className='iss__selectorsWrap'>
       {options.map(({ id, name, children, attributes }, index) => (
         <select
           key={`${id}_${fileIndex}`}
@@ -59,6 +57,6 @@ export default function Selector({
           ))}
         </select>
       ))}
-    </>
+    </div>
   );
 }
