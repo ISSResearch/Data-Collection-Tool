@@ -19,11 +19,11 @@ export default function ProjectCreate() {
   function sendForm(event) {
     event.preventDefault();
     setLoading(true);
-    const {name, description, attributes} = getFormData(event);
+    const formData = getFormData(event);
     axios.request('/api/projects/',
       {
         method: 'post',
-        data: { name, description, attributes },
+        data: formData,
         headers: { 'Content-Type': 'application/json' }
       }
     )

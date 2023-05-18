@@ -5,7 +5,6 @@ import '../styles/components/projectedit.css';
 
 export default function ProjectEdit({
   attributes,
-  originalAtrs,
   projectName,
   projectDescription,
   pathID
@@ -42,7 +41,7 @@ export default function ProjectEdit({
         <div className='iss__projectEdit__divider'/>
         {action.value !== 'attrs'
           ? <form className='iss__projectEdit__editor'>{action.caption ? action.caption + ' in development...' : ''}</form>
-          : <ChangeAttributes originalAtrs={originalAtrs} pathID={pathID} />}
+          : <ChangeAttributes attributes={attributes}  pathID={pathID} />}
       </div>
 
     </>

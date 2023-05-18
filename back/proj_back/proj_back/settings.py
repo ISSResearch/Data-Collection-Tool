@@ -4,8 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-%o*gv0gtraw6@&@_a*c)$x%wuy8w55a2n3x^c2%0$9wm+0q8ot'
 
-DEBUG = not False
-
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 USE_X_FORWARDED_HOST = True
@@ -121,7 +120,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-LOGGING = {
+__LOGGING = {
     'version': 1,
     'filters': {
         'require_debug_true': {

@@ -79,6 +79,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   useEffect(() => {
     // setUrl();
     resetZoom();
+    if (!files[slide]) return;
     const { id, file_type } = files[slide];
     setTypeVideo(file_type === 'video');
     const controller = new AbortController();

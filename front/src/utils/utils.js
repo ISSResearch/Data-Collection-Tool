@@ -29,7 +29,7 @@ export function refreshPath(node, parentPath=null, changeIndex=null) {
     if (parentPath) newPath.push(String(index));
     else newPath[newPath.length - 1] = String(index);
     item.path = newPath.join('_');
-    if(item.children.length) refreshPath(item.children, item.path);
+    if (item.children?.length) refreshPath(item.children, item.path);
   });
 }
 
@@ -37,3 +37,5 @@ export function compareArrays(arr1, arr2) {
   return arr1.length === arr2.length
     && arr1.every((value, index) => value === arr2[index]);
 }
+
+export function formUID() { return Math.floor(Math.random() * 10**16) }

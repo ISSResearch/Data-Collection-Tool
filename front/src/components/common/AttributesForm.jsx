@@ -11,12 +11,13 @@ export default function AttributesForm({
   const { levels, addLevel, changeLevel, delLevel } = levelHook;
   const { attributes, addAttribute, delAttribute, handleChange } = attributeHook;
 
-  function handleLevelDelete(index) {
+  function handleLevelDelete(index, orig) {
+    if (orig) return alert('This is an original level. Delete is not supported right now')
     if (index === 0) deleteForm(formId);
     else delLevel(formId, index);
   }
 
-  useEffect(() => { addLevel(formId) }, []);
+  useEffect(() => { if (!levels[formId].length) addLevel(formId); }, []);
 
   return (
     <div className='iss__attributesForm'>
@@ -27,22 +28,21 @@ export default function AttributesForm({
             onClick={() => addLevel(formId)}
             type="button"
             className='iss__attributesForm__button button-add'
-          ><span /><span /></button>
+          ><span/><span/></button>
         </div>
-        {levels[formId].map(({id}, index) => (
+        {levels[formId].map(({id, name, orig}, index) => (
           <div key={id} className='iss__attributesForm__levelWrap'>
             <input
               placeholder="Level name"
               required
               onBlur={({target}) => changeLevel(formId, target, index)}
+              defaultValue={name}
             />
-            <div className="iss__attributesForm__delButton">
-              <button
-                type="button"
-                onClick={() => handleLevelDelete(index)}
-                className='iss__attributesForm__button button-del'
-              ><span /></button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleLevelDelete(index, orig)}
+              className='iss__attributesForm__button button-del'
+            ><span /></button>
           </div>
         ))}
       </div>
@@ -55,7 +55,7 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span /><span /></button>
         </div>
-        {attributes[formId].length > 0 &&
+        {Boolean(attributes[formId].length) &&
           <AttributeInput
             formId={formId}
             attributes={attributes[formId]}

@@ -1,10 +1,14 @@
 import { useState, useCallback } from 'react';
-import { deepFind, refreshPath } from '../utils/utils';
+import { deepFind, refreshPath, formUID } from '../utils/utils';
 
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
 
-  function initAttribute(formId) {setAttributes({...attributes, [formId]: []});}
+  function initAttribute(formId, initData=[]) {
+    setAttributes((prev) => {
+      return {...prev, [formId]: initData}
+    });
+  }
 
   function destroyAttribute(formId) {
     const newAttributes = {...attributes};
@@ -14,7 +18,7 @@ export default function useAttributes() {
 
   function addAttribute(formId, position=null) {
     let path;
-    const id = Date.now();
+    const id = formUID();
     const newAttributes = {...attributes};
     const target = newAttributes[formId];
     if (position) {
@@ -30,7 +34,8 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  function delAttribute(formId, position, isChild) {
+  function delAttribute(formId, position, isChild, orig) {
+    if (orig) return alert('This is an original attribute. Delete is not supported tight now.');
     const newAttributes = {...attributes};
     const target = newAttributes[formId]
     const path = position.split('_');

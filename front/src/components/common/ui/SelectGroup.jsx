@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Selector from "./Selector";
-import { deepCopy } from "../../../utils/utils";
+import { deepCopy, formUID } from "../../../utils/utils";
 import '../../../styles/components/common/ui/selectgroup.css';
 
 export default function SelectGroup({
@@ -15,7 +15,7 @@ export default function SelectGroup({
 
   function addGroup() {
     const newGroups = {...groups}
-    newGroups[Date.now()] = [];
+    newGroups[formUID()] = [];
     setGroups(newGroups);
   }
 
@@ -46,7 +46,7 @@ export default function SelectGroup({
         fileIndex, ids: newGroups, set: true
       });
     }
-    else setGroups({[Date.now()]: []});
+    else setGroups({[formUID()]: []});
   }, [applyGroups]);
 
   return (
