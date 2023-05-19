@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../../../styles/components/common/ui/selectoritem.css';
 
 export default function SelectorItem({
@@ -6,6 +6,7 @@ export default function SelectorItem({
   name,
   attributes,
   handleSelect,
+  defaults
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -18,14 +19,20 @@ export default function SelectorItem({
     handleSelect([]);
   }
 
-  function handleSelectChange({ selectedOptions }) {
-    const selectedIds = Array.from(selectedOptions).map(({ value }) => Number(value));
+  function handleSelectChange(handleOptions, skipEmit=false) {
+    const selectedIds = Array.isArray(handleOptions)
+      ? handleOptions
+      : Array.from(handleOptions.selectedOptions).map(({ value }) => Number(value));
     const chosenNames = selectedIds.map(selectedId => {
       return attributes.find(({ id }) => id === Number(selectedId)).name;
     })
     setSelected(chosenNames);
-    handleSelect(selectedIds);
+    if (!skipEmit) handleSelect(selectedIds);
   }
+
+  useEffect(() => {
+    if (defaults) handleSelectChange(defaults, true);
+  }, []);
 
   return (
     <div className='iss__customSelector'>

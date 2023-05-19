@@ -31,14 +31,9 @@ export default function SelectGroup({
   function setOption({ selectorKey, id, index }, selInd) {
     const target = groups[selectorKey];
     if (!target[selInd]) target[selInd] = [];
-    if (Array.isArray(id)) {
-      target[selInd].splice(0);
-      target[selInd].push(...id)
-    }
-    else {
-      target[selInd].splice(index, target.length);
-      if (id) target[selInd].push(id);
-    }
+    target[selInd].splice(index);
+    if (Array.isArray(id)) target[selInd].push(...id);
+    else if (id) target[selInd].push(id);
     if (setAttributeGroups) setAttributeGroups({
       fileIndex, ids: target[selInd], selectorKey, selInd
     });

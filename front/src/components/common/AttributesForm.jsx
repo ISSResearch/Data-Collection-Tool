@@ -30,25 +30,28 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span/><span/></button>
         </div>
-        {levels[formId].map(({id, name, orig}, index) => (
-          <div key={id} className='iss__attributesForm__levelWrap'>
-            <input
-              type="checkbox"
-              onChange={({target}) => setMultiple(formId, index, target)}
-            />
-            <input
-              placeholder="Level name"
-              required
-              onBlur={({target}) => changeLevel(formId, target, index)}
-              defaultValue={name}
-            />
-            <button
-              type="button"
-              onClick={() => handleLevelDelete(index, orig)}
-              className='iss__attributesForm__button button-del'
-            ><span /></button>
-          </div>
-        ))}
+        {
+          levels[formId].map(({id, name, orig, multiple}, index) => (
+            <div key={id} className='iss__attributesForm__levelWrap'>
+              <input
+                type="checkbox"
+                onChange={({target}) => setMultiple(formId, index, target)}
+                defaultChecked={multiple}
+              />
+              <input
+                placeholder="Level name"
+                required
+                onBlur={({target}) => changeLevel(formId, target, index)}
+                defaultValue={name}
+              />
+              <button
+                type="button"
+                onClick={() => handleLevelDelete(index, orig)}
+                className='iss__attributesForm__button button-del'
+              ><span /></button>
+            </div>
+          ))
+        }
       </div>
       <div className='iss__attributesWrapper'>
         <div className='iss__attributeForm__titleWrap'>
@@ -59,7 +62,8 @@ export default function AttributesForm({
             className='iss__attributesForm__button button-add'
           ><span /><span /></button>
         </div>
-        {Boolean(attributes[formId].length) &&
+        {
+          Boolean(attributes[formId].length) &&
           <AttributeInput
             formId={formId}
             attributes={attributes[formId]}
@@ -67,7 +71,8 @@ export default function AttributesForm({
             delAttribute={delAttribute}
             addAttribute={addAttribute}
             handleChange={handleChange}
-          />}
+          />
+        }
       </div>
     </div>
   );

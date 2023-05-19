@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import SelectorItem from './SelectorItem';
 import '../../../styles/components/common/ui/selector.css';
 
@@ -44,28 +44,32 @@ export default function Selector({
     else setOptions([item]);
   }, [applyGroups, fileIndex]);
 
-  // <SelectorItem
-  //           key={`${id}_${fileIndex}`}
-  //           id={id}
-  //           name={name}
-  //           attributes={attributes}
-  //           handleSelect={(ids) => handleSelect(ids, children, index)}
-  //         />
   return (
     <div className='iss__selectorsWrap'>
       {
-        options.map(({ id, name, children, attributes }, index) => (
-          <select
-            key={`${id}_${fileIndex}`}
-            onChange={({target}) => handleSelect(target, children, index)}
-            className="iss__selector"
-            defaultValue={applyGroups && applyGroups[index]}
-          >
-            <option value="clear">--{name}--</option>
-            {attributes?.map(({name, id}) => (
-              <option key={id} value={id}>{name}</option>
-            ))}
-          </select>
+        options.map(({ id, name, children, attributes, multiple }, index) => (
+          <Fragment key={`${id}_${fileIndex}`}>
+          {
+            multiple
+              ? <SelectorItem
+                id={id}
+                name={name}
+                attributes={attributes}
+                handleSelect={(ids) => handleSelect(ids, children, index)}
+                defaults={applyGroups && applyGroups.slice(index)}
+              />
+              : <select
+                onChange={({target}) => handleSelect(target, children, index)}
+                className="iss__selector"
+                defaultValue={applyGroups && applyGroups[index]}
+              >
+                <option value="clear">--{name}--</option>
+                {attributes?.map(({name, id}) => (
+                  <option key={id} value={id}>{name}</option>
+                ))}
+              </select>
+          }
+          </Fragment>
         ))
       }
     </div>

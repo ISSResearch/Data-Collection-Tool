@@ -1,4 +1,5 @@
 from django.db import models
+from attribute.models import Level, Attribute
 
 class Project(models.Model):
     name = models.CharField(max_length=255)
@@ -24,13 +25,18 @@ class Project(models.Model):
         current_level, *rest = levels
 
         try:
-          LEVEL = self.level_set.get(id=current_level['id'])
+          LEVEL, changed = self.level_set.get(id=current_level['id']), False
 
-          if LEVEL.name != current_level['name']: LEVEL.name = current_level['name']
-          if LEVEL.multiple != LEVEL.multiple: LEVEL.multiple = current_level['multiple']
-          LEVEL.save()
+          if LEVEL.name != current_level['name']:
+              LEVEL.name = current_level['name']
+              changed = True
+          if LEVEL.multiple != current_level['multiple']:
+              LEVEL.multiple = current_level['multiple']
+              changed = True
 
-        except self.level_set.DoesNotExist:
+          if changed: LEVEL.save()
+
+        except Level.DoesNotExist:
            LEVEL = self.level_set.create(
                 uid=current_level['id'],
                 name=current_level['name'],
@@ -46,7 +52,7 @@ class Project(models.Model):
                 if PARENT.name != name:
                     PARENT.name = name
                     PARENT.save()
-            except self.attribute_set.DoesNotExist:
+            except Attribute.DoesNotExist:
                 PARENT = self.attribute_set.create(
                     name=name,
                     parent=parent_attribute,
