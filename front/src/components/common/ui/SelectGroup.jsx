@@ -31,8 +31,14 @@ export default function SelectGroup({
   function setOption({ selectorKey, id, index }, selInd) {
     const target = groups[selectorKey];
     if (!target[selInd]) target[selInd] = [];
-    target[selInd].splice(index, target.length);
-    if (id) target[selInd].push(id);
+    if (Array.isArray(id)) {
+      target[selInd].splice(0);
+      target[selInd].push(...id)
+    }
+    else {
+      target[selInd].splice(index, target.length);
+      if (id) target[selInd].push(id);
+    }
     if (setAttributeGroups) setAttributeGroups({
       fileIndex, ids: target[selInd], selectorKey, selInd
     });
@@ -60,33 +66,39 @@ export default function SelectGroup({
         type='button'
         className='iss__selectGroup__button add--group'
       >add object</button>
-      {Object.entries(groups).map(([key, data]) => (
-        <div key={key} className='iss__selectGroup__selectWrapper'>
-          {attributes?.map((attribute, index) => (
-            <Selector
-              key={attribute.id}
-              item={attribute}
-              fileIndex={fileIndex}
-              setOption={(data) => setOption(data, index)}
-              applyGroups={applyGroups && data[index]}
-              selectorKey={key}
-            />
-          ))}
-          <button
-            onClick={() => deleteGroup(key)}
-            type='button'
-            className='iss__selectGroup__button del--group'
-          >delete</button>
-        </div>
-      ))}
-      {handleApply &&
+      {
+        Object.entries(groups).map(([key, data]) => (
+          <div key={key} className='iss__selectGroup__selectWrapper'>
+            {
+              attributes?.map((attribute, index) => (
+                <Selector
+                  key={attribute.id}
+                  item={attribute}
+                  fileIndex={fileIndex}
+                  setOption={(data) => setOption(data, index)}
+                  applyGroups={applyGroups && data[index]}
+                  selectorKey={key}
+                />
+              ))
+            }
+            <button
+              onClick={() => deleteGroup(key)}
+              type='button'
+              className='iss__selectGroup__button del--group'
+            >delete</button>
+          </div>
+        ))
+      }
+      {
+        handleApply &&
         <button
           type="button"
           onClick={() => handleApply(groups)}
           className={
             `iss__selectGroup__button ${!isFiles ? 'button--disabled' : ''}`
           }
-        >apply to all</button>}
+        >apply to all</button>
+      }
     </fieldset>
   );
 }

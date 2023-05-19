@@ -14,7 +14,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ('id', 'name', 'attributes', 'parent')
+        fields = ('id', 'name', 'attributes', 'parent', 'multiple')
 
     def get_attributes(self, instance):
         attributes = AttributeSerializer(instance.attribute_set.all(), many=True)

@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import Form from '../components/common/Form';
 import axios from 'axios';
@@ -9,6 +9,7 @@ export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   function sendForm(event) {
     event.preventDefault();
@@ -30,7 +31,7 @@ export default function Registration() {
           throw new Error(errorMessage);
         }
         setUser(data.user);
-        redirect('/');
+        navigate('/');
       })
       .catch(({ message }) => {
         setErrors(message);

@@ -38,16 +38,18 @@
   width: 100%;
   overflow-y: hidden;
   background-color: white;
-  display: flex;
-  flex-direction: column;
   max-height: 0;
   outline: 1px solid transparent;
-  transition: max-height 0.3s ease, padding 0.5s ease, outline 0.5s ease;
+  transition: max-height 0.3s ease, outline 0.5s ease;
+}
+.iss__customSelector__options>div {
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
 }
 .options--open {
   outline-color: var(--issBrand);
   max-height: 500px;
-  padding: 4px 8px;
 }
 .iss__customSelector__level {
   font-size: 14px;

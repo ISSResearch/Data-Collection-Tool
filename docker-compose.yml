@@ -35,6 +35,8 @@ services:
     image: iss_front
     build: ./front
     restart: always
+    environment:
+      - PORT=3001
     depends_on:
       - iss_back
     volumes:
@@ -42,7 +44,7 @@ services:
       - ./front/public:/app/public
     command: npm start
     ports:
-      - 3000:3000
+      - 3001:3001
     networks:
       - iss_network
 
@@ -52,7 +54,7 @@ services:
     depends_on:
       - iss_front
     ports:
-      - 80:80
+      - 3000:3000
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:

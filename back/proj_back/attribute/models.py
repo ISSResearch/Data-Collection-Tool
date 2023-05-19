@@ -13,9 +13,11 @@ class Attribute(TreeNode):
     def __str__(self): return self.name
 
 
+# TODO: why uid?
 class Level(TreeNode):
     uid = models.BigIntegerField()
     name = models.CharField(max_length=255)
+    multiple = models.BooleanField(default=False)
 
     project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
 

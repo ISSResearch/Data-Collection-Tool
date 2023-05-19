@@ -29,7 +29,7 @@ export default function ProjectCreate() {
     )
       .then(({status, data}) => window.location.reload())
       .catch(err => {
-        console.log(err)
+        alert(err);
         setLoading(false);
       });
   }

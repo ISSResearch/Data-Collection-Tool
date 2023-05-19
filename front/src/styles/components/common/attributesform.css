@@ -20,6 +20,7 @@
   color: white;
 }
 .iss__attributesForm__levelWrap {
+  padding: 0 4px;
   width: fit-content;
   display: flex;
   background-color: white;

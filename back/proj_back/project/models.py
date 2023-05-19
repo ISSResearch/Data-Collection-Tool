@@ -24,34 +24,29 @@ class Project(models.Model):
         current_level, *rest = levels
 
         try:
-          LEVEL, _ = self.level_set.update_or_create(
-              id=current_level['id'],
-              defaults={
-                  'uid': current_level['id'],
-                  'name': current_level['name'],
-                  'parent': parent_level
-              }
-          )
-        except:
+          LEVEL = self.level_set.get(id=current_level['id'])
+
+          if LEVEL.name != current_level['name']: LEVEL.name = current_level['name']
+          if LEVEL.multiple != LEVEL.multiple: LEVEL.multiple = current_level['multiple']
+          LEVEL.save()
+
+        except self.level_set.DoesNotExist:
            LEVEL = self.level_set.create(
                 uid=current_level['id'],
                 name=current_level['name'],
-                parent=parent_level
+                parent=parent_level,
+                multiple=current_level.get('multiple')
             )
 
         for attribute in attributes:
             name, children = attribute['name'], attribute['children']
 
             try:
-                PARENT, _ = self.attribute_set.update_or_create(
-                    id=attribute['id'],
-                    defaults={
-                        'name': name,
-                        'parent': parent_attribute,
-                        'level': LEVEL
-                    }
-                )
-            except:
+                PARENT = self.attribute_set.get(id=attribute['id'])
+                if PARENT.name != name:
+                    PARENT.name = name
+                    PARENT.save()
+            except self.attribute_set.DoesNotExist:
                 PARENT = self.attribute_set.create(
                     name=name,
                     parent=parent_attribute,

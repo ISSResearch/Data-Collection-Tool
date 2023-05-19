@@ -13,10 +13,8 @@ export default function Projects() {
   const { user } = useContext(UserContext);
 
   const commonOptions = [{ name: 'all projects', value: 'all' }];
-  const adminOptions = [
-    ...commonOptions,
-    { name: 'create project', value: 'create' },
-  ];
+  const adminOptions = [ ...commonOptions ];
+  if (user.is_superuser) adminOptions.push({ name: 'create project', value: 'create' });
 
   useEffect(() => {
     axios.get('/api/projects/')

@@ -7,7 +7,7 @@ import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/filesupload.css';
 
-export default function FilesUpload({attributes, pathID}) {
+export default function FilesUpload({ attributes, pathID }) {
   const [applyGroups, setApplyGroups] = useState({});
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();
@@ -45,31 +45,33 @@ export default function FilesUpload({attributes, pathID}) {
 
   return (
     <form className='iss__filesUpload'>
-      {!uploading &&
-        <button
-          onClick={sendForm}
-          className={`iss__filesUpload__sendButton${fileManager.files?.length ? '': ' send--disabled'}`}
-        >
-          SEND ALL
-        </button>}
+      {
+        !uploading &&
+          <button
+            onClick={sendForm}
+            className={`iss__filesUpload__sendButton${fileManager.files?.length ? '': ' send--disabled'}`}
+          >SEND ALL</button>
+      }
       <SelectGroup
         attributes={attributes}
         handleApply={handleApply}
         isFiles={Boolean(fileManager.files?.length)}
       />
       <div className='iss__filesUpload__form__border'/>
-      {uploading
-        ? <div className='iss__filesUpload__loadingWrap'>
-            <span>
-              Uploading Data...<br/><b>Maximum of 100</b> files will be sent!
-            </span>
-            <Load/>
-          </div>
-        : <FileInput
-          fileManager={fileManager}
-          attributes={attributes}
-          applyGroups={applyGroups}
-        />}
+      {
+        uploading
+          ? <div className='iss__filesUpload__loadingWrap'>
+              <span>
+                Uploading Data...<br/><b>Maximum of 100</b> files will be sent!
+              </span>
+              <Load/>
+            </div>
+          : <FileInput
+            fileManager={fileManager}
+            attributes={attributes}
+            applyGroups={applyGroups}
+          />
+      }
     </form>
   );
 }

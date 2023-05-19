@@ -12,14 +12,6 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
       : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
   }
 
-  // TODO: when slide is change it triggers twice so im fetching old one (uselayouteffect)
-  function setUrl() {
-    if (!files[slide]) return setFileUrl(null);
-    const { id, file_type } = files[slide];
-    setFileUrl(id ? `/api/files/${id}/` : null);
-    setTypeVideo(file_type === 'video');
-  }
-
   let scale = 1,
     panning = false,
     pointX = 0,
@@ -77,7 +69,6 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   }, []);
 
   useEffect(() => {
-    // setUrl();
     resetZoom();
     if (!files[slide]) return;
     const { id, file_type } = files[slide];

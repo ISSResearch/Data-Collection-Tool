@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState, useContext } from "react";
 import { attributeAdapter } from '../utils/adapters';
 import { UserContext } from '../context/User';
@@ -17,7 +17,8 @@ export default function ProjectPage() {
   const [project, setProject] = useState({});
   const [pageOption, setOption] = useState('upload');
   const { user } = useContext(UserContext);
-  const { projectID, action } = useParams();
+  const { projectID } = useParams();
+  const navigate = useNavigate();
 
   const commonOptions = [{ name: 'upload data', value: 'upload' }];
   const adminOptions = [
@@ -26,17 +27,17 @@ export default function ProjectPage() {
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
   ];
-  if (user.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' },);
+  if (user.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' });
 
   useEffect(() => {
     if (!projectID) return;
     axios.get(`/api/projects/${projectID}/`)
-      .then(({status, data}) => {
+      .then(({ data }) => {
         const preparedData = attributeAdapter(data);
         setProject(preparedData);
         setLoading(false);
       })
-      .catch(err => console.log('err', err.message));
+      .catch(() => navigate('/404'));
   }, [projectID]);
 
   const PageVariant = (props) => {

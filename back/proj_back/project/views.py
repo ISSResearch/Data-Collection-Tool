@@ -34,11 +34,18 @@ class ProjectsViewSet(APIView):
 class ProjectViewSet(APIView):
     http_method_names = ['get', 'patch']
 
-    def get(self, request, pk):
-        project = Project.objects.prefetch_related('attribute_set').get(id=pk)
-        response = ProjectSerializer(project)
+    def get(self, _, pk):
+        response = None
+        response_status = status.HTTP_200_OK
 
-        return Response(response.data)
+        try:
+          project = Project.objects.prefetch_related('attribute_set').get(id=pk)
+          response = ProjectSerializer(project).data
+        except Project.DoesNotExist:
+            response = 'query does not exist'
+            response_status = status.HTTP_404_NOT_FOUND
+
+        return Response(response, status=response_status)
 
     def patch(self, request, pk):
         succeed, errors = update_project(request, pk)

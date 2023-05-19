@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import Form from '../components/common/Form';
 import axios from 'axios';
@@ -9,6 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   function sendForm(event) {
     event.preventDefault();
@@ -24,7 +25,7 @@ export default function Login() {
       .then(({status, data}) => {
         if (!data.isAuth) throw new Error(data.message);
         setUser(data.user);
-        if (window.location.pathname  === '/login') redirect('/');
+        if (window.location.pathname  === '/login') navigate('/');
       })
       .catch(({ message }) => {
         setErrors(message);

@@ -8,7 +8,7 @@ export default function AttributesForm({
   levelHook,
   attributeHook,
 }) {
-  const { levels, addLevel, changeLevel, delLevel } = levelHook;
+  const { levels, addLevel, changeLevel, delLevel, setMultiple } = levelHook;
   const { attributes, addAttribute, delAttribute, handleChange } = attributeHook;
 
   function handleLevelDelete(index, orig) {
@@ -32,6 +32,10 @@ export default function AttributesForm({
         </div>
         {levels[formId].map(({id, name, orig}, index) => (
           <div key={id} className='iss__attributesForm__levelWrap'>
+            <input
+              type="checkbox"
+              onChange={({target}) => setMultiple(formId, index, target)}
+            />
             <input
               placeholder="Level name"
               required

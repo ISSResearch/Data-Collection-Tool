@@ -17,6 +17,7 @@ export default function useLevels() {
   }
 
   function addLevel(formId) {
+    if (levels[formId][levels[formId].length - 1]?.multiple) return alert('You can`t set new level after multiple one.')
     const newLevels = {...levels};
     const prevValues = [...newLevels[formId]];
     newLevels[formId] = [ ...prevValues, { id: formUID(), name: '' } ];
@@ -39,5 +40,26 @@ export default function useLevels() {
     setLevels(newLevels);
   }
 
-  return { levels, addLevel, delLevel, changeLevel, initLevel, destroyLevel };
+  function setMultiple(formId, index, target) {
+    if (index+1 < levels[formId].length) {
+      alert('Delete previous levels. No levels allowed after multiple one.');
+      target.checked = false;
+      return;
+    }
+    const newLevels = {...levels};
+    const prevValues = newLevels[formId]
+    prevValues[index].multiple = !prevValues[index].multiple;
+    newLevels[formId] = prevValues;
+    setLevels(newLevels);
+  }
+
+  return {
+    levels,
+    addLevel,
+    delLevel,
+    changeLevel,
+    initLevel,
+    destroyLevel,
+    setMultiple
+  };
 }

@@ -16,7 +16,7 @@ export function attributeGroupsAdapter(data) {
     return {
       ...acc,
       [uid]: attributes.reduce((newacc, [id, parent]) => {
-        if (parent === null) newacc.push([id]);
+        if (parent === null || newacc.length === 0) newacc.push([id]);
         else newacc[newacc.length-1].push(id);
         return newacc;
       }, [])
