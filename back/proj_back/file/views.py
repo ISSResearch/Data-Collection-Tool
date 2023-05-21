@@ -3,9 +3,9 @@ from django.db.models import Count
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .serializers import File, FileSerializer
+from .serializers import File, FileSerializer, FilesSerializer
 from attribute.models import AttributeGroup
-from .services import FileUploader, prepare_zip_data
+from .services import FileUploader, prepare_zip_data, upload_chunk
 from os import remove
 from time import time
 
@@ -55,6 +55,9 @@ class FilesViewSet(APIView):
 
         response = {'ok': uploader.status}
         res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_500_INTERNAL_SERVER_ERROR
+
+        if (uploader.status):
+            response['created_files'] = FilesSerializer(uploader.created_files, many=True).data
 
         return Response(response, status=res_status)
 
@@ -107,13 +110,7 @@ def download_project_data(request, projectID):
     return response
 
 
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 @api_view(('POST',))
-def test(request, pId):
-    file = request.data.get('file')
-    name = request.data.get('name')
-    p = '/temp/' + name
-    with open(default_storage.location + p, 'ba') as f: f.write(file.read())
-
-    return HttpResponse('ok')
+def upload_file_chunk(request, fileID):
+    response, response_status = upload_chunk(request, fileID)
+    return Response(response, status=response_status)

@@ -8,7 +8,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = File
-        exclude = ['hash_name', 'project', 'attribute', 'author']
+        exclude = ('hash_name', 'project', 'attribute', 'author')
 
     def get_attributes(self, instance):
         return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
@@ -53,3 +53,8 @@ class FileSerializer(serializers.ModelSerializer):
             newKey = str(new_group.uid)
 
         return newKey or key
+
+class FilesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = ('id', )

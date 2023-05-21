@@ -5,6 +5,7 @@ import useFileInput from './fileInput';
 import useSwiper from './swiper';
 import useFile from './file';
 import useFiles from './fileValidation';
+import useFileUploader from './fileUploader';
 
 export {
   useFileInput,
@@ -13,5 +14,6 @@ export {
   useAttributeManager,
   useSwiper,
   useFile,
-  useFiles
+  useFiles,
+  useFileUploader
 }
