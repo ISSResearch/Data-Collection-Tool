@@ -43,7 +43,7 @@ export default function useFileUploader(projectID) {
       try {
         const data = await createFiles(formData);
         const [file_id] = data.data.created_files;
-        await sendChunk(file, file_id.id);
+        sendChunk(file, file_id.id);
       }
       catch {
         file.status = 'f';

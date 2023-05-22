@@ -9,10 +9,10 @@ export default function useFileInput() {
       const [type] = file.type.split('/');
       return { file, name, extension, type, attributeGroups: {} };
     });
-    const threshold = 100 - files.length;
+    const threshold = 20 - files.length;
     setFiles([
       ...files,
-      ...(newFiles.length <= threshold ? newFiles : newFiles.splice(0, threshold))
+      ...(newFiles.length <= threshold ? newFiles : newFiles.splice(threshold))
     ]);
   }
 

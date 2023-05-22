@@ -31,7 +31,7 @@ export default function FileInput({ fileManager, attributes, applyGroups }) {
       </label>
       <div className='iss__fileInput__note'>
         Selected: {files.length} item{Boolean(files.length !== 1) && 's'}.<br/>
-        Note that maximum of 100 files will be sent.
+        Note that maximum of 20 files will be sent.
       </div>
       <div className='iss__fileInput__filesUploaded'>
         {files.map(({file, name, type}, index) => (

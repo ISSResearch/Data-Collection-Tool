@@ -92,7 +92,6 @@ class FileUploader:
         return self
 
     def write_files(self):
-        print(self.new_instances)
         File.objects.bulk_create(
             [file for file, _, _ in self.new_instances],
             batch_size=100
@@ -170,7 +169,7 @@ class FileUploader:
         real_name = storage.generate_filename(file_name)
         save_path = path.join(storage.location, str(self.project_id), f'{real_name}.{file_extension}')
 
-        if path.exists(save_path):
+        if not path.exists(save_path):
             save_name = f'{real_name}.{file_extension}'
         else:
           copy_count = 1
