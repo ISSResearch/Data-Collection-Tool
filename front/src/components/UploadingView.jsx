@@ -46,7 +46,8 @@ export default function UploadingView({
             className={
               ['iss__uploadProgress__fileName',
               status ? `name-status-${status}` : ''].join(' ')
-          }>{name}</span>
+            }
+          >{name}</span>
           <div className='iss__uploadProgress__progressWrap'>
             <div
               style={{width: `${progress || 0}%`}}

@@ -20,15 +20,24 @@
   color: white;
 }
 .iss__attributesForm__levelWrap {
-  padding: 0 4px;
   width: fit-content;
   display: flex;
+  gap: 12px;
+}
+.iss__attributesForm__levelInput {
+  display: flex;
   background-color: white;
+}
+.iss__attributesForm__checkbox {
+  display: flex;
+  gap: 8px;
+  place-items: center;
+  color: white;
 }
 .iss__attributesForm__levelWrap:not(:last-child) {
   margin-bottom: 8px;
 }
-.iss__attributesForm__levelWrap input {
+.iss__attributesForm__levelInput>input {
   border: none;
   padding: 4px 8px;
   outline: none;

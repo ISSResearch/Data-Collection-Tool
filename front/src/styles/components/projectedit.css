@@ -3,47 +3,52 @@
   color: var(--issBlack);
   margin-bottom: 40px;
 }
-.iss__projectEdit__content {
-  display: flex;
-  gap: 12px;
+.iss__projectEdit__form {
+  width: 100%;
+  border: none;
+  display: grid;
+  grid-template-columns: 35% 1px auto;
+  gap: 20px;
+  grid-template-areas:
+    "project_field form_border attribute_field"
 }
-.iss__projectEdit__side {
+.iss__projectEdit__form__set {
+  border: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  place-items: center;
+  gap: 20px;
 }
-.iss__projectEdit__side>span {
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s ease;
+.iss__projectEdit__form__set:nth-child(1) {
+  grid-area: project_field;
 }
-.iss__projectEdit__side>span:hover {
-  color: var(--issBrand);
-}
-.iss__projectEdit__action--chosen {
-  pointer-events: none;
-  color: var(--issBrand);
-}
-.iss__projectEdit__deleteButton {
-  margin-top: 40px;
-  padding: 4px 8px;
-  font-size: 14px;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-  background: none;
-  border: 1px solid var(--issRed);
-  color: var(--issRed);
-  transition: background-color 0.3s ease;
-}
-.iss__projectEdit__deleteButton:hover {
-  background-color: var(--issLightRed);
-}
-.iss__projectEdit__divider {
+.iss__projectEdit__form__border {
+  grid-area: form_border;
   background-color: var(--issBrand);
   margin: -20px 0;
-  width: 1px;
 }
-.iss__projectEdit__editor {
-  opacity: 0.2;
+.iss__projectEdit__form__input {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+.iss__projectEdit__form__input textarea, .iss__projectEdit__form__input input {
+  border: 1px solid var(--issBrand);
+  padding: 12px;
+}
+.iss__projectEdit__form__input textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+.iss__projectEdit__form__createButton {
+  background: none;
+  border: 1px solid var(--issBrand);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.iss__projectEdit__form__createButton:hover {
+  background-color: var(--issBrand);
+  color: white;
 }

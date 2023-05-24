@@ -6,7 +6,7 @@ export default function useAttributes() {
 
   function initAttribute(formId, initData=[]) {
     setAttributes((prev) => {
-      return {...prev, [formId]: initData}
+      return { ...prev, [formId]: initData }
     });
   }
 

@@ -64,6 +64,7 @@ export default function useAttributeManager() {
 
       return [...acc, boundForm];
     }, []);
+
     preparedData.forEach(item => addForm(item));
   }
 

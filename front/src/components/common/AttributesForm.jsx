@@ -33,22 +33,27 @@ export default function AttributesForm({
         {
           levels[formId].map(({id, name, orig, multiple}, index) => (
             <div key={id} className='iss__attributesForm__levelWrap'>
-              <input
-                type="checkbox"
-                onChange={({target}) => setMultiple(formId, index, target)}
-                defaultChecked={multiple}
-              />
-              <input
-                placeholder="Level name"
-                required
-                onBlur={({target}) => changeLevel(formId, target, index)}
-                defaultValue={name}
-              />
-              <button
-                type="button"
-                onClick={() => handleLevelDelete(index, orig)}
-                className='iss__attributesForm__button button-del'
-              ><span /></button>
+              <div className='iss__attributesForm__levelInput'>
+                <input
+                  placeholder="Level name"
+                  required
+                  onBlur={({target}) => changeLevel(formId, target, index)}
+                  defaultValue={name}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleLevelDelete(index, orig)}
+                  className='iss__attributesForm__button button-del'
+                ><span /></button>
+              </div>
+              <label className='iss__attributesForm__checkbox'>
+                multiple choice
+                <input
+                  type="checkbox"
+                  onChange={({target}) => setMultiple(formId, index, target)}
+                  defaultChecked={multiple}
+                />
+              </label>
             </div>
           ))
         }

@@ -34,39 +34,42 @@ export default function FileInput({ fileManager, attributes, applyGroups }) {
         Note that maximum of 20 files will be sent.
       </div>
       <div className='iss__fileInput__filesUploaded'>
-        {files.map(({file, name, type}, index) => (
-          <div key={index + file.lastModified} className='iss__fileInput__fileCard'>
-            <div className='iss__fileInput__fileWrap'>
-              {type === 'image'
-                ? <div
-                  style={{backgroundImage: `url(${URL.createObjectURL(file)})`}}
-                  className='iss__fileInput__file'
+        {
+          files.map(({file, name, type}, index) => (
+            <div key={index + file.lastModified} className='iss__fileInput__fileCard'>
+              <div className='iss__fileInput__fileWrap'>
+                {
+                  type === 'image'
+                    ? <div
+                      style={{backgroundImage: `url(${URL.createObjectURL(file)})`}}
+                      className='iss__fileInput__file'
+                    />
+                    : <video
+                      src={URL.createObjectURL(file)}
+                      muted
+                      controls
+                      className="iss__fileInput__file"
+                    />
+                }
+                <input
+                  value={name}
+                  onChange={({target}) => handleNameChange(target, index)}
                 />
-                : <video
-                  src={URL.createObjectURL(file)}
-                  muted
-                  controls
-                  className="iss__fileInput__file"
-                />
-              }
-              <input
-                value={name}
-                onChange={({target}) => handleNameChange(target, index)}
-              />
-              <button type="button" onClick={() => handleDelete(index)}>
-                <span /><span />
-              </button>
-              <div className='iss__fileInput__selectorWrap'>
-                <SelectGroup
-                  attributes={attributes}
-                  applyGroups={applyGroups}
-                  fileIndex={index}
-                  setAttributeGroups={setAttributeGroups}
-                />
+                <button type="button" onClick={() => handleDelete(index)}>
+                  <span/><span/>
+                </button>
+                <div className='iss__fileInput__selectorWrap'>
+                  <SelectGroup
+                    attributes={attributes}
+                    applyGroups={applyGroups}
+                    fileIndex={index}
+                    setAttributeGroups={setAttributeGroups}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
     </fieldset>
   );

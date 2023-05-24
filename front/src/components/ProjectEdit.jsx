@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import ChangeAttributes from './common/ChangeAttributes';
+import { useState } from 'react';
+import { useAttributeManager } from '../hooks';
+import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
+import Load from './common/Load';
 import axios from 'axios';
 import '../styles/components/projectedit.css';
 
@@ -9,41 +11,85 @@ export default function ProjectEdit({
   projectDescription,
   pathID
 }) {
-  const [action, setAction] = useState({});
-  const [newText, setNewText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const attributeManager = useAttributeManager();
+  const attributeManagerNew = useAttributeManager();
 
-  const editActions = [
-    { caption: 'Change name', value: 'name' },
-    { caption: 'Change description', value: 'desc' },
-    { caption: 'Change contributors', value: 'contr' },
-    { caption: 'Change attributes', value: 'attrs' },
-  ];
+  function validateNewAttributes() {
+    for (
+      const attributes
+      of Object.values(attributeManagerNew.attributeHook.attributes)
+    ) if (!attributes.length) return false;
+    return true;
+  }
 
-  useEffect(() => { setNewText(''); }, [action]);
+  function getFormData({target}) {
+    const name = target.querySelector('.iss__projectCreate__form__input input');
+    const description = target.querySelector('.iss__projectCreate__form__input textarea');
+    const attributes = [
+      ...attributeManager.formHook.gatherAttributes(),
+      ...attributeManagerNew.formHook.gatherAttributes()
+    ];
+    return { name: name.value , description: description.value, attributes };
+  }
+
+  function sendForm(event) {
+    event.preventDefault();
+    setLoading(true);
+    if (!validateNewAttributes()) return alert('Some attributes form are missed.')
+    const formData = getFormData(event);
+    axios.request(`/api/projects/${pathID}/`,
+      {
+        method: 'patch',
+        data: formData,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+      .then(({status, data}) => window.location.reload())
+      .catch(err => {
+        alert(err);
+        setLoading(false);
+      });
+  }
 
   return (
     <>
-      <h2 className='iss__projectEdit__title'>Choose an action to perform...</h2>
-      <div className='iss__projectEdit__content'>
-        <aside className='iss__projectEdit__side'>
-          {editActions.map(editAction => (
-            <span
-              key={editAction.value}
-              onClick={() => setAction(editAction)}
-              className={editAction.value === action.value ? 'iss__projectEdit__action--chosen' : ''}
-            >{editAction.caption}</span>
-          ))}
-          <button
-            onClick={() => alert('Tsss...')}
-            className='iss__projectEdit__deleteButton'
-          >delete project</button>
-        </aside>
-        <div className='iss__projectEdit__divider'/>
-        {action.value !== 'attrs'
-          ? <form className='iss__projectEdit__editor'>{action.caption ? action.caption + ' in development...' : ''}</form>
-          : <ChangeAttributes attributes={attributes}  pathID={pathID} />}
-      </div>
-
+      <h2 className='iss__projectEdit__title'>Project Edit</h2>
+      <form onSubmit={sendForm} className='iss__projectEdit__form'>
+        <fieldset className='iss__projectEdit__form__set'>
+          <label className='iss__projectEdit__form__input'>
+            Name of project:
+            <input
+              placeholder='Enter project name'
+              defaultValue={projectName}
+              required
+            />
+          </label>
+          <label className='iss__projectEdit__form__input'>
+            Project description:
+            <textarea
+              autoComplete='off'
+              placeholder='Enter project description'
+              defaultValue={projectDescription}
+            />
+          </label>
+          {
+            loading
+              ? <Load isInline/>
+              : <button className='iss__projectEdit__form__createButton'>
+                Submit edit
+              </button>
+          }
+        </fieldset>
+        <div className='iss__projectEdit__form__border'/>
+        <div className='iss__projectEdit__attributes'>
+          <AttributeCreatorForm
+            attributeManager={attributeManager}
+            withBoundAttributes={attributes}
+          />
+          <AttributeCreatorForm attributeManager={attributeManagerNew}/>
+        </div>
+      </form>
     </>
   );
 }

@@ -19,42 +19,48 @@ export default function AttributeInput({
 
   return (
     <div className='iss__form__attributes'>
-      {attributes.map(({id, name, path, children, orig}) => (
-        <div key={id} className={`iss__attributeForm ${isChild ? 'attribute--child': ''}`}>
-          {isChild ? <div className='iss__attributeForm__tree'>------|</div> : ''}
-          <div className='iss__attributeForm__inputWrap'>
-            <input
-              placeholder="Attribute name"
-              required
-              onBlur={({target}) => handleChange(formId, target, path, isChild)}
-              defaultValue={name}
-            />
-            <div className="iss__attributeForm__inputButton">
-              <button
-                onClick={() => delAttribute(formId, path, isChild, orig)}
-                type="button"
-                className="inputButton--del"
-              ><span /></button>
-              {!lastLevel &&
+      {
+        attributes.map(({id, name, path, children, orig}) => (
+          <div key={id} className={`iss__attributeForm ${isChild ? 'attribute--child': ''}`}>
+            {isChild ? <div className='iss__attributeForm__tree'>------|</div> : ''}
+            <div className='iss__attributeForm__inputWrap'>
+              <input
+                placeholder="Attribute name"
+                required
+                onBlur={({target}) => handleChange(formId, target, path, isChild)}
+                defaultValue={name}
+              />
+              <div className="iss__attributeForm__inputButton">
                 <button
-                  onClick={() => addAttribute(formId, path)}
+                  onClick={() => delAttribute(formId, path, isChild, orig)}
                   type="button"
-                  className="inputButton--add"
-                ><span /><span /></button>}
+                  className="inputButton--del"
+                ><span/></button>
+                {
+                  !lastLevel &&
+                    <button
+                      onClick={() => addAttribute(formId, path)}
+                      type="button"
+                      className="inputButton--add"
+                    ><span /><span /></button>
+                }
+              </div>
             </div>
+            {
+              Boolean(children?.length) &&
+                <AttributeInput
+                  formId={formId}
+                  attributes={children}
+                  depth={depth}
+                  isChild={true}
+                  delAttribute={delAttribute}
+                  addAttribute={addAttribute}
+                  handleChange={handleChange}
+                />
+            }
           </div>
-          {Boolean(children?.length) &&
-            <AttributeInput
-              formId={formId}
-              attributes={children}
-              depth={depth}
-              isChild={true}
-              delAttribute={delAttribute}
-              addAttribute={addAttribute}
-              handleChange={handleChange}
-            />}
-        </div>
-      ))}
+        ))
+      }
     </div>
   )
 }

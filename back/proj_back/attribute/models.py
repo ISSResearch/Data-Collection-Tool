@@ -18,6 +18,7 @@ class Level(TreeNode):
     uid = models.BigIntegerField()
     name = models.CharField(max_length=255)
     multiple = models.BooleanField(default=False, null=True)
+    required = models.BooleanField(default=False, null=True)
 
     project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
 
