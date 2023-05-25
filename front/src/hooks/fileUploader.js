@@ -35,17 +35,25 @@ export default function useFileUploader(projectID) {
     })
   }
 
+  async function deleteFile(fileId) {
+    await axios.request(`/api/files/${fileId}/`, {
+      method: 'delete',
+    })
+  }
+
   async function proceedUpload() {
     for (const file of files) {
+      let file_id;
       const formData = new FormData();
       const {name, extension, type, atrsGroups} = file;
       formData.append('meta[]', JSON.stringify({name, extension, type, atrsGroups}));
       try {
         const data = await createFiles(formData);
-        const [file_id] = data.data.created_files;
+        file_id = data.data.created_files[0];
         await sendChunk(file, file_id.id);
       }
       catch {
+        deleteFile(file_id.id)
         file.status = 'f';
         setFiles([...files]);
       }

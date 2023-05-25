@@ -24,7 +24,7 @@ export default function SelectorItem({
       ? handleOptions
       : Array.from(handleOptions.selectedOptions).map(({ value }) => Number(value));
     const chosenNames = selectedIds.map(selectedId => {
-      return attributes.find(({ id }) => id === Number(selectedId)).name;
+      return attributes.find(({ id }) => id === Number(selectedId))?.name;
     })
     setSelected(chosenNames);
     if (!skipEmit) handleSelect(selectedIds);

@@ -15,17 +15,12 @@ export default function FilesUpload({ attributes, pathID }) {
 
   function sendForm(event) {
     event.preventDefault();
-    setUploading(true);
+    const { isValid, message } = fileManager.validate(attributes);
+    if (!isValid) alert(message);
+    else setUploading(true);
   }
 
-  if (uploading) return (
-    <UploadingView
-      fileManager={fileManager}
-      setUploading={setUploading}
-      attributes={attributes}
-      pathID={pathID}
-    />
-  );
+  if (uploading) return <UploadingView fileManager={fileManager} pathID={pathID}/>;
 
   return (
     <form className='iss__filesUpload'>

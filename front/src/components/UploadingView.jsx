@@ -4,23 +4,12 @@ import Load from './common/Load';
 import '../styles/components/uploadingviews.css';
 
 
-export default function UploadingView({
-  fileManager,
-  setUploading,
-  attributes,
-  pathID
-}) {
+export default function UploadingView({ fileManager, pathID }) {
   const { files, setFiles, proceedUpload } = useFileUploader(pathID);
   const [loading, setLoading] = useState(true);
   const [uploadProcess, setUploadProcess] = useState(false);
 
   useEffect(() => {
-    const { isValid, message } = fileManager.validate(attributes);
-    if (!isValid) {
-      alert(message);
-      setUploading(false);
-      return;
-    }
     setFiles(() => fileManager.gatherFiles());
     setLoading(false);
     if (files.length && !uploadProcess) {

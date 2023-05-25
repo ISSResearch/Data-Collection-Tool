@@ -5,7 +5,11 @@ export function attributeAdapter(data) {
   const attributes = preparedData.attributes;
   attributes.forEach(el => {
     const parent = attributes.find(({id}) => el.parent === id);
-    if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
+    if (parent) {
+      parent.children
+        ? parent.children[0].attributes.push(...el.attributes)
+        : parent.children = [el];
+    }
   })
   return { ...preparedData, preparedAttributes: attributes.filter(({parent}) => !parent) };
 }
@@ -15,11 +19,14 @@ export function attributeGroupsAdapter(data) {
   return attributes.reduce((acc, {uid, attributes}) => {
     return {
       ...acc,
-      [uid]: attributes.reduce((newacc, [id, parent]) => {
-        if (parent === null || newacc.length === 0) newacc.push([id]);
-        else newacc[newacc.length-1].push(id);
+      [uid]: attributes.reduce((newacc, [id, parent, level]) => {
+        const isNew  = newacc.length && newacc[newacc.length-1][0].level === level
+          ? level
+          : parent;
+        if (isNew === null || !newacc.length) newacc.push([{ id, level }]);
+        else newacc[newacc.length-1].push({ id, level });
         return newacc;
-      }, [])
+      }, []).reduce((a, b) => [...a, b.map(({ id }) => id)], [])
     };
   }, {});
 }

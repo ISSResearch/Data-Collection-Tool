@@ -2,9 +2,17 @@ from django.db import models
 from attribute.models import Level, Attribute
 
 class Project(models.Model):
+    HIDDEN_REASONS = (
+        ('d', 'deleted'),
+        ('h', 'manually_hidden'),
+        ('b', 'broken_data'),
+    )
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    visible = models.BooleanField(default=True)
+    reason_if_hidden = models.CharField(max_length=1, choices=HIDDEN_REASONS, blank=True)
 
     class Meta: db_table = 'project'
 
@@ -23,25 +31,31 @@ class Project(models.Model):
         parent_level=None
     ):
         current_level, *rest = levels
-
         try:
-          LEVEL, changed = self.level_set.get(id=current_level['id']), False
+          lookup_value = current_level.get('uid', current_level['id'])
+          LEVEL, changed = self.level_set.get(uid=lookup_value), False
 
           if LEVEL.name != current_level['name']:
               LEVEL.name = current_level['name']
               changed = True
-          if LEVEL.multiple != current_level['multiple']:
-              LEVEL.multiple = current_level['multiple']
+
+          if LEVEL.multiple != current_level.get('multiple', False):
+              LEVEL.multiple = current_level.get('multiple', False)
+              changed = True
+
+          if LEVEL.required != current_level.get('required', False):
+              LEVEL.required = current_level.get('required', False)
               changed = True
 
           if changed: LEVEL.save()
 
         except Level.DoesNotExist:
            LEVEL = self.level_set.create(
-                uid=current_level['id'],
+                uid=lookup_value,
                 name=current_level['name'],
                 parent=parent_level,
-                multiple=current_level.get('multiple')
+                multiple=current_level.get('multiple'),
+                required=current_level.get('required')
             )
 
         for attribute in attributes:

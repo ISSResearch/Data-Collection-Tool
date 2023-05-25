@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { findRequired, formError } from '../utils/utils';
 
 export default function useFileInput() {
   const [files, setFiles] = useState([]);
@@ -52,19 +53,28 @@ export default function useFileInput() {
     return files;
   }
 
-  // TODO: fix 'b' undefined issue
+  // TODO: optimize
   function validate(attributes) {
     if (!files.length) return {isValid: false, message: 'No files attached!'};
+    const requiredLevels = findRequired(attributes);
+    const requiredIds = requiredLevels.map(({attributes}) => attributes);
     for (const file of files) {
-      const error = { isValid: false, message: 'File attributes are supposed to be set at least on first levels!' };
-      const { attributeGroups } = file;
-      if (!attributeGroups || !Object.values(attributeGroups).length ) return error
+      const { attributeGroups, name } = file;
+      if (!Object.values(attributeGroups || {}).length) return formError(name, requiredLevels);
       for (const group of Object.values(attributeGroups)) {
+        const missingValues = [];
         const groupData = Object.values(group);
-        if (
-            groupData.length < Object.values(attributes).length
-            || !groupData.reduce((a, b) => a + (b?.length || 0), 0)
-        ) return error;
+        requiredIds.forEach((ids, index) => {
+          let found;
+          for (const idx in groupData) {
+            if (groupData[idx].filter(id => ids.includes(id)).length) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) missingValues.push(requiredLevels[index]);
+        });
+        if (missingValues.length) return formError(name, missingValues);
       }
     }
     return { isValid: true, message: 'ok' };

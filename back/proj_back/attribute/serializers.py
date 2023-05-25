@@ -14,7 +14,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ('id', 'name', 'attributes', 'parent', 'multiple', 'required')
+        fields = '__all__'
 
     def get_attributes(self, instance):
         attributes = AttributeSerializer(instance.attribute_set.all(), many=True)
@@ -30,4 +30,8 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
         exclude = ('file', 'attribute')
 
     def get_attributes(self, instance):
-        return tuple(instance.attribute.values_list('id', 'parent_id', 'name'))
+        return tuple(
+            instance.attribute \
+                .order_by('level_id') \
+                .values_list('id', 'parent_id', 'level_id', 'name')
+        )

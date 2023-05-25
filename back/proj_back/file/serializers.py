@@ -57,4 +57,4 @@ class FileSerializer(serializers.ModelSerializer):
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ('id', )
+        fields = ('id',)

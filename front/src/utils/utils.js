@@ -39,3 +39,23 @@ export function compareArrays(arr1, arr2) {
 }
 
 export function formUID() { return Math.floor(Math.random() * 10**16) }
+
+export function findRequired(items) {
+  const requiredItems = [];
+  const stack = [...items];
+  while (stack.length) {
+    const checkItem = stack.pop();
+    if (checkItem.required) requiredItems.push(
+      {...checkItem, attributes: checkItem.attributes.map(({id}) => id)}
+    );
+    if (checkItem.children?.length) stack.push(...checkItem.children);
+  }
+  return requiredItems;
+}
+export function formError(fileName, missedItems) {
+  const missedNames = missedItems.map(({name}) => name).join(', ');
+  return {
+    isValid: false,
+    message: `File "${fileName}" is missing required attributes: ${missedNames}.`
+  };
+}

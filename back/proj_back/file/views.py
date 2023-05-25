@@ -11,7 +11,7 @@ from time import time
 
 
 class FileViewSet(APIView):
-    http_method_names = ('get', 'patch')
+    http_method_names = ('get', 'patch', 'delete')
 
     def get(self, _, fileID):
         file = File.objects.get(id=fileID)
@@ -34,6 +34,17 @@ class FileViewSet(APIView):
         response_status = status.HTTP_202_ACCEPTED if update_valid else status.HTTP_400_BAD_REQUEST
 
         return Response(response, status=response_status)
+
+    def delete(self, _, fileID):
+        try:
+          file = File.objects.get(id=fileID)
+          file.attributegroup_set.clear()
+          file.delete()
+
+          return Response({'deleted': True}, status=status.HTTP_202_ACCEPTED)
+
+        except:
+            return Response({'deleted': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FilesViewSet(APIView):

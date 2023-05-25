@@ -53,6 +53,14 @@ export default function useLevels() {
     setLevels(newLevels);
   }
 
+  function setRequired(formId, index) {
+    const newLevels = {...levels};
+    const prevValues = newLevels[formId]
+    prevValues[index].required = !prevValues[index].required;
+    newLevels[formId] = prevValues;
+    setLevels(newLevels);
+  }
+
   return {
     levels,
     addLevel,
@@ -60,6 +68,7 @@ export default function useLevels() {
     changeLevel,
     initLevel,
     destroyLevel,
-    setMultiple
+    setMultiple,
+    setRequired
   };
 }

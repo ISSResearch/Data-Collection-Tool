@@ -61,6 +61,14 @@ class FileUploader:
         self.created_files = list()
 
     def proceed_upload(self):
+        self \
+              .get_attribute_groups_instances() \
+              .get_file_instances() \
+              .write_files() \
+              .assign_attributes() \
+              .set_created()
+        self.status = True
+        return
         try:
             self \
               .get_attribute_groups_instances() \
@@ -147,6 +155,8 @@ class FileUploader:
             meta["extension"]
         )
 
+        if not storage.exists(str(self.project_id)):
+            mkdir(f'{storage.location}/{self.project_id}')
         with open(save_path, 'bw'): pass
         # file_path = storage.save(save_path, ContentFile(byte_file))
 

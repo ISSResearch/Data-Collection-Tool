@@ -8,7 +8,7 @@ class ProjectsViewSet(APIView):
     http_method_names = ['post', 'get']
 
     def get(self, _):
-        projects = Project.objects.all()
+        projects = Project.objects.filter(visible=True)
         response = ProjectsSerializer(projects, many=True)
         return Response(response.data)
 
@@ -32,17 +32,21 @@ class ProjectsViewSet(APIView):
 
 
 class ProjectViewSet(APIView):
-    http_method_names = ['get', 'patch']
+    http_method_names = ['get', 'patch', 'delete']
 
     def get(self, _, pk):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
-          project = Project.objects.prefetch_related('attribute_set').get(id=pk)
+          project = Project.objects \
+              .prefetch_related('attribute_set') \
+              .filter(visible=True) \
+              .get(id=pk)
           response = ProjectSerializer(project).data
+
         except Project.DoesNotExist:
-            response = 'query does not exist'
+            response = 'query project does not exist'
             response_status = status.HTTP_404_NOT_FOUND
 
         return Response(response, status=response_status)
@@ -59,3 +63,19 @@ class ProjectViewSet(APIView):
         )
 
         return  Response(response_data, status=response_status)
+
+    def delete(self, _, pk):
+        response = None
+        response_status = status.HTTP_200_OK
+
+        try:
+          project = Project.objects.get(id=pk)
+          project.visible = False
+          project.reason_if_hidden = 'd'
+          project.save()
+
+        except Project.DoesNotExist:
+            response = 'query project does not exist'
+            response_status = status.HTTP_404_NOT_FOUND
+
+        return Response(response, status=response_status)

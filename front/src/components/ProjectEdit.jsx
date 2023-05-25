@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
@@ -12,8 +13,10 @@ export default function ProjectEdit({
   pathID
 }) {
   const [loading, setLoading] = useState(false);
+  const [deleteAccept, setDeleteAccept] = useState(false);
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
+  const navigate = useNavigate();
 
   function validateNewAttributes() {
     for (
@@ -24,8 +27,8 @@ export default function ProjectEdit({
   }
 
   function getFormData({target}) {
-    const name = target.querySelector('.iss__projectCreate__form__input input');
-    const description = target.querySelector('.iss__projectCreate__form__input textarea');
+    const name = target.querySelector('.iss__projectEdit__form__input input');
+    const description = target.querySelector('.iss__projectEdit__form__input textarea');
     const attributes = [
       ...attributeManager.formHook.gatherAttributes(),
       ...attributeManagerNew.formHook.gatherAttributes()
@@ -45,7 +48,21 @@ export default function ProjectEdit({
         headers: { 'Content-Type': 'application/json' }
       }
     )
-      .then(({status, data}) => window.location.reload())
+      .then(() => window.location.reload())
+      .catch(err => {
+        alert(err);
+        setLoading(false);
+      });
+  }
+
+  function deleteProject() {
+    axios.request(`/api/projects/${pathID}/`,
+      {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+      .then(() => navigate('/'))
       .catch(err => {
         alert(err);
         setLoading(false);
@@ -55,6 +72,24 @@ export default function ProjectEdit({
   return (
     <>
       <h2 className='iss__projectEdit__title'>Project Edit</h2>
+      {
+          deleteAccept
+            ? <div className='iss__projectEdit__deleteProceed'>
+              <span>Are you sure you want to delete this project?</span>
+              <button
+                onClick={deleteProject}
+                className='iss__projectEdit__delete--yes'
+               >yes, i'm sure</button>
+              <button
+                onClick={() => setDeleteAccept(false)}
+                className='iss__projectEdit__delete--no'
+              >no, return</button>
+            </div>
+            : <button
+                onClick={() => setDeleteAccept(true)}
+                className='iss__projectEdit__deleteButton'
+              >DELETE PROJECT</button>
+      }
       <form onSubmit={sendForm} className='iss__projectEdit__form'>
         <fieldset className='iss__projectEdit__form__set'>
           <label className='iss__projectEdit__form__input'>

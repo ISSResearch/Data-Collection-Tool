@@ -61,20 +61,24 @@ export default function ProjectPage() {
         currentOption={pageOption}
         handler={setOption}
       />
-      {loading
-        ? <div className="iss_projectPage__load"><Load/></div>
-        : <>
-          {pageOption !== 'edit' &&
-            <p className="iss__projectPage__description">
-              Description: {project.description}
-            </p>}
-          <PageVariant
-            attributes={project.preparedAttributes}
-            projectName={project.name}
-            projectDescription={project.description}
-            pathID={projectID}
-          />
-        </>}
+      {
+        loading
+          ? <div className="iss_projectPage__load"><Load/></div>
+          : <>
+            {
+              pageOption !== 'edit' &&
+                <p className="iss__projectPage__description">
+                  Description: {project.description}
+                </p>
+            }
+            <PageVariant
+              attributes={project.preparedAttributes}
+              projectName={project.name}
+              projectDescription={project.description}
+              pathID={projectID}
+            />
+          </>
+      }
     </div>
   );
 }
