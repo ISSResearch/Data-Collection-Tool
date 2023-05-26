@@ -37,7 +37,7 @@ export default function FilesDownload({ pathID, projectName }) {
         setLoading(false);
       })
       .catch(({ message }) => {
-        console.log(message);
+        alert(message);
         setLoading(false);
       });
   }

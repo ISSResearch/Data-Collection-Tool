@@ -15,12 +15,12 @@ export default function FilesValidate({pathID, attributes}) {
   useEffect(() => {
     if (!pathID) return;
     axios.get(`/api/files/project/${pathID}/`)
-      .then(({status, data}) => {
+      .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
         setLoading(false);
       })
-      .catch(err => console.log('err', err.message));
+      .catch(err => alert('err', err.message));
   }, [pathID]);
 
   if (loading) return <div className='iss__validation__load'><Load /></div>

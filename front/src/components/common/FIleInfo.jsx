@@ -26,8 +26,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
         headers: { 'Content-Type': 'application/json' },
       }
     )
-      .then(({status, data}) => 1)
-      .catch(err => console.log(err.message));
+      .catch(err => alert(err.message));
   }
 
   function updateFile(status) {

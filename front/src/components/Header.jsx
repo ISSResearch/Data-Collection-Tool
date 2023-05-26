@@ -10,7 +10,7 @@ export default function Header() {
 
   function logOutUser() {
     axios.get('/api/users/logout/')
-      .then(({status, data}) => {if (data.ok) setUser(null);})
+      .then(({ data }) => {if (data.ok) setUser(null);})
       .catch(err => console.log('err', err.message));
   }
 

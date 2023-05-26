@@ -34,8 +34,7 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  function delAttribute(formId, position, isChild, orig) {
-    if (orig) return alert('This is an original attribute. Delete is not supported tight now.');
+  function delAttribute(formId, position, isChild) {
     const newAttributes = {...attributes};
     const target = newAttributes[formId]
     const path = position.split('_');

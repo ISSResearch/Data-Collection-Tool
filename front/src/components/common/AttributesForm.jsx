@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import AttributeInput from './AttributeInput';
+import axios from 'axios';
 import '../../styles/components/common/attributesform.css';
 
 export default function AttributesForm({
@@ -8,11 +9,23 @@ export default function AttributesForm({
   levelHook,
   attributeHook,
 }) {
-  const { levels, addLevel, changeLevel, delLevel, setMultiple, setRequired } = levelHook;
   const { attributes, addAttribute, delAttribute, handleChange } = attributeHook;
+  const { levels, addLevel, changeLevel, delLevel, setMultiple, setRequired } = levelHook;
 
-  function handleLevelDelete(index, orig) {
-    if (orig) return alert('This is an original level. Delete is not supported right now')
+  function requestLevelDelete(id) {
+    axios.request(`/api/attributes/level/${id}/`,
+      {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+      .then((data) => console.log(data))
+      .catch(err => alert(err));
+    alert('Original level could not be deleted yet');
+  }
+
+  function handleLevelDelete(index, orig, id) {
+    if (orig) return requestLevelDelete(id);
     if (index === 0) deleteForm(formId);
     else delLevel(formId, index);
   }
@@ -42,7 +55,7 @@ export default function AttributesForm({
                 />
                 <button
                   type="button"
-                  onClick={() => handleLevelDelete(index, orig)}
+                  onClick={() => handleLevelDelete(index, orig, id)}
                   className='iss__attributesForm__button button-del'
                 ><span /></button>
               </div>

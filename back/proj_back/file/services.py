@@ -68,16 +68,6 @@ class FileUploader:
               .assign_attributes() \
               .set_created()
         self.status = True
-        return
-        try:
-            self \
-              .get_attribute_groups_instances() \
-              .get_file_instances() \
-              .write_files() \
-              .assign_attributes() \
-              .set_created()
-            self.status = True
-        except: ...
 
     def get_attribute_groups_instances(self):
         required_length = self._get_attributes_groups_amount()

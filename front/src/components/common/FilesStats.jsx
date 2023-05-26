@@ -30,7 +30,7 @@ export default function FilesStatistics({pathID}) {
         setStats(prepared);
       })
       .catch(err => {
-        console.log('err', err.message);
+        alert(err.message);
         setStats([]);
       });
   }, [pathID]);

@@ -2,6 +2,7 @@ from django.db import models
 from tree_queries.models import TreeNode
 from uuid import uuid4
 
+
 class Attribute(TreeNode):
     name = models.CharField(max_length=255)
 
@@ -11,7 +12,6 @@ class Attribute(TreeNode):
     class Meta: db_table = 'attribute'
 
     def __str__(self): return self.name
-
 
 
 class Level(TreeNode):

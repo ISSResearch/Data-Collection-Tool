@@ -18,8 +18,8 @@ export default function Projects() {
 
   useEffect(() => {
     axios.get('/api/projects/')
-      .then(({ status, data }) => { setProjects(data); })
-      .catch(err => console.log('err', err.message));
+      .then(({ data }) => { setProjects(data); })
+      .catch(err => alert(err.message));
   }, [])
 
   return (

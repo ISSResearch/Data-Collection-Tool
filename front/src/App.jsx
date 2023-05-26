@@ -11,8 +11,8 @@ export default function App() {
 
   useEffect(() => {
     axios.get('/api/users/check/')
-      .then(({status, data}) => {if (data.isAuth) setUser(data.user);})
-      .catch(err => console.log('err', err.message));
+      .then(({data}) => {if (data.isAuth) setUser(data.user);})
+      .catch(err => alert(err.message));
   }, [])
 
   return (

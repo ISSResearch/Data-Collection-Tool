@@ -69,10 +69,11 @@ class ProjectViewSet(APIView):
         response_status = status.HTTP_200_OK
 
         try:
-          project = Project.objects.get(id=pk)
+          project = Project.objects.filter(visible=True).get(id=pk)
           project.visible = False
           project.reason_if_hidden = 'd'
           project.save()
+          response = {'deleted': True}
 
         except Project.DoesNotExist:
             response = 'query project does not exist'

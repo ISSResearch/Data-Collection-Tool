@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../../styles/components/common/attributeinput.css';
 
 export default function AttributeInput({
@@ -11,6 +12,21 @@ export default function AttributeInput({
   handleChange
 }) {
   const [lastLevel, setLastLevel] = useState(false);
+
+  function handleDeleteAttribute(formId, path, isChild, orig, id) {
+    if (orig) {
+      axios.request(`/api/attributes/attribute/${id}/`,
+        {
+          method: 'delete',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+        .then((data) => console.log(data))
+        .catch(err => alert(err));
+      alert('Original attribute could not be deleted yet');
+    }
+    else delAttribute(formId, path, isChild);
+  }
 
   useEffect(() => {
     const currentDepth = attributes[0]?.path.split('_').length;
@@ -32,7 +48,7 @@ export default function AttributeInput({
               />
               <div className="iss__attributeForm__inputButton">
                 <button
-                  onClick={() => delAttribute(formId, path, isChild, orig)}
+                  onClick={() => handleDeleteAttribute(formId, path, isChild, orig, id)}
                   type="button"
                   className="inputButton--del"
                 ><span/></button>
