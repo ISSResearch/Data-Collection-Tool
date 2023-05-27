@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { deepFind, refreshPath, formUID } from '../utils/utils';
+import { deepFind, refreshPath, formUID, spreadChildren } from '../utils/utils';
 
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
@@ -36,13 +36,22 @@ export default function useAttributes() {
 
   function delAttribute(formId, position, isChild) {
     const newAttributes = {...attributes};
-    const target = newAttributes[formId]
+    const target = newAttributes[formId];
     const path = position.split('_');
     const targetNode = isChild
       ? deepFind(target, path.slice(0, path.length - 1)).children
       : target;
     targetNode.splice(path[path.length - 1], 1);
     refreshPath(targetNode, null, path[path.length - 1]);
+    setAttributes(newAttributes);
+  }
+
+  function handleLevelRemove(formId, levelIndex) {
+    const newAttributes = {...attributes};
+    const target = newAttributes[formId];
+    spreadChildren(target).forEach(el => {
+      if (el.path.split('_').length === levelIndex) el.children.splice(0);
+    });
     setAttributes(newAttributes);
   }
 
@@ -64,6 +73,7 @@ export default function useAttributes() {
     delAttribute,
     handleChange,
     initAttribute,
-    destroyAttribute
+    destroyAttribute,
+    handleLevelRemove
   }
 }

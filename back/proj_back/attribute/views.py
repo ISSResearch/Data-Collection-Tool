@@ -13,6 +13,9 @@ class LevelViewSet(APIView):
         try:
           result = perform_level_delete(Level.objects.get(id=levelID))
           response = {'delete': result}
+          if not result:
+              response['message'] = 'attribute violation'
+              response_status = status.HTTP_403_FORBIDDEN
 
         except Level.DoesNotExist:
             response = 'query level does not exist'
@@ -31,6 +34,9 @@ class AttributeViewSet(APIView):
         try:
           result = perform_attribute_delete(Attribute.objects.get(id=attributeID))
           response = {'delete': result}
+          if not result:
+              response['message'] = 'attribute violation'
+              response_status = status.HTTP_403_FORBIDDEN
 
         except Attribute.DoesNotExist:
             response = 'query level does not exist'

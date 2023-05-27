@@ -52,10 +52,26 @@ export function findRequired(items) {
   }
   return requiredItems;
 }
+
 export function formError(fileName, missedItems) {
   const missedNames = missedItems.map(({name}) => name).join(', ');
   return {
     isValid: false,
     message: `File "${fileName}" is missing required attributes: ${missedNames}.`
   };
+}
+
+export function spreadChildren(data) {
+  refreshPath(data)
+  const stack = [data];
+  const result = [];
+  while (stack.length) {
+    const current = stack.pop();
+    result.push(...current);
+    stack.push(
+      ...current.filter(({children}) => children.length)
+        .map(({children}) => children)
+    );
+  }
+  return result;
 }

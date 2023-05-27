@@ -13,19 +13,21 @@ export default function AttributeInput({
 }) {
   const [lastLevel, setLastLevel] = useState(false);
 
-  function handleDeleteAttribute(formId, path, isChild, orig, id) {
-    if (orig) {
-      axios.request(`/api/attributes/attribute/${id}/`,
-        {
-          method: 'delete',
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-        .then((data) => console.log(data))
-        .catch(err => alert(err));
-      alert('Original attribute could not be deleted yet');
+  async function handleDeleteAttribute(formId, path, isChild, orig, id) {
+    try {
+      if (orig) {
+        await axios.request(`/api/attributes/attribute/${id}/`,
+          {
+            method: 'delete',
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      }
+      delAttribute(formId, path, isChild);
     }
-    else delAttribute(formId, path, isChild);
+    catch {
+      alert('Current or child Attributes are set for Files.');
+    }
   }
 
   useEffect(() => {

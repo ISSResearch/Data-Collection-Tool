@@ -31,6 +31,7 @@ class Project(models.Model):
         parent_level=None
     ):
         current_level, *rest = levels
+
         try:
           lookup_value = current_level.get('uid', current_level['id'])
           LEVEL, changed = self.level_set.get(uid=lookup_value), False
@@ -74,3 +75,4 @@ class Project(models.Model):
                 )
 
             if children: self._create_attributes(children, rest, PARENT, LEVEL)
+            elif rest: self._create_attributes([], rest, None, LEVEL)

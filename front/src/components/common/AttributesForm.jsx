@@ -9,25 +9,28 @@ export default function AttributesForm({
   levelHook,
   attributeHook,
 }) {
-  const { attributes, addAttribute, delAttribute, handleChange } = attributeHook;
+  const { attributes, addAttribute, delAttribute, handleChange, handleLevelRemove } = attributeHook;
   const { levels, addLevel, changeLevel, delLevel, setMultiple, setRequired } = levelHook;
 
-  function requestLevelDelete(id) {
-    axios.request(`/api/attributes/level/${id}/`,
-      {
-        method: 'delete',
-        headers: { 'Content-Type': 'application/json' }
+  async function handleLevelDelete(index, orig, id) {
+    try {
+      if (orig) {
+        await axios.request(`/api/attributes/level/${id}/`,
+          {
+            method: 'delete',
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
       }
-    )
-      .then((data) => console.log(data))
-      .catch(err => alert(err));
-    alert('Original level could not be deleted yet');
-  }
-
-  function handleLevelDelete(index, orig, id) {
-    if (orig) return requestLevelDelete(id);
-    if (index === 0) deleteForm(formId);
-    else delLevel(formId, index);
+      if (index === 0) deleteForm(formId);
+      else {
+        delLevel(formId, index);
+        handleLevelRemove(formId, index);
+      }
+    }
+    catch {
+      alert('Current Level or child Levels Attributes are set for Files.');
+    }
   }
 
   useEffect(() => { if (!levels[formId].length) addLevel(formId); }, []);
