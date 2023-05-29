@@ -28,14 +28,17 @@ export default function useAttributeManager() {
   function clearForms() { setForms({}); }
 
   function gatherAttributes() {
-    return Object.keys(forms).map( key => {
+    return Object.keys(forms).map((key, index) => {
+      const preparedLevels = levelHook.levels[key].map(el => {
+        el.order = index;
+        return el;
+      })
       return {
-        levels: levelHook.levels[key],
+        levels: preparedLevels,
         attributes: attributeHook.attributes[key],
       }
     });
   }
-
 
   function boundAttributes(boundAttributes) {
     const preparedData = deepCopy(boundAttributes).reduce((acc, item) => {

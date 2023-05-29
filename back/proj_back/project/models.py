@@ -56,7 +56,8 @@ class Project(models.Model):
                 name=current_level['name'],
                 parent=parent_level,
                 multiple=current_level.get('multiple'),
-                required=current_level.get('required')
+                required=current_level.get('required'),
+                order=current_level.get('order', 0)
             )
 
         for attribute in attributes:

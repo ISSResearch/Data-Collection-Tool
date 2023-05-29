@@ -15,12 +15,11 @@ export function attributeAdapter(data) {
 }
 
 export function attributeGroupsAdapter(data) {
-  const attributes = deepCopy(data);
-  return attributes.reduce((acc, {uid, attributes}) => {
+  return data.reduce((acc, {uid, attributes}) => {
     return {
       ...acc,
       [uid]: attributes.reduce((newacc, [id, parent, level]) => {
-        const isNew  = newacc.length && newacc[newacc.length-1][0].level === level
+        const isNew = newacc.length && newacc[newacc.length-1][0].level === level
           ? level
           : parent;
         if (isNew === null || !newacc.length) newacc.push([{ id, level }]);
