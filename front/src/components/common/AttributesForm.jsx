@@ -75,7 +75,7 @@ export default function AttributesForm({
                     <button
                       onClick={() => proceedOriginalLevelDelete(index, id)}
                       type='button'
-                      className='iss__attributesForm__acceptance__button--yes'
+                      className='iss__attributesForm__acceptance__curtain__button--yes'
                     >yes</button>
                     <button
                       onClick={() => setAcceptDelete(null)}
