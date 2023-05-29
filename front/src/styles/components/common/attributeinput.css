@@ -22,6 +22,7 @@
   width: fit-content;
   display: flex;
   background-color: white;
+  position: relative;
 }
 .iss__attributeForm__inputWrap input {
   border: none;
@@ -63,4 +64,43 @@
 }
 .inputButton--add span:nth-child(1) {
   rotate: 90deg;
+}
+.iss__attributeForm__acceptance__curtain {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: white;
+  display: flex;
+  place-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+.iss__attributeForm__acceptance__curtain__button--no,
+.iss__attributeForm__acceptance__curtain__button--yes {
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iss__attributeForm__acceptance__curtain__button--no {
+  background-color: rgb(255, 98, 98, 0.2);
+  border: 1px solid var(--issRed);
+  color: var(--issRed);
+}
+.iss__attributeForm__acceptance__curtain__button--no:hover {
+  background-color: var(--issRed);
+  color: white;
+}
+.iss__attributeForm__acceptance__curtain__button--yes {
+  background-color: rgb(153, 255, 98, 0.2);
+  border: 1px solid var(--issGreen);
+  color: var(--issGreen);
+}
+.iss__attributeForm__acceptance__curtain__button--yes:hover {
+  background-color: var(--issGreen);
+  color: white;
 }

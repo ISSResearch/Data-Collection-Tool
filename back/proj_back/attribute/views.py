@@ -35,11 +35,11 @@ class AttributeViewSet(APIView):
           result = perform_attribute_delete(Attribute.objects.get(id=attributeID))
           response = {'delete': result}
           if not result:
-              response['message'] = 'attribute violation'
+              response = 'attribute violation'
               response_status = status.HTTP_403_FORBIDDEN
 
         except Attribute.DoesNotExist:
-            response = 'query level does not exist'
+            response = 'query attribute does not exist'
             response_status = status.HTTP_404_NOT_FOUND
 
         return Response(response, status=response_status)

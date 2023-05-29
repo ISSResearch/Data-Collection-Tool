@@ -12,22 +12,27 @@ export default function AttributeInput({
   handleChange
 }) {
   const [lastLevel, setLastLevel] = useState(false);
+  const [acceptDelete, setAcceptDelete] = useState(null);
 
-  async function handleDeleteAttribute(formId, path, isChild, orig, id) {
+  async function proceedOriginalAttributeDelete(path, id) {
     try {
-      if (orig) {
-        await axios.request(`/api/attributes/attribute/${id}/`,
-          {
-            method: 'delete',
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
-      }
-      delAttribute(formId, path, isChild);
+      await axios.request(`/api/attributes/attribute/${id}/`,
+        {
+          method: 'delete',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      setAcceptDelete(null);
+      handleDeleteAttribute(path, false, id);
     }
     catch {
       alert('Current or child Attributes are set for Files.');
     }
+  }
+
+  function handleDeleteAttribute(path, orig, index) {
+      if (orig) setAcceptDelete(index);
+      else delAttribute(formId, path, isChild);
   }
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export default function AttributeInput({
   return (
     <div className='iss__form__attributes'>
       {
-        attributes.map(({id, name, path, children, orig}) => (
+        attributes.map(({id, name, path, children, orig}, index) => (
           <div key={id} className={`iss__attributeForm ${isChild ? 'attribute--child': ''}`}>
             {isChild ? <div className='iss__attributeForm__tree'>------|</div> : ''}
             <div className='iss__attributeForm__inputWrap'>
@@ -50,7 +55,7 @@ export default function AttributeInput({
               />
               <div className="iss__attributeForm__inputButton">
                 <button
-                  onClick={() => handleDeleteAttribute(formId, path, isChild, orig, id)}
+                  onClick={() => handleDeleteAttribute(path, orig, index)}
                   type="button"
                   className="inputButton--del"
                 ><span/></button>
@@ -63,6 +68,24 @@ export default function AttributeInput({
                     ><span /><span /></button>
                 }
               </div>
+              {
+                acceptDelete === index &&
+                <div
+                  className='iss__attributeForm__acceptance__curtain'
+                >
+                  <span>confirm</span>
+                  <button
+                    onClick={() => proceedOriginalAttributeDelete(path, id)}
+                    type='button'
+                    className='iss__attributesForm__acceptance__curtain__button--yes'
+                  >yes</button>
+                  <button
+                    onClick={() => setAcceptDelete(null)}
+                    type='button'
+                    className='iss__attributesForm__acceptance__curtain__button--no'
+                  >no</button>
+                </div>
+              }
             </div>
             {
               Boolean(children?.length) &&

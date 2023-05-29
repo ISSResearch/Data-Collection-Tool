@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AttributeInput from './AttributeInput';
 import axios from 'axios';
 import '../../styles/components/common/attributesform.css';
@@ -9,27 +9,32 @@ export default function AttributesForm({
   levelHook,
   attributeHook,
 }) {
+  const [acceptDelete, setAcceptDelete] = useState(null);
   const { attributes, addAttribute, delAttribute, handleChange, handleLevelRemove } = attributeHook;
   const { levels, addLevel, changeLevel, delLevel, setMultiple, setRequired } = levelHook;
 
-  async function handleLevelDelete(index, orig, id) {
+  async function proceedOriginalLevelDelete (index, id) {
     try {
-      if (orig) {
-        await axios.request(`/api/attributes/level/${id}/`,
-          {
-            method: 'delete',
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
-      }
-      if (index === 0) deleteForm(formId);
-      else {
-        delLevel(formId, index);
-        handleLevelRemove(formId, index);
-      }
+      await axios.request(`/api/attributes/level/${id}/`,
+        {
+          method: 'delete',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      setAcceptDelete(null);
+      handleLevelDelete(index, false, id)
     }
     catch {
       alert('Current Level or child Levels Attributes are set for Files.');
+    }
+  }
+
+  function handleLevelDelete(index, orig, id) {
+    if (orig) return setAcceptDelete(index);
+    if (index === 0) deleteForm(formId);
+    else {
+      delLevel(formId, index);
+      handleLevelRemove(formId, index);
     }
   }
 
@@ -61,6 +66,24 @@ export default function AttributesForm({
                   onClick={() => handleLevelDelete(index, orig, id)}
                   className='iss__attributesForm__button button-del'
                 ><span /></button>
+                {
+                  acceptDelete === index &&
+                  <div
+                    className='iss__attributesForm__acceptance__curtain'
+                  >
+                    <span>confirm</span>
+                    <button
+                      onClick={() => proceedOriginalLevelDelete(index, id)}
+                      type='button'
+                      className='iss__attributesForm__acceptance__button--yes'
+                    >yes</button>
+                    <button
+                      onClick={() => setAcceptDelete(null)}
+                      type='button'
+                      className='iss__attributesForm__acceptance__curtain__button--no'
+                    >no</button>
+                  </div>
+                }
               </div>
               <label className='iss__attributesForm__checkbox'>
                 required
