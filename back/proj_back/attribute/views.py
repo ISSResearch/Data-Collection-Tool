@@ -1,20 +1,25 @@
 from rest_framework.views import Response, APIView
 from rest_framework import status
 from .serializers import Level, Attribute
-from .services import perform_attribute_delete, perform_level_delete
+from .services import (
+    perform_level_delete,
+    check_level_delete,
+    perform_attribute_delete,
+    check_attribute_delete
+  )
 
-class LevelViewSet(APIView):
-    http_method_names = ['delete']
+class LevelsViewSet(APIView):
+    http_method_names = ['get', 'delete']
 
-    def delete(self, _, levelID):
+    def get(self, _, levelID):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
-          result = perform_level_delete(Level.objects.get(id=levelID))
-          response = {'delete': result}
+          result = check_level_delete(Level.objects.get(id=levelID))
+          response = {'is_safe': result}
           if not result:
-              response['message'] = 'attribute violation'
+              response = 'attribute violation'
               response_status = status.HTTP_403_FORBIDDEN
 
         except Level.DoesNotExist:
@@ -23,17 +28,36 @@ class LevelViewSet(APIView):
 
         return Response(response, status=response_status)
 
+    def delete(self, request):
+        level_ids = request.data.get('id_set', [])
+        response = {}
+        response_status = status.HTTP_200_OK
 
-class AttributeViewSet(APIView):
-    http_method_names = ['delete']
+        for level_id in level_ids:
+            try:
+              result = perform_level_delete(Level.objects.get(id=level_id))
+              response = {'delete': result}
+              if not result:
+                  response[id] = dict((('message', 'attribute violation'),))
+                  response_status = status.HTTP_206_PARTIAL_CONTENT
 
-    def delete(self, _, attributeID):
+            except Level.DoesNotExist:
+                response[id] = dict((('message', 'query level does not exist'),))
+                response_status = status.HTTP_206_PARTIAL_CONTENT
+
+        return Response(response, status=response_status)
+
+
+class AttributesViewSet(APIView):
+    http_method_names = ['get', 'delete']
+
+    def get(self, _, attributeID):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
-          result = perform_attribute_delete(Attribute.objects.get(id=attributeID))
-          response = {'delete': result}
+          result = check_attribute_delete(Attribute.objects.get(id=attributeID))
+          response = {'is_safe': result}
           if not result:
               response = 'attribute violation'
               response_status = status.HTTP_403_FORBIDDEN
@@ -41,5 +65,24 @@ class AttributeViewSet(APIView):
         except Attribute.DoesNotExist:
             response = 'query attribute does not exist'
             response_status = status.HTTP_404_NOT_FOUND
+
+        return Response(response, status=response_status)
+
+    def delete(self, request):
+        attribute_ids = request.data.get('id_set', [])
+        response = None
+        response_status = status.HTTP_200_OK
+
+        for attribute_id in attribute_ids:
+            try:
+              result = perform_attribute_delete(Attribute.objects.get(id=attribute_id))
+              response = {'delete': result}
+              if not result:
+                  response[id] = dict((('message', 'attribute violation'),))
+                  response_status = status.HTTP_206_PARTIAL_CONTENT
+
+            except Attribute.DoesNotExist:
+                response[id] = dict((('message', 'query attribute does not exist'),))
+                response_status = status.HTTP_206_PARTIAL_CONTENT
 
         return Response(response, status=response_status)

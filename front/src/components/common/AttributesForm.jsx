@@ -10,26 +10,43 @@ export default function AttributesForm({
   attributeHook,
 }) {
   const [acceptDelete, setAcceptDelete] = useState(null);
-  const { attributes, addAttribute, delAttribute, handleChange, handleLevelRemove } = attributeHook;
-  const { levels, addLevel, changeLevel, delLevel, setMultiple, setRequired } = levelHook;
+  const {
+    attributes,
+    addAttribute,
+    delAttribute,
+    handleChange,
+    handleLevelRemove,
+    setDeletedOriginAttributes
+  } = attributeHook;
+  const {
+    levels,
+    addLevel,
+    changeLevel,
+    delLevel,
+    setMultiple,
+    setRequired,
+    setDeletedOriginLevels
+  } = levelHook;
 
   async function proceedOriginalLevelDelete (index, id) {
     try {
-      await axios.request(`/api/attributes/level/${id}/`,
+      await axios.request(`/api/attributes/levels/${id}/`,
         {
-          method: 'delete',
+          method: 'get',
           headers: { 'Content-Type': 'application/json' }
         }
       );
       setAcceptDelete(null);
+      setDeletedOriginLevels(prev => [...prev, id])
       handleLevelDelete(index, false, id)
     }
     catch {
+      setAcceptDelete(null);
       alert('Current Level or child Levels Attributes are set for Files.');
     }
   }
 
-  function handleLevelDelete(index, orig, id) {
+  function handleLevelDelete(index, orig) {
     if (orig) return setAcceptDelete(index);
     if (index === 0) deleteForm(formId);
     else {
@@ -123,6 +140,7 @@ export default function AttributesForm({
             delAttribute={delAttribute}
             addAttribute={addAttribute}
             handleChange={handleChange}
+            setDeletedOriginAttributes={setDeletedOriginAttributes}
           />
         }
       </div>

@@ -3,9 +3,11 @@
   border: none;
   display: grid;
   grid-template-columns: 35% 1px auto;
-  gap: 20px;
+  column-gap: 20px;
+  row-gap: 60px;
   grid-template-areas:
     "project_field form_border attribute_field"
+    ". submit-button .";
 }
 .iss__projectCreate__form__set {
   border: none;
@@ -37,13 +39,23 @@
   min-height: 200px;
 }
 .iss__projectCreate__form__createButton {
+  grid-area: submit-button;
   background: none;
   border: 1px solid var(--issBrand);
   cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.3s ease, background-color 0.3s ease;
+  padding: 12px 20px;
+  width: fit-content;
+  place-self: center;
+  transition: background-color 0.3s ease;
+}
+.iss__projectCreate__form__createButton>span {
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.3s ease;
 }
 .iss__projectCreate__form__createButton:hover {
   background-color: var(--issBrand);
+}
+.iss__projectCreate__form__createButton:hover>span {
   color: white;
 }

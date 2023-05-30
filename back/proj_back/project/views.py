@@ -64,16 +64,21 @@ class ProjectViewSet(APIView):
 
         return  Response(response_data, status=response_status)
 
-    def delete(self, _, pk):
+    def delete(self, request, pk):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
           project = Project.objects.filter(visible=True).get(id=pk)
-          project.visible = False
-          project.reason_if_hidden = 'd'
-          project.save()
-          response = {'deleted': True}
+
+          if request.data.get('approval') != project.name:
+              response = 'approval text differs from the actual name'
+              response_status = status.HTTP_400_BAD_REQUEST
+          else:
+              project.visible = False
+              project.reason_if_hidden = 'd'
+              project.save()
+              response = {'deleted': True}
 
         except Project.DoesNotExist:
             response = 'query project does not exist'

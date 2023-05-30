@@ -3,6 +3,7 @@ import { deepFind, refreshPath, formUID, spreadChildren } from '../utils/utils';
 
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
+  const [deletedOriginAttributes, setDeletedOriginAttributes] = useState([]);
 
   function initAttribute(formId, initData=[]) {
     setAttributes((prev) => {
@@ -74,6 +75,8 @@ export default function useAttributes() {
     handleChange,
     initAttribute,
     destroyAttribute,
-    handleLevelRemove
+    handleLevelRemove,
+    deletedOriginAttributes,
+    setDeletedOriginAttributes
   }
 }

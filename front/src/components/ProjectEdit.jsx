@@ -14,6 +14,8 @@ export default function ProjectEdit({
 }) {
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
+  const [deleteNameForm, SetDeleteNameForm] = useState('');
+
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
   const navigate = useNavigate();
@@ -36,11 +38,27 @@ export default function ProjectEdit({
     return { name: name.value , description: description.value, attributes };
   }
 
-  function sendForm(event) {
+  async function performOriginalItemsDelete(idSet, endpoint) {
+    return axios.request(`/api/attributes/${endpoint}/`,
+        {
+          method: 'delete',
+          data: {id_set: idSet},
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+  }
+
+  async function sendForm(event) {
     event.preventDefault();
     setLoading(true);
     if (!validateNewAttributes()) return alert('Some attributes form are missed.')
     const formData = getFormData(event);
+
+    const deleteLevels = attributeManager.levelHook.deletedOriginLevels;
+    const deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;
+    if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');
+    if (deleteLevels) await performOriginalItemsDelete(deleteLevels, 'levels');
+
     axios.request(`/api/projects/${pathID}/`,
       {
         method: 'patch',
@@ -56,9 +74,11 @@ export default function ProjectEdit({
   }
 
   function deleteProject() {
+    if (deleteNameForm !== projectName) return alert('Entered name differs from the actual Project name.')
     axios.request(`/api/projects/${pathID}/`,
       {
         method: 'delete',
+        data: {approval: deleteNameForm},
         headers: { 'Content-Type': 'application/json' }
       }
     )
@@ -75,15 +95,22 @@ export default function ProjectEdit({
       {
           deleteAccept
             ? <div className='iss__projectEdit__deleteProceed'>
-              <span>Are you sure you want to delete this project?</span>
+              <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
+              <input
+                placeholder='Exact Project name'
+                onChange={({target}) => SetDeleteNameForm(target.value)}
+                className='iss__projectEdit__delete__input'
+              />
               <button
-                onClick={deleteProject}
-                className='iss__projectEdit__delete--yes'
-               >yes, i'm sure</button>
-              <button
+                type='button'
                 onClick={() => setDeleteAccept(false)}
                 className='iss__projectEdit__delete--no'
-              >no, return</button>
+              >cancel</button>
+              <button
+                type='button'
+                onClick={deleteProject}
+                className='iss__projectEdit__delete--yes'
+               >submit</button>
             </div>
             : <button
                 onClick={() => setDeleteAccept(true)}
@@ -108,22 +135,26 @@ export default function ProjectEdit({
               defaultValue={projectDescription}
             />
           </label>
-          {
-            loading
-              ? <Load isInline/>
-              : <button className='iss__projectEdit__form__createButton'>
-                Submit edit
-              </button>
-          }
         </fieldset>
         <div className='iss__projectEdit__form__border'/>
         <div className='iss__projectEdit__attributes'>
+          <AttributeCreatorForm attributeManager={attributeManagerNew}/>
+          {
+            Object.keys(attributeManagerNew.formHook.forms).length > 0 &&
+              <div className='iss__projectEdit__attributeSeparator'/>
+          }
           <AttributeCreatorForm
             attributeManager={attributeManager}
             withBoundAttributes={attributes}
           />
-          <AttributeCreatorForm attributeManager={attributeManagerNew}/>
         </div>
+        <button className='iss__projectEdit__form__createButton'>
+          {
+            loading
+              ? <Load isInline/>
+              : <span>Submit edit</span>
+          }
+        </button>
       </form>
     </>
   );

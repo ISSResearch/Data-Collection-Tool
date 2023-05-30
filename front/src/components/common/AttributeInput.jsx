@@ -9,23 +9,26 @@ export default function AttributeInput({
   isChild,
   delAttribute,
   addAttribute,
-  handleChange
+  handleChange,
+  setDeletedOriginAttributes
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
 
   async function proceedOriginalAttributeDelete(path, id) {
     try {
-      await axios.request(`/api/attributes/attribute/${id}/`,
+      await axios.request(`/api/attributes/attributes/${id}/`,
         {
-          method: 'delete',
+          method: 'get',
           headers: { 'Content-Type': 'application/json' }
         }
       );
       setAcceptDelete(null);
+      setDeletedOriginAttributes(prev => [...prev, id]);
       handleDeleteAttribute(path, false, id);
     }
     catch {
+      setAcceptDelete(null);
       alert('Current or child Attributes are set for Files.');
     }
   }
@@ -97,6 +100,7 @@ export default function AttributeInput({
                   delAttribute={delAttribute}
                   addAttribute={addAttribute}
                   handleChange={handleChange}
+                  setDeletedOriginAttributes={setDeletedOriginAttributes}
                 />
             }
           </div>

@@ -46,16 +46,16 @@ export default function ProjectCreate() {
             Project description:
             <textarea autoComplete='off' placeholder='Enter project description'/>
           </label>
-          {
-            loading
-              ? <Load isInline/>
-              : <button className='iss__projectCreate__form__createButton'>
-                Create Project
-              </button>
-          }
         </fieldset>
         <div className='iss__projectCreate__form__border'/>
         <AttributeCreatorForm attributeManager={attributeManager}/>
+        <button className='iss__projectCreate__form__createButton'>
+          {
+            loading
+              ? <Load isInline/>
+              : <span>Create Project</span>
+          }
+        </button>
       </form>
     </div>
   );

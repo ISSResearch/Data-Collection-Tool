@@ -3,6 +3,7 @@ import { formUID } from '../utils/utils';
 
 export default function useLevels() {
   const [levels, setLevels] = useState({});
+  const [deletedOriginLevels, setDeletedOriginLevels] = useState([]);
 
   function initLevel(formId, initData=[]) {
     setLevels((prev) => {
@@ -69,6 +70,8 @@ export default function useLevels() {
     initLevel,
     destroyLevel,
     setMultiple,
-    setRequired
+    setRequired,
+    deletedOriginLevels,
+    setDeletedOriginLevels
   };
 }
