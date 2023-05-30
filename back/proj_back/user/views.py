@@ -57,18 +57,3 @@ def create_user(request):
     else: response['errors'] = form.errors
 
     return Response(response)
-
-
-class User(APIView):
-    http_method_names = ('get', 'put', 'path')
-
-    def get(self, request, user_id):
-        user = CustomUser.objects \
-          .values('id', 'username', 'user_role') \
-          .get(id=user_id)
-        response = UserSerializer(user)
-        return Response(response.data)
-
-    def put(self, request, user_id): ...
-
-    def patch(self, request, user_id): ...
