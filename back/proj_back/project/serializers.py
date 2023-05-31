@@ -19,7 +19,7 @@ class ProjectSerializer(ProjectsSerializer):
 
     def get_attributes(self, instance):
         levels = LevelSerializer(
-            instance.level_set.order_by('id').all(),
+            instance.level_set.order_by('order', 'id').all(),
             many=True
         )
         return levels.data

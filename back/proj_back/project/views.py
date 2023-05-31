@@ -8,7 +8,7 @@ class ProjectsViewSet(APIView):
     http_method_names = ['post', 'get']
 
     def get(self, _):
-        projects = Project.objects.filter(visible=True)
+        projects = Project.objects.order_by('id').filter(visible=True)
         response = ProjectsSerializer(projects, many=True)
         return Response(response.data)
 
