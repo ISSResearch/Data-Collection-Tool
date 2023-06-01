@@ -1,4 +1,5 @@
 class MOCK_PROJECT:
+    endpoint = '/api/projects/'
     data = {
         'name': "name",
         'description': 'description',
