@@ -10,13 +10,17 @@ export default function Selector({
   fileIndex,
 }) {
   const [options, setOptions] = useState([item]);
+  // TODO: try avoid this
+  const [valueIds, setValuesIds] = useState([]);
 
   function handleSelect(selected, children, index) {
     const newOptions = [...options];
     if (Array.isArray(selected)) return setOption({ selectorKey, id: selected, index });
     const id = typeof selected === 'number' ? selected : Number(selected.value);
     const clear = !Boolean(id);
-    newOptions.splice(index+1, newOptions.length);
+    newOptions.splice(index+1);
+    valueIds.splice(index)
+    setValuesIds(p => [...p, id])
     if (!clear && children) {
       const [child] = children;
       const option = { ...child };
@@ -28,7 +32,8 @@ export default function Selector({
   }
 
   function addSelected(group) {
-     const newOptions = group.reduce((acc, id) => {
+    setValuesIds(group)
+    const newOptions = group.reduce((acc, id) => {
       const { children } = acc[acc.length-1];
       if (!children) return acc;
       const [child] = children;
@@ -62,7 +67,7 @@ export default function Selector({
                 : <select
                   onChange={({target}) => handleSelect(target, children, index)}
                   className="iss__selector"
-                  value={applyGroups && applyGroups[index]}
+                  value={valueIds.length ? valueIds[index] : ''}
                 >
                   <option value="clear">-not set-</option>
                   {
