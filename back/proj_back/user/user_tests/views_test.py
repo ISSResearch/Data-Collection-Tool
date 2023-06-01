@@ -32,17 +32,32 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data['isAuth'])
         self.assertEqual(
-            tuple(response.data['user'].keys()),
-            ('id', 'username', 'user_role', 'is_superuser')
+            set(response.data['user'].keys()),
+            {'id', 'username', 'user_role', 'is_superuser'}
         )
         self.assertTrue(status == 200 and valid)
 
 
 class UserLogoutViewsTest(TestCase, MOCK_CLASS):
-    def test__logout__endpoint(self):
+    def test_logout_endpoint(self):
+        self.client.post(self.create_endpoint, {
+            'username': MOCK_COLLECTOR_DATA['username'],
+            'password1': MOCK_COLLECTOR_DATA['password'],
+            'password2': MOCK_COLLECTOR_DATA['password'],
+        })
+        response = self.client.post(self.login_endpoint, {
+            'username': MOCK_COLLECTOR_DATA['username'],
+            'password': MOCK_COLLECTOR_DATA['password'],
+        })
+
+        status, valid = self.check_login()
+        self.assertTrue(status == 200 and valid)
+
         response = self.client.get(self.logout_endpoint)
+        status, valid = self.check_login()
 
         self.assertEqual(response.status_code, 200)
+        self.assertFalse(status == 200 and valid)
 
 
 class UserCheckViewTest(TestCase, MOCK_CLASS):
@@ -74,8 +89,8 @@ class UserCheckViewTest(TestCase, MOCK_CLASS):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data.get('isAuth', None),)
         self.assertEqual(
-            tuple(response.data['user'].keys()),
-            ('id', 'username', 'user_role', 'is_superuser')
+            set(response.data['user'].keys()),
+            {'id', 'username', 'user_role', 'is_superuser'}
         )
 
 
@@ -109,6 +124,6 @@ class UserCreateViewTest(TestCase, MOCK_CLASS):
         self.assertEqual(valid_request.status_code, 200)
         self.assertTrue(valid_request.data.get('isAuth', None))
         self.assertEqual(
-            tuple(valid_request.data['user'].keys()),
-            ('id', 'username', 'user_role', 'is_superuser')
+            set(valid_request.data['user'].keys()),
+            {'id', 'username', 'user_role', 'is_superuser'}
         )
