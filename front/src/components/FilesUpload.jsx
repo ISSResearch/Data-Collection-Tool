@@ -26,12 +26,16 @@ export default function FilesUpload({ attributes, pathID }) {
     <form className='iss__filesUpload'>
       <button
         onClick={sendForm}
-        className={`iss__filesUpload__sendButton${fileManager.files?.length ? '': ' send--disabled'}`}
+        className={
+          `iss__filesUpload__sendButton${
+            Object.values(fileManager.files).length ? '': ' send--disabled'
+          }`
+        }
       >SEND ALL</button>
       <SelectGroup
         attributes={attributes}
         handleApply={handleApply}
-        isFiles={Boolean(fileManager.files?.length)}
+        isFiles={Boolean(Object.values(fileManager.files).length)}
       />
       <div className='iss__filesUpload__form__border'/>
       <FileInput

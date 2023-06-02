@@ -32,7 +32,7 @@ export default function SelectorItem({
 
   useEffect(() => {
     if (defaults) handleSelectChange(defaults, true);
-  }, []);
+  }, [defaults]);
 
   return (
     <div className='iss__customSelector'>

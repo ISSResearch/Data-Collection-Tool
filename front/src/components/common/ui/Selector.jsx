@@ -7,7 +7,6 @@ export default function Selector({
   item,
   setOption,
   applyGroups,
-  fileIndex,
 }) {
   const [options, setOptions] = useState([item]);
   // TODO: try avoid this
@@ -19,8 +18,12 @@ export default function Selector({
     const id = typeof selected === 'number' ? selected : Number(selected.value);
     const clear = !Boolean(id);
     newOptions.splice(index+1);
-    valueIds.splice(index)
-    setValuesIds(p => [...p, id])
+    valueIds.splice(index);
+    setValuesIds(prev => {
+      const newValues =  [...prev];
+      if (id) newValues.push(id);
+      return newValues;
+    });
     if (!clear && children) {
       const [child] = children;
       const option = { ...child };
@@ -32,7 +35,7 @@ export default function Selector({
   }
 
   function addSelected(group) {
-    setValuesIds(group)
+    setValuesIds(group);
     const newOptions = group.reduce((acc, id) => {
       const { children } = acc[acc.length-1];
       if (!children) return acc;
@@ -47,13 +50,13 @@ export default function Selector({
   useEffect(() => {
     if (applyGroups) addSelected(applyGroups);
     else setOptions([item]);
-  }, [applyGroups, fileIndex]);
+  }, [applyGroups]);
 
   return (
     <div className='iss__selectorsWrap'>
       {
         options.map(({ id, name, children, attributes, multiple }, index) => (
-          <label key={`${id}_${fileIndex}`}>
+          <label key={`${id}_${index}`}>
             <span className='iss__selector__name'>{name}</span>
             {
               multiple

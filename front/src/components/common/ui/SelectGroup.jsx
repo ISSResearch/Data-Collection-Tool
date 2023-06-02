@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Selector from "./Selector";
 import { deepCopy, formUID } from "../../../utils/utils";
+import Selector from "./Selector";
 import '../../../styles/components/common/ui/selectgroup.css';
 
 export default function SelectGroup({
@@ -8,7 +8,7 @@ export default function SelectGroup({
   isFiles,
   handleApply,
   applyGroups,
-  fileIndex,
+  fileID,
   setAttributeGroups,
 }) {
   const [groups, setGroups] = useState({});
@@ -24,7 +24,7 @@ export default function SelectGroup({
     delete newGroups[key]
     setGroups(newGroups);
     if (setAttributeGroups) setAttributeGroups({
-      fileIndex, selectorKey: key, del: true
+      fileID, selectorKey: key, del: true
     });
   }
 
@@ -35,7 +35,7 @@ export default function SelectGroup({
     if (Array.isArray(id)) target[selInd].push(...id);
     else if (id) target[selInd].push(id);
     if (setAttributeGroups) setAttributeGroups({
-      fileIndex, ids: target[selInd], selectorKey, selInd
+      fileID, ids: target[selInd], selectorKey, selInd
     });
   };
 
@@ -44,7 +44,7 @@ export default function SelectGroup({
       const newGroups = deepCopy(applyGroups);
       setGroups(newGroups);
       if (setAttributeGroups) setAttributeGroups({
-        fileIndex, ids: newGroups, set: true
+        fileID, ids: newGroups, set: true
       });
     }
     else setGroups({[formUID()]: []});
@@ -69,7 +69,7 @@ export default function SelectGroup({
                 <Selector
                   key={attribute.id}
                   item={attribute}
-                  fileIndex={fileIndex}
+                  fileID={fileID}
                   setOption={(data) => setOption(data, index)}
                   applyGroups={applyGroups && data[index]}
                   selectorKey={key}

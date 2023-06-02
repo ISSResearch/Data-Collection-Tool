@@ -1,14 +1,8 @@
-import SelectGroup from './SelectGroup';
+import { FileUploadCard } from '../FileUploadCard';
 import '../../../styles/components/common/ui/fileinput.css';
 
 export default function FileInput({ fileManager, attributes, applyGroups }) {
-  const {
-    files,
-    handleUpload,
-    handleNameChange,
-    handleDelete,
-    setAttributeGroups
-  } = fileManager;
+  const { files, handleUpload} = fileManager;
 
   const handleDrop = (ev) => {
     ev.preventDefault();
@@ -35,38 +29,15 @@ export default function FileInput({ fileManager, attributes, applyGroups }) {
       </div>
       <div className='iss__fileInput__filesUploaded'>
         {
-          files.map(({file, name, type}, index) => (
-            <div key={index + file.lastModified} className='iss__fileInput__fileCard'>
-              <div className='iss__fileInput__fileWrap'>
-                {
-                  type === 'image'
-                    ? <div
-                      style={{backgroundImage: `url(${URL.createObjectURL(file)})`}}
-                      className='iss__fileInput__file'
-                    />
-                    : <video
-                      src={URL.createObjectURL(file)}
-                      muted
-                      controls
-                      className="iss__fileInput__file"
-                    />
-                }
-                <input
-                  value={name}
-                  onChange={({target}) => handleNameChange(target, index)}
-                />
-                <button type="button" onClick={() => handleDelete(index)}>
-                  <span/><span/>
-                </button>
-                <div className='iss__fileInput__selectorWrap'>
-                  <SelectGroup
-                    attributes={attributes}
-                    applyGroups={applyGroups}
-                    fileIndex={index}
-                    setAttributeGroups={setAttributeGroups}
-                  />
-                </div>
-              </div>
+          Object.entries(files).map(([key, file]) => (
+            <div key={key} className='iss__fileInput__fileCard'>
+              <FileUploadCard
+                file={file}
+                fileID={key}
+                attributes={attributes}
+                applyGroups={applyGroups}
+                fileManager={fileManager}
+              />
             </div>
           ))
         }

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { findRequired, formError } from '../utils/utils';
+import { findRequired, formError, formUID } from '../utils/utils';
 
 export default function useFileInput() {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState({});
 
   function handleUpload(uploaded) {
     const newFiles = uploaded.map((file) => {
@@ -10,28 +10,33 @@ export default function useFileInput() {
       const [type] = file.type.split('/');
       return { file, name, extension, type, attributeGroups: {} };
     });
-    const threshold = 20 - files.length;
-    setFiles([
-      ...files,
-      ...(newFiles.length <= threshold ? newFiles : newFiles.splice(threshold))
-    ]);
+    const threshold = 20 - Object.values(files).length;
+    const newData = {...files};
+    (newFiles.length <= threshold ? newFiles : newFiles.splice(threshold)).forEach(el => {
+      newData[formUID()] = el;
+    })
+    setFiles(newData);
   }
 
-  function handleNameChange({value}, index) {
-    const newFiles = [...files];
-    newFiles[index].name = value;
-    setFiles(newFiles);
+  function handleNameChange({value}, chandeID) {
+    setFiles(prev => {
+      const newFiles = {...prev};
+      newFiles[chandeID].name = value;
+      return newFiles;
+    });
   }
 
-  function handleDelete(index) {
-    const newFiles = [...files];
-    newFiles.splice(index, 1);
-    setFiles(newFiles);
+  function handleDelete(deleteId) {
+    setFiles(prev => {
+      const newFiles = {...prev};
+      delete newFiles[deleteId]
+      return newFiles;
+    });
   }
 
-  function setAttributeGroups({ fileIndex, ids, selectorKey, selInd, del, set }) {
-    if (set) return files[fileIndex].attributeGroups = ids;
-    const {attributeGroups: target} = files[fileIndex];
+  function setAttributeGroups({ fileID, ids, selectorKey, selInd, del, set }) {
+    if (set) return files[fileID].attributeGroups = ids;
+    const {attributeGroups: target} = files[fileID];
     if (del) return delete target[selectorKey];
     if (!target[selectorKey]) target[selectorKey] = {};
     target[selectorKey][selInd] = [...ids];
@@ -39,7 +44,7 @@ export default function useFileInput() {
 
   // TODO: fix structure difference and (b undefined issue)?
   function gatherFiles() {
-    files.forEach(file => {
+    Object.values(files).forEach((file) => {
       const preparedAtrs = Object.values(file.attributeGroups)
         .reduce((acc, ids) => {
           return [
@@ -55,10 +60,10 @@ export default function useFileInput() {
 
   // TODO: optimize
   function validate(attributes) {
-    if (!files.length) return {isValid: false, message: 'No files attached!'};
+    if (!Object.values(files).length) return {isValid: false, message: 'No files attached!'};
     const requiredLevels = findRequired(attributes);
     const requiredIds = requiredLevels.map(({attributes}) => attributes);
-    for (const file of files) {
+    for (const file of Object.values(files)) {
       const { attributeGroups, name } = file;
       if (!Object.values(attributeGroups || {}).length) return formError(name, requiredLevels);
       for (const group of Object.values(attributeGroups)) {
