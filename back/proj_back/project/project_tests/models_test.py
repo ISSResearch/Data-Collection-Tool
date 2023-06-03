@@ -20,11 +20,5 @@ class ProjectModelTest(TestCase, MOCK_PROJECT):
           )
         self.assertEqual(new_project.name, self.data['name'])
         self.assertEqual(new_project.description, self.data['description'])
-        self.assertEqual(
-            new_project.level_set.all().count(),
-            self.count_levels()
-        )
-        self.assertEqual(
-            new_project.attribute_set.all().count(),
-            self.count_attributes()
-        )
+        self.assertEqual(new_project.level_set.count(), self.count_levels())
+        self.assertEqual(new_project.attribute_set.count(), self.count_attributes())

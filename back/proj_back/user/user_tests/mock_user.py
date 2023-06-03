@@ -1,3 +1,4 @@
+from user.models import CustomUser
 MOCK_ADMIN_DATA = {
     'username': 'TestAdmin',
     'password': 'Q!werty123ZasdAqwe',
@@ -25,3 +26,12 @@ class MOCK_CLASS:
         status, isAuth = response.status_code, response.data.get('isAuth')
 
         return status, isAuth
+
+    @classmethod
+    def create_admin_user(cls, login_client=None):
+        user = CustomUser.objects.create(
+            username=MOCK_ADMIN_DATA['username'],
+            password=MOCK_ADMIN_DATA['password'],
+        )
+
+        return user if not login_client else login_client.force_login(user)

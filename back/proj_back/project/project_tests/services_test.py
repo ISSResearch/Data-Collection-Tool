@@ -10,11 +10,7 @@ class ProjectUpdateService(TestCase, MOCK_PROJECT):
             description=self.data['description'],
         )
 
-        request = type('request', (object, ), {
-            'data': {
-                'name': 'TestUpdateName',
-            }
-        })
+        request = type('request', (object,), {'data': {'name': 'TestUpdateName'}})
 
         valid, _ = update_project(request, project.id)
 
@@ -29,11 +25,7 @@ class ProjectUpdateService(TestCase, MOCK_PROJECT):
             description=self.data['description'],
         )
 
-        request = type('request', (object, ), {
-            'data': {
-                'description': 'TestUpdateDesctiption',
-            }
-        })
+        request = type('request', (object,), {'data': {'description': 'TestUpdateDesctiption'}})
 
         valid, _ = update_project(request, project.id)
 
@@ -53,11 +45,7 @@ class ProjectUpdateService(TestCase, MOCK_PROJECT):
         request_attributes[1]['levels'][0]['name'] = 'newtestname'
         request_attributes[1]['levels'][0]['multiple'] = True
         request_attributes[1]['levels'][0]['required'] = True
-        request = type('request', (object, ), {
-            'data': {
-                'attributes': request_attributes
-            }
-        })
+        request = type('request', (object,), {'data': {'attributes': request_attributes}})
 
         valid, _ = update_project(request, project.id)
 

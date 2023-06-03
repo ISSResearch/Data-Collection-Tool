@@ -10,6 +10,8 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
             description=self.data['description']
         )
 
+        for form in self.data['attributes']: project.add_attributes(form)
+
         serialized_project = ProjectSerializer(project)
 
         self.assertEqual(
@@ -26,6 +28,11 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
                 if key in {'name', 'description'}
             }
         )
+        self.assertEqual(
+            serialized_project.data['attributes'][0]['name'],
+            self.data['attributes'][0]['levels'][0]['name']
+        )
+
 
 class ProjectsSerializerTest(TestCase, MOCK_PROJECT):
     def test_serializer_output(self):
@@ -46,16 +53,16 @@ class ProjectsSerializerTest(TestCase, MOCK_PROJECT):
             ]
         )
 
-        serialized_project = ProjectsSerializer(projects, many=True)
+        serialized_projects = ProjectsSerializer(projects, many=True)
 
-        self.assertEqual(len(serialized_project.data), len(projects))
+        self.assertEqual(len(serialized_projects.data), len(projects))
         self.assertEqual(
-            set(serialized_project.data[0].keys()),
+            set(serialized_projects.data[0].keys()),
             {'id', 'name', 'description', 'created_at', 'visible', 'reason_if_hidden'}
         )
         self.assertEqual(
             {
-                value for key, value in serialized_project.data[0].items()
+                value for key, value in serialized_projects.data[0].items()
                 if key in {'name', 'description'}
             },
             {

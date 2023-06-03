@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .mock_user import MOCK_CLASS, MOCK_COLLECTOR_DATA
-
+from user.models import CustomUser
 
 class UserLoginViewTest(TestCase, MOCK_CLASS):
     def test_invalid_login_endpoint(self):
@@ -17,7 +17,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
         self.assertFalse(status == 200 and valid)
 
     def test_valid_login_endpoint(self):
-        self.client.post(self.create_endpoint, {
+        valid_request = self.client.post(self.create_endpoint, {
             'username': MOCK_COLLECTOR_DATA['username'],
             'password1': MOCK_COLLECTOR_DATA['password'],
             'password2': MOCK_COLLECTOR_DATA['password'],
@@ -40,15 +40,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
 
 class UserLogoutViewsTest(TestCase, MOCK_CLASS):
     def test_logout_endpoint(self):
-        self.client.post(self.create_endpoint, {
-            'username': MOCK_COLLECTOR_DATA['username'],
-            'password1': MOCK_COLLECTOR_DATA['password'],
-            'password2': MOCK_COLLECTOR_DATA['password'],
-        })
-        response = self.client.post(self.login_endpoint, {
-            'username': MOCK_COLLECTOR_DATA['username'],
-            'password': MOCK_COLLECTOR_DATA['password'],
-        })
+        self.create_admin_user(self.client)
 
         status, valid = self.check_login()
         self.assertTrue(status == 200 and valid)
@@ -71,23 +63,12 @@ class UserCheckViewTest(TestCase, MOCK_CLASS):
         self.assertFalse(response.data.get('isAuth', None))
 
     def test_logged_check_endpoint(self):
-        self.client.post(self.create_endpoint, {
-            'username': MOCK_COLLECTOR_DATA['username'],
-            'password1': MOCK_COLLECTOR_DATA['password'],
-            'password2': MOCK_COLLECTOR_DATA['password'],
-        })
-
-        _, valid = self.check_login()
-        if not valid:
-            response = self.client.login(
-                username = MOCK_COLLECTOR_DATA['username'],
-                password = MOCK_COLLECTOR_DATA['password'],
-            )
+        self.create_admin_user(self.client)
 
         response = self.client.get(self.check_endpoint)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data.get('isAuth', None),)
+        self.assertTrue(response.data.get('isAuth', None))
         self.assertEqual(
             set(response.data['user'].keys()),
             {'id', 'username', 'user_role', 'is_superuser'}
