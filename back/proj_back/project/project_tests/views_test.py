@@ -83,7 +83,7 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT):
             {form['levels'][0]['name'] for form in self.data['attributes']}
         )
 
-    def test__get__invalid__project(self):
+    def test_get_invalid_project(self):
         self.client.force_login(self.user)
 
         self.project.visible = False
