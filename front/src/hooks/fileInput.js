@@ -55,7 +55,7 @@ export default function useFileInput() {
         }, []);
       file.atrsGroups = preparedAtrs;
     });
-    return files;
+    return Object.values(files);
   }
 
   // TODO: optimize

@@ -17,7 +17,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
         self.assertFalse(status == 200 and valid)
 
     def test_valid_login_endpoint(self):
-        valid_request = self.client.post(self.create_endpoint, {
+        self.client.post(self.create_endpoint, {
             'username': MOCK_COLLECTOR_DATA['username'],
             'password1': MOCK_COLLECTOR_DATA['password'],
             'password2': MOCK_COLLECTOR_DATA['password'],
@@ -54,8 +54,7 @@ class UserLogoutViewsTest(TestCase, MOCK_CLASS):
 
 class UserCheckViewTest(TestCase, MOCK_CLASS):
     def test_unlogged_check_endpoint(self):
-        _, valid = self.check_login()
-        if valid: self.client.logout()
+        self.client.logout()
 
         response = self.client.get(self.check_endpoint)
 
