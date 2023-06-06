@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default function useFileUploader(projectID) {
   const [files, setFiles] = useState([]);
-  const [project, _] = useState(projectID);
+  const [project] = useState(projectID);
 
   async function sendChunk(file, id) {
     const chunkSize = 1024 * 1024 * 10;
