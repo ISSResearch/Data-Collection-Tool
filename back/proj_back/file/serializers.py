@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import File
 from attribute.serializers import AttributeGroupSerializer
 
+
 class FileSerializer(serializers.ModelSerializer):
     attributes = serializers.SerializerMethodField()
     author_name = serializers.SerializerMethodField()

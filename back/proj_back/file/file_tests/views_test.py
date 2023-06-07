@@ -1,0 +1,117 @@
+from django.test import TestCase
+from user.user_tests.mock_user import MOCK_CLASS
+from attribute.attribute_tests.mock_attribute import MockCase
+from file.models import File
+
+
+class FileViewSetTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        FileViewSetTest.case = MockCase()
+        FileViewSetTest.user = MOCK_CLASS.create_admin_user()
+
+    # TODO: implement
+    def test_get_file(self): ...
+
+    def test_update_file(self):
+        self.client.force_login(self.user)
+
+        self.case.attribute2 = self.case.attributegroup.attribute.create(
+            name='new_atr',
+            project=self.case.project,
+            level=self.case.level
+        )
+
+        request_data = {
+            'status': 'a',
+            'attribute': {str(self.case.attributegroup.uid): [self.case.attribute2.id]}
+        }
+
+        request = self.client.patch(
+            f'/api/files/{self.case.file_.id}/',
+            data=request_data,
+            content_type='application/json'
+        )
+
+        self.assertTrue(request.status_code == 202)
+        self.assertTrue(request.data['ok'])
+
+    def test_delete_file(self):
+        self.client.force_login(self.user)
+        request = self.client.delete(f'/api/files/{self.case.file_.id}/')
+
+        self.assertTrue(request.status_code == 202)
+        self.assertFalse(len(File.objects.filter(id=self.case.file_.id)))
+
+
+class FilesViewSetTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        FilesViewSetTest.case = MockCase()
+        FilesViewSetTest.user = MOCK_CLASS.create_admin_user()
+
+    def test_get_files(self):
+        self.client.force_login(self.user)
+
+        self.case.file_2 = File.objects.create(
+            file_name='f_name2',
+            project=self.case.project,
+            author_id=self.user.id
+        )
+
+        request = self.client.get(f'/api/files/project/{self.case.project.id}/')
+
+        self.assertTrue(request.status_code == 200)
+        self.assertTrue(len(request.data) == 2)
+        self.assertEqual(
+            set(request.data[0].keys()),
+            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date'}
+        )
+        self.assertEqual(
+            {
+                val for key, val in request.data[0].items()
+                if key in {'id', 'file_name', 'file_type', 'status'}
+            },
+            {
+                val for key, val
+                in self.case.file_.__dict__.items()
+                if key in {'id', 'file_name', 'file_type', 'status'}
+            },
+        )
+
+    # TODO: implement
+    def test_post_files(self):...
+
+
+class ProjectStatsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        ProjectStatsTest.case = MockCase()
+        ProjectStatsTest.user = MOCK_CLASS.create_admin_user()
+
+    def test_get_project_stats(self):
+        self.client.force_login(self.user)
+
+        request = self.client.get(f'/api/files/stats/project/{self.case.project.id}/')
+
+        self.assertTrue(request.status_code == 200)
+        self.assertTrue(len(request.data) == 1)
+        self.assertEqual(
+            {key for key in request.data[0]},
+            {'attribute__id', 'attribute__name', 'attribute__parent', 'count', 'file__file_type', 'file__status'}
+        )
+        self.assertEqual(
+            {val for val in request.data[0].values()},
+            {self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status}
+        )
+
+
+# TODO: implement
+class UploadFileCHunkTest(TestCase): ...
+
+
+# TODO: implement
+class DownloadProjectDataTest(TestCase): ...

@@ -36,13 +36,11 @@ class LevelsViewSet(APIView):
         for level_id in level_ids:
             try:
               result = perform_level_delete(Level.objects.get(id=level_id))
-              response = {'delete': result}
-              if not result:
-                  response[id] = dict((('message', 'attribute violation'),))
-                  response_status = status.HTTP_206_PARTIAL_CONTENT
+              response[level_id] = result or 'attribute violation'
+              if not result: response_status = status.HTTP_206_PARTIAL_CONTENT
 
             except Level.DoesNotExist:
-                response[id] = dict((('message', 'query level does not exist'),))
+                response[level_id] = 'query level does not exist'
                 response_status = status.HTTP_206_PARTIAL_CONTENT
 
         return Response(response, status=response_status)
@@ -70,19 +68,17 @@ class AttributesViewSet(APIView):
 
     def delete(self, request):
         attribute_ids = request.data.get('id_set', [])
-        response = None
+        response = {}
         response_status = status.HTTP_200_OK
 
         for attribute_id in attribute_ids:
             try:
               result = perform_attribute_delete(Attribute.objects.get(id=attribute_id))
-              response = {'delete': result}
-              if not result:
-                  response[id] = dict((('message', 'attribute violation'),))
-                  response_status = status.HTTP_206_PARTIAL_CONTENT
+              response[attribute_id] = result or 'attribute violation'
+              if not result: response_status = status.HTTP_206_PARTIAL_CONTENT
 
             except Attribute.DoesNotExist:
-                response[id] = dict((('message', 'query attribute does not exist'),))
+                response[attribute_id] = 'query attribute does not exist'
                 response_status = status.HTTP_206_PARTIAL_CONTENT
 
         return Response(response, status=response_status)
