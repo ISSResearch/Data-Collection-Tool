@@ -6,7 +6,7 @@ from user.user_tests.mock_user import MOCK_CLASS
 
 class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
     @classmethod
-    def setUpClass(cl):
+    def setUpClass(cls):
         super().setUpClass()
         ProjectsViewSetTest.user = MOCK_CLASS.create_admin_user()
 
