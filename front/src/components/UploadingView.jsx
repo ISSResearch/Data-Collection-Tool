@@ -10,8 +10,10 @@ export default function UploadingView({ fileManager, pathID }) {
   const [uploadProcess, setUploadProcess] = useState(false);
 
   useEffect(() => {
-    setFiles(() => fileManager.gatherFiles());
-    setLoading(false);
+    if (loading){
+      setFiles(() => fileManager.gatherFiles());
+      setLoading(false);
+    }
     if (files.length && !uploadProcess) {
       setUploadProcess(true);
       proceedUpload();
@@ -27,14 +29,18 @@ export default function UploadingView({ fileManager, pathID }) {
         <div key={index} className='iss__uploadProgress__item'>
           <div
             className={
-              ['iss__uploadProgress__completion',
-              status ? `complete-status-${status}` : ''].join(' ')
+              [
+                'iss__uploadProgress__completion',
+                status ? `complete-status-${status}` : ''
+              ].join(' ')
             }
           />
           <span
             className={
-              ['iss__uploadProgress__fileName',
-              status ? `name-status-${status}` : ''].join(' ')
+              [
+                'iss__uploadProgress__fileName',
+                status ? `name-status-${status}` : ''
+              ].join(' ')
             }
           >{name}</span>
           <div className='iss__uploadProgress__progressWrap'>
