@@ -5,6 +5,4 @@ from file.file_tests.views_test import (
     FileViewSetTest,
     FilesViewSetTest,
     ProjectStatsTest,
-    UploadFileCHunkTest,
-    DownloadProjectDataTest
 )

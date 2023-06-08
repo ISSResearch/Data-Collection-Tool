@@ -11,9 +11,6 @@ class FileViewSetTest(TestCase):
         FileViewSetTest.case = MockCase()
         FileViewSetTest.user = MOCK_CLASS.create_admin_user()
 
-    # TODO: implement
-    def test_get_file(self): ...
-
     def test_update_file(self):
         self.client.force_login(self.user)
 
@@ -81,8 +78,19 @@ class FilesViewSetTest(TestCase):
             },
         )
 
-    # TODO: implement
-    def test_post_files(self):...
+    def test_post_files(self):
+        self.client.force_login(self.user)
+
+        request = '{"name":"blog3 copy","extension":"png","type":"image","atrsGroups":[[]]}'
+
+        response = self.client.post(
+            f'/api/files/project/{self.case.project.id}/',
+            data={'meta[]': [request]},
+        )
+
+        self.assertTrue(response.status_code == 201, response.status_code)
+        self.assertTrue(response.data['ok'])
+        self.assertTrue(len(response.data['created_files']) == 1, response.data)
 
 
 class ProjectStatsTest(TestCase):
@@ -107,11 +115,3 @@ class ProjectStatsTest(TestCase):
             {val for val in request.data[0].values()},
             {self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status}
         )
-
-
-# TODO: implement
-class UploadFileCHunkTest(TestCase): ...
-
-
-# TODO: implement
-class DownloadProjectDataTest(TestCase): ...

@@ -8,7 +8,6 @@ from file.services import FileUploader, upload_chunk, prepare_zip_data, File
 class PrepareZipData(TestCase): ...
 
 
-#TODO: implement
 class FileUploaderTest(TestCase):
     @classmethod
     def setUpClass(cls):

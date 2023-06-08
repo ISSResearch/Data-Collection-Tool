@@ -32,7 +32,6 @@ def prepare_zip_data(files, serialized_data, zip_name):
     return zip_location
 
 
-# TODO: handle errors and think 'bout how (atomic-like or skip failed ones)
 class FileUploader:
     __slots__ = {
         'project_id',
