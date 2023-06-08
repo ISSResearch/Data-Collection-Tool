@@ -10,6 +10,7 @@
   background-size: contain;
   background-position: center;
   background-color: rgba(98, 171, 255, 0.1);
+  cursor: pointer;
 }
 .iss__fileuploadCard input {
   border: none;
@@ -62,4 +63,9 @@
 .iss__fileuploadCard__selectWrap fieldset {
   padding: 0;
   place-self: center;
+}
+.file--zoom {
+  scale: 2;
+  position: inherit;
+  z-index: 5;
 }

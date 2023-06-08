@@ -24,7 +24,7 @@ export default function FileCard({
     <div onClick={() => handleCLick(cardIndex)} className={styles.join(' ')}>
       <h3>{name}</h3>
       <p>uploaded by <i>{author_name}</i></p>
-      <span>{date}</span>
+      <time>{date}</time>
     </div>
   )
 }

@@ -18,6 +18,7 @@ export default function ProjectCreate() {
 
   function sendForm(event) {
     event.preventDefault();
+    if (loading) return;
     setLoading(true);
     const formData = getFormData(event);
     axios.request('/api/projects/',

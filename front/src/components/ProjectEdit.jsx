@@ -33,7 +33,9 @@ export default function ProjectEdit({
     const description = target.querySelector('.iss__projectEdit__form__input textarea');
     const attributes = [
       ...attributeManager.formHook.gatherAttributes(),
-      ...attributeManagerNew.formHook.gatherAttributes()
+      ...attributeManagerNew.formHook.gatherAttributes(
+        Object.keys(attributeManager.formHook.forms).length
+      )
     ];
     return { name: name.value , description: description.value, attributes };
   }
@@ -50,10 +52,10 @@ export default function ProjectEdit({
 
   async function sendForm(event) {
     event.preventDefault();
+    if (loading) return;
     setLoading(true);
     if (!validateNewAttributes()) return alert('Some attributes form are missed.')
     const formData = getFormData(event);
-
     const deleteLevels = attributeManager.levelHook.deletedOriginLevels;
     const deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;
     if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');

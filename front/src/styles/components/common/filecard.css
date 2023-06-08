@@ -30,7 +30,7 @@
 .iss__fileCard p {
   margin: 6px 0 12px;
 }
-.iss__fileCard span {
+.iss__fileCard time {
   font-size: 8px;
   place-self: flex-end;
 }

@@ -27,10 +27,10 @@ export default function useAttributeManager() {
 
   function clearForms() { setForms({}); }
 
-  function gatherAttributes() {
+  function gatherAttributes(initLen=0) {
     return Object.keys(forms).map((key, index) => {
       const preparedLevels = levelHook.levels[key].map(el => {
-        el.order = index;
+        el.order = index + initLen;
         return el;
       })
       return {

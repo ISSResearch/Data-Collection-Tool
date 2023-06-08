@@ -8,9 +8,6 @@
 .iss__selectorsWrap {
   margin-bottom: 16px;
 }
-.iss__selectorsWrap:last-of-type {
-  margin: 0;
-}
 .iss__selector__name {
   font-size: 14px;
 }

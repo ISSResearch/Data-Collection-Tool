@@ -25,7 +25,7 @@ class LevelViewsetTest(TestCase, MOCK_CLASS):
             f'/api/attributes/levels/123987/'
         )
 
-        self.assertTrue(legit_check_request.status_code == 403, legit_check_request.json)
+        self.assertTrue(legit_check_request.status_code == 403)
         self.assertTrue(unassigned_check_request.status_code == 200)
         self.assertTrue(unexisted_check_request.status_code == 404)
         self.assertTrue(unassigned_check_request.data['is_safe'])
