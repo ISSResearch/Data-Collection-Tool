@@ -317,3 +317,103 @@ export const mock_raw_stats = [
     "count": 1
   }
 ];
+
+export const mock_raw_files = [
+  {
+    "id": 748,
+    "attributes": [
+      {
+        "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
+        "attributes": [
+          [246,null,117,"ford"]
+        ]
+      }
+    ],
+    "author_name": "admin",
+    "file_name": "file1.png",
+    "file_type": "image",
+    "path": "/app/file_store/23/file1.png",
+    "status":"",
+    "upload_date": "2023-06-08T19:39:54.304997Z"
+  },
+  {
+    "id": 745,
+    "attributes": [
+      {
+        "uid": "6c541438-762e-4e7b-b89c-b6f58eae740b",
+        "attributes": [
+          [246,null,117,"ford"]
+        ]
+      }
+    ],
+    "author_name": "admin",
+    "file_name": "file2.png",
+    "file_type": "image",
+    "path": "/app/file_store/23/file2.png",
+    "status": "",
+    "upload_date": "2023-06-08T19:39:53.905602Z"
+  }
+];
+
+export const mock_prepared_files = [
+  {
+    "id": 748,
+    "attributes": [
+      {
+        "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
+        "attributes": [
+          [246, null, 117, "ford"]
+        ]
+      }
+    ],
+    "author_name": "admin",
+    "file_name": "file1.png",
+    "file_type": "image",
+    "path":"/app/file_store/23/file1.png",
+    "status": "",
+    "upload_date": "2023-06-08T19:39:54.304997Z",
+    "attributeGroups": {
+      "99610f4b-724a-4175-a580-740b5f8559a5": [
+        [246]
+      ]
+    }
+  },
+  {
+    "id": 745,
+    "attributes": [
+      {
+        "uid": "6c541438-762e-4e7b-b89c-b6f58eae740b",
+        "attributes": [
+          [246, null, 117, "ford"]
+        ]
+      }
+    ],
+    "author_name": "admin",
+    "file_name": "file2.png",
+    "file_type": "image",
+    "path": "/app/file_store/23/file2.png",
+    "status": "",
+    "upload_date": "2023-06-08T19:39:53.905602Z",
+    "attributeGroups": {
+      "6c541438-762e-4e7b-b89c-b6f58eae740b": [
+        [246]
+      ]
+    }
+  }
+];
+
+export const mock_raw_file = {
+  "id": 748,
+  "attributes": [
+    {
+      "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
+      "attributes": [[246,null,117,"ford"]]
+    }
+  ],
+  "author_name": "admin", "file_name": "blog2_copy.png",
+  "file_type": "image",
+  "path": "/app/file_store/23/blog2_copy.png",
+  "status": "",
+  "upload_date": "2023-06-08T19:39:54.304997Z",
+  "attributeGroups": {"99610f4b-724a-4175-a580-740b5f8559a5": [[246]]}
+}

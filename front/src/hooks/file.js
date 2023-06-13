@@ -23,37 +23,11 @@ export default function useFile() {
     target[selectorKey][selInd] = [...ids];
   }
 
-  // TODO: refactor
-  function formApplyOption(attrs) {
-    if (!attrs?.length || !file.attributeGroups?.length) return [];
-    const applyOptions = [];
-    const lookUpAttrs = deepCopy(attrs);
-    file.attributeGroups.forEach( lookUpdId => {
-      for (const index in lookUpAttrs) {
-        const {children, attributes, selectIndex} = lookUpAttrs[index];
-        if (children) lookUpAttrs.push(
-          ...children.map( child => {
-            child.selectIndex = selectIndex || index;
-            return child;
-          })
-        );
-        const lookUpChild = attributes?.find(({id}) => id === lookUpdId);
-        if (lookUpChild) {
-          applyOptions[selectIndex || index]
-            ? applyOptions[selectIndex || index].push([lookUpdId, children])
-            : applyOptions[selectIndex || index] = [[lookUpdId, children]];
-          break;
-        }
-      }
-    });
-    return applyOptions;
-  }
-
   function validate(attributes) {
     const requiredLevels = findRequired(attributes);
     const requiredIds = requiredLevels.map(({attributes}) => attributes);
-    const { attributeGroups, name } = file;
-    if (!Object.values(attributeGroups || {}).length ) return formError(name, requiredLevels);
+    const { attributeGroups, file_name } = file;
+    if (!Object.values(attributeGroups || {}).length ) return formError(file_name, requiredLevels);
     for (const group of Object.values(attributeGroups)) {
       const missingValues = [];
       const groupData = Object.values(group);
@@ -67,7 +41,7 @@ export default function useFile() {
         }
         if (!found) missingValues.push(requiredLevels[index]);
       });
-      if (missingValues.length) return formError(name, missingValues);
+      if (missingValues.length) return formError(file_name, missingValues);
     }
     return { isValid: true, message: 'ok' };
   }
@@ -77,7 +51,6 @@ export default function useFile() {
     initFile,
     changeName,
     setAttributeGroups,
-    formApplyOption,
     validate
   };
 }

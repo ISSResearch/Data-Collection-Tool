@@ -2,13 +2,13 @@ import {
   attributeAdapter,
   attributeGroupsAdapter,
   statsAdapter
-} from '../utils/adapters';
+} from '../../utils/adapters';
 import {
   mock_raw_project,
   mock_prepared_attributes,
   mock_raw_file_attributes,
   mock_raw_stats
-} from './_mock';
+} from '../_mock';
 
 test("attribute adapter test", () => {
   const preparedAttributes = attributeAdapter(mock_raw_project);

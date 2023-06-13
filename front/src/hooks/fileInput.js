@@ -12,9 +12,8 @@ export default function useFileInput() {
     });
     const threshold = 20 - Object.values(files).length;
     const newData = {...files};
-    (newFiles.length <= threshold ? newFiles : newFiles.splice(threshold)).forEach(el => {
-      newData[formUID()] = el;
-    })
+    if (newFiles.length > threshold) newFiles.splice(threshold);
+    newFiles.forEach(el => newData[formUID()] = el);
     setFiles(newData);
   }
 

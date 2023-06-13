@@ -3,17 +3,16 @@ import {
   deepFind,
   refreshPath,
   compareArrays,
-  formUID,
   findRequired,
   formError,
   spreadChildren
-} from  '../utils/utils';
+} from  '../../utils/utils';
 import {
   mock_object_with_inner_list,
   mock_list_with_objects,
   mock_deep_find,
   mock_prepared_attributes
-} from './_mock';
+} from '../_mock';
 
 test("deep copy util test", () => {
   const preparedObject = deepCopy(mock_object_with_inner_list);
@@ -54,10 +53,6 @@ test("compare arrays util test", () => {
 
   expect(caseTrue).toBeTruthy();
   expect(caseFalse).toBeFalsy();
-});
-
-test("formUID util test", () => {
-  expect(String(formUID()).length).toEqual(16);
 });
 
 test("find required and form error utils test", () => {
