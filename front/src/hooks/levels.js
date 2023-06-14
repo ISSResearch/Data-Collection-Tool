@@ -18,7 +18,7 @@ export default function useLevels() {
   }
 
   function addLevel(formId) {
-    if (levels[formId][levels[formId].length - 1]?.multiple) return alert('You can`t set new level after multiple one.')
+    if (levels[formId][levels[formId].length - 1]?.multiple) return alert('You can`t set new level after multiple one.');
     const newLevels = {...levels};
     const prevValues = [...newLevels[formId]];
     newLevels[formId] = [ ...prevValues, { id: formUID(), name: '' } ];

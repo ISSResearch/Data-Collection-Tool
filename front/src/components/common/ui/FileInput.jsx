@@ -2,7 +2,7 @@ import { FileUploadCard } from '../FileUploadCard';
 import '../../../styles/components/common/ui/fileinput.css';
 
 export default function FileInput({ fileManager, attributes, applyGroups }) {
-  const { files, handleUpload} = fileManager;
+  const { files, handleUpload } = fileManager;
 
   const handleDrop = (ev) => {
     ev.preventDefault();

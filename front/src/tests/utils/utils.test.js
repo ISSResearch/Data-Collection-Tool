@@ -47,12 +47,10 @@ test("refresh path util test", () => {
 });
 
 test("compare arrays util test", () => {
-  const caseTrue = compareArrays(mock_list_with_objects, mock_list_with_objects);
   const newArray = [...mock_list_with_objects, {id: 10, name: 'new name'}];
-  const caseFalse = compareArrays(mock_list_with_objects, newArray);
 
-  expect(caseTrue).toBeTruthy();
-  expect(caseFalse).toBeFalsy();
+  expect(compareArrays(mock_list_with_objects, mock_list_with_objects)).toBeTruthy();
+  expect(compareArrays(mock_list_with_objects, newArray)).toBeFalsy();
 });
 
 test("find required and form error utils test", () => {

@@ -25,7 +25,7 @@ test("file hook test", () => {
       del: true
     })
   });
-  expect(hookItem.current.file.attributeGroups.group).toEqual(undefined);
+  expect(hookItem.current.file.attributeGroups.group).toBeUndefined();
   act(() => {
     hookItem.current.setAttributeGroups({
       ids: {group: [3,4,5]},
@@ -43,7 +43,6 @@ test("test file validate", () => {
     "isValid": false,
     "message": "File \"blog2_copy.png\" is missing required attributes: model, gen."
   });
-  console.log()
   act(() => hookItem.current.setAttributeGroups({
     ids: [262, 264],
     selectorKey: Object.keys(hookItem.current.file.attributeGroups)[0],

@@ -14,7 +14,7 @@ test("file input hook test", () => {
 
   const firstEl = Object.keys(hookItem.current.files)[0];
 
-  expect(Object.keys(hookItem.current.files).length).toBe(2);
+  expect(Object.keys(hookItem.current.files)).toHaveLength(2);
   expect(hookItem.current.files[firstEl]).toEqual({
     file: { file: '', name: 'file0.png', type: 'image/png' },
     name: 'file0',
@@ -23,7 +23,7 @@ test("file input hook test", () => {
     attributeGroups: {}
   });
   act(() => hookItem.current.handleUpload(files));
-  expect(Object.keys(hookItem.current.files).length).toBe(20);
+  expect(Object.keys(hookItem.current.files)).toHaveLength(20);
   act(() => hookItem.current.handleNameChange({value: 'new_name'}, firstEl));
   expect(hookItem.current.files[firstEl].name).toBe('new_name');
   act(() => {
@@ -56,7 +56,7 @@ test("file input hook test", () => {
   });
   expect(hookItem.current.files[firstEl].attributeGroups).toEqual({group: [3,4,5]});
   act(() => hookItem.current.handleDelete(firstEl));
-  expect(hookItem.current.files[firstEl]).toBe(undefined);
+  expect(hookItem.current.files[firstEl]).toBeUndefined();
 });
 
 test("files prepare test", () => {

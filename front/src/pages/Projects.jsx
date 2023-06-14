@@ -30,12 +30,14 @@ export default function Projects() {
         currentOption={pageOption}
         handler={setOption}
       />
-      {!projects
-        ? <div className="iss__projects__load"><Load/></div>
-        : <>
-          {pageOption !== 'create' && <AllProjects items={projects}/>}
-          {pageOption === 'create' && <ProjectCreate />}
-        </>}
+      {
+        !projects
+          ? <div className="iss__projects__load"><Load/></div>
+          : <>
+            {pageOption !== 'create' && <AllProjects items={projects}/>}
+            {pageOption === 'create' && <ProjectCreate />}
+          </>
+      }
     </div>
   );
 }
