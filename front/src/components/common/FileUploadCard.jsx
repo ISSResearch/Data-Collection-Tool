@@ -9,7 +9,7 @@ export const FileUploadCard = memo(({
   attributes,
   applyGroups
 }) => {
-  const [zoom, setZoom] = useState(false)
+  const [zoom, setZoom] = useState(false);
   const { handleNameChange, handleDelete, setAttributeGroups } = fileManager;
   const { file: fileObject, name, type } = file;
 

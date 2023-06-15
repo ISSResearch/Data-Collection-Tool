@@ -53,7 +53,7 @@ export default function SelectGroup({
   return (
     <fieldset
       className={
-        `iss__selectGroup ${setAttributeGroups ? 'style--min' : ''}`
+        `iss__selectGroup${setAttributeGroups ? ' style--min' : ''}`
       }
     >
       <button
@@ -90,7 +90,7 @@ export default function SelectGroup({
           type="button"
           onClick={() => handleApply(groups)}
           className={
-            `iss__selectGroup__button ${!isFiles ? 'button--disabled' : ''}`
+            `iss__selectGroup__button${!isFiles ? ' button--disabled' : ''}`
           }
         >apply to all</button>
       }

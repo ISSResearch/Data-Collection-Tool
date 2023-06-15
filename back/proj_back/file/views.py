@@ -54,7 +54,7 @@ class FilesViewSet(APIView):
         files = File.objects \
             .select_related('author') \
             .prefetch_related('attributegroup_set') \
-            .order_by('status') \
+            .order_by('status', '-upload_date') \
             .filter(project_id=projectID)
 
         response = FileSerializer(files, many=True)

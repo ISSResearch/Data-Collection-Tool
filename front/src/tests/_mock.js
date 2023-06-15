@@ -417,3 +417,5 @@ export const mock_raw_file = {
   "upload_date": "2023-06-08T19:39:54.304997Z",
   "attributeGroups": {"99610f4b-724a-4175-a580-740b5f8559a5": [[246]]}
 }
+
+export const mock_apply_groups = {7607322651726802: [[246, 265, 267], [271]]};
