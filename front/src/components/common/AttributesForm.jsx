@@ -37,8 +37,8 @@ export default function AttributesForm({
         }
       );
       setAcceptDelete(null);
-      setDeletedOriginLevels(prev => [...prev, id])
-      handleLevelDelete(index, false, id)
+      setDeletedOriginLevels(prev => [...prev, id]);
+      handleLevelDelete(index, false, id);
     }
     catch {
       setAcceptDelete(null);
@@ -55,7 +55,22 @@ export default function AttributesForm({
     }
   }
 
-  useEffect(() => { if (!levels[formId].length) addLevel(formId); }, []);
+  function handleSetMultiple(index, target) {
+    try { setMultiple(formId, index, target); }
+    catch ({message}) { alert(message); }
+  }
+
+  function handleAddLevel() {
+    try { addLevel(formId); }
+    catch ({message}) { alert(message); }
+  }
+
+  useEffect(() => {
+    if (!levels[formId].length) {
+      try { addLevel(formId); }
+      catch ({message}) { alert(message); }
+    }
+  }, []);
 
   return (
     <div className='iss__attributesForm'>
@@ -63,7 +78,7 @@ export default function AttributesForm({
         <div className='iss__attributeForm__titleWrap'>
           <h2>Levels:</h2>
           <button
-            onClick={() => addLevel(formId)}
+            onClick={handleAddLevel}
             type="button"
             className='iss__attributesForm__button button-add'
           ><span/><span/></button>
@@ -114,7 +129,7 @@ export default function AttributesForm({
                 multiple choice
                 <input
                   type="checkbox"
-                  onChange={({target}) => setMultiple(formId, index, target)}
+                  onChange={({target}) => handleSetMultiple(index, target)}
                   defaultChecked={multiple}
                 />
               </label>

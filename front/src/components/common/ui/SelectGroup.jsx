@@ -67,7 +67,6 @@ export default function SelectGroup({
                 <Selector
                   key={attribute.id}
                   item={attribute}
-                  fileID={fileID}
                   setOption={(data) => setOption(data, index)}
                   applyGroups={applyGroups && data[index]}
                   selectorKey={key}

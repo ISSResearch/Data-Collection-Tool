@@ -54,7 +54,7 @@ export default function ProjectEdit({
     event.preventDefault();
     if (loading) return;
     setLoading(true);
-    if (!validateNewAttributes()) return alert('Some attributes form are missed.')
+    if (!validateNewAttributes()) return alert('Some attribute forms are missed.')
     const formData = getFormData(event);
     const deleteLevels = attributeManager.levelHook.deletedOriginLevels;
     const deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;

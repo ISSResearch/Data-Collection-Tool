@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../../../styles/components/common/ui/selectoritem.css';
 
-export default function SelectorItem({
-  id,
-  name,
-  attributes,
-  handleSelect,
-  defaults
-}) {
+export default function SelectorItem({ id, name, attributes, handleSelect, defaults }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
 
@@ -15,7 +9,6 @@ export default function SelectorItem({
     const targetSelector = document.getElementById(htmlFor);
     Array.from(targetSelector.selectedOptions).forEach(opt => opt.selected = false);
     setSelected([]);
-    handleSelect([]);
     handleSelect([]);
   }
 
@@ -51,7 +44,7 @@ export default function SelectorItem({
       </div>
       <div
         className={
-          `iss__customSelector__options ${isOpen ? 'options--open' : ''}`
+          `iss__customSelector__options${isOpen ? ' options--open' : ''}`
         }
       >
         <div>

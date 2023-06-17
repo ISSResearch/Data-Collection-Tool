@@ -2,14 +2,8 @@ import { useEffect, useState } from 'react';
 import SelectorItem from './SelectorItem';
 import '../../../styles/components/common/ui/selector.css';
 
-export default function Selector({
-  selectorKey,
-  item,
-  setOption,
-  applyGroups,
-}) {
+export default function Selector({ selectorKey, item, setOption, applyGroups }) {
   const [options, setOptions] = useState([item]);
-  // TODO: try avoid this
   const [valueIds, setValuesIds] = useState([]);
 
   function handleSelect(selected, children, index) {
@@ -25,8 +19,7 @@ export default function Selector({
       return newValues;
     });
     if (!clear && children) {
-      const [child] = children;
-      const option = { ...child };
+      const option = { ...children[0] };
       option.attributes = option.attributes.filter(({parent}) => parent === id);
       newOptions.push(option);
     }
@@ -39,8 +32,7 @@ export default function Selector({
     const newOptions = group.reduce((acc, id) => {
       const { children } = acc[acc.length-1];
       if (!children) return acc;
-      const [child] = children;
-      const option = {...child};
+      const option = { ...children[0] };
       option.attributes = option.attributes.filter(({parent}) => parent === id);
       return [...acc, option];
     }, [item]);

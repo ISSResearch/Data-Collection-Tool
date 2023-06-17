@@ -1,8 +1,12 @@
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
-import SelectGroup from '../../../../components/common/ui/SelectGroup';
-import { mock_prepared_attributes, mock_apply_groups } from '../../../_mock';
 import useFileInput from '../../../../hooks/fileInput';
 import useFile from '../../../../hooks/file';
+import SelectGroup from '../../../../components/common/ui/SelectGroup';
+import {
+  mock_prepared_attributes,
+  mock_apply_groups,
+  mock_prepared_files
+} from '../../../_mock';
 
 test("select group component test", () => {
   render(
@@ -33,6 +37,13 @@ test("select group component test", () => {
   );
 
   expect(screen.getAllByText('apply to all')[1].className).toBe('iss__selectGroup__button');
+  expect(screen.getAllByText('delete')).toHaveLength(3);
+
+  fireEvent.click(screen.getAllByText('delete')[0]);
+  expect(screen.getAllByText('delete')).toHaveLength(2);
+  fireEvent.click(screen.getAllByText('delete')[0]);
+  fireEvent.click(screen.getAllByText('delete')[0]);
+  expect(screen.queryAllByText('delete')).toHaveLength(0);
 });
 
 
@@ -58,17 +69,31 @@ test("select group component test, case fileUploadCard", () => {
   expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
   expect(screen.queryByText('apply to all')).toBe(null);
   expect(screen.getAllByText('delete')).toHaveLength(1);
+  fireEvent.click(screen.getByText('delete'));
+  expect(screen.queryAllByText('delete')).toHaveLength(0);
+
+  fireEvent.click(screen.getByText('add object'));
+  expect(screen.queryAllByText('delete')).toHaveLength(1);
 });
 
 test("select group component test, case fileInfo", () => {
   const { result: fileManager } = renderHook(() => useFile());
-  act(() => fileManager.current.initFile());
+  act(() => fileManager.current.initFile(mock_prepared_files[0]));
   render(
-    // <SelectGroup
-    //   attributes={mock_prepared_attributes}
-    //   applyGroups={file.attributeGroups}
-    //   fileIndex={slide}
-    //   setAttributeGroups={setAttributeGroups}
-    // />
+    <SelectGroup
+      attributes={mock_prepared_attributes}
+      applyGroups={fileManager.current.file.attributeGroups}
+      fileIndex={0}
+      setAttributeGroups={fileManager.current.setAttributeGroups}
+    />
   );
+
+  expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
+  expect(screen.queryByText('apply to all')).toBe(null);
+  expect(screen.getAllByText('delete')).toHaveLength(1);
+  fireEvent.click(screen.getByText('delete'));
+  expect(screen.queryAllByText('delete')).toHaveLength(0);
+
+  fireEvent.click(screen.getByText('add object'));
+  expect(screen.queryAllByText('delete')).toHaveLength(1);
 });
