@@ -25,8 +25,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
         data: { status, attribute: newAttributes },
         headers: { 'Content-Type': 'application/json' },
       }
-    )
-      .catch(err => alert(err.message));
+    ).catch(err => alert(err.message));
   }
 
   function updateFile(status) {
@@ -76,7 +75,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
             type='button'
             onClick={() => updateFile('d')}
             className={
-              `button--reject ${file.status === 'd' ? 'button--block' : ''}`
+              `button--reject${file.status === 'd' ? ' button--block' : ''}`
             }
           >Decline<br />(D)</button>
           <button
@@ -84,7 +83,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
             type='button'
             onClick={() => updateFile('a')}
             className={
-              `button--accept ${file.status === 'a' ? 'button--block' : ''}`
+              `button--accept${file.status === 'a' ? ' button--block' : ''}`
             }
           >Accept<br/>(A)</button>
         </div>}

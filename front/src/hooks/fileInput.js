@@ -35,7 +35,7 @@ export default function useFileInput() {
 
   function setAttributeGroups({ fileID, ids, selectorKey, selInd, del, set }) {
     if (set) return files[fileID].attributeGroups = ids;
-    const {attributeGroups: target} = files[fileID];
+    const { attributeGroups: target } = files[fileID];
     if (del) return delete target[selectorKey];
     if (!target[selectorKey]) target[selectorKey] = {};
     target[selectorKey][selInd] = [...ids];

@@ -73,7 +73,7 @@ class FilesViewSetTest(TestCase):
             },
             {
                 val for key, val
-                in self.case.file_.__dict__.items()
+                in self.case.file_2.__dict__.items()
                 if key in {'id', 'file_name', 'file_type', 'status'}
             },
         )

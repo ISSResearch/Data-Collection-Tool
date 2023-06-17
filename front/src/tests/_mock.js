@@ -235,10 +235,10 @@ export const mock_raw_file_attributes = [
   {
     "uid": "5738e31f-c43a-4195-b1c2-ea513424a309",
     "attributes": [
-      [249, null, 117, "honda"],
-      [259, 249, 122, "civ"],
-      [260, 259, 124, "genc1"],
-      [271, null, 125,"front"]
+      [249, 0, "honda"],
+      [259, 0, "civ"],
+      [260, 0, "genc1"],
+      [271, 1,"front"]
     ]
   }
 ]
@@ -325,7 +325,8 @@ export const mock_raw_files = [
       {
         "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
         "attributes": [
-          [246,null,117,"ford"]
+          [246, 0, "ford"],
+          [271, 1,"front"]
         ]
       }
     ],
@@ -342,7 +343,8 @@ export const mock_raw_files = [
       {
         "uid": "6c541438-762e-4e7b-b89c-b6f58eae740b",
         "attributes": [
-          [246,null,117,"ford"]
+          [246, 0, "ford"],
+          [271, 1,"front"]
         ]
       }
     ],
@@ -362,7 +364,8 @@ export const mock_prepared_files = [
       {
         "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
         "attributes": [
-          [246, null, 117, "ford"]
+          [246, 0, "ford"],
+          [271, 1,"front"]
         ]
       }
     ],
@@ -373,9 +376,10 @@ export const mock_prepared_files = [
     "status": "",
     "upload_date": "2023-06-08T19:39:54.304997Z",
     "attributeGroups": {
-      "99610f4b-724a-4175-a580-740b5f8559a5": [
-        [246]
-      ]
+      "99610f4b-724a-4175-a580-740b5f8559a5": {
+        0: [246],
+        1: [271]
+      }
     }
   },
   {
@@ -384,7 +388,8 @@ export const mock_prepared_files = [
       {
         "uid": "6c541438-762e-4e7b-b89c-b6f58eae740b",
         "attributes": [
-          [246, null, 117, "ford"]
+          [246, 0, "ford"],
+          [271, 1,"front"]
         ]
       }
     ],
@@ -395,9 +400,10 @@ export const mock_prepared_files = [
     "status": "",
     "upload_date": "2023-06-08T19:39:53.905602Z",
     "attributeGroups": {
-      "6c541438-762e-4e7b-b89c-b6f58eae740b": [
-        [246]
-      ]
+      "6c541438-762e-4e7b-b89c-b6f58eae740b": {
+        0: [246],
+        1: [271]
+      }
     }
   }
 ];
@@ -407,7 +413,7 @@ export const mock_raw_file = {
   "attributes": [
     {
       "uid": "99610f4b-724a-4175-a580-740b5f8559a5",
-      "attributes": [[246,null,117,"ford"]]
+      "attributes": [[246, 0, "ford"]]
     }
   ],
   "author_name": "admin", "file_name": "blog2_copy.png",
@@ -418,4 +424,4 @@ export const mock_raw_file = {
   "attributeGroups": {"99610f4b-724a-4175-a580-740b5f8559a5": [[246]]}
 }
 
-export const mock_apply_groups = {7607322651726802: [[246, 265, 267], [271]]};
+export const mock_apply_groups = {7607322651726802: {0: [246, 265, 267], 1: [271]}};

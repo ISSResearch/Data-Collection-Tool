@@ -62,7 +62,8 @@ class AttributeSerializersTest(TestCase):
         self.assertEqual(
             set(data['attributes'][0]),
             {
-                val for key, val in self.case.attribute.__dict__.items()
-                if key in {'id', 'parent_id', 'level_id', 'name'}
+                self.case.attribute.id,
+                self.case.attribute.level.order,
+                self.case.attribute.name
             },
         )

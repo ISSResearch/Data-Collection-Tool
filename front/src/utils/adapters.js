@@ -18,16 +18,27 @@ export function attributeGroupsAdapter(data) {
   return data.reduce((acc, {uid, attributes}) => {
     return {
       ...acc,
-      [uid]: attributes.reduce((newacc, [id, parent, level]) => {
-        const isNew = newacc.length && newacc[newacc.length-1][0].level === level
-          ? level
-          : parent;
-        if (isNew === null || !newacc.length) newacc.push([{ id, level }]);
-        else newacc[newacc.length-1].push({ id, level });
+      [uid]: attributes.reduce((newacc, [id, levelIndex]) => {
+        if (!newacc[levelIndex]) return {...newacc, [levelIndex]: [id]};
+        newacc[levelIndex].push(id);
         return newacc;
-      }, []).reduce((a, b) => [...a, b.map(({ id }) => id)], [])
+      }, {})
     };
   }, {});
+
+  // return data.reduce((acc, {uid, attributes}) => {
+  //   return {
+  //     ...acc,
+  //     [uid]: attributes.reduce((newacc, [id, parent, level]) => {
+  //       const isNew = newacc.length && newacc[newacc.length-1][0].level === level
+  //         ? level
+  //         : parent;
+  //       if (isNew === null || !newacc.length) newacc.push([{ id, level }]);
+  //       else newacc[newacc.length-1].push({ id, level });
+  //       return newacc;
+  //     }, []).reduce((a, b) => [...a, b.map(({ id }) => id)], [])
+  //   };
+  // }, {});
 }
 
 export function statsAdapter(data) {

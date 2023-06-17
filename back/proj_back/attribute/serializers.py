@@ -33,5 +33,5 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
         return tuple(
             instance.attribute \
                 .order_by('level__order', 'level_id') \
-                .values_list('id', 'parent_id', 'level_id', 'name')
+                .values_list('id', 'level__order', 'name')
         )

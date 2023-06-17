@@ -14,18 +14,16 @@ export default function SelectGroup({
   const [groups, setGroups] = useState({});
 
   function addGroup() {
-    const newGroups = {...groups}
-    newGroups[formUID()] = [];
+    const newGroups = {...groups};
+    newGroups[formUID()] = {};
     setGroups(newGroups);
   }
 
-  function deleteGroup(key) {
+  function deleteGroup(selectorKey) {
     const newGroups = {...groups};
-    delete newGroups[key]
+    delete newGroups[selectorKey];
     setGroups(newGroups);
-    if (setAttributeGroups) setAttributeGroups({
-      fileID, selectorKey: key, del: true
-    });
+    if (setAttributeGroups) setAttributeGroups({fileID, selectorKey, del: true});
   }
 
   function setOption({ selectorKey, id, index }, selInd) {
@@ -47,7 +45,7 @@ export default function SelectGroup({
         fileID, ids: newGroups, set: true
       });
     }
-    else setGroups({[formUID()]: []});
+    else setGroups({[formUID()]: {}});
   }, [applyGroups]);
 
   return (

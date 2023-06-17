@@ -18,7 +18,7 @@ test("attribute adapter test", () => {
 test("attribute groups adapter test", () => {
   const preparedGroups = attributeGroupsAdapter(mock_raw_file_attributes);
   expect(preparedGroups).toEqual({
-    '5738e31f-c43a-4195-b1c2-ea513424a309': [[ 249, 259, 260 ], [ 271 ]]
+    '5738e31f-c43a-4195-b1c2-ea513424a309': {0: [ 249, 259, 260 ], 1: [ 271 ]}
   })
 });
 

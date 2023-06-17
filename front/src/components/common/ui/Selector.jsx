@@ -65,12 +65,12 @@ export default function Selector({
                   name={name}
                   attributes={attributes}
                   handleSelect={(ids) => handleSelect(ids, children, index)}
-                  defaults={applyGroups && applyGroups.slice(index)}
+                  defaults={applyGroups}
                 />
                 : <select
                   onChange={({target}) => handleSelect(target, children, index)}
                   className="iss__selector"
-                  value={valueIds.length ? valueIds[index] : ''}
+                  value={valueIds[index] || ''}
                 >
                   <option value="clear">-not set-</option>
                   {

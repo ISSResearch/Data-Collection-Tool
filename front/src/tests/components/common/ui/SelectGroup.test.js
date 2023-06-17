@@ -2,6 +2,7 @@ import { act, fireEvent, render, renderHook, screen } from '@testing-library/rea
 import SelectGroup from '../../../../components/common/ui/SelectGroup';
 import { mock_prepared_attributes, mock_apply_groups } from '../../../_mock';
 import useFileInput from '../../../../hooks/fileInput';
+import useFile from '../../../../hooks/file';
 
 test("select group component test", () => {
   render(
@@ -36,22 +37,38 @@ test("select group component test", () => {
 
 
 test("select group component test, case fileUploadCard", () => {
-  const { result: fileManager } = renderHook(() => useFileInput());
+  const { result: filesManager } = renderHook(() => useFileInput());
   act(() => {
-    fileManager.current.handleUpload([
+    filesManager.current.handleUpload([
       {file: '', name: `file1.png`, type: 'image/png'}
     ]);
   });
-  const fileID = Object.keys(fileManager.current.files)[0];
+  const fileID = Object.keys(filesManager.current.files)[0];
 
   render(
     <SelectGroup
       attributes={mock_prepared_attributes}
       applyGroups={mock_apply_groups}
       fileID={fileID}
-      setAttributeGroups={fileManager.current.setAttributeGroups}
+      setAttributeGroups={filesManager.current.setAttributeGroups}
     />
   );
+
+  expect(filesManager.current.files[fileID].attributeGroups).toEqual(mock_apply_groups);
+  expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
+  expect(screen.queryByText('apply to all')).toBe(null);
+  expect(screen.getAllByText('delete')).toHaveLength(1);
 });
 
-test("select group component test, case fileInfo", () => {});
+test("select group component test, case fileInfo", () => {
+  const { result: fileManager } = renderHook(() => useFile());
+  act(() => fileManager.current.initFile());
+  render(
+    // <SelectGroup
+    //   attributes={mock_prepared_attributes}
+    //   applyGroups={file.attributeGroups}
+    //   fileIndex={slide}
+    //   setAttributeGroups={setAttributeGroups}
+    // />
+  );
+});
