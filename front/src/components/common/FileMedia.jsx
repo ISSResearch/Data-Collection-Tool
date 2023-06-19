@@ -75,6 +75,15 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     setTypeVideo(file_type === 'video');
     const controller = new AbortController();
     fetch(`/api/files/${id}/`, { signal: controller.signal })
+      .then(response => {
+        const { file_type, file_name } = files[slide];
+        if (!file_type || !file_name) return response;
+        const [_, extension] = file_name.split('.');
+        const contentType = `${file_type}/${extension}`;
+        const headers = new Headers(response.headers);
+        headers.set('Content-Type', contentType);
+        return new Response(response.body, { headers });
+      })
       .then(response => response.blob())
       .then(blob => URL.createObjectURL(blob))
       .then(url => setFileUrl(url))

@@ -1,4 +1,4 @@
-import { render, act, fireEvent, renderHook, screen } from '@testing-library/react';
+import { render, act, fireEvent, screen } from '@testing-library/react';
 import Selector from '../../../../components/common/ui/Selector';
 import { mock_prepared_attributes } from '../../../_mock';
 

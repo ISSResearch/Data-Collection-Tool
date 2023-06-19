@@ -318,6 +318,75 @@ export const mock_raw_stats = [
   }
 ];
 
+export const mock_prepared_stats = [
+  {
+    "id": 246,
+    "name": "ford",
+    "parent": null,
+    "v": { "image": 11, "video": 1 },
+    "a": { "image": 1 },
+    "d": { "image": 1, "video": 1 },
+    "children": [
+      {
+        "id": 265,
+        "name": "exp",
+        "parent": 246,
+        "v": { "image": 1 },
+        "children": [
+          { "id": 267, "name": "gene2", "parent": 265, "v": { "image": 1 } }
+        ]
+      },
+      {
+        "id": 268,
+        "name": "f150",
+        "parent": 246,
+        "v": { "image": 1 },
+        "a": { "image": 1 },
+        "children": [
+          { "id": 270, "name": "genf2", "parent": 268, "v": { "image": 1 }, "a": { "image": 1 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 249,
+    "name": "honda",
+    "parent": null,
+    "v": { "image": 1 },
+    "d": { "image": 1 },
+    "children": [
+      {
+        "id": 259,
+        "name": "civ",
+        "parent": 249,
+        "d": { "image": 1 },
+        "children": [
+          { "id": 260, "name": "genc1", "parent": 259, "d": { "image": 1 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 271,
+    "name": "front",
+    "parent": null,
+    "v": { "image": 1 },
+    "d": { "image": 1 }
+  },
+  {
+    "id": 272,
+    "name": "back",
+    "parent": null,
+    "v": { "image": 1 }
+  },
+  {
+    "id": 287,
+    "name": "green",
+    "parent": null,
+    "v": { "image": 1 }
+  }
+];
+
 export const mock_raw_files = [
   {
     "id": 748,
