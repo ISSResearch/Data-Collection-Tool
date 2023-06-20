@@ -2,6 +2,13 @@ import { render, screen } from '@testing-library/react';
 import TableBodySet from '../../../components/common/TableBodySet';
 import { mock_prepared_stats } from '../../_mock';
 
+function formRowName({name, v, a, d}) {
+  const val = `images: ${v?.image || 0} videos: ${v?.video || 0}`;
+  const acc = `images: ${a?.image || 0} videos: ${a?.video || 0}`;
+  const dec = `images: ${d?.image || 0} videos: ${d?.video || 0}`;
+  return `${name} ${val} ${acc} ${dec}`;
+}
+
 test("tablebodyset component test", () => {
   const countItem = (a, b, c) => {
     const acc = (a?.image || 0) + (a?.video || 0);
@@ -28,11 +35,13 @@ test("tablebodyset component test", () => {
 
   expect(screen.getAllByRole('row')).toHaveLength(rows.length);
 
-  const parentRows = Array.from(screen.getAllByRole('row'))
-    .filter(({ className }) => className === 'iss__stats__table-row');
-  expect(parentRows).toHaveLength(mock_prepared_stats.length);
+  rows.forEach((el) => {
+    const row = screen.getByRole('row', {name: new RegExp(formRowName(el))});
 
-  rows.forEach(({ name, v, a, d }) => {
-    const row = screen.getByRole('row', {name: new RegExp(name)});
+    const expectedClass = mock_prepared_stats.map(({id}) => id).includes(el.id)
+      ? 'iss__stats__table-row'
+      : 'iss__stats__table-row child-row';
+
+    expect(row.className).toBe(expectedClass);
   });
 })

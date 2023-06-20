@@ -16,4 +16,6 @@ test("file input component test", () => {
     { target: { files: mock_files_upload } }
   );
   expect(Object.entries(fileManager.current.files)).toHaveLength(20);
+
+  // TODO: resolve blob issue
 });

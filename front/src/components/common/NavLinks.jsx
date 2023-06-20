@@ -5,9 +5,11 @@ export default function NavLinks({links}) {
   return (
     <nav>
       <ul className='iss__navLinks'>
-        {links.map(({link, text}) => (
-          <li key={text}><Link to={link}>{text}</Link></li>
-        ))}
+        {
+          links.map(
+            ({link, text}) => <li key={text}><Link to={link}>{text}</Link></li>
+          )
+        }
       </ul>
     </nav>
   );

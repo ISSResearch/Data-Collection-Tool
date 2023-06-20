@@ -37,7 +37,7 @@ export default function Login() {
   const fieldSet = [
     {label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true},
     {label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true},
-  ]
+  ];
 
   return (
     <div className="iss__loginPage">

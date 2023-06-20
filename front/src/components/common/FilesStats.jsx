@@ -25,7 +25,7 @@ export default function FilesStatistics({pathID}) {
 
   useEffect(() => {
     axios.get(`/api/files/stats/project/${pathID}/`)
-      .then(({status, data}) => {
+      .then(({ data }) => {
         const prepared = statsAdapter(data)
         setStats(prepared);
       })

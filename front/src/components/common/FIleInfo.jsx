@@ -68,25 +68,27 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
         fileIndex={slide}
         setAttributeGroups={setAttributeGroups}
       />
-      {file?.id &&
-        <div className='iss__fileInfo__buttonsWrap'>
-          <button
-            id='button-d'
-            type='button'
-            onClick={() => updateFile('d')}
-            className={
-              `button--reject${file.status === 'd' ? ' button--block' : ''}`
-            }
-          >Decline<br />(D)</button>
-          <button
-            id='button-a'
-            type='button'
-            onClick={() => updateFile('a')}
-            className={
-              `button--accept${file.status === 'a' ? ' button--block' : ''}`
-            }
-          >Accept<br/>(A)</button>
-        </div>}
+      {
+        file?.id &&
+          <div className='iss__fileInfo__buttonsWrap'>
+            <button
+              id='button-d'
+              type='button'
+              onClick={() => updateFile('d')}
+              className={
+                `button--reject${file.status === 'd' ? ' button--block' : ''}`
+              }
+            >Decline<br />(D)</button>
+            <button
+              id='button-a'
+              type='button'
+              onClick={() => updateFile('a')}
+              className={
+                `button--accept${file.status === 'a' ? ' button--block' : ''}`
+              }
+            >Accept<br/>(A)</button>
+          </div>
+        }
     </div>
   );
 }
