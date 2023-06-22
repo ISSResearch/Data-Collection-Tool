@@ -28,7 +28,7 @@ export default function ProjectCreate() {
         headers: { 'Content-Type': 'application/json' }
       }
     )
-      .then(({status, data}) => window.location.reload())
+      .then(() => window.location.reload())
       .catch(err => {
         alert(err);
         setLoading(false);
@@ -51,11 +51,7 @@ export default function ProjectCreate() {
         <div className='iss__projectCreate__form__border'/>
         <AttributeCreatorForm attributeManager={attributeManager}/>
         <button className='iss__projectCreate__form__createButton'>
-          {
-            loading
-              ? <Load isInline/>
-              : <span>Create Project</span>
-          }
+          { loading ? <Load isInline/> : <span>Create Project</span> }
         </button>
       </form>
     </div>

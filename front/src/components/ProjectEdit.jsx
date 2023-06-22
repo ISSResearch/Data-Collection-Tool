@@ -95,29 +95,29 @@ export default function ProjectEdit({
     <>
       <h2 className='iss__projectEdit__title'>Project Edit</h2>
       {
-          deleteAccept
-            ? <div className='iss__projectEdit__deleteProceed'>
-              <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
-              <input
-                placeholder='Exact Project name'
-                onChange={({target}) => SetDeleteNameForm(target.value)}
-                className='iss__projectEdit__delete__input'
-              />
-              <button
-                type='button'
-                onClick={() => setDeleteAccept(false)}
-                className='iss__projectEdit__delete--no'
-              >cancel</button>
-              <button
-                type='button'
-                onClick={deleteProject}
-                className='iss__projectEdit__delete--yes'
-               >submit</button>
-            </div>
-            : <button
-                onClick={() => setDeleteAccept(true)}
-                className='iss__projectEdit__deleteButton'
-              >DELETE PROJECT</button>
+        deleteAccept
+          ? <div className='iss__projectEdit__deleteProceed'>
+            <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
+            <input
+              placeholder='Exact Project name'
+              onChange={({target}) => SetDeleteNameForm(target.value)}
+              className='iss__projectEdit__delete__input'
+            />
+            <button
+              type='button'
+              onClick={() => setDeleteAccept(false)}
+              className='iss__projectEdit__delete--no'
+            >cancel</button>
+            <button
+              type='button'
+              onClick={deleteProject}
+              className='iss__projectEdit__delete--yes'
+              >submit</button>
+          </div>
+          : <button
+              onClick={() => setDeleteAccept(true)}
+              className='iss__projectEdit__deleteButton'
+            >DELETE PROJECT</button>
       }
       <form onSubmit={sendForm} className='iss__projectEdit__form'>
         <fieldset className='iss__projectEdit__form__set'>
@@ -151,11 +151,7 @@ export default function ProjectEdit({
           />
         </div>
         <button className='iss__projectEdit__form__createButton'>
-          {
-            loading
-              ? <Load isInline/>
-              : <span>Submit edit</span>
-          }
+          { loading ? <Load isInline/> : <span>Submit edit</span> }
         </button>
       </form>
     </>

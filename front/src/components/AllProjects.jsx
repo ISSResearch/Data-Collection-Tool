@@ -8,16 +8,19 @@ export default function AllProjects({ items }) {
 
   return (
     <>
-      {items.length
+    {
+      items.length
         ? <div className='iss__allProjects'>
-          {items.map(item => (
-            <div key={item.id} className='iss__projects__card'>
-              <ProjectCard item={item} />
-            </div>
-          ))}
+          {
+            items.map(item => (
+              <div key={item.id} className='iss__projects__card'>
+                <ProjectCard item={item} />
+              </div>
+            ))
+          }
         </div>
         : <span>No projects yet. Create one!</span>
-      }
+    }
     </>
   )
 }

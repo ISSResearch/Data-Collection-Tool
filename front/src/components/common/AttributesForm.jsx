@@ -97,7 +97,7 @@ export default function AttributesForm({
                   type="button"
                   onClick={() => handleLevelDelete(index, orig, id)}
                   className='iss__attributesForm__button button-del'
-                ><span /></button>
+                ><span/></button>
                 {
                   acceptDelete === index &&
                   <div
@@ -144,7 +144,7 @@ export default function AttributesForm({
             onClick={() => addAttribute(formId)}
             type="button"
             className='iss__attributesForm__button button-add'
-          ><span /><span /></button>
+          ><span/><span/></button>
         </div>
         {
           Boolean(attributes[formId].length) &&
