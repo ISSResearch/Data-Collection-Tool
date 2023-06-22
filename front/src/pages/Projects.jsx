@@ -14,7 +14,7 @@ export default function Projects() {
 
   const commonOptions = [{ name: 'all projects', value: 'all' }];
   const adminOptions = [ ...commonOptions ];
-  if (user.is_superuser) adminOptions.push({ name: 'create project', value: 'create' });
+  if (user?.is_superuser) adminOptions.push({ name: 'create project', value: 'create' });
 
   useEffect(() => {
     axios.get('/api/projects/')
@@ -26,7 +26,7 @@ export default function Projects() {
     <div className="iss__projects">
       <TitleSwitch
         title='Projects Page'
-        options={user.user_role === 'a' ? adminOptions : commonOptions}
+        options={user?.user_role === 'a' ? adminOptions : commonOptions}
         currentOption={pageOption}
         handler={setOption}
       />

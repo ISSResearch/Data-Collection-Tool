@@ -10,7 +10,7 @@ export default function UploadingView({ fileManager, pathID }) {
   const [uploadProcess, setUploadProcess] = useState(false);
 
   useEffect(() => {
-    if (loading){
+    if (loading) {
       setFiles(() => fileManager.gatherFiles());
       setLoading(false);
     }
@@ -20,7 +20,7 @@ export default function UploadingView({ fileManager, pathID }) {
     }
   }, [files]);
 
-  if (loading) return <Load />
+  if (loading) return <Load />;
 
   return (
     <>

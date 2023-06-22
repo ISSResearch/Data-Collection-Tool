@@ -27,7 +27,7 @@ export default function ProjectPage() {
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
   ];
-  if (user.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' });
+  if (user?.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' });
 
   useEffect(() => {
     if (!projectID) return;
@@ -57,7 +57,7 @@ export default function ProjectPage() {
       <Link to="/" className="iss__projectPage__button">back to</Link>
       <TitleSwitch
         title={project.name}
-        options={user.user_role === 'a' ? adminOptions : commonOptions}
+        options={user?.user_role === 'a' ? adminOptions : commonOptions}
         currentOption={pageOption}
         handler={setOption}
       />
