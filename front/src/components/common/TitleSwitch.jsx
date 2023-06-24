@@ -9,15 +9,18 @@ export default function TitleSwitch({title, options, currentOption, handler}) {
         onChange={({target}) => handler(target.value)}
         className='iss__titleSwitch__radio'
       >
-        {options.map(({name, value}) => (
-          <label
-            key={value}
-            className={currentOption === value
-              ? 'iss__titleSwitch__radioItem--active'
-              : 'iss__titleSwitch__radioItem'
-            }
-          ><input type="radio" name="option" value={value}/>{name}</label>
-        ))}
+        {
+          options.map(({name, value}) => (
+            <label
+              key={value}
+              className={
+                currentOption === value
+                  ? 'iss__titleSwitch__radioItem--active'
+                  : 'iss__titleSwitch__radioItem'
+              }
+            ><input type="radio" name="option" value={value}/>{name}</label>
+          ))
+        }
       </fieldset>
     </div>
   )

@@ -37,7 +37,7 @@ test("uploading view component test", () => {
 
   rerender(<UploadingView fileManager={hookItem.current} />)
 
-  let [newresult, newname, newprogressWrap] = screen.getByText('file1').parentNode.childNodes;
+  let [newresult, newname] = screen.getByText('file1').parentNode.childNodes;
   let [newprogress] = progressWrap.childNodes;
 
   expect(newresult.className).toBe('iss__uploadProgress__completion complete-status-a');

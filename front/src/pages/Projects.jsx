@@ -20,7 +20,7 @@ export default function Projects() {
     axios.get('/api/projects/')
       .then(({ data }) => { setProjects(data); })
       .catch(err => alert(err.message));
-  }, [])
+  }, []);
 
   return (
     <div className="iss__projects">
