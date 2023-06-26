@@ -26,6 +26,7 @@ export const FileUploadCard = memo(({
           ? <div
             onClick={({target}) => handleZoom(target)}
             style={{backgroundImage: `url(${URL.createObjectURL(fileObject)})`}}
+            data-testid='media'
             className='iss__fileuploadCard__file'
           />
           : <video
@@ -33,6 +34,7 @@ export const FileUploadCard = memo(({
             src={URL.createObjectURL(fileObject)}
             muted
             controls
+            data-testid='media'
             className="iss__fileuploadCard__file"
           />
       }

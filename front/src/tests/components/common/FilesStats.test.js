@@ -1,8 +1,18 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { mock_raw_stats } from '../../_mock';
 import FilesStats from '../../../components/common/FilesStats';
-import { mock_prepared_stats } from '../../_mock';
+import axios from 'axios';
 
-test("files stats component test", () => {
-  render(<FilesStats pathID={1}/>);
-  // TODO: force to have stats
+jest.mock('axios');
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+test("files stats component test", async () => {
+  axios.get.mockResolvedValue({ data: mock_raw_stats });
+
+  await act(async () => await render(<FilesStats pathID={1}/>));
+  screen.getByRole('table');
+  expect(screen.queryByTestId('load-c')).toBeNull();
 });

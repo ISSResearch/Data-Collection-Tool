@@ -1,4 +1,4 @@
-import { render, screen, renderHook } from '@testing-library/react';
+import { act, render, screen, renderHook } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { useState } from "react";
 import { MemoryRouter } from 'react-router-dom';
@@ -10,15 +10,29 @@ test("app router component test", () => {
     return { user, setUser };
   });
 
-  render(
-    <MemoryRouter>
-      <UserContext.Provider
-        value={{ user: hookItem.current.user, setUser: hookItem.current.setUser }}
-      >
+  const { rerender } = render(
+    <UserContext.Provider
+      value={{ user: hookItem.current.user, setUser: hookItem.current.setUser }}
+    >
+      <MemoryRouter initialEntries={['/project/1']}>
         <AppRouter/>
-      </UserContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </UserContext.Provider>
   );
 
-  // TODO: how to test routes
+  expect(screen.getByRole('heading').innerHTML).toBe('Login Page');
+
+  act(() => hookItem.current.setUser({ name: 'username' }));
+
+  rerender(
+    <UserContext.Provider
+      value={{ user: hookItem.current.user, setUser: hookItem.current.setUser }}
+    >
+      <MemoryRouter initialEntries={['/project/1']}>
+        <AppRouter/>
+      </MemoryRouter>
+    </UserContext.Provider>
+  );
+
+  screen.getByTestId('load-c');
 });

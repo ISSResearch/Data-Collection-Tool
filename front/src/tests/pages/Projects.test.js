@@ -1,7 +1,7 @@
 import { render, screen, renderHook, act } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { useState } from 'react';
-import { MemoryRouter, useParams } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { mock_raw_project  } from '../_mock';
 import Projects from '../../pages/Projects';
 import axios from 'axios';

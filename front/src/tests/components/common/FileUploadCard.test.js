@@ -1,22 +1,41 @@
 import { render, renderHook, screen } from '@testing-library/react';
-import useFileInput from '../../../hooks/fileInput';
 import { FileUploadCard } from '../../../components/common/FileUploadCard';
-import {
-  mock_prepared_files,
-  mock_prepared_attributes,
-  mock_apply_groups
-} from '../../_mock';
+import useFileInput from '../../../hooks/fileInput';
+import { mock_prepared_attributes } from '../../_mock';
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 test("file upload card test", () => {
   const { result: hookItem } = renderHook(() => useFileInput());
-  // TODO: resolve blobl issue
-  // render(
-  //   <FileUploadCard
-  //     file={mock_prepared_files[0]}
-  //     fileID={1}
-  //     attributes={mock_prepared_attributes}
-  //     applyGroups={mock_apply_groups}
-  //     fileManager={hookItem.current}
-  //   />
-  // );
+
+  const file = { type: 'image', name: 'file_name'};
+  const file2 = { type: 'video', name: 'file_name2'};
+
+  window.URL.createObjectURL = function() {};
+
+  const { rerender } = render(
+    <FileUploadCard
+      file={file}
+      fileID={1}
+      attributes={mock_prepared_attributes}
+      fileManager={hookItem.current}
+    />
+  );
+
+  expect(screen.getByRole('textbox').value).toBe(file.name);
+  expect(screen.getByTestId('media').tagName).toBe('DIV');
+
+  rerender(
+    <FileUploadCard
+      file={file2}
+      fileID={1}
+      attributes={mock_prepared_attributes}
+      fileManager={hookItem.current}
+    />
+  );
+
+  expect(screen.getByRole('textbox').value).toBe(file2.name);
+  expect(screen.getByTestId('media').tagName).toBe('VIDEO');
 });
