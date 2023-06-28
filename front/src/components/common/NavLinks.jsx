@@ -7,7 +7,10 @@ export default function NavLinks({links}) {
       <ul className='iss__navLinks'>
         {
           links.map(
-            ({link, text}) => <li key={text}><Link to={link}>{text}</Link></li>
+            ({link, text}) => (
+              <li key={text}>
+                <Link to={link} className='iss__navLinks__link'>{text}</Link>
+              </li>)
           )
         }
       </ul>

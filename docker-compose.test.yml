@@ -1,0 +1,61 @@
+services:
+  iss_selenium_hub:
+    container_name: iss_selenium_hub
+    image: selenium/hub
+    ports:
+      - 4444:4444
+    networks:
+      - iss_tests_network
+
+  # iss_selenium_chrome:
+  #   container_name: iss_selenium_chrome
+  #   image: selenium/node-chrome
+  #   depends_on:
+  #     - iss_selenium_hub
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   environment:
+  #     SE_EVENT_BUS_HOST: iss_selenium_hub
+  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
+  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+  #   networks:
+  #     - iss_tests_network
+
+  # iss_selenium_edge:
+  #   container_name: iss_selenium_edge
+  #   image: selenium/node-edge
+  #   depends_on:
+  #     - iss_selenium_hub
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   environment:
+  #     SE_EVENT_BUS_HOST: iss_selenium_hub
+  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
+  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+  #   networks:
+  #     - iss_tests_network
+
+  iss_selenium_fox:
+    container_name: iss_selenium_fox
+    image: selenium/node-firefox
+    depends_on:
+      - iss_selenium_hub
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      SE_EVENT_BUS_HOST: iss_selenium_hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+    networks:
+      - iss_tests_network
+
+
+  # tests:
+  #   build: ./path/to/tests  # Replace with the path to your tests
+  #   depends_on:
+  #     - chrome
+  #   environment:
+  #     - SELENIUM_GRID_URL=http://chrome:4444/wd/hub  # Replace with the appropriate URL for your Selenium Grid
+
+networks:
+  iss_tests_network:

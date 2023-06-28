@@ -26,7 +26,7 @@ export default function Header() {
         {
           user
             ? <>
-              <span>{user.username}</span>
+              <span className='iss__header__username'>{user.username}</span>
               <button
                 onClick={logOutUser}
                 className='iss__header__logoutButton'

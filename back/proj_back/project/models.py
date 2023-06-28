@@ -1,6 +1,7 @@
 from django.db import models
 from attribute.models import Level, Attribute
 
+
 class Project(models.Model):
     HIDDEN_REASONS = (
         ('d', 'deleted'),

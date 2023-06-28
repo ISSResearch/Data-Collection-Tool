@@ -3,7 +3,7 @@
   gap: 12px;
   list-style: none;
 }
-.iss__navLinks a {
+.iss__navLinks__link {
   background: none;
   border: 1px solid var(--issBrand);
   cursor: pointer;
@@ -12,7 +12,7 @@
   text-decoration: none;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
-.iss__navLinks a:hover {
+.iss__navLinks__link:hover {
   background-color: var(--issBrand);
   color: white;
 }
