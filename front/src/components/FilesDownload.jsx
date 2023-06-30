@@ -24,9 +24,9 @@ export default function FilesDownload({ pathID, projectName }) {
     setLoading(true);
     axios.get(
       `/api/files/download/project/${pathID}/?files=${option.value}`,
-      { responseType: 'blob', }
+      { responseType: 'blob' }
     )
-      .then(({ status, data }) =>{
+      .then(({ status, data }) => {
         if (status === 204) throw new Error('no content');
         const url = window.URL.createObjectURL(new Blob([data]));
         const link = document.createElement('a');
