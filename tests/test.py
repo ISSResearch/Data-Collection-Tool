@@ -1,9 +1,13 @@
 from unittest import TestCase, main
-from .set_up import Options, PagesTests, By
+from set_up import Options, PagesTests, By
 
 
 class FoxBrowserTest(TestCase, Options, PagesTests):
-    def setUp(self): self.driver = self.start_driver('chrome')
+    __slots__ = { 'driver', 'test_project' }
+
+    def setUp(self):
+        self.driver = self.start_driver('chrome')
+        self.test_project = None
 
     def tearDown(self): self.driver.quit()
 

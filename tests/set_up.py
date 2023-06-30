@@ -36,10 +36,10 @@ class PagesTests(
     ProjectPageTests,
     BlankPageTests,
 ):
-    def login_page_test(self): super(LoginPageTests, self).run_tests()
+    def login_page_test(self): LoginPageTests.run_tests(self)
 
-    def projects_page_test(self): super(ProjectsPageTests, self).run_tests()
+    def projects_page_test(self): ProjectsPageTests.run_tests(self)
 
-    def project_page_test(self): super(ProjectPageTests, self).run_tests()
+    def project_page_test(self): ProjectPageTests.run_tests(self)
 
-    def blank_page_test(self): super(BlankPageTests, self).run_tests()
+    def blank_page_test(self): BlankPageTests.run_tests(self)

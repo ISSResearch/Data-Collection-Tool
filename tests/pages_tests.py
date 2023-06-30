@@ -2,22 +2,49 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-def ensure_login(Case):
-        def decorator(function):
-              def wrapper():
-                  if not Case.driver.find_elements(By.CLASS_NAME, value='iss__header__username'):
-                      Case.driver.get(Case.base_url + Case.login_url)
+def ensure_login(function):
+    def wrapper(Case):
+        if not Case.driver.find_elements(By.CLASS_NAME, value='iss__header__username'):
+            Case.driver.get(Case.base_url + Case.login_url)
 
-                      [name, password] = Case.driver.find_elements(By.TAG_NAME, value='input')
-                      name.send_keys('admin')
-                      password.send_keys('admin')
+            [name, password] = Case.driver.find_elements(By.TAG_NAME, value='input')
+            name.send_keys('admin')
+            password.send_keys('admin')
 
-                      Case.driver.find_element(By.TAG_NAME, value='button').click()
+            Case.driver.find_element(By.TAG_NAME, value='button').click()
 
-                      WebDriverWait(Case.driver, timeout=3).until(lambda d: d.current_url == Case.base_url)
-                  function()
-              return wrapper
-        return decorator
+            WebDriverWait(Case.driver, timeout=3).until(
+                lambda d: d.find_element(By.CLASS_NAME, value='iss__header__username')
+            )
+        print('asd')
+        function(Case)
+    return wrapper
+
+
+@ensure_login
+def get_project(Case):
+    Case.driver.get(Case.base_url)
+
+    WebDriverWait(Case.driver, timeout=3).until(
+        lambda d: d.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem')
+    )
+
+    if Case.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').text == 'all projects':
+        Case.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').click()
+
+    WebDriverWait(Case.driver, timeout=3).until(
+        lambda d: len(d.find_elements(By.CLASS_NAME, value='iss__projectCard')) > 0
+    )
+
+    projects = Case.driver.find_elements(By.CLASS_NAME, value='iss__projectCard')
+    if projects:
+        project, *_ = projects
+        Case.test_project = {
+            'name': project.find_element(By.TAG_NAME, value='h3').text,
+            'description': project.find_element(By.TAG_NAME, value='p').text,
+            'date': project.find_element(By.TAG_NAME, value='time').text,
+            'link': project.get_property('href')
+        }
 
 
 class LoginPageTests:
@@ -28,10 +55,15 @@ class LoginPageTests:
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.login_url)
 
-        self._ui_test()
-        self._login_test()
+        user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
+        if user_logged:
+            self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
 
-    def _ui_test(self):
+        self._login_ui_test()
+        self._login_invalid_login()
+        self._login_login_test()
+
+    def _login_ui_test(self):
         self.assertEqual(
             self.driver.find_element(By.TAG_NAME, value='h1').text,
             'Login Page'
@@ -64,11 +96,31 @@ class LoginPageTests:
 
         self.assertEqual(self.driver.current_url, self.base_url + 'login')
 
-    def _login_test(self):
-        self.driver.get(self.base_url)
+    def _login_invalid_login(self):
+      user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
+      if user_logged:
+          self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
+      self.driver.get(self.base_url + self.login_url)
+
+      [name, password] = self.driver.find_elements(By.TAG_NAME, value='input')
+
+      name.send_keys('admin_invalid1231231230978')
+      password.send_keys('admin_invalid12398789668')
+
+      self.driver.find_element(By.TAG_NAME, value='button').click()
+
+      WebDriverWait(self.driver, timeout=3).until(
+          lambda d: d.find_element(By.CLASS_NAME, value='iss__formContainer__errors')
+      )
+
+      self.driver.find_element(By.CLASS_NAME, value='iss__formContainer__errors')
+
+    def _login_login_test(self):
         user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
-        if not user_logged:
+        if user_logged:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
+        self.driver.get(self.base_url)
+
         [name, password] = self.driver.find_elements(By.TAG_NAME, value='input')
 
         name.send_keys('admin')
@@ -76,7 +128,9 @@ class LoginPageTests:
 
         self.driver.find_element(By.TAG_NAME, value='button').click()
 
-        WebDriverWait(self.driver, timeout=3).until(lambda d: d.current_url == self.base_url)
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.CLASS_NAME, value='iss__header__username')
+        )
 
         self.assertEqual(
             self.driver.find_element(By.CLASS_NAME, value='iss__header__username').text,
@@ -91,12 +145,12 @@ class ProjectsPageTests:
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.projects_url)
 
-        self._ui_test()
-        self._main_create_test()
-        self._main_projects_test()
+        self._projects_ui_test()
+        self._projects_main_create_test()
+        self._projects_main_projects_test()
 
     @ensure_login
-    def _ui_test(self):
+    def _projects_ui_test(self):
         self.assertEqual(self.driver.find_element(By.TAG_NAME, 'h1').text, 'Projects Page')
         self.driver.find_element(By.CLASS_NAME, value='iss__allProjects')
 
@@ -105,13 +159,12 @@ class ProjectsPageTests:
         )
 
     @ensure_login
-    def _main_create_test(self):
-        self.ensure_login()
+    def _projects_main_create_test(self):
         if self.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').text == 'create project':
             self.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').click()
         self.driver.find_element(By.CLASS_NAME, value='iss__projectCreate')
 
-        self.assertFalse(self.driver.find_elements('iss__attributesForm'))
+        self.assertFalse(self.driver.find_elements(By.CLASS_NAME, value='iss__attributesForm'))
 
         for _ in range(2):
             self.driver.find_element(By.CLASS_NAME, value='iss__attributecreator__addButton').click()
@@ -188,8 +241,7 @@ class ProjectsPageTests:
         )
 
     @ensure_login
-    def _main_projects_test(self):
-        self.ensure_login()
+    def _projects_main_projects_test(self):
         if self.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').text == 'all projects':
             self.driver.find_element(By.CLASS_NAME, value='iss__titleSwitch__radioItem').click()
         self.driver.find_element(By.CLASS_NAME, value='iss__allProjects')
@@ -210,7 +262,37 @@ class ProjectsPageTests:
 class ProjectPageTests:
     project_base_url = 'project/'
 
-    def run_tests(self): ...
+    def run_tests(self):
+        self.assertTrue(self.driver)
+
+        if not self.test_project: get_project(self)
+
+        self._project_ui_test()
+
+
+    @ensure_login
+    def _project_ui_test(self):
+        self.driver.get(self.test_project['link'])
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1').text
+        )
+
+        self.assertEqual(
+            self.driver.find_element(By.TAG_NAME, value='h1').text,
+            self.test_project['name']
+        )
+        self.assertEqual(
+            self.driver.find_element(By.TAG_NAME, value='p').text,
+            self.test_project['description']
+        )
+
+        self.assertEqual(
+            self.driver \
+                .find_element(By.CLASS_NAME, value='iss__titleSwitch__radio') \
+                .find_elements(By.TAG_NAME, value='input'),
+                5
+        )
 
 class BlankPageTests:
     def run_tests(self): ...
