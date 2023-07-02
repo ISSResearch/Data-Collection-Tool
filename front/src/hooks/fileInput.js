@@ -41,7 +41,6 @@ export default function useFileInput() {
     target[selectorKey][selInd] = [...ids];
   }
 
-  // TODO: fix structure difference and (b undefined issue)?
   function gatherFiles() {
     Object.values(files).forEach((file) => {
       const preparedAtrs = Object.values(file.attributeGroups)
@@ -57,7 +56,6 @@ export default function useFileInput() {
     return Object.values(files);
   }
 
-  // TODO: optimize
   function validate(attributes) {
     if (!Object.values(files).length) return {isValid: false, message: 'No files attached!'};
     const requiredLevels = findRequired(attributes);

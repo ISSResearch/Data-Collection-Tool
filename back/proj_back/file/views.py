@@ -92,7 +92,6 @@ def get_stats(_, projectID):
     return Response(stats, status=status.HTTP_200_OK)
 
 
-# todo: perform a better way/class based if versatile will be needed
 @api_view(('GET',))
 def download_project_data(request, projectID):
     files_query = request.query_params.get('files')

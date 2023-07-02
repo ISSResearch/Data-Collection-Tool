@@ -19,10 +19,8 @@ class Project(models.Model):
 
     def __str__(self): return self.name
 
-    #TODO: group creation of attributes to reduce queries amount
     def add_attributes(self, form):
-        attributes, levels = form['attributes'], form['levels']
-        self._create_attributes(attributes, levels)
+        self._create_attributes(form['attributes'], form['levels'])
 
     def _create_attributes(
         self,
@@ -60,6 +58,8 @@ class Project(models.Model):
                 required=current_level.get('required'),
                 order=current_level.get('order', 0)
             )
+
+        if rest and not attributes: self._create_attributes([], rest, None, LEVEL)
 
         for attribute in attributes:
             name, children = attribute['name'], attribute['children']
