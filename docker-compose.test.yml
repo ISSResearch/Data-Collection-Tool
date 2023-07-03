@@ -1,11 +1,60 @@
 services:
+  iss_test_db:
+    container_name: iss_test_db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: iss_test_app_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - iss_test_network
+
+  iss_back:
+    container_name: iss_back
+    image: iss_back
+    build: ./back
+    restart: always
+    depends_on:
+      - iss_test_db
+    volumes:
+      - ./back/proj_back:/app
+    environment:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: admin
+    command: >
+      sh -c "python manage.py makemigrations user &&
+             python manage.py makemigrations project &&
+             python manage.py makemigrations attribute &&
+             python manage.py makemigrations file &&
+             python manage.py migrate &&
+             python manage.py createsuperuser --noinput &&
+             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
+    networks:
+      - iss_test_network
+
+  iss_front:
+    container_name: iss_front
+    image: iss_front
+    build: ./front
+    restart: always
+    depends_on:
+      - iss_back
+    volumes:
+      - ./front/src:/app/src
+      - ./front/public:/app/public
+    command: npm start
+    networks:
+      - iss_test_network
+
   iss_selenium_hub:
     container_name: iss_selenium_hub
     image: selenium/hub
+    depends_on:
+      - iss_front
     ports:
       - 4444:4444
     networks:
-      - iss_tests_network
+      - iss_test_network
 
   # iss_selenium_chrome:
   #   container_name: iss_selenium_chrome
@@ -19,7 +68,7 @@ services:
   #     SE_EVENT_BUS_PUBLISH_PORT: 4442
   #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
   #   networks:
-  #     - iss_tests_network
+  #     - iss_test_network
 
   # iss_selenium_edge:
   #   container_name: iss_selenium_edge
@@ -33,7 +82,7 @@ services:
   #     SE_EVENT_BUS_PUBLISH_PORT: 4442
   #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
   #   networks:
-  #     - iss_tests_network
+  #     - iss_test_network
 
   iss_selenium_fox:
     container_name: iss_selenium_fox
@@ -47,7 +96,7 @@ services:
       SE_EVENT_BUS_PUBLISH_PORT: 4442
       SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
     networks:
-      - iss_tests_network
+      - iss_test_network
 
 
   # tests:
@@ -58,4 +107,4 @@ services:
   #     - SELENIUM_GRID_URL=http://chrome:4444/wd/hub  # Replace with the appropriate URL for your Selenium Grid
 
 networks:
-  iss_tests_network:
+  iss_test_network:

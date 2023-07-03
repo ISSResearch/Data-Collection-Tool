@@ -26,6 +26,8 @@ class FoxBrowserTest(TestCase, Options, PagesTests):
 
     def test_login_page(self): self.login_page_test()
 
+    def test_registration_page(self): self.registration_page_test()
+
     def test_projects_page(self): self.projects_page_test()
 
     def test_project_page(self): self.project_page_test()

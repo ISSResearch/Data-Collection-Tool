@@ -1,6 +1,7 @@
 from selenium import webdriver
 from pages_tests import (
     LoginPageTests,
+    RegistrationTest,
     ProjectsPageTests,
     ProjectPageTests,
     BlankPageTests,
@@ -32,11 +33,14 @@ class Options:
 
 class PagesTests(
     LoginPageTests,
+    RegistrationTest,
     ProjectsPageTests,
     ProjectPageTests,
     BlankPageTests,
 ):
     def login_page_test(self): LoginPageTests.run_tests(self)
+
+    def registration_page_test(self): RegistrationTest.run_tests(self)
 
     def projects_page_test(self): ProjectsPageTests.run_tests(self)
 
