@@ -1,5 +1,8 @@
+from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from utils import ensure_login, get_project, switch_to_view
 
 
@@ -146,6 +149,7 @@ class RegistrationTest:
             'NewTestUser'
         )
 
+
 class ProjectsPageTests:
     projects_url = ''
 
@@ -279,6 +283,9 @@ class ProjectPageTests:
         self._project_ui_test()
         self._project_upload_test()
         self._project_validate_test()
+        self._project_download_test()
+        self._project_statistics_test()
+        self._project_editing_test()
 
     @ensure_login
     def _project_ui_test(self):
@@ -340,7 +347,6 @@ class ProjectPageTests:
     @ensure_login
     def _project_validate_test(self):
         switch_to_view(self.driver, 'validate data')
-
         WebDriverWait(self.driver, timeout=3).until(
             lambda d: d.find_element(By.CLASS_NAME, value='iss__validation')
         )
@@ -349,37 +355,188 @@ class ProjectPageTests:
         self.driver.find_element(By.CLASS_NAME, value='iss__fileswiper')
         self.driver.find_element(By.CLASS_NAME, value='iss__fileInfo')
 
-        cards = self.driver.find_elements(By.CLASS_NAME, value='iss__fileCard')
-        if cards:
-            try:
-              cardOne, cardTwo, *_ = cards
-            except ValueError:
-                cardOne, *_ = cards
-                cardTwo = None
+        cards = self.driver.find_elements(By.CLASS_NAME, value='iss__fileCard')[:2]
+        cards.extend([
+            type(
+                'fakeCard',
+                (object, ),
+                {'get_dom_attribute': lambda x: x,'click': lambda _: ..., 'fake': True}
+            )
+            for _ in range(2 - len(cards))
+        ])
 
-            self.assertIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+        self.assertNotEqual(cards[0].__class__, 'fakeCard')
 
-            if cardTwo:
-                cardTwo.click()
-                self.assertNotIn('card--active', cardOne.get_dom_attribute('class').split(' '))
-                self.assertIn('card--active', cardTwo.get_dom_attribute('class').split(' '))
+        self.__project_validate_filecards_test(cards)
+        self.__project_validate_media_test(cards)
+        self.__project_validate_fileinfo_test(cards)
 
-            cardOne.click()
+    @ensure_login
+    def _project_download_test(self): ...
 
-            # self.driver.find_element(By.CLASS_NAME, value=(
-            #     'button--accept'
-            #     if len(set(cardOne.get_dom_attribute('class').split(' ')) - {'card--accepted'}) > 1
-            #     else 'button--reject'
-            # )).click()
+    @ensure_login
+    def _project_statistics_test(self): ...
 
-            # cardOne.click()
+    @ensure_login
+    def _project_editing_test(self): ...
 
-            # WebDriverWait(self.driver, timeout=3).until(
-            #     lambda d: 3 == self.driver \
-            #         .find_elements(By.CLASS_NAME, value='iss__fileCard')[1] \
-            #         .get_dom_attribute('class').split(' ') \
-            #         .__len__()
-            # )
+    def __project_validate_filecards_test(self, cards):
+        cardOne, cardTwo = cards
+
+        self.assertIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+
+        ActionChains(self.driver).key_down(Keys.ARROW_RIGHT).perform()
+        (
+            self.assertIn if cardTwo.__class__ == 'fakeCard'
+            else self.assertNotIn
+        )('card--active', cardOne.get_dom_attribute('class').split(' '))
+        (
+            self.assertNotIn if cardTwo.__class__ == 'fakeCard'
+            else self.assertIn
+        )('card--active', cardTwo.get_dom_attribute('class').split(' '), 'a')
+
+        ActionChains(self.driver).key_down(Keys.ARROW_LEFT).perform()
+        (
+            self.assertIn if not cardTwo.__class__ == 'fakeCard'
+            else self.assertNotIn
+        )('card--active', cardOne.get_dom_attribute('class').split(' '))
+        (
+            self.assertNotIn if not cardTwo.__class__ == 'fakeCard'
+            else self.assertIn
+        )('card--active', cardTwo.get_dom_attribute('class').split(' '))
+
+        # if cardTwo.__class__ != 'fakeCard':
+        #     cardTwo.click()
+        #     self.assertNotIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+        #     self.assertIn('card--active', cardTwo.get_dom_attribute('class').split(' '))
+
+    def __project_validate_media_test(self, cards):
+        cardOne, cardTwo = cards
+
+        self.assertEqual(
+            self.driver \
+                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls') \
+                .value_of_css_property('transform'),
+            'matrix(1, 0, 0, 1, -95.5, 57)'
+        )
+
+        media = self.driver \
+            .find_element(By.CLASS_NAME, value='zoomWrap') \
+            .find_element(By.TAG_NAME, value='div')
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(0px, 0px) scale(1);'
+        )
+
+        ActionChains(self.driver).move_to_element(media).pause(1).perform()
+        self.assertEqual(
+            self.driver \
+                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls') \
+                .value_of_css_property('transform'),
+            'matrix(1, 0, 0, 1, -95.5, -11.4)'
+        )
+        ActionChains(self.driver) \
+            .click_and_hold(media) \
+            .move_by_offset(10, 10) \
+            .perform()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(10px, 10px) scale(1);'
+        )
+        # TODO: doesnt work as expected following
+        ActionChains(self.driver) \
+            .scroll_from_origin(ScrollOrigin.from_element(media), 0, 0) \
+            .perform()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(28.0952px, 31.4762px) scale(0.952381);'
+        )
+        ActionChains(self.driver).key_down('x').perform()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(0px, 0px) scale(1);'
+        )
+        ActionChains(self.driver) \
+            .click_and_hold(media) \
+            .move_by_offset(20, 40) \
+            .perform()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(20px, 40px) scale(1);'
+        )
+        self.driver.find_element(By.CLASS_NAME, value='slide-res').click()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(0px, 0px) scale(1);'
+        )
+
+        self.assertIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+        self.assertNotIn('card--active', cardTwo.get_dom_attribute('class').split(' '))
+
+        ActionChains(self.driver) \
+            .click_and_hold(media) \
+            .move_by_offset(20, 40) \
+            .perform()
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(20px, 40px) scale(1);'
+        )
+        self.driver.find_element(By.CLASS_NAME, value='slide-inc').click()
+        self.assertNotIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+        self.assertIn('card--active', cardTwo.get_dom_attribute('class').split(' '))
+        self.assertEqual(
+            media.get_dom_attribute('style'),
+            'transform: translate(0px, 0px) scale(1);'
+        )
+        self.driver.find_element(By.CLASS_NAME, value='slide-dec').click()
+        self.assertIn('card--active', cardOne.get_dom_attribute('class').split(' '))
+        self.assertNotIn('card--active', cardTwo.get_dom_attribute('class').split(' '))
+
+        ActionBuilder(self.driver).clear_actions()
+
+    def __project_validate_fileinfo_test(self, cards):
+        cardOne, cardTwo = cards
+
+        self.driver.find_element(By.CLASS_NAME, value='style--min')
+        self.assertEqual(
+            self.driver \
+                .find_element(By.CLASS_NAME, value='iss__fileInfo__buttonsWrap') \
+                .find_elements(By.TAG_NAME, value='button') \
+                .__len__(),
+            2
+        )
+        self.assertEqual(
+            len(self.driver.find_elements(By.CLASS_NAME, value='iss__selectGroup__selectWrapper')),
+            1
+        )
+        self.driver.find_element(By.CLASS_NAME, value='add--group').click()
+        self.assertEqual(
+            len(self.driver.find_elements(By.CLASS_NAME, value='iss__selectGroup__selectWrapper')),
+            2
+        )
+        self.driver \
+            .find_elements(By.CLASS_NAME, value='iss__selectGroup__selectWrapper')[-1] \
+            .find_element(By.CLASS_NAME, value='del--group') \
+            .click()
+        self.assertEqual(
+            len(self.driver.find_elements(By.CLASS_NAME, value='iss__selectGroup__selectWrapper')),
+            1
+        )
+
+        # self.driver.find_element(By.CLASS_NAME, value=(
+        #     'button--accept'
+        #     if len(set(cardOne.get_dom_attribute('class').split(' ')) - {'card--accepted'}) > 1
+        #     else 'button--reject'
+        # )).click()
+
+        # cardOne.click()
+
+        # WebDriverWait(self.driver, timeout=3).until(
+        #     lambda d: 3 == self.driver \
+        #         .find_elements(By.CLASS_NAME, value='iss__fileCard')[1] \
+        #         .get_dom_attribute('class').split(' ') \
+        #         .__len__()
+        # )
 
 
 class BlankPageTests:
