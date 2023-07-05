@@ -8,6 +8,7 @@ from .services import (
     check_attribute_delete
   )
 
+
 class LevelsViewSet(APIView):
     http_method_names = ['get', 'delete']
 

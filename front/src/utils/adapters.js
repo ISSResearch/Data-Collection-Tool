@@ -68,3 +68,41 @@ export function statsAdapter(data) {
 
   return Object.values(preparedData).filter(({parent}) => !parent);
 }
+
+export function fullStatsAdapter(data) {
+  const gatheredData = data.reduce((acc, item) => {
+    const {
+      id,
+      name,
+      attribute__id: attr_id,
+      attribute__name: attr_name,
+      attribute__attributegroup__file__file_type: type,
+      attribute__attributegroup__file__status: status,
+      count
+    } = item;
+    const newEntry = { attr_id, attr_name, type: type || 'notype', status: status || 'v', count };
+    if (id in acc) {
+      acc[id].data.push(newEntry);
+      return acc;
+    }
+    return { ...acc, [id]: { name, data: [newEntry] } };
+  }, {});
+
+
+  // const preparedData = Object.values(gatheredData).reduce((acc, {name, data}) => {
+  //   console.log(name, !(name in acc))
+  //   if (!(name in acc)) return { ...acc, [name]: {} };
+  //   const target = acc[name];
+  //   const { attr_id: id, attr_name, type, status, count } = data;
+  //   if (id in target) {
+  //     target[id].data[status] = { ...target[id].data[status], [type]: count }
+  //   }
+  //   else {
+  //     target[id] = { name: attr_name, data: { v: {}, a: {}, d: {}} }
+  //   }
+  //   return acc;
+  // }, {});
+
+  // console.log(preparedData)
+  return Object.values(gatheredData);
+}

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { statsAdapter } from '../../utils/adapters';
+import { Fragment, useEffect, useState } from 'react';
+import { fullStatsAdapter, statsAdapter } from '../../utils/adapters';
 import TableBodySet from './TableBodySet';
 import Load from './Load';
 import axios from 'axios';
@@ -7,6 +7,8 @@ import '../../styles/components/filesstats.css';
 
 export default function FilesStatistics({pathID}) {
   const [stats, setStats] = useState(null);
+
+  const [rawData, setRawData] = useState(false);
 
   const countItem = (a, b, c) => {
     const acc = (a?.image || 0) + (a?.video || 0);
@@ -16,28 +18,59 @@ export default function FilesStatistics({pathID}) {
   };
 
   const countStatus = (status) => {
-    return Object.values(stats).reduce((sum, item) => sum + countItem(item[status]), 0);
+    return Object.values(stats.stats).reduce((sum, item) => sum + countItem(item[status]), 0);
   };
 
   const countTotal = () => {
-    return Object.values(stats).reduce((sum, {a, d, v}) => sum + countItem(a, d, v), 0);
+    return Object.values(stats.stats).reduce((sum, {a, d, v}) => sum + countItem(a, d, v), 0);
   };
 
   useEffect(() => {
     axios.get(`/api/files/stats/project/${pathID}/`)
       .then(({ data }) => {
-        const prepared = statsAdapter(data)
+        const { stats, full_stats} = data;
+        const prepared = {
+          stats: statsAdapter(stats),
+          fullStats: fullStatsAdapter(full_stats)
+        }
         setStats(prepared);
       })
       .catch(err => {
         alert(err.message);
-        setStats([]);
+        setStats({});
       });
   }, [pathID]);
 
   if (!stats) return <div className='iss__stats__load'><Load /></div>
 
+  const typeMap = {
+    v: 'on validation',
+    a: 'accepted',
+    d: 'declined'
+  }
+  if (rawData) return (
+    <>
+    <button className='iss_button_temp' onClick={() => setRawData(!rawData)}>{rawData ? 'get pretty data' : 'get raw data'}</button>
+    {
+      stats.fullStats.map(({name, data}, index) => (
+        <div className='iss_table_temp' key={name + index}>
+          <span>{name}:</span>
+          {
+            data.map(({attr_name, type, status, count}, index) => (
+              <ul key={attr_name + index}>
+                <li>{attr_name}: {type} <span>|</span> {typeMap[status]} <span>|</span> {count}</li>
+              </ul>
+            ))
+          }
+        </div>
+      ))
+    }
+    </>
+  );
+
   return (
+    <>
+    <button className='iss_button_temp' onClick={() => setRawData(!rawData)}>{rawData ? 'get pretty data' : 'get raw data'}</button>
     <table className='iss__stats__table'>
       <thead className='iss__stats__table-header'>
         <tr className='iss__stats__table-row'>
@@ -49,7 +82,7 @@ export default function FilesStatistics({pathID}) {
         </tr>
       </thead>
       <tbody className='iss__stats__table-body'>
-        <TableBodySet bodySet={stats} countCallback={countItem} parent/>
+        <TableBodySet bodySet={stats.stats} countCallback={countItem} parent/>
       </tbody>
       <tfoot className='iss__stats__table-footer'>
         <tr className='iss__stats__table-row'>
@@ -61,5 +94,6 @@ export default function FilesStatistics({pathID}) {
         </tr>
       </tfoot>
     </table>
+  </>
   )
 }

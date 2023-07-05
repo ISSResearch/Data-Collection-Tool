@@ -4,7 +4,7 @@ from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import File, FileSerializer, FilesSerializer
-from attribute.models import AttributeGroup
+from attribute.models import AttributeGroup, Level
 from .services import FileUploader, prepare_zip_data, upload_chunk
 from os import remove
 from time import time
@@ -89,7 +89,20 @@ def get_stats(_, projectID):
       ) \
       .annotate(count=Count('file__file_type'))
 
-    return Response(stats, status=status.HTTP_200_OK)
+    full_stats = Level.objects \
+        .filter(project_id=projectID) \
+        .order_by('order', 'id') \
+        .values(
+            'id',
+            'name',
+            'attribute__id',
+            'attribute__name',
+            'attribute__attributegroup__file__file_type',
+            'attribute__attributegroup__file__status'
+          ) \
+          .annotate(count=Count('attribute__attributegroup__file__file_type'))
+
+    return Response({'stats': stats, 'full_stats': full_stats}, status=status.HTTP_200_OK)
 
 
 @api_view(('GET',))
@@ -124,3 +137,4 @@ def download_project_data(request, projectID):
 def upload_file_chunk(request, fileID):
     response, response_status = upload_chunk(request, fileID)
     return Response(response, status=response_status)
+

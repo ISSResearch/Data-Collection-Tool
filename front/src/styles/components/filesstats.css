@@ -30,3 +30,32 @@
 .iss__stats__table-footer td:last-child {
   text-align: center;
 }
+
+
+
+.iss_table_temp {
+  margin-top: 20px;
+}
+.iss_table_temp>span {
+  color: var(--issBrand);
+  font-weight: 600;
+}
+.iss_table_temp>ul {
+  padding-left: 20px;
+  list-style: none;
+}
+.iss_table_temp>ul>li {
+  display: flex;
+  flex-grow: 1;
+  gap: 8px;
+}
+.iss_table_temp>ul>li>span {
+  color: var(--issBrand);
+}
+
+
+.iss_button_temp {
+  width: fit-content;
+  margin-bottom: 20px;
+  padding: 4px 8px;
+}
