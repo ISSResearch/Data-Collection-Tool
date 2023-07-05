@@ -61,3 +61,7 @@
   font-size: 12px;
   transform: translateY(-50%);
 }
+.iss__stats__table__name {
+  word-break: break-all;
+  white-space: break-spaces;
+}
