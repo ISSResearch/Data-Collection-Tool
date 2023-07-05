@@ -1,8 +1,19 @@
-.iss__stats__table-row td  {
+.iss__stats__table-row>td  {
   border: 1px solid var(--issBrand);
   padding: 4px;
+  cursor: pointer;
 }
-.iss__stats__table-row td>div  {
+.iss__stats__table-row:hover {
+  background-color: var(--issBrand) !important;
+}
+.iss__stats__table-row:hover .iss__stats__table__levelName {
+  color: white;
+}
+.iss__stats__table-row:hover .icon--flip {
+  stroke: white;
+  fill: white;
+}
+.iss__stats__table-row>td>div  {
   display: flex;
   justify-content: space-evenly;
 }
@@ -18,11 +29,35 @@
 .row-cnt {
   font-size: 12px;
   text-align: center;
-  background-color: rgb(216, 234, 255, 0.1);
-}
-.child-row {
   background-color: rgb(216, 234, 255, 0.2);
 }
 .child-row>td {
   border: none;
+}
+.iss__stats__table--name {
+  position: relative;
+}
+.iss__stats__table--icon {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  margin-right: 8px;
+  width: 12px;
+  height: 6px;
+  transform: translateY(-50%);
+}
+.icon--flip {
+  top: initial;
+  bottom: 50%;
+  rotate: 180deg;
+  stroke: var(--issBrand);
+  fill: var(--issBrand);
+}
+.iss__stats__table__levelName {
+  opacity: 0.3;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  font-size: 12px;
+  transform: translateY(-50%);
 }

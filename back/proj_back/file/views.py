@@ -75,34 +75,20 @@ class FilesViewSet(APIView):
 
 @api_view(('GET',))
 def get_stats(_, projectID):
-    stats = AttributeGroup.objects \
-      .prefetch_related('attribute') \
-      .select_related('file') \
-      .filter(file__project_id=projectID) \
-      .order_by('attribute__id') \
-      .values(
-          'attribute__id',
-          'attribute__name',
-          'attribute__parent',
-          'file__status',
-          'file__file_type'
-      ) \
-      .annotate(count=Count('file__file_type'))
-
-    full_stats = Level.objects \
+    stats = Level.objects \
         .filter(project_id=projectID) \
         .order_by('order', 'id') \
         .values(
-            'id',
             'name',
             'attribute__id',
             'attribute__name',
+            'attribute__parent',
             'attribute__attributegroup__file__file_type',
             'attribute__attributegroup__file__status'
           ) \
           .annotate(count=Count('attribute__attributegroup__file__file_type'))
 
-    return Response({'stats': stats, 'full_stats': full_stats}, status=status.HTTP_200_OK)
+    return Response(stats, status=status.HTTP_200_OK)
 
 
 @api_view(('GET',))

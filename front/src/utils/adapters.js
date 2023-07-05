@@ -25,84 +25,35 @@ export function attributeGroupsAdapter(data) {
       }, {})
     };
   }, {});
-
-  // return data.reduce((acc, {uid, attributes}) => {
-  //   return {
-  //     ...acc,
-  //     [uid]: attributes.reduce((newacc, [id, parent, level]) => {
-  //       const isNew = newacc.length && newacc[newacc.length-1][0].level === level
-  //         ? level
-  //         : parent;
-  //       if (isNew === null || !newacc.length) newacc.push([{ id, level }]);
-  //       else newacc[newacc.length-1].push({ id, level });
-  //       return newacc;
-  //     }, []).reduce((a, b) => [...a, b.map(({ id }) => id)], [])
-  //   };
-  // }, {});
 }
 
 export function statsAdapter(data) {
-  const preparedData = deepCopy(data).reduce((acc, item) => {
-    const target = acc[item.attribute__name || 'atr not set'];
-    if (!target) {
-      acc[item.attribute__name || 'atr not set'] = {
-        id: item.attribute__id || 'no_atr_id',
-        name: item.attribute__name || 'atr not set',
-        parent: item.attribute__parent,
-        [item.file__status || 'v']: { [item.file__file_type]: item.count }
-      };
-    }
-    else if ((target[item.file__status || 'v'])) {
-      target[item.file__status || 'v'][item.file__file_type] = item.count
-    }
-    else target[item.file__status] = { [item.file__file_type]: item.count };
-    return acc;
-  }, {});
-
-  Object.values(preparedData).forEach(el => {
-    const parent = Object.values(preparedData).find(({ id }) => {
-      return el.parent  === id;
-    });
-    if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
-  });
-
-  return Object.values(preparedData).filter(({parent}) => !parent);
-}
-
-export function fullStatsAdapter(data) {
-  const gatheredData = data.reduce((acc, item) => {
-    const {
-      id,
-      name,
-      attribute__id: attr_id,
-      attribute__name: attr_name,
+  const preparedData = data.reduce((acc, item) => {
+    let {
+      name: levelName,
+      attribute__id: id,
+      attribute__name: name,
+      attribute__parent: parent,
       attribute__attributegroup__file__file_type: type,
       attribute__attributegroup__file__status: status,
       count
     } = item;
-    const newEntry = { attr_id, attr_name, type: type || 'notype', status: status || 'v', count };
-    if (id in acc) {
-      acc[id].data.push(newEntry);
-      return acc;
-    }
-    return { ...acc, [id]: { name, data: [newEntry] } };
+    status = status || 'v';
+    name = name || 'no name';
+    type = type || 'no data';
+    const target = acc[id];
+    if (!target) acc[id] = { id, levelName, name, parent, [status]: { [type]: count } };
+    else if (target[status]) target[status][type] = count;
+    else target[status] = { [type]: count };
+    return acc;
   }, {});
 
+  Object.values(preparedData).forEach(el => {
+    const parent = Object.values(preparedData).find(({ id }) => el.parent === id);
+    if (parent) parent.children
+      ? parent.children.push(el)
+      : parent.children = [el];
+  });
 
-  // const preparedData = Object.values(gatheredData).reduce((acc, {name, data}) => {
-  //   console.log(name, !(name in acc))
-  //   if (!(name in acc)) return { ...acc, [name]: {} };
-  //   const target = acc[name];
-  //   const { attr_id: id, attr_name, type, status, count } = data;
-  //   if (id in target) {
-  //     target[id].data[status] = { ...target[id].data[status], [type]: count }
-  //   }
-  //   else {
-  //     target[id] = { name: attr_name, data: { v: {}, a: {}, d: {}} }
-  //   }
-  //   return acc;
-  // }, {});
-
-  // console.log(preparedData)
-  return Object.values(gatheredData);
+  return Object.values(preparedData).filter(({parent}) => !parent);
 }
