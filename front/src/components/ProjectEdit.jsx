@@ -14,7 +14,7 @@ export default function ProjectEdit({
 }) {
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
-  const [deleteNameForm, SetDeleteNameForm] = useState('');
+  const [deleteNameForm, setDeleteNameForm] = useState('');
 
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
@@ -76,7 +76,11 @@ export default function ProjectEdit({
   }
 
   function deleteProject() {
-    if (deleteNameForm !== projectName) return alert('Entered name differs from the actual Project name.')
+    if (deleteNameForm !== projectName) {
+      alert('Entered name differs from the actual Project name.');
+      setDeleteAccept(false);
+      return;
+    }
     axios.request(`/api/projects/${pathID}/`,
       {
         method: 'delete',
@@ -100,7 +104,7 @@ export default function ProjectEdit({
             <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
             <input
               placeholder='Exact Project name'
-              onChange={({target}) => SetDeleteNameForm(target.value)}
+              onChange={({target}) => setDeleteNameForm(target.value)}
               className='iss__projectEdit__delete__input'
             />
             <button

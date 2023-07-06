@@ -280,6 +280,12 @@ class ProjectPageTests:
 
         if not self.test_project: get_project(self)
 
+        self.driver.get(self.test_project['link'])
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1').text == self.test_project['name']
+        )
+
         self._project_ui_test()
         self._project_upload_test()
         self._project_validate_test()
@@ -289,12 +295,6 @@ class ProjectPageTests:
 
     @ensure_login
     def _project_ui_test(self):
-        self.driver.get(self.test_project['link'])
-
-        WebDriverWait(self.driver, timeout=3).until(
-            lambda d: d.find_element(By.TAG_NAME, value='h1').text == self.test_project['name']
-        )
-
         self.driver.find_element(By.CLASS_NAME, value='iss__projectPage__button')
 
         self.assertEqual(
@@ -372,13 +372,78 @@ class ProjectPageTests:
         self.__project_validate_fileinfo_test(cards)
 
     @ensure_login
-    def _project_download_test(self): ...
+    def _project_download_test(self):
+        self.driver.refresh()
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1').text == self.test_project['name']
+        )
+
+        switch_to_view(self.driver, 'download data')
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.CLASS_NAME, value='iss__filesDownload')
+        )
+        optionCases = (
+            ('option--all', 'all files'),
+            ('option--validation', 'on validation'),
+            ('option--accepted', 'accepted files'),
+            ('option--declined', 'declined files')
+        )
+        selector = self.driver.find_element(By.CLASS_NAME, value='iss__filesDownload__selector')
+        selected = self.driver.find_element(By.CLASS_NAME, value='iss__filesDownload__selected')
+        options = self.driver.find_element(By.CLASS_NAME, value='iss__filesDownload__options__wrap')
+
+        for _class, text in optionCases:
+            selector.click()
+            self.assertEqual(
+                options.get_dom_attribute('class'),
+                'iss__filesDownload__options__wrap options--open'
+            )
+            self.driver.find_element(By.CLASS_NAME, value=_class).click()
+            self.assertEqual(selected.text, text)
+            self.assertNotEqual(
+                options.get_dom_attribute('class'),
+                'iss__filesDownload__options__wrap options--open'
+            )
 
     @ensure_login
-    def _project_statistics_test(self): ...
+    def _project_statistics_test(self):
+        switch_to_view(self.driver, 'statistics')
 
     @ensure_login
-    def _project_editing_test(self): ...
+    def _project_editing_test(self):
+        self.driver.refresh()
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1').text == self.test_project['name']
+        )
+        switch_to_view(self.driver, 'editing')
+
+        self.driver.find_element(By.CLASS_NAME, value='iss__projectEdit__form')
+        self.assertFalse(self.driver.find_elements(By.TAG_NAME, value='p'))
+
+        self.assertFalse(self.driver.find_elements(By.CLASS_NAME, value='iss__projectEdit__deleteProceed'))
+        self.driver.find_element(By.CLASS_NAME, value='iss__projectEdit__deleteButton').click()
+        self.driver \
+            .find_element(By.CLASS_NAME, value='iss__projectEdit__deleteProceed') \
+            .find_element(By.TAG_NAME, value='input').send_keys(self.test_project['name'] + 'zxc123')
+        self.driver.find_element(By.CLASS_NAME, value='iss__projectEdit__delete--yes').click()
+        self.assertEqual(self.driver.switch_to.alert.text, 'Entered name differs from the actual Project name.')
+        self.driver.switch_to.alert.dismiss()
+        self.assertFalse(self.driver.find_elements(By.CLASS_NAME, value='iss__projectEdit__deleteProceed'))
+        self.driver.find_element(By.CLASS_NAME, value='iss__projectEdit__deleteButton')
+
+        new_attribute_forms, _  = self.driver.find_elements(By.CLASS_NAME, value='iss__attributecreator')
+        self.assertFalse(
+            new_attribute_forms.find_elements(By.CLASS_NAME, value='iss__attributesForm')
+        )
+        new_attribute_forms \
+            .find_element(By.CLASS_NAME, value='iss__attributecreator__addButton') \
+            .click()
+        self.assertEqual(
+            new_attribute_forms \
+                .find_elements(By.CLASS_NAME, value='iss__attributesForm') \
+                .__len__(),
+            1
+        )
 
     def __project_validate_filecards_test(self, cards):
         cardOne, cardTwo = cards
@@ -532,7 +597,7 @@ class ProjectPageTests:
         # cardOne.click()
 
         # WebDriverWait(self.driver, timeout=3).until(
-        #     lambda d: 3 == self.driver \
+        #     lambda d: 3 == d \
         #         .find_elements(By.CLASS_NAME, value='iss__fileCard')[1] \
         #         .get_dom_attribute('class').split(' ') \
         #         .__len__()
