@@ -7,7 +7,8 @@ import {
   mock_raw_project,
   mock_prepared_attributes,
   mock_raw_file_attributes,
-  mock_raw_stats
+  mock_raw_stats,
+  mock_prepared_stats
 } from '../_mock';
 
 test("attribute adapter test", () => {
@@ -24,39 +25,5 @@ test("attribute groups adapter test", () => {
 
 test("stats adapter test", () => {
   const preparedStats = statsAdapter(mock_raw_stats);
-  expect(preparedStats).toEqual([
-    {
-      "id": 246,
-      "name":
-      "ford",
-      "parent": null,
-      "v": {"image": 10, "video": 1},
-      "d": {"image": 1, "video": 1}
-    },
-    {
-      "id": 249,
-      "name": "honda",
-      "parent": null,
-      "v": {"image": 1},
-      "d": {"image": 1},
-      "children": [
-        {
-          "id": 259,
-          "name": "civ",
-          "parent": 249,
-          "d": {"image": 1},
-          "children": [
-            {
-              "id": 260,
-              "name": "genc1",
-              "parent": 259,
-              "d": {"image": 1}
-            }
-          ]
-        }
-      ]
-    },
-    {"id": 271, "name": "front", "parent": null, "d": {"image": 1}}
-  ])
+  expect(preparedStats).toEqual(mock_prepared_stats);
 });
-

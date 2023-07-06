@@ -109,9 +109,16 @@ class ProjectStatsTest(TestCase):
         self.assertTrue(len(request.data) == 1)
         self.assertEqual(
             {key for key in request.data[0]},
-            {'attribute__id', 'attribute__name', 'attribute__parent', 'count', 'file__file_type', 'file__status'}
+            {'attribute__id', 'name', 'attribute__attributegroup__file__file_type', 'attribute__attributegroup__file__status' ,'attribute__name', 'attribute__parent', 'count'}
         )
         self.assertEqual(
             {val for val in request.data[0].values()},
-            {self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status}
+            {self.case.level.name, self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status},
+            {val for val in request.data[0].items()}
         )
+
+    def test_get_unexisted_project_stats(self):
+        self.client.force_login(self.user)
+        request = self.client.get(f'/api/files/stats/project/asd/')
+
+        self.assertTrue(request.status_code == 404)

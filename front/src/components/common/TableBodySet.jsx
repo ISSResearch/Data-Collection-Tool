@@ -36,6 +36,7 @@ export default function TableBodySet({ bodySet, countCallback, parent, depth }) 
               {
                 children &&
                 <svg
+                  data-testid='table-row-icon'
                   viewBox="0 0 14 8"
                   className={`iss__stats__table--icon${childWrap.includes(index) ? ' icon--flip' : ''}`}
                 >
