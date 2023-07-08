@@ -408,6 +408,11 @@ class ProjectPageTests:
     @ensure_login
     def _project_statistics_test(self):
         switch_to_view(self.driver, 'statistics')
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.CLASS_NAME, value='iss__stats__table')
+        )
+
+        rows = self.driver.find_elements(By.CLASS_NAME, value='iss__stats__table-row')
 
     @ensure_login
     def _project_editing_test(self):

@@ -1,7 +1,9 @@
+version: "3.8"
+
 services:
   iss_test_db:
     container_name: iss_test_db
-    image: postgres
+    image: postgres:15.3-alpine3.18
     restart: always
     environment:
       POSTGRES_DB: iss_test_app_db
