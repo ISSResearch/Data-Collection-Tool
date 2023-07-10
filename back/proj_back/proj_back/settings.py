@@ -1,10 +1,16 @@
 from pathlib import Path
+from os import getenv
+
+DB_HOST = getenv('DB_HOST')
+DB_NAME = getenv('DB_NAME')
+
+DEBUG = bool(getenv('DEBUG'))
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-%o*gv0gtraw6@&@_a*c)$x%wuy8w55a2n3x^c2%0$9wm+0q8ot'
 
-DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 USE_X_FORWARDED_HOST = True
@@ -70,10 +76,10 @@ WSGI_APPLICATION = 'proj_back.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iss_app_db',
+        'NAME': DB_NAME,
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': 'iss_db',
+        'HOST': DB_HOST,
         'PORT': '5432',
     }
 }

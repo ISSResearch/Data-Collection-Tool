@@ -18,6 +18,10 @@ services:
     image: iss_back
     build: ./back
     restart: always
+    environment:
+      DB_HOST: iss_db
+      DB_NAME: iss_app_db
+      DEBUG: true
     depends_on:
       - iss_db
     volumes:

@@ -11,8 +11,8 @@ services:
     networks:
       - iss_test_network
 
-  iss_back:
-    container_name: iss_back
+  iss_test_back:
+    container_name: iss_test_back
     image: iss_back
     build: ./back
     restart: always
@@ -23,27 +23,31 @@ services:
     environment:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_PASSWORD: admin
+      DB_HOST: iss_test_db
+      DB_NAME: iss_test_app_db
+      DEBUG: true
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
              python manage.py makemigrations attribute &&
              python manage.py makemigrations file &&
              python manage.py migrate &&
-             python manage.py createsuperuser --noinput &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
     networks:
       - iss_test_network
 
-  iss_front:
-    container_name: iss_front
+  iss_test_front:
+    container_name: iss_test_front
     image: iss_front
     build: ./front
     restart: always
     depends_on:
-      - iss_back
+      - iss_test_back
     volumes:
       - ./front/src:/app/src
       - ./front/public:/app/public
+    ports:
+      - 3000:3000
     command: npm start
     networks:
       - iss_test_network
@@ -52,7 +56,7 @@ services:
     container_name: iss_selenium_hub
     image: selenium/hub
     depends_on:
-      - iss_front
+      - iss_test_front
     ports:
       - 4444:4444
     networks:
