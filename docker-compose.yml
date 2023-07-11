@@ -49,8 +49,6 @@ services:
       - ./front/src:/app/src
       - ./front/public:/app/public
     command: npm start
-    ports:
-      - 3001:3001
     networks:
       - iss_network
 

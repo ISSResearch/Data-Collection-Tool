@@ -8,8 +8,6 @@ import '../../styles/components/filesstats.css';
 export default function FilesStatistics({pathID}) {
   const [stats, setStats] = useState(null);
 
-  const [s2, ss2] = useState(false);
-
   const countItem = (a, b, c) => {
     const acc = (a?.image || 0) + (a?.video || 0);
     const dec = (b?.image || 0) + (b?.video || 0);
