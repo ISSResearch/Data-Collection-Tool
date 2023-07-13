@@ -7,13 +7,16 @@ load_dotenv()
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
+TEST_ENV = getenv('CONTAINER') == 'test'
+
 DEBUG = getenv('DEBUG') == 'true'
 
-SELF_ORIGIN = getenv('SERVER_ORIGINS', 'http://localhost, http://127.0.0.1')
-SELF_ORIGIN = [
-    f"{origin}:{getenv('FRONTEND_EXT_PORT', 3000)}" for origin
-    in SELF_ORIGIN.replace(' ', '').split(',')
-]
+SELF_ORIGIN = (TEST_ENV and 'http://127.0.0.1,http://localhost') or getenv('SERVER_ORIGINS')
+if SELF_ORIGIN:
+    SELF_ORIGIN = [
+      f"{origin}:{getenv('FRONTEND_EXT_PORT', 3000)}" for origin
+      in SELF_ORIGIN.replace(' ', '').split(',')
+  ]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,11 +26,13 @@ ALLOWED_HOSTS = ('*',)
 
 USE_X_FORWARDED_HOST = True
 
+CORS_ALLOW_CREDENTIALS = TEST_ENV
+
 CORS_ALLOW_ALL_ORIGINS = False
 
-CSRF_TRUSTED_ORIGINS = SELF_ORIGIN
+CSRF_TRUSTED_ORIGINS = ()
 
-CORS_ALLOWED_ORIGINS = ()
+CORS_ALLOWED_ORIGINS = SELF_ORIGIN or ()
 
 CORS_ALLOW_METHODS = (
     "OPTIONS",

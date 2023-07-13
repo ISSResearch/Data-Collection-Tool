@@ -25,16 +25,18 @@ services:
       DJANGO_SUPERUSER_PASSWORD: admin
       DB_HOST: iss_test_db
       DB_NAME: iss_test_app_db
-      FRONTEND_EXT_PORT: 8888
+      CONTAINER: test
+      FRONTEND_EXT_PORT: 3333
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
              python manage.py makemigrations attribute &&
              python manage.py makemigrations file &&
              python manage.py migrate &&
+             python manage.py createsuperuser --email=admin@example.ex --noinput &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
     ports:
-      - 8888:3000
+      - 8888:8000
     networks:
       - iss_test_network
 
@@ -48,6 +50,8 @@ services:
     volumes:
       - ./front/src:/app/src
       - ./front/public:/app/public
+    environment:
+      BACKEND_EXT_PORT: 8888
     ports:
       - 3333:3000
     command: npm start
