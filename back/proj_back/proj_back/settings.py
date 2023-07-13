@@ -7,12 +7,13 @@ load_dotenv()
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
-DEBUG = bool(getenv('DEBUG'))
+DEBUG = getenv('DEBUG') == 'true'
 
-SELF_ORIGIN = getenv(
-    'ISS_DOMAINS',
-    ('http://localhost:3000', 'http://127.0.0.1:3000')
-)
+SELF_ORIGIN = getenv('SERVER_ORIGINS', 'http://localhost, http://127.0.0.1')
+SELF_ORIGIN = [
+    f"{origin}:{getenv('FRONTEND_EXT_PORT', 3000)}" for origin
+    in SELF_ORIGIN.replace(' ', '').split(',')
+]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

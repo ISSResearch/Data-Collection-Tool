@@ -21,7 +21,7 @@ services:
     environment:
       DB_HOST: iss_db
       DB_NAME: iss_app_db
-      DEBUG: true
+      FRONTEND_EXT_PORT: 3000
     depends_on:
       - iss_db
     volumes:
