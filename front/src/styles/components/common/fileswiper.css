@@ -4,7 +4,7 @@
   height: 600px;
   overflow-y: hidden;
 }
-.iss__fileswiper:hover .iss__fileswiper__controls {
+.iss__fileswiper .iss__fileswiper__controls {
   transform: translate(-50%, -20%);
   transition: transform 0.3s ease;
 }
@@ -27,40 +27,31 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
-  padding: 2px;
   outline: none;
+  padding: 0px;
+  background-color: white;
+  border-radius: 6px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  color: var(--issBrand);
 }
-.slider-button span{
-  display: block;
-  width: 20px;
-  position: absolute;
-  height: 4px;
+.slider-button>svg {
+  width: 18px;
+  height: 24px;
+  fill: var(--issBrand);
+  transition: fill 0.3s ease;
+}
+.slide-dec>svg {
+  rotate: 180deg;
 }
 .slide-res {
   width: fit-content;
   height: fit-content;
   padding: 4px 8px;
-  background-color: white;
-  color: var(--issBrand);
-  border-radius: 6px;
-  transition: color 0.3s ease, background-color 0.3s ease;
 }
-.slide-res:hover {
+.slider-button:hover {
   background-color: var(--issBrand);
   color: white;
 }
-.slide-dec span {
-  background-color: var(--issLightRed);
-}
-.slide-dec:hover span {
-  background-color: var(--issRed);
-}
-.slide-inc span{
-  background-color: var(--issLightGreen);
-}
-.slide-inc span:nth-child(1) {
-  rotate: 90deg;
-}
-.slide-inc:hover span {
-  background-color: var(--issGreen);
+.slider-button:hover svg {
+  fill: white;
 }
