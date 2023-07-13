@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Load from './common/Load';
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/components/filesdownload.css';
 
 export default function FilesDownload({ pathID, projectName }) {
@@ -22,7 +22,7 @@ export default function FilesDownload({ pathID, projectName }) {
 
   function downloadSelected() {
     setLoading(true);
-    axios.get(
+    api.get(
       `/api/files/download/project/${pathID}/?files=${option.value}`,
       { responseType: 'blob' }
     )

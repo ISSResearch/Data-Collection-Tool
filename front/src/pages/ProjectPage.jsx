@@ -9,7 +9,7 @@ import FilesStatistics from "../components/common/FilesStats";
 import TitleSwitch from "../components/common/TitleSwitch";
 import ProjectEdit from "../components/ProjectEdit";
 import Load from '../components/common/Load';
-import axios from "axios";
+import api from "../config/api";
 import '../styles/pages/project.css';
 
 export default function ProjectPage() {
@@ -31,7 +31,7 @@ export default function ProjectPage() {
 
   useEffect(() => {
     if (!projectID) return;
-    axios.get(`/api/projects/${projectID}/`)
+    api.get(`/api/projects/${projectID}/`)
       .then(({ data }) => {
         const preparedData = attributeAdapter(data);
         setProject(preparedData);

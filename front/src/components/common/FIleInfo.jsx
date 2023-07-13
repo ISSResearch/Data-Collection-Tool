@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useFile } from '../../hooks'
 import SelectGroup from './ui/SelectGroup';
-import axios from 'axios';
+import api from '../../config/api';
 import '../../styles/components/common/fileinfo.css';
 
 export default function FileInfo({ fileManager, sliderManager, attributes }) {
@@ -19,7 +19,7 @@ export default function FileInfo({ fileManager, sliderManager, attributes }) {
   }
 
   function fetchUpdateFile(status, newAttributes) {
-    axios.request(`/api/files/${file.id}/`,
+    api.request(`/api/files/${file.id}/`,
       {
         method: 'patch',
         data: { status, attribute: newAttributes },

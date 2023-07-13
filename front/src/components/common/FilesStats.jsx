@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { statsAdapter } from '../../utils/adapters';
 import TableBodySet from './TableBodySet';
 import Load from './Load';
-import axios from 'axios';
+import api from '../../config/api';
 import '../../styles/components/filesstats.css';
 
 export default function FilesStatistics({pathID}) {
@@ -24,7 +24,7 @@ export default function FilesStatistics({pathID}) {
   };
 
   useEffect(() => {
-    axios.get(`/api/files/stats/project/${pathID}/`)
+    api.get(`/api/files/stats/project/${pathID}/`)
       .then(({ data }) => setStats(statsAdapter(data)) )
       .catch(err => {
         alert(err.message);

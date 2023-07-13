@@ -1,3 +1,8 @@
+export function getOriginDomain() {
+  const { origin } = window.location;
+  return origin.split(':', 2).join(':');
+}
+
 export function deepCopy(obj) {
   if (typeof obj !== 'object' || obj === null) return obj;
   const res = Array.isArray(obj) ? [] : {};

@@ -4,7 +4,7 @@ import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileInfo from './common/FileInfo';
 import Load from './common/Load';
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/components/filesvalidate.css';
 
 export default function FilesValidate({pathID, attributes}) {
@@ -14,7 +14,7 @@ export default function FilesValidate({pathID, attributes}) {
 
   useEffect(() => {
     if (!pathID) return;
-    axios.get(`/api/files/project/${pathID}/`)
+    api.get(`/api/files/project/${pathID}/`)
       .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);

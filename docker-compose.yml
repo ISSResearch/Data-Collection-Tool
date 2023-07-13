@@ -59,6 +59,7 @@ services:
       - iss_front
     ports:
       - 3000:3000
+      - 8000:8000
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:

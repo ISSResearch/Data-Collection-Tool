@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../config/api';
 import '../../styles/components/common/attributeinput.css';
 
 export default function AttributeInput({
@@ -17,7 +17,7 @@ export default function AttributeInput({
 
   async function proceedOriginalAttributeDelete(path, id) {
     try {
-      await axios.request(`/api/attributes/attributes/${id}/`,
+      await api.request(`/api/attributes/attributes/${id}/`,
         {
           method: 'get',
           headers: { 'Content-Type': 'application/json' }

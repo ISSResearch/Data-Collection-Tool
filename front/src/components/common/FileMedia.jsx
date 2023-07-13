@@ -1,6 +1,7 @@
 import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import api from "../../config/api";
+import axios from "axios";
 import "../../styles/components/common/filemedia.css";
-
 
 export const FileMedia = forwardRef(({ files, slide }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
@@ -73,24 +74,25 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     if (!files[slide]) return;
     const { id, file_type } = files[slide];
     setTypeVideo(file_type === 'video');
-    const controller = new AbortController();
-    fetch(`/api/files/${id}/`, { signal: controller.signal })
+    const controller = axios.CancelToken.source();
+    api.request(`/api/files/${id}/`, {
+      method: 'get',
+      cancelToken: controller.token,
+      responseType: "blob"
+    })
       .then(response => {
         const { file_type, file_name } = files[slide];
         if (!file_type || !file_name) return response;
         const [_, extension] = file_name.split('.');
         const contentType = `${file_type}/${extension}`;
-        const headers = new Headers(response.headers);
-        headers.set('Content-Type', contentType);
-        return new Response(response.body, { headers });
+        return new Blob([response.data], { type: contentType });
       })
-      .then(response => response.blob())
       .then(blob => URL.createObjectURL(blob))
       .then(url => setFileUrl(url))
       .catch(err => console.error(err));
 
     return () => {
-      controller.abort();
+      controller.cancel();
       URL.revokeObjectURL(fileUrl);
     }
   }, [files, slide]);

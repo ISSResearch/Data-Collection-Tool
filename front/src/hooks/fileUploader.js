@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from 'axios';
+import api from '../config/api';
 
 export default function useFileUploader(projectID) {
   const [files, setFiles] = useState([]);
@@ -12,7 +12,7 @@ export default function useFileUploader(projectID) {
       const form = new FormData();
       const chunk = file.file.slice(i * chunkSize, chunkSize * (i + 1));
       form.append('chunk', chunk);
-      const data = await axios.request(`/api/files/upload/${id}/`, {
+      const data = await api.request(`/api/files/upload/${id}/`, {
         method: 'post',
         data: form,
         headers: {
@@ -28,7 +28,7 @@ export default function useFileUploader(projectID) {
   }
 
   async function createFiles(formData) {
-    return await axios.request(`/api/files/project/${project}/`, {
+    return await api.request(`/api/files/project/${project}/`, {
       method: 'post',
       data: formData,
       headers: {'Content-Type': 'multipart/form-data',}
@@ -36,9 +36,7 @@ export default function useFileUploader(projectID) {
   }
 
   async function deleteFile(fileId) {
-    await axios.request(`/api/files/${fileId}/`, {
-      method: 'delete',
-    })
+    await api.delete(`/api/files/${fileId}/`)
   }
 
   async function proceedUpload() {

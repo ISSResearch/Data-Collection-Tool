@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import Form from '../components/common/Form';
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/pages/login.css';
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
     event.preventDefault();
     setLoading(true);
     const [name, pass] = event.target;
-    axios.request('/api/users/login/',
+    api.request('/api/users/login/',
       {
         method: 'post',
         data: { username: name.value, password: pass.value },

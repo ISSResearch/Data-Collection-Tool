@@ -1,9 +1,9 @@
-from rest_framework.views import Response, APIView
+from rest_framework.views import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-from .serializers import CustomUser, UserSerializer
+from .serializers import UserSerializer
 from user.forms import CreateUserForm
 
 

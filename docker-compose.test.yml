@@ -33,6 +33,8 @@ services:
              python manage.py makemigrations file &&
              python manage.py migrate &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - 8888:3000
     networks:
       - iss_test_network
 
@@ -47,7 +49,7 @@ services:
       - ./front/src:/app/src
       - ./front/public:/app/public
     ports:
-      - 3000:3000
+      - 3333:3000
     command: npm start
     networks:
       - iss_test_network

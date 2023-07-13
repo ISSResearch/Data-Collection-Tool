@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AttributeInput from './AttributeInput';
-import axios from 'axios';
+import api from '../../config/api';
 import '../../styles/components/common/attributesform.css';
 
 export default function AttributesForm({
@@ -30,7 +30,7 @@ export default function AttributesForm({
 
   async function proceedOriginalLevelDelete (index, id) {
     try {
-      await axios.request(`/api/attributes/levels/${id}/`,
+      await api.request(`/api/attributes/levels/${id}/`,
         {
           method: 'get',
           headers: { 'Content-Type': 'application/json' }

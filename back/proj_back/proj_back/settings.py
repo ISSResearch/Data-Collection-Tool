@@ -1,30 +1,40 @@
 from pathlib import Path
 from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
 DEBUG = bool(getenv('DEBUG'))
 
+SELF_ORIGIN = getenv(
+    'ISS_DOMAINS',
+    ('http://localhost:3000', 'http://127.0.0.1:3000')
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-%o*gv0gtraw6@&@_a*c)$x%wuy8w55a2n3x^c2%0$9wm+0q8ot'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ('*',)
 
 USE_X_FORWARDED_HOST = True
 
 CORS_ALLOW_ALL_ORIGINS = False
 
-CSRF_TRUSTED_ORIGINS = ['http://iss_back:8000']
+CSRF_TRUSTED_ORIGINS = SELF_ORIGIN
 
-CORS_ORIGIN_WHITELIST = [
-#		'http://localhost:8000',
-#		'http://iss_back:8000',
-#		'http://localhost:3000',
-#		'http://127.0.01:3000'
-]
+CORS_ALLOWED_ORIGINS = ()
+
+CORS_ALLOW_METHODS = (
+    "OPTIONS",
+    "GET",
+    "POST",
+    "PATCH",
+    "DELETE",
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',

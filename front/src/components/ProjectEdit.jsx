@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/components/projectedit.css';
 
 export default function ProjectEdit({
@@ -41,10 +41,10 @@ export default function ProjectEdit({
   }
 
   async function performOriginalItemsDelete(idSet, endpoint) {
-    return axios.request(`/api/attributes/${endpoint}/`,
+    return api.request(`/api/attributes/${endpoint}/`,
         {
           method: 'delete',
-          data: {id_set: idSet},
+          data: { id_set: idSet },
           headers: { 'Content-Type': 'application/json' }
         }
       );
@@ -61,7 +61,7 @@ export default function ProjectEdit({
     if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');
     if (deleteLevels) await performOriginalItemsDelete(deleteLevels, 'levels');
 
-    axios.request(`/api/projects/${pathID}/`,
+    api.request(`/api/projects/${pathID}/`,
       {
         method: 'patch',
         data: formData,
@@ -81,7 +81,7 @@ export default function ProjectEdit({
       setDeleteAccept(false);
       return;
     }
-    axios.request(`/api/projects/${pathID}/`,
+    api.request(`/api/projects/${pathID}/`,
       {
         method: 'delete',
         data: {approval: deleteNameForm},

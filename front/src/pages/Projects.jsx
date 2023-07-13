@@ -4,7 +4,7 @@ import AllProjects from '../components/AllProjects';
 import Load from '../components/common/Load';
 import ProjectCreate from '../components/ProjectCreate';
 import TitleSwitch from "../components/common/TitleSwitch";
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/pages/projects.css';
 
 export default function Projects() {
@@ -17,7 +17,7 @@ export default function Projects() {
   if (user?.is_superuser) adminOptions.push({ name: 'create project', value: 'create' });
 
   useEffect(() => {
-    axios.get('/api/projects/')
+    api.get('/api/projects/')
       .then(({ data }) => { setProjects(data); })
       .catch(err => alert(err.message));
   }, []);

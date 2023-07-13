@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
-import axios from 'axios';
+import api from '../config/api';
 import '../styles/components/projectcreate.css';
 
 export default function ProjectCreate() {
@@ -21,7 +21,7 @@ export default function ProjectCreate() {
     if (loading) return;
     setLoading(true);
     const formData = getFormData(event);
-    axios.request('/api/projects/',
+    api.request('/api/projects/',
       {
         method: 'post',
         data: formData,
