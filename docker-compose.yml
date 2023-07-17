@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  iss_db:
-    container_name: iss_db
+  iss-db:
+    container_name: iss-db
     image: postgres:15.3-alpine
     restart: always
     environment:
@@ -13,17 +13,16 @@ services:
     networks:
       - iss_network
 
-  iss_back:
-    container_name: iss_back
+  iss-back:
+    container_name: iss-back
     image: iss_back
     build: ./back
     restart: always
     environment:
-      DB_HOST: iss_db
+      DB_HOST: iss-db
       DB_NAME: iss_app_db
-      FRONTEND_EXT_PORT: 3000
     depends_on:
-      - iss_db
+      - iss-db
     volumes:
       - ./back/proj_back:/app
     command: >
@@ -36,15 +35,15 @@ services:
     networks:
       - iss_network
 
-  iss_front:
-    container_name: iss_front
+  iss-front:
+    container_name: iss-front
     image: iss_front
     build: ./front
     restart: always
     environment:
       - PORT=3001
     depends_on:
-      - iss_back
+      - iss-back
     volumes:
       - ./front/src:/app/src
       - ./front/public:/app/public
@@ -52,11 +51,11 @@ services:
     networks:
       - iss_network
 
-  iss_proxy:
-    container_name: iss_proxy
+  iss-proxy:
+    container_name: iss-proxy
     image: nginx:1.25.1-alpine
     depends_on:
-      - iss_front
+      - iss-front
     ports:
       - 3000:3000
       - 8000:8000

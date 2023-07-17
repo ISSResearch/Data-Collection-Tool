@@ -7,22 +7,22 @@ load_dotenv()
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
-TEST_ENV = getenv('CONTAINER') == 'test'
+TEST_ENV = getenv('CASE') == 'test'
 
 DEBUG = getenv('DEBUG') == 'true'
 
-SELF_ORIGIN = getenv('SERVER_ORIGINS')
-if SELF_ORIGIN:
-    SELF_ORIGIN = [
-      f"{origin}:{getenv('FRONTEND_EXT_PORT', 3000)}" for origin
-      in SELF_ORIGIN.replace(' ', '').split(',')
-  ]
+RAW_ORIGIN = getenv('SERVER_ORIGINS')
+SELF_ORIGIN = None
+
+if RAW_ORIGIN:
+    RAW_ORIGIN = RAW_ORIGIN.replace(' ', '').split(',')
+    SELF_ORIGIN = [ f"http://{origin}:3000" for origin in RAW_ORIGIN]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-%o*gv0gtraw6@&@_a*c)$x%wuy8w55a2n3x^c2%0$9wm+0q8ot'
 
-ALLOWED_HOSTS = ('*',)
+ALLOWED_HOSTS = RAW_ORIGIN or ()
 
 USE_X_FORWARDED_HOST = True
 

@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { getOriginDomain } from '../utils/utils';
 
-const port = process.env.REACT_APP_BACKEND_PORT;
+const origin = process.env.REACT_APP_CASE === 'test'
+  ? 'http://iss-test-back'
+  : getOriginDomain();
 
 const api = axios.create({
-  baseURL: `${getOriginDomain()}:${port || 8000}`,
+  baseURL: `${origin}:8000`,
   headers: {
     'Content-Type': 'application/json',
   },

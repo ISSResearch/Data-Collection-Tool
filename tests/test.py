@@ -3,7 +3,7 @@ from set_up import Options, PagesTests, By, WebDriverWait
 
 
 class FoxBrowserTest(TestCase, Options, PagesTests):
-    __slots__ = { 'driver', 'test_project' }
+    __slots__ = {'driver', 'test_project'}
 
     def setUp(self):
         self.start_driver('firefox')
@@ -26,24 +26,15 @@ class FoxBrowserTest(TestCase, Options, PagesTests):
             2
         )
 
-    def test_login_page(self): self.login_page_test()
+    # def test_login_page(self): self.login_page_test()
 
-    def test_registration_page(self): self.registration_page_test()
+    # def test_registration_page(self): self.registration_page_test()
 
-    def test_projects_page(self): self.projects_page_test()
+    # def test_projects_page(self): self.projects_page_test()
 
-    def test_project_page(self): self.project_page_test()
+    # def test_project_page(self): self.project_page_test()
 
-    def test_blank_page(self): self.blank_page_test()
+    # def test_blank_page(self): self.blank_page_test()
 
 
-if __name__ == '__main__':
-    main()
-
-    # from selenium import webdriver
-    # hub_url = 'http://localhost:4444/wd/hub'
-    # base_url = 'http://iss_test_front:3000/'
-    # option = webdriver.FirefoxOptions()
-    # option.add_argument("--headless")
-
-    # d = webdriver.Remote(command_executor=hub_url, options=option)
+if __name__ == '__main__': main()

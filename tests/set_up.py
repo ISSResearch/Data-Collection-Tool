@@ -12,7 +12,7 @@ from pages_tests import (
 
 class Options:
     hub_url = 'http://localhost:4444/wd/hub'
-    base_url = 'http://iss_test_front:3000/'
+    base_url = 'http://iss-test-front:3000/'
 
     def start_driver(self, browser):
         options_map = {
