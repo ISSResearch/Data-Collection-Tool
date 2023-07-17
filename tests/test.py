@@ -1,19 +1,21 @@
 from unittest import TestCase, main
-from set_up import Options, PagesTests, By
+from set_up import Options, PagesTests, By, WebDriverWait
 
 
 class FoxBrowserTest(TestCase, Options, PagesTests):
     __slots__ = { 'driver', 'test_project' }
 
     def setUp(self):
-        self.driver = self.start_driver('chrome')
+        self.start_driver('firefox')
         self.test_project = None
 
     def tearDown(self): self.driver.quit()
 
     def test_entry_load(self):
         self.driver.get(self.base_url)
-        self.assertEqual(self.driver.title, 'ISS Data Collection Tool')
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.title == 'ISS Data Collection Tool'
+        )
         self.assertEqual(
             self.driver.find_element(By.TAG_NAME, value='h1').text,
             'Login Page'
@@ -35,4 +37,13 @@ class FoxBrowserTest(TestCase, Options, PagesTests):
     def test_blank_page(self): self.blank_page_test()
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
+
+    # from selenium import webdriver
+    # hub_url = 'http://localhost:4444/wd/hub'
+    # base_url = 'http://iss_test_front:3000/'
+    # option = webdriver.FirefoxOptions()
+    # option.add_argument("--headless")
+
+    # d = webdriver.Remote(command_executor=hub_url, options=option)

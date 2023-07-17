@@ -5,7 +5,7 @@ from .services import update_project
 
 
 class ProjectsViewSet(APIView):
-    http_method_names = ['post', 'get']
+    http_method_names = ('post', 'get')
 
     def get(self, _):
         projects = Project.objects.order_by('id').filter(visible=True)
@@ -32,7 +32,7 @@ class ProjectsViewSet(APIView):
 
 
 class ProjectViewSet(APIView):
-    http_method_names = ['get', 'patch', 'delete']
+    http_method_names = ('get', 'patch', 'delete')
 
     def get(self, _, pk):
         response = None

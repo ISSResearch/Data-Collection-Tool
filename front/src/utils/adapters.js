@@ -31,6 +31,7 @@ export function statsAdapter(data) {
   const preparedData = data.reduce((acc, item) => {
     let {
       name: levelName,
+      order,
       attribute__id: id,
       attribute__name: name,
       attribute__parent: parent,
@@ -42,8 +43,11 @@ export function statsAdapter(data) {
     name = name || 'no name';
     type = type || 'no data';
     const target = acc[id];
-    if (!target) acc[id] = { id, levelName, name, parent, [status]: { [type]: count } };
-    else if (target[status]) target[status][type] = count;
+    if (!target) acc[id] = { id, levelName, name, parent, order, [status]: { [type]: count } };
+    else if (target[status]) {
+      const prevCount = target[status][type];
+      target[status][type] = prevCount ? prevCount + count : count;
+    }
     else target[status] = { [type]: count };
     return acc;
   }, {});
@@ -55,5 +59,7 @@ export function statsAdapter(data) {
       : parent.children = [el];
   });
 
-  return Object.values(preparedData).filter(({parent}) => !parent);
+  return Object.values(preparedData)
+    .filter(({parent}) => !parent)
+    .sort(({order: orderA}, {order: orderB}) => orderA > orderB? 1 : -1);
 }

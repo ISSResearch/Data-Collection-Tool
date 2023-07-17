@@ -4,7 +4,7 @@ from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import File, FileSerializer, FilesSerializer
-from attribute.models import AttributeGroup, Level
+from attribute.models import Level
 from .services import FileUploader, prepare_zip_data, upload_chunk
 from os import remove
 from time import time
@@ -80,13 +80,41 @@ def get_stats(_, projectID):
         .order_by('order', 'id') \
         .values(
             'name',
+            'order',
             'attribute__id',
             'attribute__name',
             'attribute__parent',
             'attribute__attributegroup__file__file_type',
             'attribute__attributegroup__file__status'
           ) \
-          .annotate(count=Count('attribute__attributegroup__file__file_type'))
+        .annotate(count=Count('attribute__attributegroup__file__file_type'))
+
+    empty_attributes_files = File.objects \
+        .filter(project_id=projectID, attributegroup__isnull=False) \
+        .values('file_type', 'status') \
+        .annotate(file_count=Count('file_type'), attribute_count=Count('attributegroup__attribute')) \
+        .filter(attribute_count=0)
+
+    empty_attributegroups_files = File.objects \
+        .filter(project_id=projectID, attributegroup__isnull=True) \
+        .annotate(file_count=Count('file_type'), attribute_count=Count('attributegroup')) \
+        .values('file_type', 'status', 'file_count') \
+        .filter(attribute_count=0)
+
+    empty_stats = [
+        {
+            'name': 'no level',
+            'attribute__name': 'No attribute',
+            'attribute__parent': None,
+            'attribute__id': 'no-id',
+            'attribute__attributegroup__file__file_type': entry['file_type'],
+            'attribute__attributegroup__file__status': entry['status'],
+            'count': entry['file_count']
+        }
+        for entry in tuple(empty_attributes_files) + tuple(empty_attributegroups_files)
+    ]
+
+    if empty_stats: stats = list(stats) + list(empty_stats)
 
     return Response(stats, status=status.HTTP_200_OK)
 
@@ -123,4 +151,3 @@ def download_project_data(request, projectID):
 def upload_file_chunk(request, fileID):
     response, response_status = upload_chunk(request, fileID)
     return Response(response, status=response_status)
-

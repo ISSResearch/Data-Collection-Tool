@@ -59,6 +59,7 @@ export default function useFileInput() {
   function validate(attributes) {
     if (!Object.values(files).length) return {isValid: false, message: 'No files attached!'};
     const requiredLevels = findRequired(attributes);
+    if (!requiredLevels.length) return { isValid: true, message: 'ok' };
     const requiredIds = requiredLevels.map(({attributes}) => attributes);
     for (const file of Object.values(files)) {
       const { attributeGroups, name } = file;

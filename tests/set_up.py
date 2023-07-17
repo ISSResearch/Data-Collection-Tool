@@ -12,7 +12,7 @@ from pages_tests import (
 
 class Options:
     hub_url = 'http://localhost:4444/wd/hub'
-    base_url = 'http://localhost:3000/'
+    base_url = 'http://iss_test_front:3000/'
 
     def start_driver(self, browser):
         options_map = {
@@ -24,11 +24,10 @@ class Options:
         option = options_map[browser]()
         option.add_argument("--headless")
 
-        return webdriver.Chrome(options=option)
-        # self.driver = webdriver.Remote(
-        #   command_executor=self.hub_url,
-        #   options=self.firefox_options
-        # )
+        self.driver = webdriver.Remote(
+          command_executor=self.hub_url,
+          options=option
+        )
 
 
 class PagesTests(
