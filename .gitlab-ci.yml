@@ -8,3 +8,7 @@ setup-job:
     - python3 --version
     - echo "print(10 ** 3)" > x.py
     - python3 x.py
+  only:
+    refs:
+      - main
+  when: manual
