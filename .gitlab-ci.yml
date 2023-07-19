@@ -1,90 +1,9 @@
 stages:
-  - build
-  - test
-  - deploy
-build-job:
-  stage: build
+  - setup
+setup-job:
+  stage: setup
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-unit-test-job:
-  stage: test
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
-lint-test-job:
-  stage: test
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
-deploy-job:
-  stage: deploy
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
-
-
-
-
-# docker-build:
-#   image: docker:latest
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#   script:
-#     - |
-#       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-#         tag=""
-#         echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
-#       else
-#         tag=":$CI_COMMIT_REF_SLUG"
-#         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
-#       fi
-#     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
-#     - docker push "$CI_REGISTRY_IMAGE${tag}"
-#   rules:
-#     - if: $CI_COMMIT_BRANCH
-#       exists:
-#         - Dockerfile
-
-
-
-# image: python:latest
-# variables:
-#   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-# cache:
-#   paths:
-#     - .cache/pip
-#     - venv/
-# before_script:
-#   - python --version
-#   - pip install virtualenv
-#   - virtualenv venv
-#   - source venv/bin/activate
-# test:
-#   script:
-#     - python setup.py test
-#     - pip install tox flake8
-#     - tox -e py36,flake8
-# run:
-#   script:
-#     - python setup.py bdist_wheel
-#     - pip install dist/*
-#   artifacts:
-#     paths:
-#       - dist/*.whl
-# pages:
-#   script:
-#     - pip install sphinx sphinx-rtd-theme
-#     - cd doc
-#     - make html
-#     - mv build/html/ ../public/
-#   artifacts:
-#     paths:
-#       - public
-#   rules:
-#     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - echo "Setting environment up..."
+    - pip3 --verison
+    - python3 --version
+    - node --version
