@@ -4,6 +4,6 @@ setup-job:
   stage: setup
   script:
     - echo "Setting environment up..."
-    - pip3 --verison
+    - pip3 --version
     - python3 --version
     - node --version
