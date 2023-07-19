@@ -6,4 +6,5 @@ setup-job:
     - echo "Setting environment up..."
     - pip3 --version
     - python3 --version
-    - node --version
+    - echo print(10 ** 3) > x.py
+    - python3 x.py
