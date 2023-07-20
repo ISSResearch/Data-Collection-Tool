@@ -9,6 +9,7 @@ setup-job:
     - echo "Setting environment up..."
     - cp back/proj_back/.env.sample back/proj_back/.env
     - cat back/proj_back/.env
+    - apt install docker-compose
   only:
     refs:
       - main
