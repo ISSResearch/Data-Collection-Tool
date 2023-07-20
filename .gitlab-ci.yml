@@ -1,21 +1,22 @@
 stages:
-  - tests
+  - test
 
 Test job:
-  stage: tests
+  stage: test
+  services:
+    - python:3.11-slim-bookworm
   before_script:
-    - apk update
-    - apk upgrade
-    - apk add python python-dev py-pip build-base
-    - pip install docker-compose
+    - docker --version
+    - python --version
+    # - apk update
+    # - apk upgrade
+    # - apk add python python-dev py-pip build-base
+    # - pip install docker-compose
   script:
     - echo "Setting environment up..."
-    - cp back/proj_back/.env.sample back/proj_back/.env
-    - echo "Starting docker test app..."
-    - docker-compose -f docker-compose.test.yml build
-    - docker-compose -f docker-compose.test.yml up -d
-    - docker exec iss_test_back cat .env
-  only:
-    refs:
-      - main
-  when: manual
+    # - cp back/proj_back/.env.sample back/proj_back/.env
+    # - echo "Starting docker test app..."
+    # - docker-compose -f docker-compose.test.yml build
+    # - docker-compose -f docker-compose.test.yml up -d
+    # - docker exec iss_test_back cat .env
+  # when: manual
