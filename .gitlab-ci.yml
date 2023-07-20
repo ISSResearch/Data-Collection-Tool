@@ -6,8 +6,8 @@ Test job:
   services:
     - python:3.11-slim-bookworm
   before_script:
-    - apt update
-    - apt install -y python3
+    - apk update
+    - apk install -y python3
     - docker --version
     - python3 --version
     # - pip install docker-compose
