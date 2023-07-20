@@ -7,11 +7,6 @@ setup-job:
   stage: setup
   script:
     - echo "Setting environment up..."
-    - pwd
-    - ls 
-    - cat {id_iss,id_iss.pub} > v.txt
-    - rm v.txt
-    - git clone git@gitlab.iss.ru:m-zyuzin/data-collection-app.git
     - cp data-collection-app/back/proj_back/.env.sample  data-collection-app/back/proj_back/.env
     - cat data-collection-app/back/proj_back/.env
   only:
