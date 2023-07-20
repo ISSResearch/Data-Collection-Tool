@@ -1,9 +1,24 @@
 stages:
-  - setup
-setup-job:
-  stage: setup
+  - test
+
+Test job:
+  stage: test
+  before_script:
+    - apk update
+    - apk add python3
+    - apk add py3-pip
+    - pip3 install --upgrade pip setuptools
+    # - pip3 install docker-compose
+    - docker --version
+    - docker-compose --version
+    - python3 --version
+    - pip3 --version
+    - docker info
   script:
     - echo "Setting environment up..."
-    - pip3 --verison
-    - python3 --version
-    - node --version
+    # - cp back/proj_back/.env.sample back/proj_back/.env
+    # - echo "Starting docker test app..."
+    # - docker-compose -f docker-compose.test.yml build
+    # - docker-compose -f docker-compose.test.yml up -d
+    # - docker exec iss_test_back cat .env
+  # when: manual
