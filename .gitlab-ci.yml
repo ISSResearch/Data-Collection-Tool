@@ -1,29 +1,35 @@
 stages:
   - tests
 
-Test project:
+Tests setup:
   stage: tests
-
   services:
     - docker:dind
-
-  before_script:
+  script:
     - docker info
+    - python3 --version
     - apk update
     - apk upgrade
     - apk add python python-dev py-pip build-base
     - pip install docker-compose
-
-  script:
     - echo "Setting environment up..."
     - cp back/proj_back/.env.sample back/proj_back/.env
+  only:
+    refs:
+      - main
+  when: manual
+
+Tests boot up:
+  stage: tests
+  script:
     - echo "Starting docker test app..."
     - docker-compose -f docker-compose.test.yml build
     - docker-compose -f docker-compose.test.yml up -d
     - docker exec iss_test_back cat .env
-
+  needs:
+    - job: Tests setup
   only:
     refs:
       - main
 
-  when: manual
+
