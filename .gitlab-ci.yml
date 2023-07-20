@@ -23,7 +23,7 @@ Test project:
     - docker exec iss_test_back cat .env
 
   only:
-    branches:
+    refs:
       - main
 
   when: manual
