@@ -4,8 +4,6 @@ stages:
 Test project:
   stage: tests
 
-  image: docker:stable
-
   services:
     - docker:dind
 
@@ -20,12 +18,12 @@ Test project:
     - echo "Setting environment up..."
     - cp back/proj_back/.env.sample back/proj_back/.env
     - echo "Starting docker test app..."
-    - docker-compose docker-compose.test.yml build
+    - docker-compose -f docker-compose.test.yml build
     - docker-compose -f docker-compose.test.yml up -d
     - docker exec iss_test_back cat .env
 
   only:
-    refs:
+    branches:
       - main
 
   when: manual
