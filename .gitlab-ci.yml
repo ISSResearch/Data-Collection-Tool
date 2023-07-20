@@ -4,8 +4,6 @@ stages:
 Test job:
   stage: tests
   before_script:
-    - docker-compose
-    - python3 --version
     - apk update
     - apk upgrade
     - apk add python python-dev py-pip build-base
