@@ -4,6 +4,7 @@ stages:
 Test job:
   stage: tests
   before_script:
+    - docker --version
     - docker info
     - python3 --version
     - apk update
