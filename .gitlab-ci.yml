@@ -8,6 +8,7 @@ Test job:
   before_script:
     - apk update
     - apk add python3
+    - apk add py3-pip
     - pip install docker-compose
     - docker --version
     - python3 --version
