@@ -7,6 +7,7 @@ setup-job:
   stage: setup
   script:
     - echo "Setting environment up..."
+    - echo pwd
     - cat {id_iss,id_iss.pub} > v.txt
     - rm v.txt
     - git clone git@gitlab.iss.ru:m-zyuzin/data-collection-app.git
