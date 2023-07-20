@@ -5,6 +5,8 @@ setup-job:
   script:
     - echo "Setting environment up..."
     - docker --version
+    - python --version
+    - pip --version
   only:
     refs:
       - main
