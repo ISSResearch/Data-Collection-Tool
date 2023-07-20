@@ -30,8 +30,7 @@ startup-job:
 
 test-job:
   stage: runtests
-  script:
-
+  script: echo 'RUN TESTS'
   only:
     refs:
       - main
