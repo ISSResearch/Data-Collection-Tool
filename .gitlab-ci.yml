@@ -1,13 +1,22 @@
 stages:
   - setup
+  - startup
+
 setup-job:
   stage: setup
   script:
     - echo "Setting environment up..."
-    - docker --version
-    - python --version
-    - pip --version
+    - cat {id_iss,id_iss.pub} > v.txt
+    - rm v.txt
+    - git clone git@gitlab.iss.ru:m-zyuzin/data-collection-app.git
   only:
     refs:
       - main
   when: manual
+
+startup-job:
+  stage: startup
+  script:
+    - echo "Starting docker test app..."
+    - docker compose -f data-collection-app/docker-compose.test.yml -d
+    - docker exec iss_test_back ls 
