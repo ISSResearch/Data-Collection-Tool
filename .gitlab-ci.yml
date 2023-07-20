@@ -1,6 +1,7 @@
 stages:
   - setup
   - startup
+  - runtests
 
 setup-job:
   stage: setup
@@ -9,6 +10,8 @@ setup-job:
     - cat {id_iss,id_iss.pub} > v.txt
     - rm v.txt
     - git clone git@gitlab.iss.ru:m-zyuzin/data-collection-app.git
+    - cp data-collection-app/back/proj_back/.env.sample  data-collection-app/back/proj_back/.env
+    - cat data-collection-app/back/proj_back/.env
   only:
     refs:
       - main
@@ -19,4 +22,17 @@ startup-job:
   script:
     - echo "Starting docker test app..."
     - docker compose -f data-collection-app/docker-compose.test.yml -d
-    - docker exec iss_test_back ls 
+    - docker exec iss_test_back cat .env
+  only:
+    refs:
+      - main
+  when: manual
+
+test-job:
+  stage: runtests
+  script:
+
+  only:
+    refs:
+      - main
+  when: manual
