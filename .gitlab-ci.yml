@@ -18,7 +18,7 @@ startup-job:
   stage: startup
   script:
     - echo "Starting docker test app..."
-    - docker compose -f docker-compose.test.yml build
+    - docker compose docker-compose.test.yml build
     - docker compose -f docker-compose.test.yml up -d
     - docker exec iss_test_back cat .env
   only:
