@@ -8,9 +8,10 @@ Test job:
   before_script:
     - apk update
     - apk add python3
+    - pip3 install docker-compose
     - docker --version
     - python3 --version
-    # - pip install docker-compose
+    - docker-compose --version
   script:
     - echo "Setting environment up..."
     # - cp back/proj_back/.env.sample back/proj_back/.env
