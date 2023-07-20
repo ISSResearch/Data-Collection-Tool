@@ -6,11 +6,10 @@ Test job:
   services:
     - python:3.11-slim-bookworm
   before_script:
+    - apt-get update
+    - apt-get install -y python3
     - docker --version
-    - python --version
-    # - apk update
-    # - apk upgrade
-    # - apk add python python-dev py-pip build-base
+    - python3 --version
     # - pip install docker-compose
   script:
     - echo "Setting environment up..."
