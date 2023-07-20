@@ -7,7 +7,7 @@ Test job:
     - python:3.11-slim-bookworm
   before_script:
     - apk update
-    - apk add -y python3
+    - apk add python3
     - docker --version
     - python3 --version
     # - pip install docker-compose
