@@ -13,6 +13,8 @@ Test job:
     - docker-compose --version
     - python3 --version
     - pip3 --version
+    - docker info
+    - docker-compose info
   script:
     - echo "Setting environment up..."
     # - cp back/proj_back/.env.sample back/proj_back/.env
