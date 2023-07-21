@@ -25,7 +25,8 @@ services:
       DB_NAME: iss_test_app_db
       CASE: test
     command: >
-      sh -c "python manage.py makemigrations user &&
+      sh -c "python manage.py migrate &&
+             python manage.py makemigrations user &&
              python manage.py makemigrations project &&
              python manage.py makemigrations attribute &&
              python manage.py makemigrations file &&
