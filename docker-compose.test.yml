@@ -48,15 +48,15 @@ services:
     networks:
       - iss_test_network
 
-  iss-selenium-hub:
-    container_name: iss-selenium-hub
-    image: selenium/hub
-    depends_on:
-      - iss-test-front
-    ports:
-      - 4444:4444
-    networks:
-      - iss_test_network
+  # iss-selenium-hub:
+  #   container_name: iss-selenium-hub
+  #   image: selenium/hub
+  #   depends_on:
+  #     - iss-test-front
+  #   ports:
+  #     - 4444:4444
+  #   networks:
+  #     - iss_test_network
 
   # iss-selenium-chrome:
   #   container_name: iss-selenium-chrome
@@ -86,19 +86,19 @@ services:
   #   networks:
   #     - iss_test_network
 
-  iss-selenium-fox:
-    container_name: iss-selenium-fox
-    image: selenium/node-firefox
-    depends_on:
-      - iss-selenium-hub
-    volumes:
-      - /dev/shm:/dev/shm
-    environment:
-      SE_EVENT_BUS_HOST: iss-selenium-hub
-      SE_EVENT_BUS_PUBLISH_PORT: 4442
-      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-    networks:
-      - iss_test_network
+  # iss-selenium-fox:
+  #   container_name: iss-selenium-fox
+  #   image: selenium/node-firefox
+  #   depends_on:
+  #     - iss-selenium-hub
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   environment:
+  #     SE_EVENT_BUS_HOST: iss-selenium-hub
+  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
+  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+  #   networks:
+  #     - iss_test_network
 
 networks:
   iss_test_network:

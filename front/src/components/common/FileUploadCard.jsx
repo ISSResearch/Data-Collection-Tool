@@ -30,7 +30,6 @@ export const FileUploadCard = memo(({
             className='iss__fileuploadCard__file'
           />
           : <video
-            onClick={({target}) => handleZoom(target)}
             src={URL.createObjectURL(fileObject)}
             muted
             controls
