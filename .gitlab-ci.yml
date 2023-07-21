@@ -2,7 +2,6 @@ stages:
   - test
 
 setup and run tests:
-  image: docker:dind
   stage: test
   before_script:
     - echo "Setting environment up..."
