@@ -1,23 +1,19 @@
 stages:
   - test
 
-Test job:
+setup and run tests:
   stage: test
   before_script:
+    - echo "Setting environment up..."
     - apk update
     - apk add python3
     - apk add py3-pip
     - pip3 install --upgrade pip setuptools
-    - docker --version
-    - docker-compose --version
-    - python3 --version
-    - pip3 --version
-    - docker info
+    - echo "DEBUG=True" >> back/proj_back/.env
+    - echo "SERVER_ORIGINS='127.0.0.1,localhost,iss-test-front,iss-front,iss-test-back,iss-back'" >> back/proj_back/.env
   script:
-    - echo "Setting environment up..."
-    # - cp back/proj_back/.env.sample back/proj_back/.env
-    # - echo "Starting docker test app..."
-    # - docker-compose -f docker-compose.test.yml build
-    # - docker-compose -f docker-compose.test.yml up -d
-    # - docker exec iss_test_back cat .env
+    - echo "Starting docker test app..."
+    - docker-compose -f docker-compose.test.yml build
+    - docker-compose -f docker-compose.test.yml up -d
+    - docker exec iss_test_back cat .env
   # when: manual
