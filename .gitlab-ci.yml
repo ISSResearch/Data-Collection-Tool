@@ -3,14 +3,11 @@ stages:
 
 Test job:
   stage: test
-  services:
-    - python:3.11-slim-bookworm
   before_script:
-    # - apk update
-    # - apk add python3
-    # - apk add py3-pip
-    # - pip3 install --upgrade pip setuptools
-    # - pip3 install docker-compose
+    - apk update
+    - apk add python3
+    - apk add py3-pip
+    - pip3 install --upgrade pip setuptools
     - docker --version
     - docker-compose --version
     - python3 --version
