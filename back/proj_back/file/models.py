@@ -13,8 +13,8 @@ class File(models.Model):
 
     project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
     author = models.ForeignKey('user.CustomUser', on_delete=models.DO_NOTHING)
-    attribute = models.ManyToManyField('attribute.Attribute')
 
     class Meta: db_table = 'file'
 
     def __str__(self): return self.file_name
+
