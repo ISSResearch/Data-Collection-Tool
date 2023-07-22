@@ -19,4 +19,5 @@ setup and run tests:
     - docker logs iss-test-back
     - docker ps
     - docker exec iss-test-back cat .env
+    - docker-compose -f docker-compose.test.yml down
   # when: manual
