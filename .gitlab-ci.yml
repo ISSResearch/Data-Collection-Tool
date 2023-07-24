@@ -13,15 +13,14 @@ build and tests application:
     - echo "DEBUG=True" >> back/proj_back/.env
     - echo "SERVER_ORIGINS='127.0.0.1,localhost,iss-test-front,iss-front,iss-test-back,iss-back'" >> back/proj_back/.env
   script:
-    - ls back/proj_back/user
-    # - echo "Starting docker test app..."
-    # - docker-compose -f docker-compose.test.yml build --no-cache
-    # - docker-compose -f docker-compose.test.yml up -d --force-recreate
-    # - ls back/proj_back/user/migrations
-    # - docker exec iss-test-back ls user/migrations
-    # - echo "Running tests..." 
-    # - docker exec iss-test-back ./manage.py test
-    # - docker exec iss-test-front npm test
+    - echo "Starting docker test app..."
+    - docker-compose -f docker-compose.test.yml build --no-cache
+    - docker-compose -f docker-compose.test.yml up -d --force-recreate
+    - ls back/proj_back/user/migrations
+    - docker exec iss-test-back ls user/migrations
+    - echo "Running tests..." 
+    - docker exec iss-test-back ./manage.py test
+    - docker exec iss-test-front npm test
   after_script:
     - docker-compose -f docker-compose.test.yml down --rmi all --volumes --remove-orphans
   # when: manual
