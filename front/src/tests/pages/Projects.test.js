@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { mock_raw_project  } from '../_mock';
 import Projects from '../../pages/Projects';
-import axios from 'axios';
+import api from '../../config/api';
+jest.mock('../../config/api');
 
-jest.mock('axios');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ projectID: '1' })
@@ -19,7 +19,7 @@ afterEach(() => {
 test("projects page test", async () => {
   const { result: userHook } = renderHook(() => useState(null));
 
-  axios.get.mockResolvedValue({data: [mock_raw_project]});
+  api.get.mockResolvedValue({data: [mock_raw_project]});
 
   let rerender = null;
   await act(async () => {

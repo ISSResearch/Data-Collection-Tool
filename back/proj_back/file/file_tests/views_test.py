@@ -109,12 +109,11 @@ class ProjectStatsTest(TestCase):
         self.assertTrue(len(request.data) == 1)
         self.assertEqual(
             {key for key in request.data[0]},
-            {'attribute__id', 'name', 'attribute__attributegroup__file__file_type', 'attribute__attributegroup__file__status' ,'attribute__name', 'attribute__parent', 'count'}
+            {'attribute__id', 'name', 'order', 'attribute__attributegroup__file__file_type', 'attribute__attributegroup__file__status' ,'attribute__name', 'attribute__parent', 'count'}
         )
         self.assertEqual(
             {val for val in request.data[0].values()},
-            {self.case.level.name, self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status},
-            {val for val in request.data[0].items()}
+            {self.case.level.name, self.case.level.order, self.case.attribute.id, self.case.attribute.name, self.case.attribute.parent, 1, self.case.file_.file_type, self.case.file_.status},
         )
 
     def test_get_unexisted_project_stats(self):

@@ -3,10 +3,11 @@ import { UserContext } from "../../context/User";
 import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { mock_raw_project } from '../_mock';
-import axios from 'axios';
+import api from '../../config/api';
 import ProjectPage from '../../pages/ProjectPage';
 
-jest.mock('axios');
+jest.mock('../../config/api');
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ projectID: '1' })
@@ -26,7 +27,7 @@ test("project page test", async () => {
     { name: 'statistics', value: 'stats' },
   ];
 
-  axios.get.mockResolvedValue({data: mock_raw_project});
+  api.get.mockResolvedValue({data: mock_raw_project});
 
   let rerender = null;
   await act(async () => {

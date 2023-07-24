@@ -4,7 +4,7 @@
   height: 600px;
   overflow-y: hidden;
 }
-.iss__fileswiper .iss__fileswiper__controls {
+.iss__fileswiper:hover .iss__fileswiper__controls {
   transform: translate(-50%, -20%);
   transition: transform 0.3s ease;
 }

@@ -31,14 +31,12 @@ class AttributeModelsTest(TestCase):
         parent_attribute = Attribute.objects.create(
             name='parent_atr',
             project=self.project,
-            file=self.file,
             level=self.level
         )
         child_attribute = Attribute.objects.create(
             name='child_atr',
             parent=parent_attribute,
             project=self.project,
-            file=self.file,
             level=self.level
         )
 

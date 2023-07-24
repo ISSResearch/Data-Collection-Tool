@@ -246,6 +246,7 @@ export const mock_raw_file_attributes = [
 export const mock_raw_stats = [
   {
     name: "make",
+    'order': 0,
     attribute__id: 246,
     attribute__name: "ford",
     attribute__parent: null,
@@ -255,6 +256,7 @@ export const mock_raw_stats = [
   },
   {
     name: "make",
+    'order': 0,
     attribute__id: 246,
     attribute__name: "ford",
     attribute__parent: null,
@@ -264,6 +266,7 @@ export const mock_raw_stats = [
   },
   {
     name: "make",
+    'order': 0,
     attribute__id: 246,
     attribute__name: "ford",
     attribute__parent: null,
@@ -273,6 +276,7 @@ export const mock_raw_stats = [
   },
   {
     name: "make",
+    'order': 0,
     attribute__id: 246,
     attribute__name: "ford",
     attribute__parent: null,
@@ -282,6 +286,7 @@ export const mock_raw_stats = [
   },
   {
     name: "make",
+    'order': 0,
     attribute__id: 246,
     attribute__name: "ford",
     attribute__parent: null,
@@ -291,6 +296,7 @@ export const mock_raw_stats = [
   },
   {
     name: "model",
+    'order': 0,
     attribute__id: 265,
     attribute__name: "exp",
     attribute__parent: 246,
@@ -300,6 +306,7 @@ export const mock_raw_stats = [
   },
   {
     name: "model",
+    'order': 0,
     attribute__id: 268,
     attribute__name: "f150",
     attribute__parent: 246,
@@ -309,6 +316,7 @@ export const mock_raw_stats = [
   },
   {
     name: "model",
+    'order': 0,
     attribute__id: 268,
     attribute__name: "f150",
     attribute__parent: 246,
@@ -318,6 +326,7 @@ export const mock_raw_stats = [
   },
   {
     name: "gen",
+    'order': 0,
     attribute__id: 267,
     attribute__name: "gene2",
     attribute__parent: 265,
@@ -327,6 +336,7 @@ export const mock_raw_stats = [
   },
   {
     name: "gen",
+    'order': 0,
     attribute__id: 270,
     attribute__name: "genf2",
     attribute__parent: 268,
@@ -336,6 +346,7 @@ export const mock_raw_stats = [
   },
   {
     name: "gen",
+    'order': 0,
     attribute__id: 270,
     attribute__name: "genf2",
     attribute__parent: 268,
@@ -345,6 +356,7 @@ export const mock_raw_stats = [
   },
   {
     name: "views",
+    'order': 1,
     attribute__id: 271,
     attribute__name: "front",
     attribute__parent: null,
@@ -354,6 +366,7 @@ export const mock_raw_stats = [
   },
   {
     name: "views",
+    'order': 1,
     attribute__id: 272,
     attribute__name: "back",
     attribute__parent: null,
@@ -363,6 +376,7 @@ export const mock_raw_stats = [
   },
   {
     name: "views",
+    'order': 1,
     attribute__id: 271,
     attribute__name: "front",
     attribute__parent: null,
@@ -372,6 +386,7 @@ export const mock_raw_stats = [
   },
   {
     name: "Color",
+    'order': 2,
     attribute__id: 287,
     attribute__name: "green",
     attribute__parent: null,
@@ -381,6 +396,7 @@ export const mock_raw_stats = [
   },
   {
     name: "Color",
+    'order': 2,
     attribute__id: 286,
     attribute__name: "red",
     attribute__parent: null,
@@ -396,6 +412,7 @@ export const mock_prepared_stats = [
     levelName: "make",
     name: "ford",
     parent: null,
+    order: 0,
     a: { image: 2 },
     v: { image: 10, video: 1 },
     d: { image: 1, video: 1 },
@@ -405,6 +422,7 @@ export const mock_prepared_stats = [
         levelName: "model",
         name: "exp",
         parent: 246,
+        order: 0,
         a: { image: 1 },
         children: [
           {
@@ -412,6 +430,7 @@ export const mock_prepared_stats = [
             levelName: "gen",
             name: "gene2",
             parent: 265,
+            order: 0,
             a: { image: 1 },
           },
         ],
@@ -421,6 +440,7 @@ export const mock_prepared_stats = [
         levelName: "model",
         name: "f150",
         parent: 246,
+        order: 0,
         v: { image: 1 },
         a: { image: 1 },
         children: [
@@ -429,6 +449,7 @@ export const mock_prepared_stats = [
             levelName: "gen",
             name: "genf2",
             parent: 268,
+            order: 0,
             v: { image: 1 },
             a: { image: 1 },
           },
@@ -437,33 +458,37 @@ export const mock_prepared_stats = [
     ],
   },
   {
-    id: 271,
-    levelName: "views",
-    name: "front",
-    parent: null,
-    d: { image: 1 },
-    v: { image: 1 },
-  },
-  {
     id: 272,
     levelName: "views",
     name: "back",
     parent: null,
-    v: { image: 1 }
+    order: 1,
+    v: { image: 1 },
   },
   {
-    id: 286,
-    levelName: "Color",
-    name: "red",
+    id: 271,
+    levelName: "views",
+    name: "front",
     parent: null,
-    v: { "no data": 0 },
+    order: 1,
+    d: { image: 1 },
+    v: { image: 1 },
   },
   {
     id: 287,
     levelName: "Color",
     name: "green",
     parent: null,
-    a: { image: 1 }
+    order: 2,
+    a: { image: 1 },
+  },
+  {
+    id: 286,
+    levelName: "Color",
+    name: "red",
+    parent: null,
+    order: 2,
+    v: { "no data": 0 },
   },
 ];
 
