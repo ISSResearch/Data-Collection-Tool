@@ -15,10 +15,10 @@ build and tests application:
   script:
     - echo "Starting docker test app..."
     - docker-compose -f docker-compose.test.yml build --no-cache
-    - docker-compose -f docker-compose.test.yml up -d
+    - docker-compose -f docker-compose.test.yml up -d --force-recreate
     - echo "Running tests..." 
     - docker exec iss-test-back ./manage.py test
     - docker exec iss-test-front npm test
   after_script:
-    - docker-compose -f docker-compose.test.yml down
+    - docker-compose -f docker-compose.test.yml down --rmi all --volumes --remove-orphans
   # when: manual
