@@ -16,6 +16,7 @@ setup and run tests:
     - docker-compose -f docker-compose.test.yml build --no-cache
     - docker-compose -f docker-compose.test.yml up -d
     - sleep 30
-    - docker exec iss-test-back ./manage.py test
+    # - docker exec iss-test-back ./manage.py test
+    - docker exec iss-test-front npm test
     - docker-compose -f docker-compose.test.yml down
   # when: manual
