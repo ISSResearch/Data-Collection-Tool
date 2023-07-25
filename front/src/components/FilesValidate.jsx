@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSwiper, useFiles } from '../hooks';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
-import FileInfo from './common/FileInfo';
+import FileModification from './common/FileModification';
 import Load from './common/Load';
 import api from '../config/api';
 import '../styles/components/filesvalidate.css';
@@ -29,7 +29,7 @@ export default function FilesValidate({pathID, attributes}) {
     <div className='iss__validation'>
       <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
       <FileSwiper fileManager={fileManager} sliderManager={sliderManager} />
-      <FileInfo
+      <FileModification
         fileManager={fileManager}
         sliderManager={sliderManager}
         attributes={attributes}

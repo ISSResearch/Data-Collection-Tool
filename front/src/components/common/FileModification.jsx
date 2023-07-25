@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useFile } from '../../hooks'
 import SelectGroup from './ui/SelectGroup';
 import api from '../../config/api';
-import '../../styles/components/common/fileinfo.css';
+import '../../styles/components/common/filemodification.css';
 
-export default function FileInfo({ fileManager, sliderManager, attributes }) {
+export default function FileModification({ fileManager, sliderManager, attributes }) {
   const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;

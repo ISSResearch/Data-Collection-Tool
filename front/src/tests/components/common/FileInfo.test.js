@@ -1,5 +1,5 @@
 import { fireEvent, render, act, renderHook, screen } from '@testing-library/react';
-import FileInfo from '../../../components/common/FileInfo';
+import FileModification from '../../../components/common/FileModification';
 import { useFiles, useSwiper } from '../../../hooks';
 import { mock_raw_files, mock_prepared_attributes } from '../../_mock';
 
@@ -13,7 +13,7 @@ test("file info component test", () => {
   });
 
   const { rerender } = render(
-    <FileInfo
+    <FileModification
       fileManager={filesHook.current}
       sliderManager={swiperHook.current}
       attributes={mock_prepared_attributes}
@@ -32,7 +32,7 @@ test("file info component test", () => {
   expect(filesHook.current.files[swiperHook.current.slide-1].status).toBe('a');
   expect(swiperHook.current.slide).toBe(1);
 
-  rerender(<FileInfo
+  rerender(<FileModification
     fileManager={filesHook.current}
     sliderManager={swiperHook.current}
     attributes={mock_prepared_attributes}
