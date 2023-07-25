@@ -83,8 +83,6 @@ class FilesViewSetTest(TestCase):
 
         request = '{"name":"blog3 copy","extension":"png","type":"image","atrsGroups":[[]]}'
 
-        # TODO: breaks due to  File "/app/file/services.py", line 150, in _upload_file mkdir(f'{storage.location}/{self.project_id}') FileNotFoundError: [Errno 2] No such file or directory: '/app/file_store/19'
-        return
         response = self.client.post(
             f'/api/files/project/{self.case.project.id}/',
             data={'meta[]': [request]},

@@ -146,9 +146,11 @@ class FileUploader:
             meta["extension"]
         )
 
+        if not storage.exists(storage.location): mkdir(storage.location)
+
         if not storage.exists(str(self.project_id)):
             mkdir(f'{storage.location}/{self.project_id}')
-        with open(save_path, 'bw'): pass
+        # with open(save_path, 'bw'): pass
         # file_path = storage.save(save_path, ContentFile(byte_file))
 
         file_groups_count = len(meta.get('atrsGroups', []))

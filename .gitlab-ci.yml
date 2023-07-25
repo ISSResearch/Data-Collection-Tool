@@ -21,6 +21,5 @@ build and tests application:
     - docker exec iss-test-back ./manage.py test
     - docker exec iss-test-front npm test
   after_script:
-    # - docker system prune --all --volumes --force
     - docker-compose -f docker-compose.test.yml down --volumes
   # when: manual

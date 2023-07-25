@@ -26,8 +26,6 @@ class FileUploaderTest(TestCase):
             'POST': post
         })
 
-        # TODO: breaks due to: File "/app/file/services.py", line 150, in _upload_file mkdir(f'{storage.location}/{self.project_id}') - FileNotFoundError: [Errno 2] No such file or directory: '/app/file_store/15'
-        return
         uploader = FileUploader(request, self.case.project.id)
 
         uploader.proceed_upload()
