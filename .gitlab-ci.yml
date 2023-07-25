@@ -5,11 +5,6 @@ build and tests application:
   stage: test
   before_script:
     - echo "Setting environment up..."
-    - apk update
-    - apk add python3
-    - apk add py3-pip
-    - pip3 install --upgrade pip setuptools
-    - pip install selenium
     - echo "DEBUG=True" >> back/proj_back/.env
     - echo "SERVER_ORIGINS='127.0.0.1,localhost,iss-test-front,iss-front,iss-test-back,iss-back'" >> back/proj_back/.env
   script:
@@ -21,6 +16,7 @@ build and tests application:
     - echo "Running tests..."
     - docker exec iss-test-back ./manage.py test
     - docker exec iss-test-front npm test
+    - docker exec iss-test-ui python3 tests/test.py
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes
   # when: manual
