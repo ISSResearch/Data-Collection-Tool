@@ -54,8 +54,6 @@ services:
     image: selenium/hub
     depends_on:
       - iss-test-front
-    ports:
-      - 4444:4444
     networks:
       - iss_test_network
 
