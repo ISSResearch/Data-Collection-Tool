@@ -20,7 +20,7 @@ build and tests application:
     - sleep 30
     - echo "Running tests..."
     - docker exec iss-test-back ./manage.py test
-    - docker exec iss-test-front npm test --watchAll=false
+    - docker exec iss-test-front CI=true npm test
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes
   # when: manual
