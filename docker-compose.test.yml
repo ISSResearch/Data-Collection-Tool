@@ -103,14 +103,12 @@ services:
 
   iss-test-ui:
     container_name: iss-test-ui
-    image: python:3.11-slim-bookworm
+    build: ./ui-tests
     depends_on:
       # - iss-selenium-chrome
       # - iss-selenium-edge
       - iss-selenium-fox
-    volumes:
-      - ./tests:/tests
-    command: sh -c "pip3 install selenium && tail -f /dev/null"
+    command: tail -f /dev/null
     networks:
       - iss_test_network
 
