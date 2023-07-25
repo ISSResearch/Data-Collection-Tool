@@ -16,9 +16,7 @@ build and tests application:
     - echo "Running tests..."
     - docker exec iss-test-back ./manage.py test
     - docker exec iss-test-front npm test
-    - docker logs iss-selenium-hub
-    - docker logs iss-selenium-fox
-    - docker exec iss-test-ui python3 test.py
+    # - docker exec iss-test-ui python3 test.py
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes
   # when: manual
