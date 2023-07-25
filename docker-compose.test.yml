@@ -44,6 +44,7 @@ services:
       - iss-test-back
     environment:
       CASE: test
+      CI: true
     command: npm start
     networks:
       - iss_test_network
