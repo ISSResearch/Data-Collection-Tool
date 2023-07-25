@@ -17,6 +17,8 @@ build and tests application:
     - docker exec iss-test-back ./manage.py test
     - docker exec iss-test-front npm test
     - docker exec iss-test-ui ls
+    - ls
+    - docker exec iss-test-ui ls tests
     - docker exec iss-test-ui python3 /tests/test.py
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes
