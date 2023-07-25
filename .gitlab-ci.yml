@@ -1,6 +1,9 @@
 stages:
   - test
 
+variables:
+  CI: "true"
+
 build and tests application:
   stage: test
   before_script:
