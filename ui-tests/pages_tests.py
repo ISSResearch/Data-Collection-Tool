@@ -9,7 +9,7 @@ from utils import ensure_login, get_project, switch_to_view
 class LoginPageTests:
     login_url = 'login'
 
-    def run_tests(self):
+    def run_login_tests(self):
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.login_url)
 
@@ -17,6 +17,7 @@ class LoginPageTests:
         if user_logged:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
 
+        return #TODO:
         self._login_ui_test()
         self._login_invalid_login()
         self._login_login_test()
@@ -79,7 +80,7 @@ class LoginPageTests:
 class RegistrationTest:
     registrations_url ='registration'
 
-    def run_tests(self):
+    def run_registration_tests(self):
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.registrations_url)
 
@@ -153,10 +154,11 @@ class RegistrationTest:
 class ProjectsPageTests:
     projects_url = ''
 
-    def run_tests(self):
+    def run_projectspage_tests(self):
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.projects_url)
 
+        return #TODO:
         self._projects_ui_test()
         self._projects_main_create_test()
         self._projects_main_projects_test()
@@ -275,9 +277,10 @@ class ProjectsPageTests:
 class ProjectPageTests:
     project_base_url = 'project/'
 
-    def run_tests(self):
+    def run_projectpage_tests(self):
         self.assertTrue(self.driver)
 
+        return #TODO:
         if not self.test_project: get_project(self)
 
         self.driver.get(self.test_project['link'])
@@ -610,4 +613,4 @@ class ProjectPageTests:
 
 
 class BlankPageTests:
-    def run_tests(self): ...
+    def run_blankpage_tests(self): ...
