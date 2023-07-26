@@ -109,8 +109,6 @@ services:
       - iss-selenium-chrome
       # - iss-selenium-edge
       - iss-selenium-fox
-    volumes:
-      - ./ui-tests/:/tests
     command: tail -f /dev/null
     networks:
       - iss_test_network
