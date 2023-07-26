@@ -51,7 +51,8 @@ services:
 
   iss-selenium-hub:
     container_name: iss-selenium-hub
-    image: selenium/hub
+    # image: selenium/hub
+    image: seleniarm/hub
     depends_on:
       - iss-test-front
     networks:
@@ -87,7 +88,8 @@ services:
 
   iss-selenium-fox:
     container_name: iss-selenium-fox
-    image: selenium/node-firefox
+    # image: selenium/node-firefox
+    image: seleniarm/node-firefox
     depends_on:
       - iss-selenium-hub
     volumes:
