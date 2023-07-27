@@ -51,7 +51,6 @@ services:
 
   iss-selenium-hub:
     container_name: iss-selenium-hub
-    # image: selenium/hub
     image: seleniarm/hub
     depends_on:
       - iss-test-front
@@ -60,7 +59,6 @@ services:
 
   iss-selenium-chrome:
     container_name: iss-selenium-chrome
-    # image: selenium/node-chrome
     image: seleniarm/node-chromium
     depends_on:
       - iss-selenium-hub
@@ -73,23 +71,8 @@ services:
     networks:
       - iss_test_network
 
-  # iss-selenium-edge:
-  #   container_name: iss-selenium-edge
-  #   image: selenium/node-edge
-  #   depends_on:
-  #     - iss-selenium-hub
-  #   volumes:
-  #     - /dev/shm:/dev/shm
-  #   environment:
-  #     SE_EVENT_BUS_HOST: iss-selenium-hub
-  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
-  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-  #   networks:
-  #     - iss_test_network
-
   iss-selenium-fox:
     container_name: iss-selenium-fox
-    # image: selenium/node-firefox
     image: seleniarm/node-firefox
     depends_on:
       - iss-selenium-hub
@@ -102,13 +85,14 @@ services:
     networks:
       - iss_test_network
 
-  iss-test-ui:
-    container_name: iss-test-ui
-    build: ./ui-tests
+  iss-tests:
+    container_name: iss-tests
+    build: ./tests
     depends_on:
       - iss-selenium-chrome
-      # - iss-selenium-edge
       - iss-selenium-fox
+    volumes:
+      - ./back/proj_back:/tests/backend_code/
     command: tail -f /dev/null
     networks:
       - iss_test_network
