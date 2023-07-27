@@ -35,10 +35,10 @@ class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
 
         self.assertTrue(response.status_code == 200)
         self.assertTrue(len(response.data) == 4)
-        self.assertTrue(all(
+        self.assertTrue(all([
             bool(projects[0].name == self.data['name'] + '0'),
             bool(projects[0].description == self.data['description'] + '0')
-        ))
+        ]))
 
     def test_create_project(self):
         self.client.force_login(self.user)
