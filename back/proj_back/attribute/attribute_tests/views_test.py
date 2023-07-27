@@ -22,7 +22,7 @@ class LevelViewsetTest(TestCase, MOCK_CLASS):
             f'/api/attributes/levels/{self.case_unassigned.level.id}/'
         )
         unexisted_check_request = self.client.get(
-            f'/api/attributes/levels/123987/'
+            '/api/attributes/levels/123987/'
         )
 
         self.assertTrue(legit_check_request.status_code == 403)
@@ -84,7 +84,7 @@ class AttributeViewsetTest(TestCase):
             f'/api/attributes/attributes/{self.case_unassigned.attribute.id}/'
         )
         unexisted_check_request = self.client.get(
-            f'/api/attributes/attributes/123987/'
+            '/api/attributes/attributes/123987/'
         )
 
         self.assertTrue(legit_check_request.status_code == 403)

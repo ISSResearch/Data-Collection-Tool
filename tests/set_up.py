@@ -25,8 +25,8 @@ class Options:
         option.add_argument("--headless")
 
         self.driver = webdriver.Remote(
-          command_executor=self.hub_url,
-          options=option
+            command_executor=self.hub_url,
+            options=option
         )
 
 

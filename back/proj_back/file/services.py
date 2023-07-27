@@ -3,7 +3,7 @@ from django.db import connection
 from rest_framework import status
 from .serializers import File
 from attribute.models import AttributeGroup as AGroup
-from hashlib import md5
+# from hashlib import md5
 from os import path, mkdir
 from json import loads, dumps
 from tempfile import NamedTemporaryFile
@@ -25,9 +25,9 @@ def prepare_zip_data(files, serialized_data, zip_name):
         json_data = dumps(serialized_data, indent=4).encode('utf-8')
 
         with NamedTemporaryFile() as temp_json:
-          temp_json.write(json_data)
-          temp_json.seek(0)
-          zp.write(temp_json.name, arcname='annotation.json')
+            temp_json.write(json_data)
+            temp_json.seek(0)
+            zp.write(temp_json.name, arcname='annotation.json')
 
     return zip_location
 
@@ -61,11 +61,11 @@ class FileUploader:
 
     def proceed_upload(self):
         self \
-              .get_attribute_groups_instances() \
-              .get_file_instances() \
-              .write_files() \
-              .assign_attributes() \
-              .set_created()
+            .get_attribute_groups_instances() \
+            .get_file_instances() \
+            .write_files() \
+            .assign_attributes() \
+            .set_created()
         self.status = True
 
     def get_attribute_groups_instances(self):
@@ -74,9 +74,9 @@ class FileUploader:
         available_groups = list(AGroup.get_free_groups())
         new_groups = AGroup.objects.bulk_create(
             [AGroup() for _ in range(required_length - len(available_groups))],
-            #TODO:   return self.cursor.execute(sql, params)
-          #   django.db.utils.DataError: value too long for type character varying(100)
-            #batch_size=400
+            # TODO:   return self.cursor.execute(sql, params)
+            # django.db.utils.DataError: value too long for type character varying(100)
+            # batch_size=400
         )
         available_groups.extend(new_groups)
 
@@ -93,7 +93,7 @@ class FileUploader:
     def write_files(self):
         File.objects.bulk_create(
             [file for file, _, _ in self.new_instances],
-            #batch_size=100
+            # batch_size=100
         )
         AGroup.objects.bulk_update(
             [
@@ -102,7 +102,7 @@ class FileUploader:
                 for group in file_groups
             ],
             ['file_id'],
-            #batch_size=300
+            # batch_size=300
         )
         return self
 
@@ -175,22 +175,22 @@ class FileUploader:
         if not path.exists(save_path):
             save_name = f'{real_name}.{file_extension}'
         else:
-          copy_count = 1
-          while path.exists(save_path):
-              save_path = path.join(
-                  storage.location,
-                  str(self.project_id),
-                  f'{real_name}_{copy_count}.{file_extension}'
-              )
-              copy_count += 1
-          save_name = f'{real_name}_{copy_count}.{file_extension}'
+            copy_count = 1
+            while path.exists(save_path):
+                save_path = path.join(
+                    storage.location,
+                    str(self.project_id),
+                    f'{real_name}_{copy_count}.{file_extension}'
+                )
+                copy_count += 1
+            save_name = f'{real_name}_{copy_count}.{file_extension}'
 
         return save_name, save_path
 
     def _assign_groups(self, file, groups_count):
         file_groups = list()
 
-        for group in self.attribute_groups_instances[self.groups_taken:self.groups_taken+groups_count]:
+        for group in self.attribute_groups_instances[self.groups_taken:self.groups_taken + groups_count]:
             group.file = file
             file_groups.append(group)
 
@@ -214,7 +214,7 @@ def upload_chunk(request, file_id):
     try:
         file = File.objects.get(id=file_id)
         with open(file.path.path, 'ba') as f: f.write(file_chunk.read())
-    except:
+    except Exception:
         response['success'] = False
         response_status = status.HTTP_400_BAD_REQUEST
 

@@ -16,7 +16,7 @@ SELF_ORIGIN = None
 
 if RAW_ORIGIN:
     RAW_ORIGIN = RAW_ORIGIN.replace(' ', '').split(',')
-    SELF_ORIGIN = [ f"http://{origin}:3000" for origin in RAW_ORIGIN]
+    SELF_ORIGIN = [f"http://{origin}:3000" for origin in RAW_ORIGIN]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-		'rest_framework',
+    'rest_framework',
     'corsheaders',
     'user',
     'api',
@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
-  {
+    {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
@@ -135,7 +135,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-       'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -163,4 +163,3 @@ __LOGGING = {
         }
     }
 }
-

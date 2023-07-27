@@ -38,7 +38,6 @@ class DeleteServiceTest(TestCase):
         self.assertTrue(not Level.objects.filter(id=level_id))
         self.assertTrue(not Attribute.objects.filter(id__in=attributes_id))
 
-
     def test_attribute_delete(self):
         case_legit, case_unassigned = case_set_up()
 

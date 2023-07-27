@@ -28,7 +28,7 @@ class ProjectsViewSet(APIView):
             response_data['errors'] = new_project.errors
             response_status = status.HTTP_400_BAD_REQUEST
 
-        return  Response(response_data, status=response_status)
+        return Response(response_data, status=response_status)
 
 
 class ProjectViewSet(APIView):
@@ -39,11 +39,11 @@ class ProjectViewSet(APIView):
         response_status = status.HTTP_200_OK
 
         try:
-          project = Project.objects \
-              .prefetch_related('attribute_set') \
-              .filter(visible=True) \
-              .get(id=pk)
-          response = ProjectSerializer(project).data
+            project = Project.objects \
+                .prefetch_related('attribute_set') \
+                .filter(visible=True) \
+                .get(id=pk)
+            response = ProjectSerializer(project).data
 
         except Project.DoesNotExist:
             response = 'query project does not exist'
@@ -62,23 +62,23 @@ class ProjectViewSet(APIView):
             else status.HTTP_400_BAD_REQUEST
         )
 
-        return  Response(response_data, status=response_status)
+        return Response(response_data, status=response_status)
 
     def delete(self, request, pk):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
-          project = Project.objects.filter(visible=True).get(id=pk)
+            project = Project.objects.filter(visible=True).get(id=pk)
 
-          if request.data.get('approval') != project.name:
-              response = 'approval text differs from the actual name'
-              response_status = status.HTTP_400_BAD_REQUEST
-          else:
-              project.visible = False
-              project.reason_if_hidden = 'd'
-              project.save()
-              response = {'deleted': True}
+            if request.data.get('approval') != project.name:
+                response = 'approval text differs from the actual name'
+                response_status = status.HTTP_400_BAD_REQUEST
+            else:
+                project.visible = False
+                project.reason_if_hidden = 'd'
+                project.save()
+                response = {'deleted': True}
 
         except Project.DoesNotExist:
             response = 'query project does not exist'

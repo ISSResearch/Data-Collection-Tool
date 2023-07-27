@@ -17,7 +17,7 @@ class LoginPageTests:
         if user_logged:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
 
-        return #TODO:
+        return  # TODO:
         self._login_ui_test()
         self._login_invalid_login()
         self._login_login_test()
@@ -78,7 +78,7 @@ class LoginPageTests:
 
 
 class RegistrationTest:
-    registrations_url ='registration'
+    registrations_url = 'registration'
 
     def run_registration_tests(self):
         self.assertTrue(self.driver)
@@ -108,23 +108,23 @@ class RegistrationTest:
         self.assertEqual(self.driver.current_url, self.base_url + 'login')
 
     def _registration_invalid_test(self):
-          user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
-          if user_logged:
-              self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
+        user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
 
-          self.driver.get(self.base_url + self.registrations_url)
+        if user_logged: self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
 
-          [name, pass1, pass2] = self.driver.find_elements(By.TAG_NAME, value='input')
+        self.driver.get(self.base_url + self.registrations_url)
 
-          name.send_keys('FailInutTestName')
-          pass1.send_keys('FailInutTestName1290')
-          pass2.send_keys('FailInutTestName1190')
+        [name, pass1, pass2] = self.driver.find_elements(By.TAG_NAME, value='input')
 
-          self.driver.find_element(By.TAG_NAME, value='button').click()
+        name.send_keys('FailInutTestName')
+        pass1.send_keys('FailInutTestName1290')
+        pass2.send_keys('FailInutTestName1190')
 
-          WebDriverWait(self.driver, timeout=3).until(
-              lambda d: d.find_element(By.CLASS_NAME, value='iss__formContainer__errors')
-          )
+        self.driver.find_element(By.TAG_NAME, value='button').click()
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.CLASS_NAME, value='iss__formContainer__errors')
+        )
 
     def _registration_valid_test(self):
         user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
@@ -158,7 +158,7 @@ class ProjectsPageTests:
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.projects_url)
 
-        return #TODO:
+        return  # TODO:
         self._projects_ui_test()
         self._projects_main_create_test()
         self._projects_main_projects_test()
@@ -280,7 +280,7 @@ class ProjectPageTests:
     def run_projectpage_tests(self):
         self.assertTrue(self.driver)
 
-        return #TODO:
+        return  # TODO:
         if not self.test_project: get_project(self)
 
         self.driver.get(self.test_project['link'])
@@ -307,8 +307,8 @@ class ProjectPageTests:
 
         self.assertEqual(
             len(
-                self.driver \
-                    .find_element(By.CLASS_NAME, value='iss__titleSwitch__radio') \
+                self.driver
+                    .find_element(By.CLASS_NAME, value='iss__titleSwitch__radio')
                     .find_elements(By.TAG_NAME, value='input')
             ),
             5
@@ -363,7 +363,7 @@ class ProjectPageTests:
             type(
                 'fakeCard',
                 (object, ),
-                {'get_dom_attribute': lambda x: x,'click': lambda _: ..., 'fake': True}
+                {'get_dom_attribute': lambda x: x, 'click': lambda _: ..., 'fake': True}
             )
             for _ in range(2 - len(cards))
         ])
@@ -415,7 +415,7 @@ class ProjectPageTests:
             lambda d: d.find_element(By.CLASS_NAME, value='iss__stats__table')
         )
 
-        rows = self.driver.find_elements(By.CLASS_NAME, value='iss__stats__table-row')
+        self.driver.find_elements(By.CLASS_NAME, value='iss__stats__table-row')
 
     @ensure_login
     def _project_editing_test(self):
@@ -439,7 +439,7 @@ class ProjectPageTests:
         self.assertFalse(self.driver.find_elements(By.CLASS_NAME, value='iss__projectEdit__deleteProceed'))
         self.driver.find_element(By.CLASS_NAME, value='iss__projectEdit__deleteButton')
 
-        new_attribute_forms, _  = self.driver.find_elements(By.CLASS_NAME, value='iss__attributecreator')
+        new_attribute_forms, _ = self.driver.find_elements(By.CLASS_NAME, value='iss__attributecreator')
         self.assertFalse(
             new_attribute_forms.find_elements(By.CLASS_NAME, value='iss__attributesForm')
         )
@@ -447,9 +447,9 @@ class ProjectPageTests:
             .find_element(By.CLASS_NAME, value='iss__attributecreator__addButton') \
             .click()
         self.assertEqual(
-            new_attribute_forms \
-                .find_elements(By.CLASS_NAME, value='iss__attributesForm') \
-                .__len__(),
+            new_attribute_forms
+            .find_elements(By.CLASS_NAME, value='iss__attributesForm')
+            .__len__(),
             1
         )
 
@@ -487,8 +487,8 @@ class ProjectPageTests:
         cardOne, cardTwo = cards
 
         self.assertEqual(
-            self.driver \
-                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls') \
+            self.driver
+                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls')
                 .value_of_css_property('transform'),
             'matrix(1, 0, 0, 1, -95.5, 57)'
         )
@@ -503,8 +503,8 @@ class ProjectPageTests:
 
         ActionChains(self.driver).move_to_element(media).pause(1).perform()
         self.assertEqual(
-            self.driver \
-                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls') \
+            self.driver
+                .find_element(By.CLASS_NAME, value='iss__fileswiper__controls')
                 .value_of_css_property('transform'),
             'matrix(1, 0, 0, 1, -95.5, -11.4)'
         )
@@ -572,9 +572,9 @@ class ProjectPageTests:
 
         self.driver.find_element(By.CLASS_NAME, value='style--min')
         self.assertEqual(
-            self.driver \
-                .find_element(By.CLASS_NAME, value='iss__fileInfo__buttonsWrap') \
-                .find_elements(By.TAG_NAME, value='button') \
+            self.driver
+                .find_element(By.CLASS_NAME, value='iss__fileInfo__buttonsWrap')
+                .find_elements(By.TAG_NAME, value='button')
                 .__len__(),
             2
         )

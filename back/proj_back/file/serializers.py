@@ -35,7 +35,7 @@ class FileSerializer(serializers.ModelSerializer):
 
         delete_groups = set(str(group.uid) for group in current_attributes) - new_groups
 
-        current_attributes.filter(uid__in = delete_groups).delete()
+        current_attributes.filter(uid__in=delete_groups).delete()
 
     def _handle_group_change(self, group, current_groups):
         key, new_ids = group
@@ -54,6 +54,7 @@ class FileSerializer(serializers.ModelSerializer):
             newKey = str(new_group.uid)
 
         return newKey or key
+
 
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:

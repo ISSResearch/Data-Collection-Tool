@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .mock_user import MOCK_CLASS, MOCK_COLLECTOR_DATA
-from user.models import CustomUser
+
 
 class UserLoginViewTest(TestCase, MOCK_CLASS):
     def test_invalid_login_endpoint(self):

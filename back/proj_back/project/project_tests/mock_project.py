@@ -22,18 +22,18 @@ class MOCK_PROJECT:
                 'attributes': [
                     {
                         'children': [
-                          {
-                              'children': [],
-                              'id': 5502486269984042,
-                              'name': "subattribute11",
-                              'path': "0_0"
-                          },
-                          {
-                              'children': [],
-                              'id': 5502486269984043,
-                              'name': "subattribute12",
-                              'path': "0_1"
-                          },
+                            {
+                                'children': [],
+                                'id': 5502486269984042,
+                                'name': "subattribute11",
+                                'path': "0_0"
+                            },
+                            {
+                                'children': [],
+                                'id': 5502486269984043,
+                                'name': "subattribute12",
+                                'path': "0_1"
+                            },
                         ],
                         'id': 6940887817155961,
                         'name': "attribute1",
@@ -41,18 +41,18 @@ class MOCK_PROJECT:
                     },
                     {
                         'children': [
-                          {
-                              'children': [],
-                              'id': 5502446239924042,
-                              'name': "subattribute21",
-                              'path': "1_0"
-                          },
-                          {
-                              'children': [],
-                              'id': 5502286269954033,
-                              'name': "subattribute22",
-                              'path': "1_1"
-                          },
+                            {
+                                'children': [],
+                                'id': 5502446239924042,
+                                'name': "subattribute21",
+                                'path': "1_0"
+                            },
+                            {
+                                'children': [],
+                                'id': 5502286269954033,
+                                'name': "subattribute22",
+                                'path': "1_1"
+                            },
                         ],
                         'id': 6250877817155261,
                         'name': "attribute2",

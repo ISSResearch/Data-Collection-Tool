@@ -1,7 +1,7 @@
 from django.test import TestCase
 from attribute.attribute_tests.mock_attribute import MockCase
 from user.user_tests.mock_user import MOCK_CLASS
-from file.services import FileUploader, upload_chunk, prepare_zip_data, File
+from file.services import FileUploader, upload_chunk, prepare_zip_data, File # noqa
 
 
 # TODO: implement

@@ -35,9 +35,9 @@ class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
 
         self.assertTrue(response.status_code == 200)
         self.assertTrue(len(response.data) == 4)
-        self.assertTrue(bool(
-            projects[0].name == self.data['name'] + '0'
-            and projects[0].description == self.data['description'] + '0'
+        self.assertTrue(all(
+            bool(projects[0].name == self.data['name'] + '0'),
+            bool(projects[0].description == self.data['description'] + '0')
         ))
 
     def test_create_project(self):
@@ -128,7 +128,6 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT):
         self.assertTrue(updated_project.level_set.last().name)
         self.assertTrue(updated_project.level_set.last().name)
 
-
     def test_approved_delete_project(self):
         self.client.force_login(self.user)
 
@@ -146,7 +145,6 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT):
         self.assertTrue(request.status_code == 200)
         self.assertFalse(updated_project.visible)
         self.assertTrue(updated_project.reason_if_hidden == 'd')
-
 
     def test_unapproved_delete_project(self):
         self.client.force_login(self.user)

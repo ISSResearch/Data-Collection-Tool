@@ -31,7 +31,7 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
 
     def get_attributes(self, instance):
         return tuple(
-            instance.attribute \
-                .order_by('level__order', 'level_id') \
-                .values_list('id', 'level__order', 'name')
+            instance.attribute
+            .order_by('level__order', 'level_id')
+            .values_list('id', 'level__order', 'name')
         )

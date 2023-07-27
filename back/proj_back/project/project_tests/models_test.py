@@ -17,7 +17,7 @@ class ProjectModelTest(TestCase, MOCK_PROJECT):
                 for key in
                 ('id', 'name', 'description', 'created_at', 'visible', 'reason_if_hidden')
             ])
-          )
+        )
         self.assertEqual(new_project.name, self.data['name'])
         self.assertEqual(new_project.description, self.data['description'])
         self.assertEqual(new_project.level_set.count(), self.count_levels())

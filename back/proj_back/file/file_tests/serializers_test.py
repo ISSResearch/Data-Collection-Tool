@@ -41,7 +41,7 @@ class FileSerializerTest(TestCase):
         )
 
     def test_update_file_serializer(self):
-        data = FileSerializer(self.case.file_, {'status': 'a',}, partial=True)
+        data = FileSerializer(self.case.file_, {'status': 'a'}, partial=True)
 
         if data.is_valid(): data.update_file()
 

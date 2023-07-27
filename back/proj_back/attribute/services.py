@@ -6,9 +6,9 @@ from file.models import File
 def perform_level_delete(level):
     project_id = level.project_id
     current_file_attributes = set(
-        File.objects \
-          .filter(project_id=project_id) \
-          .values_list('attributegroup__attribute', flat=True)
+        File.objects
+            .filter(project_id=project_id)
+            .values_list('attributegroup__attribute', flat=True)
     )
     level_delete_attributes = set(
         level.descendants().reverse().values_list('attribute', flat=True)
@@ -33,9 +33,9 @@ def perform_level_delete(level):
 def check_level_delete(level):
     project_id = level.project_id
     current_file_attributes = set(
-        File.objects \
-          .filter(project_id=project_id) \
-          .values_list('attributegroup__attribute', flat=True)
+        File.objects
+            .filter(project_id=project_id)
+            .values_list('attributegroup__attribute', flat=True)
     )
     level_delete_attributes = set(
         level.descendants().reverse().values_list('attribute', flat=True)
@@ -51,9 +51,9 @@ def check_level_delete(level):
 def perform_attribute_delete(attribute):
     project_id = attribute.project_id
     current_file_attributes = set(
-        File.objects \
-          .filter(project_id=project_id) \
-          .values_list('attributegroup__attribute', flat=True)
+        File.objects
+            .filter(project_id=project_id)
+            .values_list('attributegroup__attribute', flat=True)
     )
     delete_attributes = set(
         attribute.descendants().values_list('id', flat=True)
@@ -74,9 +74,9 @@ def perform_attribute_delete(attribute):
 def check_attribute_delete(attribute):
     project_id = attribute.project_id
     current_file_attributes = set(
-        File.objects \
-          .filter(project_id=project_id) \
-          .values_list('attributegroup__attribute', flat=True)
+        File.objects
+            .filter(project_id=project_id)
+            .values_list('attributegroup__attribute', flat=True)
     )
     delete_attributes = set(
         attribute.descendants().values_list('id', flat=True)

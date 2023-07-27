@@ -32,25 +32,25 @@ class Project(models.Model):
         current_level, *rest = levels
 
         try:
-          lookup_value = current_level.get('uid', current_level['id'])
-          LEVEL, changed = self.level_set.get(uid=lookup_value), False
+            lookup_value = current_level.get('uid', current_level['id'])
+            LEVEL, changed = self.level_set.get(uid=lookup_value), False
 
-          if LEVEL.name != current_level['name']:
-              LEVEL.name = current_level['name']
-              changed = True
+            if LEVEL.name != current_level['name']:
+                LEVEL.name = current_level['name']
+                changed = True
 
-          if LEVEL.multiple != current_level.get('multiple', False):
-              LEVEL.multiple = current_level.get('multiple', False)
-              changed = True
+            if LEVEL.multiple != current_level.get('multiple', False):
+                LEVEL.multiple = current_level.get('multiple', False)
+                changed = True
 
-          if LEVEL.required != current_level.get('required', False):
-              LEVEL.required = current_level.get('required', False)
-              changed = True
+            if LEVEL.required != current_level.get('required', False):
+                LEVEL.required = current_level.get('required', False)
+                changed = True
 
-          if changed: LEVEL.save()
+            if changed: LEVEL.save()
 
         except Level.DoesNotExist:
-           LEVEL = self.level_set.create(
+            LEVEL = self.level_set.create(
                 uid=lookup_value,
                 name=current_level['name'],
                 parent=parent_level,

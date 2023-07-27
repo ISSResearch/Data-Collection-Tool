@@ -37,13 +37,13 @@ class FileViewSet(APIView):
 
     def delete(self, _, fileID):
         try:
-          file = File.objects.get(id=fileID)
-          file.attributegroup_set.clear()
-          file.delete()
+            file = File.objects.get(id=fileID)
+            file.attributegroup_set.clear()
+            file.delete()
 
-          return Response({'deleted': True}, status=status.HTTP_202_ACCEPTED)
+            return Response({'deleted': True}, status=status.HTTP_202_ACCEPTED)
 
-        except:
+        except Exception:
             return Response({'deleted': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -86,7 +86,7 @@ def get_stats(_, projectID):
             'attribute__parent',
             'attribute__attributegroup__file__file_type',
             'attribute__attributegroup__file__status'
-          ) \
+        ) \
         .annotate(count=Count('attribute__attributegroup__file__file_type'))
 
     empty_attributes_files = File.objects \
