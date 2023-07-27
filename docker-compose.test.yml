@@ -87,6 +87,7 @@ services:
 
   iss-tests:
     container_name: iss-tests
+    image: iss_tests
     build: ./tests
     depends_on:
       - iss-selenium-chrome
