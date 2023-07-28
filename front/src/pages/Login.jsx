@@ -22,7 +22,7 @@ export default function Login() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
     )
-      .then(({status, data}) => {
+      .then(({ data }) => {
         if (!data.isAuth) throw new Error(data.message);
         setUser(data.user);
         if (window.location.pathname  === '/login') navigate('/');
@@ -52,3 +52,4 @@ export default function Login() {
     </div>
   );
 }
+// TODO: changes - revise tests

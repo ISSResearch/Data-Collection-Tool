@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserContext } from "../context/User";
 import { useContext } from "react";
 import { routes } from '../config/routes';
@@ -13,10 +13,21 @@ export default function AppRouter() {
       <div className="iss__pageContent">
         {
           user
-            ? <Routes>
+          ? <Routes>
               {
-                routes.map(({ path, element, exact }) =>
-                  <Route key={path} path={path} element={element} exact={exact}/>
+                routes.map(({ path, element, exact, children }) =>
+                  <Route
+                    key={path}
+                    path={path}
+                    element={element}
+                    exact={exact}
+                  >
+                    {
+                      children?.map(({ path, element, exact}) =>
+                        <Route key={path} path={path} element={element} exact={exact}/>
+                      )
+                    }
+                  </Route>
                 )
               }
             </Routes>
@@ -29,3 +40,4 @@ export default function AppRouter() {
     </main>
   );
 }
+// TODO: changes - revise tests

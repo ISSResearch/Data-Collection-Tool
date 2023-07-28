@@ -5,27 +5,26 @@
   width: fit-content;
   border-bottom: 1px solid var(--issBrand);
 }
-.iss__titleSwitch__radio {
-  display: flex;
-  width: fit-content;
-  border: unset;
-  user-select: none;
+.iss__titleSwitch__navWrap {
   place-self: flex-end;
 }
-.iss__titleSwitch__radio input {
-  display: none;
+.iss__titleSwitch__nav {
+  display: flex;
+  width: fit-content;
+  list-style: none;
 }
-.iss__titleSwitch__radioItem, .iss__titleSwitch__radioItem--active {
+.iss__titleSwitch__navItem, .iss__titleSwitch__navItem--active {
+  display: block;
   padding: 4px 8px;
   outline: 1px solid #62abff00;
   transition: outline 0.3s ease, color 0.3s ease;
+  text-decoration: none;
 }
-.iss__titleSwitch__radioItem:hover {
+.iss__titleSwitch__navItem:hover {
   outline-color: var(--issBrand);
   color: var(--issBrand);
-  cursor: pointer;
 }
-.iss__titleSwitch__radioItem--active {
+.iss__titleSwitch__navItem--active {
   outline: 1px solid var(--issBrand);
   background-color: var(--issBrand);
   color: white;

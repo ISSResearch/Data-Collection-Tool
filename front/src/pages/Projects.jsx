@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import AllProjects from '../components/AllProjects';
 import Load from '../components/common/Load';
@@ -7,14 +8,28 @@ import TitleSwitch from "../components/common/TitleSwitch";
 import api from '../config/api';
 import '../styles/pages/projects.css';
 
+const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
+const PROTECTED_ROUTE_LINKS = [
+  { name: 'create project', link: 'create' }
+];
+
 export default function Projects() {
   const [projects, setProjects] = useState(null);
-  const [pageOption, setOption] = useState('all');
+  const [currentRoute, setCurrentRoute] = useState('projects');
+  const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
-  const commonOptions = [{ name: 'all projects', value: 'all' }];
-  const adminOptions = [ ...commonOptions ];
-  if (user?.is_superuser) adminOptions.push({ name: 'create project', value: 'create' });
+  const userOptions = [...ROUTE_LINKS];
+  if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
+
+  const PageVariant = (props) => {
+    const variants = {
+      create: ProjectCreate
+    }
+    const Component = variants[currentRoute] || AllProjects;
+    return <Component {...props} />;
+  }
 
   useEffect(() => {
     api.get('/api/projects/')
@@ -22,22 +37,32 @@ export default function Projects() {
       .catch(err => alert(err.message));
   }, []);
 
+  useEffect(() => {
+    const getLocation = () => {
+      const [, mainPath, childPath] = location.pathname.split('/');
+      return childPath || mainPath;
+    };
+    setCurrentRoute(getLocation());
+    if (
+      PROTECTED_ROUTE_LINKS.map(({link}) => link).includes(currentRoute)
+      && !userOptions.map(({link}) => link).includes(currentRoute)
+    ) navigate('/projects');
+  }, [location]);
+
   return (
     <div className="iss__projects">
       <TitleSwitch
-        title='Projects Page'
-        options={user?.user_role === 'a' ? adminOptions : commonOptions}
-        currentOption={pageOption}
-        handler={setOption}
+        title='Projects'
+        links={userOptions}
+        currentRoute={currentRoute}
+        parent={'projects'}
       />
       {
         !projects
           ? <div className="iss__projects__load"><Load/></div>
-          : <>
-            {pageOption !== 'create' && <AllProjects items={projects}/>}
-            {pageOption === 'create' && <ProjectCreate />}
-          </>
+          : <PageVariant items={projects}/>
       }
     </div>
   );
 }
+// TODO: changes - revise tests

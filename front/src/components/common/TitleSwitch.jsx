@@ -1,27 +1,30 @@
+import { Link } from 'react-router-dom';
 import '../../styles/components/common/titleswitch.css';
 
-export default function TitleSwitch({title, options, currentOption, handler}) {
+export default function TitleSwitch({title, links, currentRoute, parent }) {
+  const createLink = (link) => '/' + [parent, link].join('/');
 
   return (
     <div className='iss__titleSwitch'>
       <h1 className="iss__titleSwitch__title">{title}</h1>
-      <fieldset
-        onChange={({target}) => handler(target.value)}
-        className='iss__titleSwitch__radio'
-      >
-        {
-          options.map(({name, value}) => (
-            <label
-              key={value}
-              className={
-                currentOption === value
-                  ? 'iss__titleSwitch__radioItem--active'
-                  : 'iss__titleSwitch__radioItem'
-              }
-            ><input type="radio" name="option" value={value}/>{name}</label>
-          ))
-        }
-      </fieldset>
+      <nav className='iss__titleSwitch__navWrap'>
+        <ul className='iss__titleSwitch__nav'>
+          {
+            links.map(({name, link}) => (
+              <li key={link}>
+                <Link
+                  className={currentRoute === (link || parent)
+                    ? 'iss__titleSwitch__navItem--active'
+                    : 'iss__titleSwitch__navItem'
+                  }
+                  to={createLink(link)}
+                >{name}</Link>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </div>
   )
 }
+// TODO: changes - revise tests

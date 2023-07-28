@@ -1,4 +1,4 @@
-import { Link, useParams, useNavigate } from "react-router-dom"
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
 import { useEffect, useState, useContext } from "react";
 import { attributeAdapter } from '../utils/adapters';
 import { UserContext } from '../context/User';
@@ -12,22 +12,25 @@ import Load from '../components/common/Load';
 import api from "../config/api";
 import '../styles/pages/project.css';
 
+const ROUTE_LINKS = [{ name: 'upload data', link: '' }];
+const PROTECTED_ROUTE_LINKS = [
+  { name: 'validate data', link: 'validate' },
+  { name: 'download data', link: 'download' },
+  { name: 'statistics', link: 'stats' },
+];
+
 export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState({});
-  const [pageOption, setOption] = useState('upload');
+  const [currentRoute, setCurrentRoute] = useState('projects');
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useContext(UserContext);
   const { projectID } = useParams();
-  const navigate = useNavigate();
 
-  const commonOptions = [{ name: 'upload data', value: 'upload' }];
-  const adminOptions = [
-    ...commonOptions,
-    { name: 'validate data', value: 'validate' },
-    { name: 'download data', value: 'download' },
-    { name: 'statistics', value: 'stats' },
-  ];
-  if (user?.is_superuser) adminOptions.push({ name: 'editing', value: 'edit' });
+  const userOptions = [...ROUTE_LINKS];
+  if (user?.user_role === 'a') userOptions.push(...PROTECTED_ROUTE_LINKS);
+  if (user?.is_superuser) userOptions.push({ name: 'editing', link: 'edit' });
 
   useEffect(() => {
     if (!projectID) return;
@@ -40,33 +43,45 @@ export default function ProjectPage() {
       .catch(() => navigate('/404'));
   }, [projectID]);
 
+  useEffect(() => {
+    const getLocation = () => {
+      const [, mainPath, id, childPath] = location.pathname.split('/');
+      return childPath || `${mainPath}/${id}`;
+    };
+    setCurrentRoute(getLocation());
+    if (
+      PROTECTED_ROUTE_LINKS.map(({link}) => link).includes(currentRoute)
+      && !userOptions.map(({link}) => link).includes(currentRoute)
+    ) navigate('/projects');
+  }, [location]);
+
   const PageVariant = (props) => {
     const variants = {
       validate: FilesValidate,
-      download: FilesDownload,
       stats: FilesStatistics,
-      upload: FilesUpload,
+      download: FilesDownload,
       edit: ProjectEdit,
     }
-    const Component = variants[pageOption] || FilesUpload;
-    return <Component {...props}/>;
+    const Component = variants[currentRoute] || FilesUpload;
+    return <Component {...props} />;
   }
 
   return (
     <div className='iss__projectPage'>
-      <Link to="/" className="iss__projectPage__button">back to</Link>
+      <Link to="/projects" className="iss__projectPage__button">back to</Link>
       <TitleSwitch
         title={project.name}
-        options={user?.user_role === 'a' ? adminOptions : commonOptions}
-        currentOption={pageOption}
-        handler={setOption}
+        links={userOptions}
+        currentRoute={currentRoute}
+        parent={`projects/${projectID}`}
+
       />
       {
         loading
           ? <div className="iss_projectPage__load"><Load/></div>
           : <>
             {
-              pageOption !== 'edit' &&
+              currentRoute !== 'edit' &&
                 <p className="iss__projectPage__description">
                   Description: {project.description}
                 </p>
@@ -82,3 +97,4 @@ export default function ProjectPage() {
     </div>
   );
 }
+// TODO: changes - revise tests

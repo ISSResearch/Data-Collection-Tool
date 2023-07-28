@@ -65,7 +65,9 @@
   place-self: center;
 }
 .file--zoom {
-  scale: 2;
+  scale: 3;
   position: inherit;
   z-index: 5;
+  background-color: unset;
+  transition: scale 0.2s ease;
 }
