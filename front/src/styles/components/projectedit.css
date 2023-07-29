@@ -58,12 +58,6 @@
   white-space: nowrap;
   transition: color 0.3s ease;
 }
-.iss__projectEdit__form__createButton:hover {
-  background-color: var(--issBrand);
-}
-.iss__projectEdit__form__createButton:hover>span {
-  color: white;
-}
 .iss__projectEdit__deleteButton {
   padding: 4px 8px;
   font-size: 14px;
@@ -76,10 +70,6 @@
   width: fit-content;
   margin-bottom: 40px;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-.iss__projectEdit__deleteButton:hover {
-  background-color: var(--issRed);
-  color: white;
 }
 .iss__projectEdit__deleteProceed {
   display: flex;
@@ -109,14 +99,6 @@
   background-color: unset;
   border: 1px solid var(--issBrand);
 }
-.iss__projectEdit__delete--yes:hover {
-  background-color: var(--issRed);
-  color: white;
-}
-.iss__projectEdit__delete--no:hover {
-  background-color: var(--issBrand);
-  color: white;
-}
 .iss__projectEdit__attributes {
   display: flex;
   flex-direction: column;
@@ -134,4 +116,24 @@
   border: 1px solid var(--issBrand);
   overflow-x: scroll;
   outline: none;
+}
+@media (hover:hover) {
+  .iss__projectEdit__delete--yes:hover {
+    background-color: var(--issRed);
+    color: white;
+  }
+  .iss__projectEdit__delete--no:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
+  .iss__projectEdit__deleteButton:hover {
+    background-color: var(--issRed);
+    color: white;
+  }
+  .iss__projectEdit__form__createButton:hover {
+    background-color: var(--issBrand);
+  }
+  .iss__projectEdit__form__createButton:hover>span {
+    color: white;
+  }
 }

@@ -8,3 +8,55 @@
   display: flex;
   gap: 20px;
 }
+.iss__validation__filters {
+  border: none;
+  width: fit-content;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+}
+.iss__filters__option {
+  border: 1px solid;
+  border-radius: 20px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.iss__filters__option>input {
+  display: none;
+}
+.option--blue {
+  color: var(--issBrand);
+  border-color: var(--issBrand);
+}
+.option--green {
+  color: var(--issGreen);
+  border-color: var(--issGreen);
+}
+.option--red {
+  color: var(--issRed);
+  border-color: var(--issRed);
+}
+.checked--blue {
+  pointer-events: none;
+  background-color: rgb(98, 171, 255, 0.2);
+}
+.checked--green {
+  pointer-events: none;
+  background-color: rgb(153, 255, 98, 0.2);
+}
+.checked--red {
+  pointer-events: none;
+  background-color: rgb(255, 98, 98, 0.2);
+}
+@media (hover:hover) {
+  .option--blue:hover {
+    background-color: rgb(98, 171, 255, 0.2);
+  }
+  .option--red:hover {
+    background-color: rgb(255, 98, 98, 0.2);
+  }
+  .option--green:hover {
+    background-color: rgb(153, 255, 98, 0.2);
+  }
+}

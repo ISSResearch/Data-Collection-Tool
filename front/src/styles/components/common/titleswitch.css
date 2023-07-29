@@ -20,12 +20,22 @@
   transition: outline 0.3s ease, color 0.3s ease;
   text-decoration: none;
 }
-.iss__titleSwitch__navItem:hover {
-  outline-color: var(--issBrand);
-  color: var(--issBrand);
-}
 .iss__titleSwitch__navItem--active {
   outline: 1px solid var(--issBrand);
   background-color: var(--issBrand);
   color: white;
+}
+.iss__titleSwitch__title>a {
+  text-decoration: none;
+  color: var(--issBrand);
+  transition: color 0.3s ease;
+}
+@media (hover:hover) {
+  .iss__titleSwitch__title>a:hover {
+    color: var(--issLightBrand);
+  }
+  .iss__titleSwitch__navItem:hover {
+    outline-color: var(--issBrand);
+    color: var(--issBrand);
+  }
 }

@@ -9,9 +9,6 @@
   color: var(--issBrand);
   transition: 0.3s ease;
 }
-.iss__fileCard:hover {
-  filter: sepia(2);
-}
 .card--accepted {
   background-color: rgb(153, 255, 98, 0.2);
   border: 1px solid var(--issGreen);
@@ -34,4 +31,8 @@
   font-size: 8px;
   place-self: flex-end;
 }
-
+@media (hover:hover) {
+  .iss__fileCard:hover {
+    filter: sepia(2);
+  }
+}

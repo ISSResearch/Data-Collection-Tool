@@ -26,9 +26,6 @@
   user-select: none;
   outline: none;
 }
-.iss__fileInfo__buttonsWrap button:hover {
-  scale: 1.1;
-}
 .button--reject {
   background-color: rgb(255, 98, 98, 0.2);
   border: 1px solid var(--issRed);
@@ -43,4 +40,9 @@
   filter: grayscale(1);
   scale: 0.9;
   pointer-events: none;
+}
+@media (hover:hover) {
+  .iss__fileInfo__buttonsWrap button:hover {
+    scale: 1.1;
+  }
 }

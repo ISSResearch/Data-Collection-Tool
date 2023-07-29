@@ -22,6 +22,7 @@ export const routes = [
     element: <ProjectPage />,
     exact: true,
     children: [
+      { path: '/projects/:projectID/upload', element: <ProjectPage />, exact: true },
       { path: '/projects/:projectID/validate', element: <ProjectPage />, exact: true },
       { path: '/projects/:projectID/stats', element: <ProjectPage />, exact: true },
       { path: '/projects/:projectID/download', element: <ProjectPage />, exact: true },

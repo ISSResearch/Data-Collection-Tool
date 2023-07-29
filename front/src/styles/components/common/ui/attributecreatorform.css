@@ -15,10 +15,6 @@
   padding: 4px 8px;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
-.iss__attributecreator__addButton:hover {
-  background-color: var(--issBrand);
-  color: white;
-}
 .iss__attributecreator__addButton {
   position: relative;
   width: fit-content;
@@ -42,4 +38,10 @@
 }
 .iss__attributecreator__attributesForm {
   max-width: 557px;
+}
+@media (hover:hover) {
+  .iss__attributecreator__addButton:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
 }

@@ -12,7 +12,7 @@ import Load from '../components/common/Load';
 import api from "../config/api";
 import '../styles/pages/project.css';
 
-const ROUTE_LINKS = [{ name: 'upload data', link: '' }];
+const ROUTE_LINKS = [{ name: 'upload data', link: 'upload' }];
 const PROTECTED_ROUTE_LINKS = [
   { name: 'validate data', link: 'validate' },
   { name: 'download data', link: 'download' },
@@ -57,13 +57,14 @@ export default function ProjectPage() {
 
   const PageVariant = (props) => {
     const variants = {
+      upload: FilesUpload,
       validate: FilesValidate,
       stats: FilesStatistics,
       download: FilesDownload,
       edit: ProjectEdit,
     }
-    const Component = variants[currentRoute] || FilesUpload;
-    return <Component {...props} />;
+    const Component = variants[currentRoute];
+    return Component && <Component {...props} />;
   }
 
   return (
@@ -71,17 +72,17 @@ export default function ProjectPage() {
       <Link to="/projects" className="iss__projectPage__button">back to</Link>
       <TitleSwitch
         title={project.name}
+        titleLink={true}
         links={userOptions}
         currentRoute={currentRoute}
         parent={`projects/${projectID}`}
-
       />
       {
         loading
           ? <div className="iss_projectPage__load"><Load/></div>
           : <>
             {
-              currentRoute !== 'edit' &&
+              currentRoute === `projects/${projectID}` &&
                 <p className="iss__projectPage__description">
                   Description: {project.description}
                 </p>

@@ -59,18 +59,20 @@
   border-bottom: 1px solid var(--issBrand);
   margin-bottom: 8px;
 }
-.iss__customSelector__level:hover {
-  background-color: var(--issLightBrand);
-}
 .iss__customSelector__selector {
   border: none;
   outline: none;
   font-size: 14px;
 }
-.iss__customSelector__option:hover {
-  background-color: var(--issLightBrand);
-  cursor: pointer;
-}
 .off--title {
   background-color: transparent !important;
+}
+@media (hover:hover) {
+  .iss__customSelector__option:hover {
+    background-color: var(--issLightBrand);
+    cursor: pointer;
+  }
+  .iss__customSelector__level:hover {
+    background-color: var(--issLightBrand);
+  }
 }

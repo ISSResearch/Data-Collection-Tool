@@ -3,16 +3,6 @@
   padding: 4px;
   cursor: pointer;
 }
-.iss__stats__table-row:hover {
-  background-color: var(--issBrand) !important;
-}
-.iss__stats__table-row:hover .iss__stats__table__levelName {
-  color: white;
-}
-.iss__stats__table-row:hover .icon--flip {
-  stroke: white;
-  fill: white;
-}
 .iss__stats__table-row>td>div  {
   display: flex;
   justify-content: space-evenly;
@@ -64,4 +54,16 @@
 .iss__stats__table__name {
   word-break: break-all;
   white-space: break-spaces;
+}
+@media (hover:hover) {
+  .iss__stats__table-row:hover {
+    background-color: var(--issBrand) !important;
+  }
+  .iss__stats__table-row:hover .iss__stats__table__levelName {
+    color: white;
+  }
+  .iss__stats__table-row:hover .icon--flip {
+    stroke: white;
+    fill: white;
+  }
 }

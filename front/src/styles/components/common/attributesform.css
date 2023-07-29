@@ -60,15 +60,9 @@
 .button-del span {
   background-color: var(--issLightRed);
 }
-.button-del:hover span {
-  background-color: var(--issRed);
-}
 .button-add span {
   position: absolute;
   background-color: var(--issLightGreen);
-}
-.button-add:hover span {
-  background-color: var(--issGreen);
 }
 .button-add span:nth-child(1) {
   rotate: 90deg;
@@ -99,16 +93,24 @@
   border: 1px solid var(--issRed);
   color: var(--issRed);
 }
-.iss__attributesForm__acceptance__curtain__button--no:hover {
-  background-color: var(--issRed);
-  color: white;
-}
 .iss__attributesForm__acceptance__curtain__button--yes {
   background-color: rgb(153, 255, 98, 0.2);
   border: 1px solid var(--issGreen);
   color: var(--issGreen);
 }
-.iss__attributesForm__acceptance__curtain__button--yes:hover {
-  background-color: var(--issGreen);
-  color: white;
+@media (hover:hover) {
+  .iss__attributesForm__acceptance__curtain__button--yes:hover {
+    background-color: var(--issGreen);
+    color: white;
+  }
+  .iss__attributesForm__acceptance__curtain__button--no:hover {
+    background-color: var(--issRed);
+    color: white;
+  }
+  .button-add:hover span {
+    background-color: var(--issGreen);
+  }
+  .button-del:hover span {
+    background-color: var(--issRed);
+  }
 }

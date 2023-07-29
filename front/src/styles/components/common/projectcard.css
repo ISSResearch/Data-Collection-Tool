@@ -9,10 +9,6 @@
   box-shadow: 1px 1px 2px var(--issBrand);
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
-.iss__projectCard:hover {
-  transform: scale(1.01) translate(-6px, -6px);
-  box-shadow: 6px 6px 10px var(--issBrand);
-}
 .iss__projectCard__name {
   color: var(--issBrand);
   font-size: 24px;
@@ -27,4 +23,10 @@
   font-size: 8px;
   color: black;
   text-align: right;
+}
+@media (hover:hover) {
+  .iss__projectCard:hover {
+    transform: scale(1.01) translate(-6px, -6px);
+    box-shadow: 6px 6px 10px var(--issBrand);
+  }
 }

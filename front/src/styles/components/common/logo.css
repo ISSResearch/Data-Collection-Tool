@@ -13,6 +13,8 @@
   color: var(--issBrand);
   transition: opacity 0.3s ease;
 }
-.iss__brand:hover .iss__brand__name {
-  opacity: 0.7;
+@media (hover:hover) {
+  .iss__brand:hover .iss__brand__name {
+    opacity: 0.7;
+  }
 }

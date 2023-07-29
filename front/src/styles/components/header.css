@@ -22,7 +22,9 @@
   padding: 4px 8px;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
-.iss__header__logoutButton:hover {
-  background-color: var(--issBrand);
-  color: white;
+@media (hover:hover) {
+  .iss__header__logoutButton:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
 }

@@ -43,23 +43,25 @@
 .iss__regButton {
   color: white !important;
 }
-.iss__regButton:hover {
-  border-top: 1px solid var(--issBrand);
-  border-left: 1px solid var(--issBrand);
-}
-.iss__formButton:hover, .iss__regButton:hover {
-  color: var(--issBrand);
-  background-color: white;
-}
 .iss__regButton {
   position: absolute;
   bottom: 0;
   right: 0;
   border: 0;
 }
-.iss__formContainer a:hover {
-  color: var(--issBrand) !important;
-}
 .iss__formLoad {
   margin: 0 auto;
+}
+@media (hover:hover) {
+  .iss__formContainer a:hover {
+    color: var(--issBrand) !important;
+  }
+  .iss__regButton:hover {
+    border-top: 1px solid var(--issBrand);
+    border-left: 1px solid var(--issBrand);
+  }
+  .iss__formButton:hover, .iss__regButton:hover {
+    color: var(--issBrand);
+    background-color: white;
+  }
 }

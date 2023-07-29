@@ -4,10 +4,6 @@
   height: 600px;
   overflow-y: hidden;
 }
-.iss__fileswiper:hover .iss__fileswiper__controls {
-  transform: translate(-50%, -20%);
-  transition: transform 0.3s ease;
-}
 .iss__fileswiper__controls {
   backdrop-filter: blur(10px);
   position: absolute;
@@ -48,10 +44,16 @@
   height: fit-content;
   padding: 4px 8px;
 }
-.slider-button:hover {
-  background-color: var(--issBrand);
-  color: white;
-}
-.slider-button:hover svg {
-  fill: white;
+@media (hover:hover) {
+  .slider-button:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
+  .slider-button:hover svg {
+    fill: white;
+  }
+  .iss__fileswiper:hover .iss__fileswiper__controls {
+    transform: translate(-50%, -20%);
+    transition: transform 0.3s ease;
+  }
 }

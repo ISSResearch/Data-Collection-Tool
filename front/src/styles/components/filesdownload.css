@@ -59,20 +59,11 @@
 .option--validation {
   color: var(--issBrand);
 }
-.option--validation:hover {
-  background-color: var(--issLightBrand);
-}
 .option--accepted {
   color: var(--issGreen);
 }
-.option--accepted:hover {
-  background-color: var(--issLightGreen);
-}
 .option--declined {
   color: var(--issRed);
-}
-.option--declined:hover {
-  background-color: var(--issLightRed);
 }
 .iss__filesDownload__button {
   max-width: 120px;
@@ -88,13 +79,24 @@
   place-content: center;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
-.iss__filesDownload__button:hover {
-  background-color: var(--issBrand);
-  color: white;
-}
 .block--button {
   pointer-events: none;
 }
 .iss__filesDownload__options>span {
   cursor: pointer;
+}
+@media (hover:hover) {
+  .iss__filesDownload__button:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
+  .option--declined:hover {
+    background-color: var(--issLightRed);
+  }
+  .option--accepted:hover {
+    background-color: var(--issLightGreen);
+  }
+  .option--validation:hover {
+    background-color: var(--issLightBrand);
+  }
 }

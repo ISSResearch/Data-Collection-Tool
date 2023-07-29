@@ -21,10 +21,12 @@
   content: '< --';
   padding: 0 6px;
 }
-.iss__projectPage__button:hover::after {
-  content: ' all projects';
-}
 .iss__projectPage__description {
   font-size: 16px;
   margin-bottom: 20px;
+}
+@media (hover:hover) {
+  .iss__projectPage__button:hover::after {
+    content: ' all projects';
+  }
 }

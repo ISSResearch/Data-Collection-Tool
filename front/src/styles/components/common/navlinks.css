@@ -12,7 +12,9 @@
   text-decoration: none;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
-.iss__navLinks__link:hover {
-  background-color: var(--issBrand);
-  color: white;
+@media (hover:hover) {
+  .iss__navLinks__link:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
 }

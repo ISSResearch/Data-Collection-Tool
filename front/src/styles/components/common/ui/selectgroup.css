@@ -36,10 +36,6 @@
   user-select: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.iss__selectGroup__button:hover {
-  background-color: white;
-  color: var(--issBrand);
-}
 .button--disabled {
   cursor: pointer;
   pointer-events: none;
@@ -54,10 +50,6 @@
   width: 100%;
   margin-bottom: 12px;
 }
-.add--group:hover {
-  background-color: var(--issGreen);
-  color: white;
-}
 .del--group {
   border: none;
   width: 100%;
@@ -65,7 +57,17 @@
   border: 1px solid var(--issRed);
   color: var(--issRed);
 }
-.del--group:hover {
-  background-color: var(--issRed);
-  color: white;
+@media (hover:hover) {
+  .del--group:hover {
+    background-color: var(--issRed);
+    color: white;
+  }
+  .add--group:hover {
+    background-color: var(--issGreen);
+    color: white;
+  }
+  .iss__selectGroup__button:hover {
+    background-color: white;
+    color: var(--issBrand);
+  }
 }

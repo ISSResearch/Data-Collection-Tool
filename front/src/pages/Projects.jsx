@@ -28,7 +28,7 @@ export default function Projects() {
       create: ProjectCreate
     }
     const Component = variants[currentRoute] || AllProjects;
-    return <Component {...props} />;
+    return Component && <Component {...props} />;
   }
 
   useEffect(() => {

@@ -18,10 +18,6 @@
   cursor: pointer;
   outline: 1px solid var(--issBrand);
 }
-.iss__fileInput__upload:hover {
-  background-color: white;
-  color: var(--issBrand);
-}
 .iss__fileInput__upload input {
   display: none;
 }
@@ -33,4 +29,10 @@
 .iss__fileInput__fileCard {
   width: 33%;
   padding: 6px;
+}
+@media (hover:hover) {
+  .iss__fileInput__upload:hover {
+    background-color: white;
+    color: var(--issBrand);
+  }
 }

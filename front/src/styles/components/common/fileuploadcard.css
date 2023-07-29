@@ -48,9 +48,6 @@
 .iss__fileuploadCard>button span:nth-child(2) {
   rotate: -45deg;
 }
-.iss__fileuploadCard>button:hover span {
-  background-color: var(--issRed);
-}
 .iss__fileuploadCard__selectWrap {
   padding: 8px;
   display: flex;
@@ -70,4 +67,9 @@
   z-index: 5;
   background-color: unset;
   transition: scale 0.2s ease;
+}
+@media (hover:hover) {
+  .iss__fileuploadCard>button:hover span {
+    background-color: var(--issRed);
+  }
 }
