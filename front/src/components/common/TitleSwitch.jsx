@@ -8,7 +8,7 @@ export default function TitleSwitch({title, titleLink, links, currentRoute, pare
     <div className='iss__titleSwitch'>
       <h1 className="iss__titleSwitch__title">
         {
-          titleLink ? <Link to={'/' + parent}>{title}</Link> : {title}
+          titleLink ? <Link to={'/' + parent}>{title}</Link> : <span>{title}</span>
         }
       </h1>
       <nav className='iss__titleSwitch__navWrap'>

@@ -53,11 +53,11 @@ export default function Selector({ selectorKey, item, setOption, applyGroups }) 
             {
               multiple
                 ? <SelectorItem
-                  id={id}
-                  name={name}
-                  attributes={attributes}
+                  selectorId={id}
+                  selectorName={name}
+                  selectorOptions={attributes}
                   handleSelect={(ids) => handleSelect(ids, children, index)}
-                  defaults={applyGroups}
+                  defaultSelected={applyGroups}
                 />
                 : <select
                   onChange={({target}) => handleSelect(target, children, index)}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import { useSwiper, useFiles } from '../hooks';
+import SelectorItem from './common/ui/SelectorItem';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileModification from './common/FileModification';
@@ -8,24 +9,24 @@ import Load from './common/Load';
 import api from '../config/api';
 import '../styles/components/filesvalidate.css';
 
-
-const FILTERS = [
-  { name: 'all', colors: 'blue', value: 'all' },
-  { name: 'on validation', colors: 'blue', value: 'v' },
-  { name: 'accepted', colors: 'green', value: 'a' },
-  { name: 'declined', colors: 'red', value: 'd' },
+const CARD_FILTERS = [
+  { name: 'all', id: 'all' },
+  { name: 'on validation', id: 'v' },
+  { name: 'accepted', id: 'a' },
+  { name: 'declined', id: 'd' },
 ]
 
 export default function FilesValidate({pathID, attributes}) {
   const [loading, setLoading] = useState(true);
-  const [cardFilter, setCardFilter] = useState('all');
+  const [cardFilter, setCardFilter] = useState(['all']);
   const [pageQuery, setPageQuery] = useSearchParams();
   const fileManager = useFiles();
   const sliderManager = useSwiper();
 
-  const handleFilterChange = ({value}) => {
-    setCardFilter(value);
-    setPageQuery({ card: value });
+  function handleFilterChange(type, ids) {
+    console.log(type, ids);
+    // setCardFilter(value);
+    // setPageQuery({ cards: value });
   }
 
   useEffect(() => {
@@ -33,14 +34,14 @@ export default function FilesValidate({pathID, attributes}) {
 
     function getPageQuery() {
       return {
-        card: pageQuery.get('card'),
+        cards: pageQuery.getAll('cards[]'),
         attribute: pageQuery.get('attribute')
       }
     }
-    const { card, attribute } = getPageQuery();
-    setCardFilter(card || 'all');
+    const { cards, attribute } = getPageQuery();
+    setCardFilter(cards.length ? cards : ['all']);
 
-    api.get(`/api/files/project/${pathID}/`, { params:  { card, attribute } })
+    api.get(`/api/files/project/${pathID}/`, { params:  { cards, attribute } })
       .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
@@ -53,27 +54,24 @@ export default function FilesValidate({pathID, attributes}) {
 
   return (
     <>
-      <fieldset
-        onChange={({target}) => handleFilterChange(target)}
-        className='iss__validation__filters'
-      >
-        {
-          FILTERS.map(({name, colors, value}) => (
-            <label
-              key={value}
-              className={
-                [
-                  'iss__filters__option',
-                  'option--' + colors,
-                  (value === cardFilter) ? 'checked--' + colors : ''
-                ].join(' ')
-              }
-            >
-              <input type="radio" name="cardFilter" value={value} />
-              {name}
-            </label>
-          ))
-        }
+      <fieldset className='iss__validation__filters'>
+        <SelectorItem
+          selectorId={1}
+          selectorName={'cards'}
+          selectorOptions={CARD_FILTERS}
+          handleSelect={(ids) => handleFilterChange('cards', ids)}
+          defaultSelected={cardFilter}
+          isAlpha
+          manual
+        />
+        <SelectorItem
+          selectorId={2}
+          selectorName={'attributes'}
+          selectorOptions={attributes}
+          handleSelect={(ids) => handleFilterChange('atrs', ids)}
+          // defaultSelected={cardFilter}
+          manual
+        />
       </fieldset>
       <div className='iss__validation'>
         <FileSelector fileManager={fileManager} sliderManager={sliderManager} />

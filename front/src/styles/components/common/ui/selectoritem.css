@@ -40,7 +40,6 @@
   background-color: white;
   max-height: 0;
   outline: 1px solid transparent;
-  transition: max-height 0.3s ease, outline 0.5s ease;
 }
 .iss__customSelector__options>div {
   padding: 4px 8px;
@@ -50,6 +49,7 @@
 .options--open {
   outline-color: var(--issBrand);
   max-height: 500px;
+  transition: max-height 0.3s ease, outline 0.5s ease;
 }
 .iss__customSelector__level {
   font-size: 14px;
@@ -67,6 +67,17 @@
 .off--title {
   background-color: transparent !important;
 }
+.iss__customSelector__submit {
+  margin: 12px 0;
+  background-color: unset;
+  border: 1px solid var(--issBrand);
+  padding: 4px;
+  width: fit-content;
+  min-width: 60px;
+  place-self: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 @media (hover:hover) {
   .iss__customSelector__option:hover {
     background-color: var(--issLightBrand);
@@ -74,5 +85,9 @@
   }
   .iss__customSelector__level:hover {
     background-color: var(--issLightBrand);
+  }
+  .iss__customSelector__submit:hover {
+    background-color: var(--issBrand);
+    color: white;
   }
 }

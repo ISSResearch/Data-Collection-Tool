@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import '../../../styles/components/common/ui/selectoritem.css';
 
-export default function SelectorItem({ id, name, attributes, handleSelect, defaults }) {
+export default function SelectorItem({
+  selectorId,
+  selectorName,
+  selectorOptions,
+  handleSelect,
+  defaultSelected,
+  isAlpha,
+  manual
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
 
@@ -13,19 +21,30 @@ export default function SelectorItem({ id, name, attributes, handleSelect, defau
   }
 
   function handleSelectChange(handleOptions, skipEmit=false) {
+    // TODO: number is propably used due to income value - adapt them to strings to avoid different comparers
     const selectedIds = Array.isArray(handleOptions)
       ? handleOptions
-      : Array.from(handleOptions.selectedOptions).map(({ value }) => Number(value));
+      : Array.from(handleOptions.selectedOptions).map(({ value }) => {
+        return isAlpha ? value : Number(value)
+      });
     const chosenNames = selectedIds.map(selectedId => {
-      return attributes.find(({ id }) => id === Number(selectedId))?.name;
+      return selectorOptions.find(({ id }) => {
+        return id === (isAlpha ? selectedId : Number(selectedId));
+      })?.name;
     })
     setSelected(chosenNames);
     if (!skipEmit) handleSelect(selectedIds);
   }
 
+  function handleManualSelect() {
+    const selector = document.getElementById(`selector--${selectorName}_${selectorId}`);
+    handleSelectChange(selector);
+    setIsOpen(false);
+  }
+
   useEffect(() => {
-    if (defaults) handleSelectChange(defaults, true);
-  }, [defaults]);
+    if (defaultSelected) handleSelectChange(defaultSelected, true);
+  }, [defaultSelected]);
 
   return (
     <div className='iss__customSelector'>
@@ -49,18 +68,18 @@ export default function SelectorItem({ id, name, attributes, handleSelect, defau
       >
         <div>
           <label
-            htmlFor={`selector--${name}_${id}`}
+            htmlFor={`selector--${selectorName}_${selectorId}`}
             onClick={({target}) => resetSelector(target)}
             className='iss__customSelector__level'
-          >clear {name}</label>
+          >clear {selectorName}</label>
           <select
             multiple
-            id={`selector--${name}_${id}`}
-            onChange={({target}) => handleSelectChange(target)}
+            id={`selector--${selectorName}_${selectorId}`}
+            onChange={({ target }) => !manual && handleSelectChange(target)}
             className='iss__customSelector__selector'
           >
             {
-              attributes.map(({ name, id }) =>
+              selectorOptions.map(({ name, id }) =>
                 <option
                   key={id}
                   value={id}
@@ -69,8 +88,17 @@ export default function SelectorItem({ id, name, attributes, handleSelect, defau
               )
             }
           </select>
+          {
+            manual &&
+            <button
+              onClick={handleManualSelect}
+              type="button"
+              className='iss__customSelector__submit'
+            >ok</button>
+          }
         </div>
       </div>
     </div>
   );
 }
+// TODO: changed - revise tests
