@@ -16,7 +16,7 @@ export default function FileCard({
   useEffect(() => {
     const newStyles = [defauleStyle];
     if (active) newStyles.push('card--active');
-    if (status) newStyles.push(`card--${status === 'a' ? 'accepted' : 'rejected'}`)
+    if (status && status !== 'v') newStyles.push(`card--${status === 'a' ? 'accepted' : 'rejected'}`)
     setStyles(newStyles);
   }, [active, status]);
 

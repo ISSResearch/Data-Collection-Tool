@@ -10,11 +10,13 @@
 }
 .iss__validation__filters {
   border: none;
-  width: fit-content;
   margin-bottom: 20px;
   display: flex;
   gap: 8px;
 }
 .iss__validation__filters>.iss__customSelector {
-  min-width: 160px;
+  max-width: 180px;
+}
+.iss__validation__filters #selector--attributes_2 {
+  min-height: 120px;
 }

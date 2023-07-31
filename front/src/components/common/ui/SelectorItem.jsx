@@ -20,6 +20,7 @@ export default function SelectorItem({
     handleSelect([]);
   }
 
+  // TODO: move out
   function handleSelectChange(handleOptions, skipEmit=false) {
     // TODO: number is propably used due to income value - adapt them to strings to avoid different comparers
     const selectedIds = Array.isArray(handleOptions)

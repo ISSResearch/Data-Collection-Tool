@@ -1,10 +1,10 @@
 .iss__customSelector {
   position: relative;
   width: 100%;
-  border: 1px solid;
   padding: 4px 8px;
   background-color: white;
   border: 1px solid var(--issBrand);
+  height: fit-content;
 }
 .iss__customSelector__selected {
   position: relative;
@@ -12,6 +12,9 @@
   display: inline-block;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .iss__customSelector__selected>span {
   padding: 2px 8px;
@@ -19,9 +22,6 @@
   font-size: 14px;
   background-color: var(--issLightBrand);
   border-radius: 4px;
-}
-.iss__customSelector__selected>span:not(:last-child) {
-  margin-right: 4px;
 }
 .iss__customSelector__selected>svg {
   position: absolute;
@@ -32,7 +32,7 @@
 }
 .iss__customSelector__options {
   position: absolute;
-  top: 28px;
+  bottom: 0;
   left: 0;
   z-index: 1;
   width: 100%;
@@ -40,6 +40,7 @@
   background-color: white;
   max-height: 0;
   outline: 1px solid transparent;
+  transform: translateY(100%);
 }
 .iss__customSelector__options>div {
   padding: 4px 8px;

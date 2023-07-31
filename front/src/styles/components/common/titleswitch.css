@@ -25,7 +25,7 @@
   background-color: var(--issBrand);
   color: white;
 }
-.iss__titleSwitch__title>a {
+.iss__titleSwitch__title>* {
   text-decoration: none;
   color: var(--issBrand);
   transition: color 0.3s ease;

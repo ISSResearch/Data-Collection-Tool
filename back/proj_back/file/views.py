@@ -49,13 +49,25 @@ class FileViewSet(APIView):
 
 class FilesViewSet(APIView):
     http_method_names = ('get', 'post')
+    # TODO: changed - revise tests
+    def get(self, request, projectID):
+        accepted_queries = (
+            ('status__in', 'card[]'),
+            ('attributegroup__attribute__in', 'attr[]'),
+            ('file_type__in', 'type[]')
+        )
 
-    def get(self, _, projectID):
+        filter_query = {'project_id': projectID}
+
+        for filter_name, param in  accepted_queries:
+            query_param = request.query_params.getlist(param)
+            if query_param: filter_query[filter_name] = query_param
+
         files = File.objects \
             .select_related('author') \
             .prefetch_related('attributegroup_set') \
-            .order_by('status', '-upload_date') \
-            .filter(project_id=projectID)
+            .order_by('-status', '-upload_date') \
+            .filter(**filter_query)
 
         response = FileSerializer(files, many=True)
         return Response(response.data, status=status.HTTP_200_OK)

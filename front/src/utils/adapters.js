@@ -1,8 +1,7 @@
 import { deepCopy } from "./utils";
 
 export function attributeAdapter(data) {
-  const preparedData = deepCopy(data);
-  const attributes = preparedData.attributes;
+  const attributes = deepCopy(data.attributes);
   attributes.forEach(el => {
     const parent = attributes.find(({id}) => el.parent === id);
     if (parent) {
@@ -11,7 +10,7 @@ export function attributeAdapter(data) {
         : parent.children = [el];
     }
   })
-  return { ...preparedData, preparedAttributes: attributes.filter(({parent}) => !parent) };
+  return { ...data, preparedAttributes: attributes.filter(({parent}) => !parent) };
 }
 
 export function attributeGroupsAdapter(data) {
