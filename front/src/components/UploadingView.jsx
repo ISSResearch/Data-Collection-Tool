@@ -43,6 +43,7 @@ export default function UploadingView({ fileManager, pathID }) {
               ].join(' ')
             }
           >{name}</span>
+          {/* TODO: made component - insert */}
           <div className='iss__uploadProgress__progressWrap'>
             <div
               style={{width: `${progress || 0}%`}}

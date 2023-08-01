@@ -14,7 +14,7 @@ export const routes = [
     element: <Projects />,
     exact: true,
     children: [
-      { path: 'create', element: <Projects />, exact: true },
+      { path: 'create', element: <Projects />, exact: true, secure: true },
     ]
   },
   {
@@ -22,11 +22,11 @@ export const routes = [
     element: <ProjectPage />,
     exact: true,
     children: [
-      { path: '/projects/:projectID/upload', element: <ProjectPage />, exact: true },
-      { path: '/projects/:projectID/validate', element: <ProjectPage />, exact: true },
-      { path: '/projects/:projectID/stats', element: <ProjectPage />, exact: true },
-      { path: '/projects/:projectID/download', element: <ProjectPage />, exact: true },
-      { path: '/projects/:projectID/edit', element: <ProjectPage />, exact: true },
+      { path: 'upload', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'validate', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'stats', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'download', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'edit', element: <ProjectPage />, exact: true, secure: true },
     ]
   },
   { path: '*', element: <Blank /> },

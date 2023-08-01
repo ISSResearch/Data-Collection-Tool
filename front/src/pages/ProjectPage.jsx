@@ -12,11 +12,13 @@ import Load from '../components/common/Load';
 import api from "../config/api";
 import '../styles/pages/project.css';
 
-const ROUTE_LINKS = [{ name: 'upload data', link: 'upload' }];
+const ROUTE_LINKS = [];
 const PROTECTED_ROUTE_LINKS = [
+  { name: 'upload data', link: 'upload' },
   { name: 'validate data', link: 'validate' },
   { name: 'download data', link: 'download' },
   { name: 'statistics', link: 'stats' },
+  { name: 'edit', link: 'edit' }
 ];
 
 export default function ProjectPage() {
@@ -29,8 +31,7 @@ export default function ProjectPage() {
   const { projectID } = useParams();
 
   const userOptions = [...ROUTE_LINKS];
-  if (user?.user_role === 'a') userOptions.push(...PROTECTED_ROUTE_LINKS);
-  if (user?.is_superuser) userOptions.push({ name: 'editing', link: 'edit' });
+  if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
 
   useEffect(() => {
     if (!projectID) return;
@@ -49,10 +50,6 @@ export default function ProjectPage() {
       return childPath || `${mainPath}/${id}`;
     };
     setCurrentRoute(getLocation());
-    if (
-      PROTECTED_ROUTE_LINKS.map(({link}) => link).includes(currentRoute)
-      && !userOptions.map(({link}) => link).includes(currentRoute)
-    ) navigate('/projects');
   }, [location]);
 
   const PageVariant = (props) => {

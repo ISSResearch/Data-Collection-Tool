@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
@@ -21,10 +21,9 @@ export default function ProjectEdit({
   const navigate = useNavigate();
 
   function validateNewAttributes() {
-    for (
-      const attributes
-      of Object.values(attributeManagerNew.attributeHook.attributes)
-    ) if (!attributes.length) return false;
+    for (let attributes of Object.values(attributeManagerNew.attributeHook.attributes)) {
+      if (!attributes.length) return false;
+    }
     return true;
   }
 
@@ -93,11 +92,12 @@ export default function ProjectEdit({
         alert(err);
         setLoading(false);
       });
-  }
+}
 
   return (
     <>
       <h2 className='iss__projectEdit__title'>Project Edit</h2>
+      <Link to={`/projects/${pathID}/edit/users`} >edit users</Link>
       {
         deleteAccept
           ? <div className='iss__projectEdit__deleteProceed'>

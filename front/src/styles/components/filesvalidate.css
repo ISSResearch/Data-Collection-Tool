@@ -8,15 +8,3 @@
   display: flex;
   gap: 20px;
 }
-.iss__validation__filters {
-  border: none;
-  margin-bottom: 20px;
-  display: flex;
-  gap: 8px;
-}
-.iss__validation__filters>.iss__customSelector {
-  max-width: 180px;
-}
-.iss__validation__filters #selector--attributes_2 {
-  min-height: 120px;
-}

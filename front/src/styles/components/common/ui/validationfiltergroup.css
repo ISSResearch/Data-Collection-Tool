@@ -1,0 +1,14 @@
+.iss__validation__filters {
+  border: none;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+}
+.iss__validation__filters__item {
+  max-width: 180px;
+  width: 100%;
+}
+.iss__validation__filters__item .iss__customSelector__selected {
+  max-height: 56px;
+  overflow-y: scroll;
+}

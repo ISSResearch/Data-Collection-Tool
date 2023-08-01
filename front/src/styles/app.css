@@ -25,3 +25,10 @@ h1 {
   font-size: 42px;
   line-height: 0.75;
 }
+.iss__main__loadWrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  place-content: center;
+  place-items: center
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom'
-import { useSwiper, useFiles, useValidateFilter } from '../hooks';
-import SelectorItem from './common/ui/SelectorItem';
+import { useSwiper, useFiles } from '../hooks';
+import ValidationFilterGroup from './common/ui/ValidationFilterGroup';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileModification from './common/FileModification';
@@ -22,9 +22,9 @@ const TYPE_FILTER = [
 export default function FilesValidate({ pathID, attributes, rawAttributes }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
+  const [filterData, setFilterData] = useState({});
   const fileManager = useFiles();
   const sliderManager = useSwiper();
-  const { filterData, selected, initFilters, changeFilters } = useValidateFilter();
 
   function getPageQuery() {
     return {
@@ -34,8 +34,7 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
     };
   }
 
-  function handleFilterChange(filterType, query) {
-    changeFilters(filterType, query);
+  function hadleFilterChange(filterType, query) {
     const { card, attr, type } = getPageQuery();
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
@@ -50,56 +49,53 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
       .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
-        initFilters(CARD_FILTERS, rawAttributes, TYPE_FILTER, card, attr, type);
+        setFilterData([
+          {
+            prettyName: 'Card Filter:',
+            name: 'card',
+            data: CARD_FILTERS,
+            selected: card,
+            manual: true,
+            isAlpha: true
+          },
+          {
+            prettyName: 'Attribute Filter:',
+            name: 'attr',
+            data: rawAttributes.reduce((acc, { attributes }) => [...acc, ...attributes], []),
+            selected: attr,
+            manual: true,
+          },
+          {
+            prettyName: 'Filetype Filter:',
+            name: 'type',
+            data: TYPE_FILTER,
+            selected: type,
+            manual: true,
+            isAlpha: true
+          },
+        ]);
         setLoading(false);
       })
       .catch(err => alert('err', err.message));
   }, []);
 
-  if (loading) return <div className='iss__validation__load'><Load /></div>
+  if (loading) return <div className='iss__validation__load'><Load/></div>
 
   return (
     <>
-      <fieldset className='iss__validation__filters'>
-        <SelectorItem
-          selectorId={1}
-          selectorName={'cards'}
-          selectorOptions={filterData.card}
-          handleSelect={(ids) => handleFilterChange('card', ids)}
-          defaultSelected={selected.card}
-          isAlpha
-          manual
-        />
-        <SelectorItem
-          selectorId={2}
-          selectorName={'attributes'}
-          selectorOptions={filterData.attr}
-          handleSelect={(ids) => handleFilterChange('attr', ids)}
-          defaultSelected={selected.attr}
-          manual
-        />
-        <SelectorItem
-          selectorId={3}
-          selectorName={'type'}
-          selectorOptions={filterData.type}
-          handleSelect={(ids) => handleFilterChange('type', ids)}
-          defaultSelected={selected.type}
-          isAlpha
-          manual
-        />
-      </fieldset>
+      <ValidationFilterGroup filterData={filterData} hadleChange={hadleFilterChange}/>
       {
         fileManager.files.length
           ? <div className='iss__validation'>
-          <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
-          <FileSwiper fileManager={fileManager} sliderManager={sliderManager} />
-          <FileModification
-            fileManager={fileManager}
-            sliderManager={sliderManager}
-            attributes={attributes}
-          />
-        </div>
-        : <p>No files just yet or no query matches selected params.</p>
+            <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
+            <FileSwiper fileManager={fileManager} sliderManager={sliderManager} />
+            <FileModification
+              fileManager={fileManager}
+              sliderManager={sliderManager}
+              attributes={attributes}
+            />
+          </div>
+          : <p>No files just yet or no query matches selected params.</p>
       }
     </>
   );

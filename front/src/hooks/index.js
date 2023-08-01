@@ -4,7 +4,6 @@ import useSwiper from './swiper';
 import useFile from './file';
 import useFiles from './fileValidation';
 import useFileUploader from './fileUploader';
-import useValidateFilter from './validateFilter';
 
 export {
   useFileInput,
@@ -13,5 +12,4 @@ export {
   useFile,
   useFiles,
   useFileUploader,
-  useValidateFilter
 }

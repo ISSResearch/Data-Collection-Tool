@@ -67,7 +67,8 @@ class FilesViewSet(APIView):
             .select_related('author') \
             .prefetch_related('attributegroup_set') \
             .order_by('-status', '-upload_date') \
-            .filter(**filter_query)
+            .filter(**filter_query) \
+            .distinct()
 
         response = FileSerializer(files, many=True)
         return Response(response.data, status=status.HTTP_200_OK)

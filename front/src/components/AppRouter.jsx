@@ -1,12 +1,28 @@
-import { Route, Routes, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { UserContext } from "../context/User";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { routes } from '../config/routes';
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 
 export default function AppRouter() {
   const { user } = useContext(UserContext);
+  const [availableRoutes, setAvailableRoutes] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    if (user.is_superuser) setAvailableRoutes(routes);
+    else {
+      const publicRoutes = routes.reduce((acc, route) => {
+        const { children, secure } = route;
+        if (children) route.children = children.filter(({secure}) => !secure);
+        if (!secure) acc.push(route);
+        return acc;
+      }, []);
+      setAvailableRoutes(publicRoutes);
+    }
+
+  }, [user]);
 
   return (
     <main>
@@ -15,7 +31,7 @@ export default function AppRouter() {
           user
           ? <Routes>
               {
-                routes.map(({ path, element, exact, children }) =>
+                availableRoutes.map(({ path, element, exact, children }) =>
                   <Route
                     key={path}
                     path={path}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import AllProjects from '../components/AllProjects';
 import Load from '../components/common/Load';
@@ -17,7 +17,6 @@ export default function Projects() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
   const userOptions = [...ROUTE_LINKS];
@@ -43,10 +42,6 @@ export default function Projects() {
       return childPath || mainPath;
     };
     setCurrentRoute(getLocation());
-    if (
-      PROTECTED_ROUTE_LINKS.map(({link}) => link).includes(currentRoute)
-      && !userOptions.map(({link}) => link).includes(currentRoute)
-    ) navigate('/projects');
   }, [location]);
 
   return (

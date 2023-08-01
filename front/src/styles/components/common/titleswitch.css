@@ -21,6 +21,7 @@
   text-decoration: none;
 }
 .iss__titleSwitch__navItem--active {
+  pointer-events: none;
   outline: 1px solid var(--issBrand);
   background-color: var(--issBrand);
   color: white;
