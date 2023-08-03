@@ -1,8 +1,3 @@
-.iss__projectEdit__title {
-  font-size: 24px;
-  color: var(--issBlack);
-  margin-bottom: 20px;
-}
 .iss__projectEdit__form {
   width: 100%;
   border: none;
@@ -13,6 +8,12 @@
   grid-template-areas:
     "project_field form_border attribute_field"
     ". edit-button .";
+}
+.iss__projectEdit__fieldset {
+  border: none;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
 }
 .iss__projectEdit__form__set {
   border: none;
@@ -58,23 +59,32 @@
   white-space: nowrap;
   transition: color 0.3s ease;
 }
-.iss__projectEdit__deleteButton {
+.iss__projectEdit__visibilityLink, .iss__projectEdit__deleteButton {
   padding: 4px 8px;
   font-size: 14px;
   cursor: pointer;
   user-select: none;
   outline: none;
+  width: fit-content;
+  height: fit-content;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iss__projectEdit__visibilityLink {
+  flex-shrink: 0;
+  background-color: var(--issLightBrand);
+  border: 1px solid var(--issBrand);
+  color: var(--issBrand);
+  text-decoration: none;
+}
+.iss__projectEdit__deleteButton {
   background-color: rgb(255, 98, 98, 0.2);
   border: 1px solid var(--issRed);
   color: var(--issRed);
-  width: fit-content;
-  margin-bottom: 40px;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .iss__projectEdit__deleteProceed {
+  width: 100%;
   display: flex;
   gap: 12px;
-  margin-bottom: 40px;
   place-items: center;
   flex-wrap: wrap;
 }
@@ -123,6 +133,10 @@
     color: white;
   }
   .iss__projectEdit__delete--no:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
+  .iss__projectEdit__visibilityLink:hover {
     background-color: var(--issBrand);
     color: white;
   }

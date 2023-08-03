@@ -1,0 +1,56 @@
+.iss__visibility__load {
+  width: 100%;
+  display: flex;
+  place-content: center;
+}
+.iss__visibility__submitButton {
+  grid-area: edit-button;
+  place-self: center;
+  width: fit-content;
+  background: none;
+  border: 1px solid var(--issBrand);
+  cursor: pointer;
+  padding: 4px 8px;
+  white-space: nowrap;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iss__visibility__table {
+  border-collapse: collapse;
+  margin-bottom: 40px;
+}
+.iss__visibility__table-row>th, .iss__visibility__table-body>tr>td {
+  border: 1px solid var(--issBrand);
+  padding: 4px;
+}
+
+/* Hide the default checkbox */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333; /* Border color of the checkbox */
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+/* Style the checked state of the custom checkbox */
+input[type="checkbox"]:checked {
+  background-color: #333; /* Background color when checked */
+}
+/* Style the checkmark (the "tick" inside the checkbox) */
+input[type="checkbox"]:checked::after {
+  content: "\2713"; /* Unicode checkmark symbol */
+  display: block;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  line-height: 18px;
+}
+@media(hover:hover) {
+  .iss__visibility__submitButton:hover {
+    color: white;
+    background: var(--issBrand);
+  }
+}

@@ -34,7 +34,7 @@ test("projects page test", async () => {
 
   expect(screen.getAllByRole('radio')).toHaveLength(1);
 
-  act(() => userHook.current[1]({is_superuser: true, user_role: 'a'}));
+  act(() => userHook.current[1]({is_superuser: true}));
 
   rerender(
     <UserContext.Provider value={{ user: userHook.current[0], setUser: userHook.current[1] }}>

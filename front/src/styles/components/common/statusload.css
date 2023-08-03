@@ -4,6 +4,9 @@
   border: 1px solid var(--issBrand);
   background-color: var(--issLightBrand);
 }
+.progress--fail {
+  background-color: var(--issLightRed);
+}
 .iss__statusLoad__progress {
   height: 100%;
   background-color: var(--issBrand);

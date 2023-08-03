@@ -19,7 +19,14 @@ export default function App() {
         if (data.isAuth) setUser(data.user);
         setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       })
-      .catch(err => alert(err.message));
+      .catch(error => {
+        setStatusData({
+          error: true,
+          done: false,
+          progress: 0,
+          info: 'app is not available' + error.message
+        });
+      });
   }, []);
 
   return (
@@ -28,7 +35,7 @@ export default function App() {
       {
         !statusData.done
           ? <div className="iss__main__loadWrap">
-            <StatusLoad progress={statusData.progress} info={statusData.info} />
+            <StatusLoad progress={statusData.progress} info={statusData.info} error={statusData.error} />
           </div>
           : <AppRouter />
       }

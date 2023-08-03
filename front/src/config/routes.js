@@ -27,6 +27,7 @@ export const routes = [
       { path: 'stats', element: <ProjectPage />, exact: true, secure: true },
       { path: 'download', element: <ProjectPage />, exact: true, secure: true },
       { path: 'edit', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'visibility', element: <ProjectPage />, exact: true, secure: true },
     ]
   },
   { path: '*', element: <Blank /> },

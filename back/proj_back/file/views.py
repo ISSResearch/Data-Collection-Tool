@@ -1,10 +1,13 @@
 from django.http import HttpResponse
 from django.db.models import Count
 from rest_framework.views import Response, APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from .serializers import File, FileSerializer, FilesSerializer
 from attribute.models import Level
+from project.permissions import ProjetcStatsPermission, ProjetcDownloadPermission
+from .permissions import FilePermission
+from .serializers import File, FileSerializer, FilesSerializer
 from .services import FileUploader, prepare_zip_data, upload_chunk
 from os import remove
 from time import time
@@ -12,6 +15,7 @@ from time import time
 
 class FileViewSet(APIView):
     http_method_names = ('get', 'patch', 'delete')
+    permission_classes = (IsAuthenticated, FilePermission)
 
     def get(self, _, fileID):
         file = File.objects.get(id=fileID)
@@ -87,6 +91,7 @@ class FilesViewSet(APIView):
 
 
 @api_view(('GET',))
+@permission_classes((IsAuthenticated, ProjetcStatsPermission))
 def get_stats(_, projectID):
     stats = Level.objects \
         .filter(project_id=projectID) \
@@ -133,6 +138,7 @@ def get_stats(_, projectID):
 
 
 @api_view(('GET',))
+@permission_classes((IsAuthenticated, ProjetcDownloadPermission))
 def download_project_data(request, projectID):
     files_query = request.query_params.get('files')
     files_filter = {'', 'a', 'd'}
@@ -164,3 +170,4 @@ def download_project_data(request, projectID):
 def upload_file_chunk(request, fileID):
     response, response_status = upload_chunk(request, fileID)
     return Response(response, status=response_status)
+# TODO: changed - revise tests

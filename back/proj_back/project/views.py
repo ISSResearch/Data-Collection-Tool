@@ -1,11 +1,14 @@
 from rest_framework.views import Response, APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from .permissions import ProjectPermission, ProjectViewPermission
 from .serializers import ProjectsSerializer, ProjectSerializer, Project
 from .services import update_project
 
 
 class ProjectsViewSet(APIView):
     http_method_names = ('post', 'get')
+    permission_classes = (IsAuthenticated, ProjectPermission)
 
     def get(self, _):
         projects = Project.objects.order_by('id').filter(visible=True)
@@ -33,6 +36,7 @@ class ProjectsViewSet(APIView):
 
 class ProjectViewSet(APIView):
     http_method_names = ('get', 'patch', 'delete')
+    permission_classes = (IsAuthenticated, ProjectPermission, ProjectViewPermission)
 
     def get(self, _, pk):
         response = None
@@ -85,3 +89,4 @@ class ProjectViewSet(APIView):
             response_status = status.HTTP_404_NOT_FOUND
 
         return Response(response, status=response_status)
+# TODO: changed - revise tests

@@ -2,7 +2,6 @@ from user.models import CustomUser
 MOCK_ADMIN_DATA = {
     'username': 'TestAdmin',
     'password': 'Q!werty123ZasdAqwe',
-    'user_role': 'a',
     'is_superuser': True,
     'is_staff': True
 }
@@ -10,7 +9,6 @@ MOCK_ADMIN_DATA = {
 MOCK_COLLECTOR_DATA = {
     'username': 'TestCollector',
     'password': 'Q!werty123ZasdAqwe',
-    'user_role': 'c',
 }
 
 

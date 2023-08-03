@@ -1,5 +1,7 @@
 from rest_framework.views import Response, APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from .permissions import LevelPermission, AttributePermission
 from .serializers import Level, Attribute
 from .services import (
     perform_level_delete,
@@ -10,7 +12,8 @@ from .services import (
 
 
 class LevelsViewSet(APIView):
-    http_method_names = ['get', 'delete']
+    http_method_names = ('get', 'delete')
+    permission_classes = (IsAuthenticated, LevelPermission)
 
     def get(self, _, levelID):
         response = None
@@ -48,7 +51,8 @@ class LevelsViewSet(APIView):
 
 
 class AttributesViewSet(APIView):
-    http_method_names = ['get', 'delete']
+    http_method_names = ('get', 'delete')
+    permission_classes = (IsAuthenticated, AttributePermission)
 
     def get(self, _, attributeID):
         response = None
@@ -83,3 +87,4 @@ class AttributesViewSet(APIView):
                 response_status = status.HTTP_206_PARTIAL_CONTENT
 
         return Response(response, status=response_status)
+# TODO: changed -revise tests

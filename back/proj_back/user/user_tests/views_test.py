@@ -33,7 +33,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
         self.assertTrue(response.data['isAuth'])
         self.assertEqual(
             set(response.data['user'].keys()),
-            {'id', 'username', 'user_role', 'is_superuser'}
+            {'id', 'username', 'is_superuser'}
         )
         self.assertTrue(status == 200 and valid)
 
@@ -70,7 +70,7 @@ class UserCheckViewTest(TestCase, MOCK_CLASS):
         self.assertTrue(response.data.get('isAuth', None))
         self.assertEqual(
             set(response.data['user'].keys()),
-            {'id', 'username', 'user_role', 'is_superuser'}
+            {'id', 'username', 'is_superuser'}
         )
 
 
@@ -105,5 +105,5 @@ class UserCreateViewTest(TestCase, MOCK_CLASS):
         self.assertTrue(valid_request.data.get('isAuth', None))
         self.assertEqual(
             set(valid_request.data['user'].keys()),
-            {'id', 'username', 'user_role', 'is_superuser'}
+            {'id', 'username', 'is_superuser'}
         )

@@ -4,6 +4,7 @@ import useSwiper from './swiper';
 import useFile from './file';
 import useFiles from './fileValidation';
 import useFileUploader from './fileUploader';
+import useCollectors from './collectorsHook';
 
 export {
   useFileInput,
@@ -12,4 +13,5 @@ export {
   useFile,
   useFiles,
   useFileUploader,
+  useCollectors
 }

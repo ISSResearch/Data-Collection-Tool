@@ -11,15 +11,15 @@ class CustomUserSerializerTest(TestCase):
 
         self.assertEqual(
             set(serialized_user.data.keys()),
-            {'id', 'username', 'user_role', 'is_superuser'}
+            {'id', 'username', 'is_superuser'}
         )
         self.assertEqual(
             {
                 value for key, value in serialized_user.data.items()
-                if key in {'name', 'user_role', 'is_superuser'}
+                if key in {'name', 'is_superuser'}
             },
             {
                 value for key, value in MOCK_ADMIN_DATA.items()
-                if key in {'name', 'user_role', 'is_superuser'}
+                if key in {'name', 'is_superuser'}
             }
         )

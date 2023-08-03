@@ -15,7 +15,14 @@ class Project(models.Model):
     visible = models.BooleanField(default=True)
     reason_if_hidden = models.CharField(max_length=1, choices=HIDDEN_REASONS, blank=True)
 
-    class Meta: db_table = 'project'
+    user_visible = models.ManyToManyField('user.CustomUser')
+
+    class Meta:
+        db_table = 'project'
+        permissions = (
+            ('can_view_stats_project', 'Can view stats project'),
+            ('can_download_project', 'Can view download project'),
+        )
 
     def __str__(self): return self.name
 
@@ -78,3 +85,4 @@ class Project(models.Model):
 
             if children: self._create_attributes(children, rest, PARENT, LEVEL)
             elif rest: self._create_attributes([], rest, None, LEVEL)
+# TODO: changed -revise tests

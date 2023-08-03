@@ -1,10 +1,12 @@
-from rest_framework.views import Response
+from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 from .serializers import UserSerializer
-from user.forms import CreateUserForm
+from .forms import CreateUserForm, CustomUser
+from .permissions import UserPermission
 
 
 @api_view(('POST',))
@@ -57,3 +59,19 @@ def create_user(request):
     else: response['errors'] = form.errors
 
     return Response(response)
+
+
+class CollectorsViewSet(APIView):
+    http_method_names = ('get', 'patch')
+    permission_classes = (IsAuthenticated, UserPermission)
+
+    def get(self, _):
+        collectors = CustomUser.objects.filter(is_superuser=False)
+        response = UserSerializer(collectors, many=True)
+
+        return Response(response.data)
+
+    def patch(self, request):
+        return Response('ok')
+
+# TODO: chaged - revise tests

@@ -2,6 +2,7 @@ import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
 import { useEffect, useState, useContext } from "react";
 import { attributeAdapter } from '../utils/adapters';
 import { UserContext } from '../context/User';
+import ProjectVisibility from "../components/ProjectVisibility";
 import FilesValidate from "../components/FilesValidate";
 import FilesUpload from "../components/FilesUpload";
 import FilesDownload from "../components/FilesDownload";
@@ -59,6 +60,7 @@ export default function ProjectPage() {
       stats: FilesStatistics,
       download: FilesDownload,
       edit: ProjectEdit,
+      visibility: ProjectVisibility
     }
     const Component = variants[currentRoute];
     return Component && <Component {...props} />;
