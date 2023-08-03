@@ -5,6 +5,7 @@ import useFile from './file';
 import useFiles from './fileValidation';
 import useFileUploader from './fileUploader';
 import useCollectors from './collectorsHook';
+import useUser from './user';
 
 export {
   useFileInput,
@@ -13,5 +14,6 @@ export {
   useFile,
   useFiles,
   useFileUploader,
-  useCollectors
+  useCollectors,
+  useUser
 }

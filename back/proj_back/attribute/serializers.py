@@ -30,6 +30,7 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
         exclude = ('file', 'attribute')
 
     def get_attributes(self, instance):
+        # TODO: optimize query
         return tuple(
             instance.attribute
             .order_by('level__order', 'level_id')

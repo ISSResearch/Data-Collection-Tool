@@ -55,6 +55,7 @@ class Command(BaseCommand):
         files_with_empty_attirubtes = File.objects \
             .filter(attribute__isnull=True, attributegroup__isnull=True) \
             .values_list('id', flat=True)
+        # TODO: optimize query ^
 
         self._gather_attributes_group(files_with_empty_attirubtes.count())
         free_groups_ids = {group.uid for group in self.attribute_group_instances}

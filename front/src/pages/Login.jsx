@@ -8,7 +8,7 @@ import '../styles/pages/login.css';
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { setUser } = useContext(UserContext);
+  const { initUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   function sendForm(event) {
@@ -24,7 +24,7 @@ export default function Login() {
     )
       .then(({ data }) => {
         if (!data.isAuth) throw new Error(data.message);
-        setUser(data.user);
+        initUser(data.user);
         if (window.location.pathname  === '/login') navigate('/');
       })
       .catch(({ message }) => {

@@ -45,6 +45,7 @@ class FileSerializer(serializers.ModelSerializer):
 
         if model:
             upd_group, *_ = model
+            # TODO: optimize query
             current_ids = set(upd_group.attribute.values_list('id', flat=True))
             if set(new_ids) != current_ids: upd_group.attribute.set(new_ids)
 

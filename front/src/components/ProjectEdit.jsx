@@ -157,7 +157,7 @@ export default function ProjectEdit({
             withBoundAttributes={attributes}
           />
         </div>
-        <button className='iss__projectEdit__form__createButton'>
+        <button type="submit" className='iss__projectEdit__form__submitButton'>
           { loading ? <Load isInline/> : <span>Submit edit</span> }
         </button>
       </form>

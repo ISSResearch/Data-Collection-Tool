@@ -35,6 +35,13 @@
   place-items: center;
   color: white;
 }
+.iss__attributesForm__checkbox>input[type="checkbox"]:checked {
+  background-color: white;
+}
+.iss__attributesForm__checkbox>input[type="checkbox"]:checked::after {
+  color: var(--issBrand);
+}
+
 .iss__attributesForm__levelWrap:not(:last-child) {
   margin-bottom: 8px;
 }

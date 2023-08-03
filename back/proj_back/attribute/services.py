@@ -6,6 +6,7 @@ from file.models import File
 def perform_level_delete(level):
     project_id = level.project_id
     current_file_attributes = set(
+        # TODO: optimize query
         File.objects
             .filter(project_id=project_id)
             .values_list('attributegroup__attribute', flat=True)
@@ -13,6 +14,7 @@ def perform_level_delete(level):
     level_delete_attributes = set(
         level.descendants().reverse().values_list('attribute', flat=True)
     )
+    # TODO: optimize query
     level_delete_attributes = level_delete_attributes.union(level.attribute_set.values_list('id', flat=True))
 
     if current_file_attributes.intersection(level_delete_attributes): return
@@ -33,6 +35,7 @@ def perform_level_delete(level):
 def check_level_delete(level):
     project_id = level.project_id
     current_file_attributes = set(
+        # TODO: optimize query
         File.objects
             .filter(project_id=project_id)
             .values_list('attributegroup__attribute', flat=True)
@@ -40,6 +43,7 @@ def check_level_delete(level):
     level_delete_attributes = set(
         level.descendants().reverse().values_list('attribute', flat=True)
     )
+    # TODO: optimize query
     level_delete_attributes = level_delete_attributes.union(level.attribute_set.values_list('id', flat=True))
 
     if current_file_attributes.intersection(level_delete_attributes): return
@@ -52,10 +56,12 @@ def perform_attribute_delete(attribute):
     project_id = attribute.project_id
     current_file_attributes = set(
         File.objects
+        # TODO: optimize query
             .filter(project_id=project_id)
             .values_list('attributegroup__attribute', flat=True)
     )
     delete_attributes = set(
+        # TODO: optimize query
         attribute.descendants().values_list('id', flat=True)
     )
     delete_attributes.add(attribute.id)
@@ -76,9 +82,11 @@ def check_attribute_delete(attribute):
     current_file_attributes = set(
         File.objects
             .filter(project_id=project_id)
+            # TODO: optimize query
             .values_list('attributegroup__attribute', flat=True)
     )
     delete_attributes = set(
+        # TODO: optimize query
         attribute.descendants().values_list('id', flat=True)
     )
     delete_attributes.add(attribute.id)

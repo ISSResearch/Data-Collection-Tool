@@ -1,5 +1,6 @@
 import { UserContext } from "./context/User";
 import { useState, useEffect } from "react";
+import { useUser } from "./hooks";
 import Header from "./components/Header";
 import AppRouter from "./components/AppRouter";
 import StatusLoad from "./components/common/StatusLoad";
@@ -8,29 +9,30 @@ import './styles/app.css';
 import './styles/variables.css';
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  const { user, initUser } = useUser();
   const [statusData, setStatusData] = useState({ done: false });
 
   useEffect(() => {
     setStatusData({ ...statusData, progress: 20, info: 'initializing...' });
     api.get('/api/users/check/')
-      .then(({data}) => {
+      .then(({ data }) => {
+        setStatusData({ ...statusData, progress: 60, info: 'getting session...' });
+        initUser(data.user);
         setStatusData({ ...statusData, progress: 80, info: 'getting session...' });
-        if (data.isAuth) setUser(data.user);
         setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       })
-      .catch(error => {
-        setStatusData({
-          error: true,
-          done: false,
-          progress: 0,
-          info: 'app is not available' + error.message
-        });
-      });
+      // .catch(error => {
+      //   setStatusData({
+      //     error: true,
+      //     done: false,
+      //     progress: 0,
+      //     info: 'app is not available ' + error.message
+      //   });
+      // });
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, initUser }}>
       <Header />
       {
         !statusData.done

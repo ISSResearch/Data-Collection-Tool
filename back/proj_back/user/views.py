@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from .serializers import UserSerializer
 from .forms import CreateUserForm, CustomUser
 from .permissions import UserPermission
+from .services import set_user_permissions
 
 
 @api_view(('POST',))
@@ -66,12 +67,21 @@ class CollectorsViewSet(APIView):
     permission_classes = (IsAuthenticated, UserPermission)
 
     def get(self, _):
-        collectors = CustomUser.objects.filter(is_superuser=False)
+        collectors = CustomUser.objects \
+            .prefetch_related('user_permissions', 'project_set') \
+            .filter(is_superuser=False)
         response = UserSerializer(collectors, many=True)
 
         return Response(response.data)
 
     def patch(self, request):
-        return Response('ok')
+        set_user_permissions(request.data)
+
+        collectors = CustomUser.objects \
+            .prefetch_related('user_permissions', 'project_set') \
+            .filter(is_superuser=False)
+        response = UserSerializer(collectors, many=True)
+
+        return Response(response.data)
 
 # TODO: chaged - revise tests

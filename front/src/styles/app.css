@@ -25,6 +25,29 @@ h1 {
   font-size: 42px;
   line-height: 0.75;
 }
+input[type="checkbox"] {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--issBlack);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+input[type="checkbox"]:checked {
+  background-color: var(--issBrand);
+}
+input[type="checkbox"]:checked::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: "\2713";
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
 .iss__main__loadWrap {
   display: flex;
   flex-direction: column;

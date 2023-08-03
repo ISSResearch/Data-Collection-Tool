@@ -6,11 +6,11 @@ import api from '../config/api';
 import '../styles/components/header.css'
 
 export default function Header() {
-  const { user, setUser } = useContext(UserContext);
+  const { user, initUser } = useContext(UserContext);
 
   function logOutUser() {
     api.get('/api/users/logout/')
-      .then(({ data }) => {if (data.ok) setUser(null);})
+      .then(({ data }) => { if (data.ok) initUser(null); })
       .catch(err => console.log('err', err.message));
   }
 

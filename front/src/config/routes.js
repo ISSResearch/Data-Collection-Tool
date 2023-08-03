@@ -14,7 +14,7 @@ export const routes = [
     element: <Projects />,
     exact: true,
     children: [
-      { path: 'create', element: <Projects />, exact: true, secure: true },
+      { path: 'create', element: <Projects />, exact: true, permission: 'hidden' },
     ]
   },
   {
@@ -22,12 +22,12 @@ export const routes = [
     element: <ProjectPage />,
     exact: true,
     children: [
-      { path: 'upload', element: <ProjectPage />, exact: true, secure: true },
-      { path: 'validate', element: <ProjectPage />, exact: true, secure: true },
-      { path: 'stats', element: <ProjectPage />, exact: true, secure: true },
-      { path: 'download', element: <ProjectPage />, exact: true, secure: true },
-      { path: 'edit', element: <ProjectPage />, exact: true, secure: true },
-      { path: 'visibility', element: <ProjectPage />, exact: true, secure: true },
+      { path: 'upload', element: <ProjectPage />, exact: true, permission: 'can_upload_project' },
+      { path: 'validate', element: <ProjectPage />, exact: true, permission: 'can_validate_project' },
+      { path: 'stats', element: <ProjectPage />, exact: true, permission: 'can_view_stats_project' },
+      { path: 'download', element: <ProjectPage />, exact: true, permission: 'can_download_project' },
+      { path: 'edit', element: <ProjectPage />, exact: true, permission: 'change_project' },
+      { path: 'visibility', element: <ProjectPage />, exact: true, permission: 'change_project' },
     ]
   },
   { path: '*', element: <Blank /> },

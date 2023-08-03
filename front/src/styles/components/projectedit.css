@@ -44,7 +44,7 @@
   resize: vertical;
   min-height: 200px;
 }
-.iss__projectEdit__form__createButton {
+.iss__projectEdit__form__submitButton {
   grid-area: edit-button;
   place-self: center;
   width: fit-content;
@@ -54,7 +54,7 @@
   padding: 12px 20px;
   transition: background-color 0.3s ease;
 }
-.iss__projectEdit__form__createButton>span {
+.iss__projectEdit__form__submitButton>span {
   text-transform: uppercase;
   white-space: nowrap;
   transition: color 0.3s ease;
@@ -144,10 +144,10 @@
     background-color: var(--issRed);
     color: white;
   }
-  .iss__projectEdit__form__createButton:hover {
+  .iss__projectEdit__form__submitButton:hover {
     background-color: var(--issBrand);
   }
-  .iss__projectEdit__form__createButton:hover>span {
+  .iss__projectEdit__form__submitButton:hover>span {
     color: white;
   }
 }

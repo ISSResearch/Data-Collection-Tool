@@ -8,7 +8,7 @@ import '../styles/pages/registration.css';
 export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { setUser } = useContext(UserContext);
+  const { initUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   function sendForm(event) {
@@ -30,7 +30,7 @@ export default function Registration() {
           .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
           throw new Error(errorMessage);
         }
-        setUser(data.user);
+        initUser(data.user);
         navigate('/');
       })
       .catch(({ message }) => {

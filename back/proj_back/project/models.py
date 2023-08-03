@@ -20,6 +20,8 @@ class Project(models.Model):
     class Meta:
         db_table = 'project'
         permissions = (
+            ('can_upload_project', 'Can upload project files'),
+            ('can_validate_project', 'Can validate project'),
             ('can_view_stats_project', 'Can view stats project'),
             ('can_download_project', 'Can view download project'),
         )
