@@ -10,8 +10,12 @@ class ProjectsViewSet(APIView):
     http_method_names = ('post', 'get')
     permission_classes = (IsAuthenticated, ProjectPermission)
 
-    def get(self, _):
+    def get(self, request):
         projects = Project.objects.order_by('id').filter(visible=True)
+
+        if not request.user.is_superuser:
+            projects = projects.filter(user_visible__id=13)
+
         response = ProjectsSerializer(projects, many=True)
         return Response(response.data)
 
@@ -43,10 +47,7 @@ class ProjectViewSet(APIView):
         response_status = status.HTTP_200_OK
 
         try:
-            project = Project.objects \
-                .prefetch_related('attribute_set') \
-                .filter(visible=True) \
-                .get(id=pk)
+            project = Project.objects.filter(visible=True).get(id=pk)
             response = ProjectSerializer(project).data
 
         except Project.DoesNotExist:
