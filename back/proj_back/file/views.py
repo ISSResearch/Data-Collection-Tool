@@ -53,6 +53,8 @@ class FileViewSet(APIView):
 
 class FilesViewSet(APIView):
     http_method_names = ('get', 'post')
+    permission_classes = (IsAuthenticated, FilePermission)
+
     # TODO: changed - revise tests
     def get(self, request, projectID):
         accepted_queries = (

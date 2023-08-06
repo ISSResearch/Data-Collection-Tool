@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CollectorSerializer
 from .forms import CreateUserForm, CustomUser
 from .permissions import UserPermission
 from .services import set_user_permissions
@@ -66,21 +66,35 @@ class CollectorsViewSet(APIView):
     http_method_names = ('get', 'patch')
     permission_classes = (IsAuthenticated, UserPermission)
 
-    def get(self, _):
+    def get(self, _, projectID):
         collectors = CustomUser.objects \
-            .prefetch_related('user_permissions', 'project_set') \
+            .prefetch_related(
+                'project_view',
+                'project_upload',
+                'project_validate',
+                'project_stats',
+                'project_download',
+                'project_edit'
+            ) \
             .filter(is_superuser=False)
-        response = UserSerializer(collectors, many=True)
+        response = CollectorSerializer(collectors, many=True, context={'project_id': projectID})
 
         return Response(response.data)
 
-    def patch(self, request):
-        set_user_permissions(request.data)
+    def patch(self, request, projectID):
+        set_user_permissions(request.data, projectID)
 
         collectors = CustomUser.objects \
-            .prefetch_related('user_permissions', 'project_set') \
+            .prefetch_related(
+                'project_view',
+                'project_upload',
+                'project_validate',
+                'project_stats',
+                'project_download',
+                'project_edit'
+            ) \
             .filter(is_superuser=False)
-        response = UserSerializer(collectors, many=True)
+        response = CollectorSerializer(collectors, many=True, context={'project_id': projectID})
 
         return Response(response.data)
 

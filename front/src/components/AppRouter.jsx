@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { UserContext } from "../context/User";
 import { useContext } from "react";
+import { routes } from '../config/routes';
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 
@@ -14,7 +15,7 @@ export default function AppRouter() {
           user
           ? <Routes>
               {
-                user.availableRoutes.map(({ path, element, exact, children }) =>
+                routes.map(({ path, element, exact, children }) =>
                   <Route
                     key={path}
                     path={path}

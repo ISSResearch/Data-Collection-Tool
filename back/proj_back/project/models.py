@@ -15,16 +15,15 @@ class Project(models.Model):
     visible = models.BooleanField(default=True)
     reason_if_hidden = models.CharField(max_length=1, choices=HIDDEN_REASONS, blank=True)
 
-    user_visible = models.ManyToManyField('user.CustomUser')
+    user_visible = models.ManyToManyField('user.CustomUser', related_name='project_view')
+    user_upload = models.ManyToManyField('user.CustomUser', related_name='project_upload')
+    user_validate = models.ManyToManyField('user.CustomUser', related_name='project_validate')
+    user_stats = models.ManyToManyField('user.CustomUser', related_name='project_stats')
+    user_download = models.ManyToManyField('user.CustomUser', related_name='project_download')
+    user_edit = models.ManyToManyField('user.CustomUser', related_name='project_edit')
 
     class Meta:
         db_table = 'project'
-        permissions = (
-            ('can_upload_project', 'Can upload project files'),
-            ('can_validate_project', 'Can validate project'),
-            ('can_view_stats_project', 'Can view stats project'),
-            ('can_download_project', 'Can view download project'),
-        )
 
     def __str__(self): return self.name
 

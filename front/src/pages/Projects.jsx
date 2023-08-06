@@ -21,9 +21,6 @@ export default function Projects() {
 
   const userOptions = [...ROUTE_LINKS];
   if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
-  else if (user) userOptions.push(
-    ...PROTECTED_ROUTE_LINKS.filter(({permission}) => user.permissions.includes(permission))
-  )
 
   const PageVariant = (props) => {
     const variants = {

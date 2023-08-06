@@ -42,13 +42,21 @@ class ProjectViewSet(APIView):
     http_method_names = ('get', 'patch', 'delete')
     permission_classes = (IsAuthenticated, ProjectPermission, ProjectViewPermission)
 
-    def get(self, _, pk):
+    def get(self, request, pk):
         response = None
         response_status = status.HTTP_200_OK
 
         try:
-            project = Project.objects.filter(visible=True).get(id=pk)
-            response = ProjectSerializer(project).data
+            project = Project.objects \
+                .prefetch_related(
+                    'user_upload',
+                    'user_validate',
+                    'user_stats',
+                    'user_download',
+                    'user_edit'
+                  ) \
+                .filter(visible=True).get(id=pk)
+            response = ProjectSerializer(project, context={'request': request}).data
 
         except Project.DoesNotExist:
             response = 'query project does not exist'

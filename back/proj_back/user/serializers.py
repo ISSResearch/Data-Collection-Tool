@@ -3,24 +3,28 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    permissions = serializers.SerializerMethodField()
-    projects = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'is_superuser', 'permissions', 'projects')
+        fields = ('id', 'username', 'is_superuser')
+
+
+class CollectorSerializer(UserSerializer):
+    permissions = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields = ('id', 'username', 'permissions')
 
     def get_permissions(self, instance):
-        if instance.is_superuser: return tuple()
+        project_id = self.context.get('project_id')
+        if not project_id: return {}
 
-        permissions = instance.user_permissions.all()
-
-        return { permission.codename for permission in permissions}
-
-    def get_projects(self, instance):
-        if instance.is_superuser: return tuple()
-
-        projects = instance.project_set.all()
-
-        return { project.id for project in projects }
+        return {
+            'view': project_id in {project.id for project in instance.project_view.all()},
+            'upload': project_id in {project.id for project in instance.project_upload.all()},
+            'validate': project_id in {project.id for project in instance.project_validate.all()},
+            'stats': project_id in {project.id for project in instance.project_stats.all()},
+            'download': project_id in {project.id for project in instance.project_download.all()},
+            'edit': project_id in {project.id for project in instance.project_edit.all()},
+        }
 # TODO: changed - revise tests

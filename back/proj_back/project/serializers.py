@@ -16,9 +16,10 @@ class ProjectsSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(ProjectsSerializer):
     attributes = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
 
     class Meta(ProjectsSerializer.Meta):
-        fields = ('attributes',)
+        fields = ('id', 'name', 'description', 'attributes', 'permissions')
 
     def get_attributes(self, instance):
         levels = LevelSerializer(
@@ -26,4 +27,17 @@ class ProjectSerializer(ProjectsSerializer):
             many=True
         )
         return levels.data
+
+    def get_permissions(self, instance):
+        request = self.context.get('request')
+        if not request: return {}
+
+        user_id = request.user.id
+        return {
+            'upload': user_id in {user.id for user in instance.user_upload.all()},
+            'validate': user_id in {user.id for user in instance.user_validate.all()},
+            'stats': user_id in {user.id for user in instance.user_stats.all()},
+            'download': user_id in {user.id for user in instance.user_download.all()},
+            'edit': user_id in {user.id for user in instance.user_edit.all()},
+        }
 # TODO: changed - revise tests

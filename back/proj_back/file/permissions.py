@@ -1,13 +1,21 @@
 from rest_framework.permissions import BasePermission
-
+from .models import File
 
 class FilePermission(BasePermission):
-    def has_permission(self, request, _):
+    def has_permission(self, request, view):
+        if request.user.is_superuser: return True
+
         method = request.method
-        permission_map = {
-            'GET': 'project.can_validate_project',
-            'POST': 'project.can_upload_project',
-            'PATCH': 'project.can_validate_project',
-            'DELETE': 'project.can_upload_project',
-        }
-        return request.user.has_perm(permission_map.get(method, False))
+        try:
+            file_id = view.kwargs.get('fileID')
+            if file_id:
+                project_id = File.objects.get(id=file_id).project_id
+            else: project_id = view.kwargs['projectID']
+
+            if method in ('GET', 'PATCH'):
+                return bool(request.user.project_validate.filter(id=project_id))
+
+            if method in ('POST', 'DELETE'):
+                return bool(request.user.project_upload.filter(id=project_id))
+
+        except File.DoesNotExist: ...

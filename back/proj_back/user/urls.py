@@ -6,5 +6,5 @@ urlpatterns = [
     path('logout/', logout_user),
     path('check/', check_user),
     path('create/', create_user),
-    path('collectors/', CollectorsViewSet.as_view())
+    path('collectors/<int:projectID>/', CollectorsViewSet.as_view())
 ]

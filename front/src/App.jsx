@@ -21,14 +21,14 @@ export default function App() {
         setStatusData({ ...statusData, progress: 80, info: 'getting session...' });
         setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       })
-      // .catch(error => {
-      //   setStatusData({
-      //     error: true,
-      //     done: false,
-      //     progress: 0,
-      //     info: 'app is not available ' + error.message
-      //   });
-      // });
+      .catch(error => {
+        setStatusData({
+          error: true,
+          done: false,
+          progress: 0,
+          info: 'app is not available ' + error.message
+        });
+      });
   }, []);
 
   return (

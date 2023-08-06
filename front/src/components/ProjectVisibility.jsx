@@ -13,24 +13,23 @@ export default function ProjectVisibility({ pathID }) {
   function sendForm(event) {
     event.preventDefault();
     setLoading({ ...loading, submit: true });
-    const formData = gatherData();
-    api.request(`/api/users/collectors/`,
-      {
+    const formData = { project: pathID, users: gatherData()};
+    api.request(`/api/users/collectors/${pathID}/`, {
         method: 'patch',
         data: formData,
         headers: { 'Content-Type': 'application/json' }
     })
       .then(({ data }) => {
-        initData(data, pathID);
+        initData( data );
         setLoading({ ...loading, submit: false });
       })
       .catch(error => alert(error.message));
   }
 
   useEffect(() => {
-    api.get('api/users/collectors/')
+    api.get(`api/users/collectors/${pathID}/`)
       .then(({ data }) => {
-        initData(data, pathID);
+        initData(data);
         setLoading({ ...loading, page: false });
       })
       .catch(error => alert(error.message));
@@ -54,12 +53,12 @@ export default function ProjectVisibility({ pathID }) {
         </thead>
         <tbody className='iss__visibility__table-body'>
           {
-            Object.values(collectors).map(({ user_id, username, preparedPermissions }) => (
+            Object.values(collectors).map(({ user_id, username, permissions }) => (
               <Fragment key={user_id}>
                 <tr className="iss__visibility__table-row">
                   <td className="iss__visibility__table-cell">{username}</td>
                   {
-                    Object.entries(preparedPermissions).map(([name, permission]) => (
+                    Object.entries(permissions).map(([name, permission]) => (
                       <td key={name} className="iss__visibility__table-cell">
                         <input
                           onChange={({target}) => changeCollector(user_id, name, target)}

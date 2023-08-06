@@ -30,7 +30,7 @@ export default function FilesStatistics({pathID}) {
         alert(err.message);
         setStats([]);
       });
-  }, [pathID]);
+  }, []);
 
   if (!stats) return <div className='iss__stats__load'><Load /></div>
 
