@@ -13,6 +13,10 @@ class LoginPageTests:
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.login_url)
 
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
+
         user_logged = len(self.driver.find_elements(By.CLASS_NAME, value='iss__header__username'))
         if user_logged:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
@@ -43,6 +47,10 @@ class LoginPageTests:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
         self.driver.get(self.base_url + self.login_url)
 
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
+
         [name, password] = self.driver.find_elements(By.TAG_NAME, value='input')
 
         name.send_keys('admin_invalid1231231230978')
@@ -59,6 +67,10 @@ class LoginPageTests:
         if user_logged:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
         self.driver.get(self.base_url)
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
 
         [name, password] = self.driver.find_elements(By.TAG_NAME, value='input')
 
@@ -84,12 +96,17 @@ class RegistrationTest:
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.registrations_url)
 
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
+
         self._registration_ui_test()
         self._registration_invalid_test()
         # self._registration_valid_test()
 
     def _registration_ui_test(self):
         self.assertEqual(self.driver.current_url, self.base_url + self.registrations_url)
+
         self.assertEqual(
             self.driver.find_element(By.TAG_NAME, value='h1').text,
             'Registration Page'
@@ -114,6 +131,10 @@ class RegistrationTest:
 
         self.driver.get(self.base_url + self.registrations_url)
 
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
+
         [name, pass1, pass2] = self.driver.find_elements(By.TAG_NAME, value='input')
 
         name.send_keys('FailInutTestName')
@@ -132,6 +153,10 @@ class RegistrationTest:
             self.driver.find_element(By.CLASS_NAME, value='iss__header__logoutButton').click()
 
         self.driver.get(self.base_url + self.registrations_url)
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
 
         [name, pass1, pass2] = self.driver.find_elements(By.TAG_NAME, value='input')
 
@@ -157,6 +182,10 @@ class ProjectsPageTests:
     def run_projectspage_tests(self):
         self.assertTrue(self.driver)
         self.driver.get(self.base_url + self.projects_url)
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
 
         return  # TODO:
         self._projects_ui_test()
@@ -284,6 +313,10 @@ class ProjectPageTests:
         if not self.test_project: get_project(self)
 
         self.driver.get(self.test_project['link'])
+
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
 
         WebDriverWait(self.driver, timeout=3).until(
             lambda d: d.find_element(By.TAG_NAME, value='h1').text == self.test_project['name']
