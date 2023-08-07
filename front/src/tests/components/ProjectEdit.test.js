@@ -16,7 +16,7 @@ test("project edit component test", () => {
 
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
   screen.getByRole('button', { name: 'DELETE PROJECT' });
-  expect(screen.getAllByRole('group')).toHaveLength(3);
+  expect(screen.getAllByRole('group')).toHaveLength(4);
   screen.getByText('Submit edit');
   expect(screen.queryByTestId('load-c')).toBeNull();
 

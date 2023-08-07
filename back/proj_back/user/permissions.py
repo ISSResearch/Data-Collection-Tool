@@ -10,3 +10,4 @@ class UserPermission(BasePermission):
 
         if method in ('GET', 'POST'):
             return bool(request.user.project_edit.filter(id=project_id))
+# TODO: write not admin tests

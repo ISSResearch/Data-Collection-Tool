@@ -16,7 +16,7 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
 
         self.assertEqual(
             set(serialized_project.data.keys()),
-            {'id', 'attributes', 'name', 'description', 'created_at', 'visible', 'reason_if_hidden'}
+            {'id', 'name', 'description', 'attributes', 'permissions'}
         )
         self.assertEqual(
             {
@@ -58,7 +58,7 @@ class ProjectsSerializerTest(TestCase, MOCK_PROJECT):
         self.assertEqual(len(serialized_projects.data), len(projects))
         self.assertEqual(
             set(serialized_projects.data[0].keys()),
-            {'id', 'name', 'description', 'created_at', 'visible', 'reason_if_hidden'}
+            {'id', 'name', 'description', 'created_at'}
         )
         self.assertEqual(
             {

@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     def update_permissions(self, permissions, project_id=None):
         change_fields = (
             (self.project_view, 'view'),
-            (self.project_upload,  'upload'),
+            (self.project_upload, 'upload'),
             (self.project_validate, 'validate'),
             (self.project_stats, 'stats'),
             (self.project_download, 'download'),

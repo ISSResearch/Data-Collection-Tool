@@ -30,6 +30,7 @@ class MOCK_CLASS:
         user = CustomUser.objects.create(
             username=MOCK_ADMIN_DATA['username'],
             password=MOCK_ADMIN_DATA['password'],
+            is_superuser=MOCK_ADMIN_DATA['is_superuser']
         )
 
         return user if not login_client else login_client.force_login(user)

@@ -14,15 +14,15 @@ export default function TitleSwitch({title, titleLink, links, currentRoute, pare
       <nav className='iss__titleSwitch__navWrap'>
         <ul className='iss__titleSwitch__nav'>
           {
-            links.map(({name, link}) => (
+            links?.map(({name, link}) => (
               <li key={link}>
                 <Link
+                  to={createLink(link)}
                   className={
                     currentRoute === (link || parent)
                       ? 'iss__titleSwitch__navItem--active'
                       : 'iss__titleSwitch__navItem'
                   }
-                  to={createLink(link)}
                 >{name}</Link>
               </li>
             ))

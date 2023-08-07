@@ -70,11 +70,7 @@ export default function ProjectPage() {
           if (user.is_superuser) setUserOptions([...PROTECTED_ROUTE_LINKS]);
           else {
             setUserOptions([
-              ...PROTECTED_ROUTE_LINKS.filter(({ permission }) => {
-                console.log(permission)
-                console.log(permissions)
-                return permissions[permission];
-              })
+              ...PROTECTED_ROUTE_LINKS.filter(({ permission }) => permissions[permission])
             ]);
           }
 

@@ -19,7 +19,7 @@ test('all project component test', () => {
   );
 
   expect(screen.queryByTestId('load-c')).toBeNull();
-  expect(screen.getByRole('link').href).toBe('http://localhost/project/' + mock_raw_project.id);
+  expect(screen.getByRole('link').href).toBe('http://localhost/projects/' + mock_raw_project.id);
   expect(screen.getByRole('heading').innerHTML).toBe(mock_raw_project.name);
 
   rerender(

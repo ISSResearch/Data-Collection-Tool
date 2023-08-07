@@ -6,11 +6,12 @@ import { mock_prepared_attributes } from '../../../_mock';
 test("selectoritem component test, case initial", () => {
   const attribute = mock_prepared_attributes.find(({multiple}) => multiple);
   const {attributes} = attribute;
+
   render(
     <SelectorItem
-      id={1}
-      name={'sel_name'}
-      attributes={attributes}
+      selectorId={1}
+      selectorName={'sel_name'}
+      selectorOptions={attributes}
       handleSelect={() => {}}
     />
   );
@@ -55,19 +56,20 @@ test("selectoritem component test, case initial", () => {
 test("selectoritem component test, case woth defaults", () => {
   const attribute = mock_prepared_attributes.find(({multiple}) => multiple);
   const {attributes} = attribute;
+
   render(
     <SelectorItem
-      id={1}
-      name={'sel_name'}
-      attributes={attributes}
+      selectorId={1}
+      selectorName={'sel_name'}
+      selectorOptions={attributes}
       handleSelect={() => {}}
-      defaults={attributes.slice(1).map(({id}) => id)}
+      defaultSelected={attributes.slice(1).map(({id}) => id)}
     />
   );
   const selector = screen.queryByRole('listbox');
 
   expect(selector).not.toBeNull();
-  expect(screen.queryByText('-not set-', { ignore: 'option'})).toBeNull();
+  expect(screen.queryByText('-not set-', {ignore: 'option'})).toBeNull();
   attributes.slice(1).forEach(({name}) => {
     expect(screen.queryByText(name, { ignore: 'option'})).not.toBeNull();
   });

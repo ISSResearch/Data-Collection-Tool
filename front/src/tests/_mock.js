@@ -159,6 +159,13 @@ export const mock_prepared_attributes = [
 
 export const mock_raw_project = {
   "id": 23,
+  permissions: {
+    'upload': false,
+    'validate': false,
+    'stats': false,
+    'download': false,
+    'edit': false,
+  },
   "attributes": [
     {
       "id": 117,

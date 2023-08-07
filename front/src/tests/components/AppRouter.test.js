@@ -14,7 +14,7 @@ test("app router component test", () => {
     <UserContext.Provider
       value={{ user: hookItem.current.user, setUser: hookItem.current.setUser }}
     >
-      <MemoryRouter initialEntries={['/project/1']}>
+      <MemoryRouter initialEntries={['/projects/1']}>
         <AppRouter/>
       </MemoryRouter>
     </UserContext.Provider>
@@ -28,7 +28,7 @@ test("app router component test", () => {
     <UserContext.Provider
       value={{ user: hookItem.current.user, setUser: hookItem.current.setUser }}
     >
-      <MemoryRouter initialEntries={['/project/1']}>
+      <MemoryRouter initialEntries={['/projects/1']}>
         <AppRouter/>
       </MemoryRouter>
     </UserContext.Provider>

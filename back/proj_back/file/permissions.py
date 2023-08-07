@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from .models import File
 
+
 class FilePermission(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_superuser: return True
@@ -19,3 +20,4 @@ class FilePermission(BasePermission):
                 return bool(request.user.project_upload.filter(id=project_id))
 
         except File.DoesNotExist: ...
+# TODO: write not admin tests

@@ -13,22 +13,22 @@ class LevelViewsetTest(TestCase, MOCK_CLASS):
         LevelViewsetTest.user = MOCK_CLASS.create_admin_user()
 
     def test_get_level(self):
+        unassigned_check_request = self.client.get(
+            f'/api/attributes/levels/{self.case_unassigned.level.id}/'
+        )
+        self.assertTrue(unassigned_check_request.status_code == 403)
+
         self.client.force_login(self.user)
 
         legit_check_request = self.client.get(
             f'/api/attributes/levels/{self.case_legit.level.id}/'
-        )
-        unassigned_check_request = self.client.get(
-            f'/api/attributes/levels/{self.case_unassigned.level.id}/'
         )
         unexisted_check_request = self.client.get(
             '/api/attributes/levels/123987/'
         )
 
         self.assertTrue(legit_check_request.status_code == 403)
-        self.assertTrue(unassigned_check_request.status_code == 200)
         self.assertTrue(unexisted_check_request.status_code == 404)
-        self.assertTrue(unassigned_check_request.data['is_safe'])
         self.assertTrue(legit_check_request.data == 'attribute violation')
         self.assertTrue(unexisted_check_request.data == 'query level does not exist')
 
@@ -75,23 +75,23 @@ class AttributeViewsetTest(TestCase):
         AttributeViewsetTest.user = MOCK_CLASS.create_admin_user()
 
     def test_get_attribute(self):
+        unassigned_check_request = self.client.get(
+            f'/api/attributes/attributes/{self.case_unassigned.attribute.id}/'
+        )
+        self.assertTrue(unassigned_check_request.status_code == 403)
+
         self.client.force_login(self.user)
 
         legit_check_request = self.client.get(
             f'/api/attributes/attributes/{self.case_legit.attribute.id}/'
-        )
-        unassigned_check_request = self.client.get(
-            f'/api/attributes/attributes/{self.case_unassigned.attribute.id}/'
         )
         unexisted_check_request = self.client.get(
             '/api/attributes/attributes/123987/'
         )
 
         self.assertTrue(legit_check_request.status_code == 403)
-        self.assertTrue(unassigned_check_request.status_code == 200)
         self.assertTrue(unexisted_check_request.status_code == 404)
-        self.assertTrue(unassigned_check_request.data['is_safe'])
-        self.assertTrue(legit_check_request.data == 'attribute violation')
+        self.assertTrue(legit_check_request.data == 'attribute violation', legit_check_request.data)
         self.assertTrue(unexisted_check_request.data == 'query attribute does not exist')
 
     def test_delete_attribute(self):

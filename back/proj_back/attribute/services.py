@@ -80,9 +80,9 @@ def perform_attribute_delete(attribute):
 def check_attribute_delete(attribute):
     project_id = attribute.project_id
     current_file_attributes = set(
+        # TODO: optimize query
         File.objects
             .filter(project_id=project_id)
-            # TODO: optimize query
             .values_list('attributegroup__attribute', flat=True)
     )
     delete_attributes = set(

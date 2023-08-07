@@ -32,3 +32,4 @@ class ProjetcDownloadPermission(BasePermission):
         return request.user.is_superuser or bool(
             request.user.project_download.filter(id=view.kwargs['projectID'])
         )
+# TODO: write not admin tests

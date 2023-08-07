@@ -65,7 +65,7 @@ class FilesViewSet(APIView):
 
         filter_query = {'project_id': projectID}
 
-        for filter_name, param in  accepted_queries:
+        for filter_name, param in accepted_queries:
             query_param = request.query_params.getlist(param)
             if query_param: filter_query[filter_name] = query_param
 

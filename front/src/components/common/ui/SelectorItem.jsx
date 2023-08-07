@@ -102,4 +102,3 @@ export default function SelectorItem({
     </div>
   );
 }
-// TODO: changed - revise tests

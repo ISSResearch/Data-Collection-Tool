@@ -16,8 +16,8 @@ const PROTECTED_ROUTE_LINKS = [
 export default function Projects() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');
-  const location = useLocation();
   const { user } = useContext(UserContext);
+  const location = useLocation();
 
   const userOptions = [...ROUTE_LINKS];
   if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);

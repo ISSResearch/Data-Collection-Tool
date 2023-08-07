@@ -54,7 +54,7 @@ class ProjectViewSet(APIView):
                     'user_stats',
                     'user_download',
                     'user_edit'
-                  ) \
+                ) \
                 .filter(visible=True).get(id=pk)
             response = ProjectSerializer(project, context={'request': request}).data
 

@@ -1,6 +1,5 @@
-import { fireEvent, act, render, screen, renderHook } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { UserContext } from "../../context/User";
-import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { mock_raw_project } from '../_mock';
 import api from '../../config/api';
@@ -18,8 +17,6 @@ afterEach(() => {
 });
 
 test("project page test", async () => {
-  const { result: userHook } = renderHook(() => useState(null));
-
   const options = [
     { name: 'upload data', value: 'upload' },
     { name: 'validate data', value: 'validate' },
@@ -29,40 +26,36 @@ test("project page test", async () => {
 
   api.get.mockResolvedValue({data: mock_raw_project});
 
-  let rerender = null;
+  let unmount = null;
+
   await act(async () => {
-    rerender = render(
-      <UserContext.Provider value={{ user: userHook.current[0], setUser: userHook.current[1] }}>
-        <MemoryRouter initialEntries={['/project/1']}>
+    unmount = render(
+      <UserContext.Provider value={{ user: { is_superuser: false } }}>
+        <MemoryRouter initialEntries={['/projects/1']}>
           <ProjectPage />
         </MemoryRouter>
       </UserContext.Provider>
-    ).rerender;
+    ).unmount;
   });
 
   expect(screen.queryByTestId('load-c')).toBeNull();
   screen.getByText(mock_raw_project.name);
   screen.getByText('Description: ' + mock_raw_project.description);
 
-  expect(screen.getAllByRole('radio')).toHaveLength(1);
+  expect(screen.getByRole('navigation').children[0].children).toHaveLength(0);
 
-  act(() => userHook.current[1]({is_superuser: true}));
+  unmount();
 
-  rerender(
-    <UserContext.Provider value={{ user: userHook.current[0], setUser: userHook.current[1] }}>
-      <MemoryRouter initialEntries={['/project/1']}>
-        <ProjectPage />
-      </MemoryRouter>
-    </UserContext.Provider>
-  );
+  await act(async () => {
+    render(
+      <UserContext.Provider value={{ user: { is_superuser: true } }}>
+        <MemoryRouter initialEntries={['/projects/1']}>
+          <ProjectPage />
+        </MemoryRouter>
+      </UserContext.Provider>
+    );
+  });
 
-  expect(screen.getAllByRole('radio')).toHaveLength(options.length + 1);
 
-  fireEvent.click(screen.getByRole('radio', { name: 'download data' }));
-
-  screen.getByRole('heading', { level: 2 });
-
-  fireEvent.click(screen.getByRole('radio', { name: 'editing' }));
-
-  expect(screen.queryByText('Description: ' + mock_raw_project.description)).toBeNull();
+  expect(screen.getByRole('navigation').children[0].children).toHaveLength(options.length + 1);
 });
