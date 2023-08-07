@@ -58,6 +58,9 @@ class BrowserTestMixin(
         WebDriverWait(self.driver, timeout=3).until(
             lambda d: d.title == 'ISS Data Collection Tool'
         )
+        WebDriverWait(self.driver, timeout=3).until(
+            lambda d: d.find_element(By.TAG_NAME, value='h1')
+        )
         self.assertEqual(
             self.driver.find_element(By.TAG_NAME, value='h1').text,
             'Login Page'
