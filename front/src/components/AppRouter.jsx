@@ -40,4 +40,3 @@ export default function AppRouter() {
     </main>
   );
 }
-// TODO: changes - revise tests

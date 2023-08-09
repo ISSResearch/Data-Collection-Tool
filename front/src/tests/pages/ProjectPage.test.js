@@ -42,7 +42,7 @@ test("project page test", async () => {
   screen.getByText(mock_raw_project.name);
   screen.getByText('Description: ' + mock_raw_project.description);
 
-  expect(screen.getByRole('navigation').children[0].children).toHaveLength(0);
+  expect(screen.getByRole('navigation').children[0].children).toHaveLength(2);
 
   unmount();
 
@@ -55,7 +55,6 @@ test("project page test", async () => {
       </UserContext.Provider>
     );
   });
-
 
   expect(screen.getByRole('navigation').children[0].children).toHaveLength(options.length + 1);
 });

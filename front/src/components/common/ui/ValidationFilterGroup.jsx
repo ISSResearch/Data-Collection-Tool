@@ -23,4 +23,3 @@ export default function ValidationFilterGroup({ filterData, hadleChange }) {
     </fieldset>
   )
 }
-// TODO: new component - write tests

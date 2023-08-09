@@ -5,7 +5,6 @@ import Load from './common/Load';
 import api from "../config/api";
 import '../styles/components/projectvisibility.css';
 
-
 export default function ProjectVisibility({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();
@@ -80,4 +79,3 @@ export default function ProjectVisibility({ pathID }) {
     </form>
   );
 }
-// TODO: new component - write tests

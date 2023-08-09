@@ -32,6 +32,7 @@ export default function ProjectPage() {
   const { projectID } = useParams();
 
   const PageVariant = useCallback((props) => {
+    const [,,, variant] = location.pathname.split('/')
     const variants = {
       upload: FilesUpload,
       validate: FilesValidate,
@@ -40,9 +41,9 @@ export default function ProjectPage() {
       edit: ProjectEdit,
       visibility: ProjectVisibility
     }
-    const Component = variants[currentRoute];
+    const Component = variants[variant];
     return Component && <Component {...props} />;
-  }, [currentRoute]);
+  }, [location]);
 
   // TODO: refactor routes validation and permission
   useEffect(() => {
@@ -108,4 +109,3 @@ export default function ProjectPage() {
     </div>
   );
 }
-// TODO: changes - revise tests

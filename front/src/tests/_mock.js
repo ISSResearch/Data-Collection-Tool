@@ -160,9 +160,9 @@ export const mock_prepared_attributes = [
 export const mock_raw_project = {
   "id": 23,
   permissions: {
-    'upload': false,
+    'upload': true,
     'validate': false,
-    'stats': false,
+    'stats': true,
     'download': false,
     'edit': false,
   },
@@ -606,3 +606,30 @@ export const mock_raw_file = {
 }
 
 export const mock_apply_groups = {7607322651726802: {0: [246, 265, 267], 1: [271]}};
+
+export const mock_raw_collectors = [
+  {
+  "id": 13,
+  "username": "some",
+  "permissions": {
+    "view": true,
+    "upload": true,
+    "validate": false,
+    "stats": false,
+    "download": true,
+    "edit": false
+  }
+  },
+  {
+    "id": 12,
+    "username": "test",
+    "permissions": {
+      "view": false,
+      "upload": false,
+      "validate": false,
+      "stats": false,
+      "download": false,
+      "edit": false
+    }
+  }
+];

@@ -10,4 +10,3 @@ export default function ProjectCard({item}) {
     </Link>
   )
 }
-// TODO: changes - revise tests

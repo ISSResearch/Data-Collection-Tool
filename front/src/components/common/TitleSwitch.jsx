@@ -32,4 +32,3 @@ export default function TitleSwitch({title, titleLink, links, currentRoute, pare
     </div>
   )
 }
-// TODO: changes - revise tests

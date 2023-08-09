@@ -60,4 +60,3 @@ export default function Projects() {
     </div>
   );
 }
-// TODO: changes - revise tests

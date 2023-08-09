@@ -31,5 +31,4 @@ export const routes = [
     ]
   },
   { path: '*', element: <Blank /> },
-]
-// TODO: changes - revise tests
+];

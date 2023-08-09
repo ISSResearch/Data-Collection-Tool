@@ -77,7 +77,7 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
         setLoading(false);
       })
       .catch(err => alert('err', err.message));
-  }, []);
+  }, [pageQuery]);
 
   if (loading) return <div className='iss__validation__load'><Load/></div>
 
@@ -100,4 +100,3 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
     </>
   );
 }
-// TODO: changed - revise tests

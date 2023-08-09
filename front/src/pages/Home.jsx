@@ -8,4 +8,3 @@ export default function Home() {
     navigate('/projects');
   }, []);
 }
-// TODO: changes - revise tests
