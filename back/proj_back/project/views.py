@@ -1,20 +1,20 @@
 from rest_framework.views import Response, APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from .permissions import ProjectPermission, ProjectViewPermission
+from .permissions import ProjectsPermission, ProjectPermission, ProjectViewPermission
 from .serializers import ProjectsSerializer, ProjectSerializer, Project
 from .services import update_project
 
 
 class ProjectsViewSet(APIView):
     http_method_names = ('post', 'get')
-    permission_classes = (IsAuthenticated, ProjectPermission)
+    permission_classes = (IsAuthenticated, ProjectsPermission)
 
     def get(self, request):
         projects = Project.objects.order_by('id').filter(visible=True)
 
         if not request.user.is_superuser:
-            projects = projects.filter(user_visible__id=13)
+            projects = projects.filter(user_visible__id=request.user.id)
 
         response = ProjectsSerializer(projects, many=True)
         return Response(response.data)
@@ -98,4 +98,3 @@ class ProjectViewSet(APIView):
             response_status = status.HTTP_404_NOT_FOUND
 
         return Response(response, status=response_status)
-# TODO: changed - revise tests

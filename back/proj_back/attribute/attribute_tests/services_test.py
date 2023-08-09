@@ -31,7 +31,6 @@ class DeleteServiceTest(TestCase):
         case_legit, case_unassigned = case_set_up()
 
         level_id = case_unassigned.level.id
-        # TODO: optimize query
         attributes_id = set(case_unassigned.level.attribute_set.values_list('id', flat=True))
 
         self.assertFalse(perform_level_delete(case_legit.level))

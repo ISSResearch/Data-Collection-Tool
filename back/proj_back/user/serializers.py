@@ -27,4 +27,3 @@ class CollectorSerializer(UserSerializer):
             'download': project_id in {project.id for project in instance.project_download.all()},
             'edit': project_id in {project.id for project in instance.project_edit.all()},
         }
-# TODO: changed - revise tests

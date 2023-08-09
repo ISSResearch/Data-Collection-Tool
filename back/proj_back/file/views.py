@@ -55,7 +55,6 @@ class FilesViewSet(APIView):
     http_method_names = ('get', 'post')
     permission_classes = (IsAuthenticated, FilePermission)
 
-    # TODO: changed - revise tests
     def get(self, request, projectID):
         accepted_queries = (
             ('status__in', 'card[]'),
@@ -86,7 +85,7 @@ class FilesViewSet(APIView):
         response = {'ok': uploader.status}
         res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_500_INTERNAL_SERVER_ERROR
 
-        if (uploader.status):
+        if uploader.status:
             response['created_files'] = FilesSerializer(uploader.created_files, many=True).data
 
         return Response(response, status=res_status)
@@ -172,4 +171,3 @@ def download_project_data(request, projectID):
 def upload_file_chunk(request, fileID):
     response, response_status = upload_chunk(request, fileID)
     return Response(response, status=response_status)
-# TODO: changed - revise tests

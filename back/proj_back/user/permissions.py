@@ -8,6 +8,5 @@ class UserPermission(BasePermission):
         project_id = view.kwargs['projectID']
         method = request.method
 
-        if method in ('GET', 'POST'):
+        if method in {'GET', 'PATCH'}:
             return bool(request.user.project_edit.filter(id=project_id))
-# TODO: write not admin tests

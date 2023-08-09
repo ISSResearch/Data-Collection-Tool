@@ -97,5 +97,3 @@ class CollectorsViewSet(APIView):
         response = CollectorSerializer(collectors, many=True, context={'project_id': projectID})
 
         return Response(response.data)
-
-# TODO: chaged - revise tests

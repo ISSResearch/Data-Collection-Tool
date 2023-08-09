@@ -2,7 +2,7 @@ from .models import CustomUser
 
 
 def set_user_permissions(data, projectID):
-    change_users = data.get('users', [])
+    change_users = data.get('users', ())
 
     for _user in change_users:
         try:

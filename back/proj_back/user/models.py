@@ -25,4 +25,3 @@ class CustomUser(AbstractUser):
 
             if is_permission: field.add(int(project_id))
             else: field.remove(int(project_id))
-# TODO: changed - revise tests

@@ -86,4 +86,3 @@ class Project(models.Model):
 
             if children: self._create_attributes(children, rest, PARENT, LEVEL)
             elif rest: self._create_attributes([], rest, None, LEVEL)
-# TODO: changed -revise tests

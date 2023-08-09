@@ -10,7 +10,7 @@ class ProjectsSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'created_at')
 
     def add_attributes(self):
-        attributeForm = self.initial_data.get('attributes', [])
+        attributeForm = self.initial_data.get('attributes', ())
         for form in attributeForm: self.instance.add_attributes(form)
 
 
@@ -40,4 +40,3 @@ class ProjectSerializer(ProjectsSerializer):
             'download': user_id in {user.id for user in instance.user_download.all()},
             'edit': user_id in {user.id for user in instance.user_edit.all()},
         }
-# TODO: changed - revise tests

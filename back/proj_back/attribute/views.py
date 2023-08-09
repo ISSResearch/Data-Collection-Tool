@@ -33,7 +33,7 @@ class LevelsViewSet(APIView):
         return Response(response, status=response_status)
 
     def delete(self, request):
-        level_ids = request.data.get('id_set', [])
+        level_ids = request.data.get('id_set', ())
         response = {}
         response_status = status.HTTP_200_OK
 
@@ -72,7 +72,7 @@ class AttributesViewSet(APIView):
         return Response(response, status=response_status)
 
     def delete(self, request):
-        attribute_ids = request.data.get('id_set', [])
+        attribute_ids = request.data.get('id_set', ())
         response = {}
         response_status = status.HTTP_200_OK
 
@@ -87,4 +87,3 @@ class AttributesViewSet(APIView):
                 response_status = status.HTTP_206_PARTIAL_CONTENT
 
         return Response(response, status=response_status)
-# TODO: changed -revise tests

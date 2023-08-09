@@ -13,11 +13,10 @@ class FilePermission(BasePermission):
                 project_id = File.objects.get(id=file_id).project_id
             else: project_id = view.kwargs['projectID']
 
-            if method in ('GET', 'PATCH'):
+            if method in {'GET', 'PATCH'}:
                 return bool(request.user.project_validate.filter(id=project_id))
 
-            if method in ('POST', 'DELETE'):
+            if method in {'POST', 'DELETE'}:
                 return bool(request.user.project_upload.filter(id=project_id))
 
         except File.DoesNotExist: ...
-# TODO: write not admin tests

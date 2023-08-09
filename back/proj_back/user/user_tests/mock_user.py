@@ -18,6 +18,7 @@ class MOCK_CLASS:
     logout_endpoint = base_api + 'logout/'
     check_endpoint = base_api + 'check/'
     create_endpoint = base_api + 'create/'
+    collector_endpoint = base_api + 'collectors/'
 
     def check_login(self):
         response = self.client.get(self.check_endpoint)

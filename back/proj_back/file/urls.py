@@ -7,10 +7,10 @@ from .views import (
     upload_file_chunk
 )
 
-urlpatterns = [
+urlpatterns = (
     path('project/<int:projectID>/', FilesViewSet.as_view()),
     path('<int:fileID>/', FileViewSet.as_view()),
     path('stats/project/<int:projectID>/', get_stats),
     path('download/project/<int:projectID>/', download_project_data),
     path('upload/<int:fileID>/', upload_file_chunk)
-]
+)

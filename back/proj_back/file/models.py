@@ -17,4 +17,3 @@ class File(models.Model):
     class Meta: db_table = 'file'
 
     def __str__(self): return self.file_name
-# TODO: changed -revise tests

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .mock_project import MOCK_PROJECT
 from project.serializers import Project, ProjectSerializer, ProjectsSerializer
+from user.models import CustomUser
 
 
 class ProjectSerializerTest(TestCase, MOCK_PROJECT):
@@ -9,10 +10,16 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
             name=self.data['name'],
             description=self.data['description']
         )
+        user = CustomUser.objects.create(username='user', password='password')
 
         for form in self.data['attributes']: project.add_attributes(form)
+        project.user_visible.add(user.id)
+        project.user_edit.add(user.id)
 
-        serialized_project = ProjectSerializer(project)
+        serialized_project = ProjectSerializer(
+            project,
+            context={'request': type('request', (object,), {'user': user})}
+        )
 
         self.assertEqual(
             set(serialized_project.data.keys()),
@@ -31,6 +38,14 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
         self.assertEqual(
             serialized_project.data['attributes'][0]['name'],
             self.data['attributes'][0]['levels'][0]['name']
+        )
+        self.assertEqual(
+            serialized_project.data['attributes'][0]['name'],
+            self.data['attributes'][0]['levels'][0]['name']
+        )
+        self.assertEqual(
+            serialized_project.data['permissions'],
+            {'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': True}
         )
 
 

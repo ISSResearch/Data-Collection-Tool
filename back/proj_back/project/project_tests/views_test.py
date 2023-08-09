@@ -40,6 +40,19 @@ class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
             bool(projects[0].description == self.data['description'] + '0')
         ]))
 
+        self.user.is_superuser = False
+        self.user.save()
+
+        response = self.client.get(self.endpoint)
+
+        self.assertFalse(response.data)
+
+        projects[0].user_visible.add(self.user.id)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.data[0]['id'], projects[0].id)
+
     def test_create_project(self):
         self.client.force_login(self.user)
 
@@ -82,6 +95,20 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT):
             {level['name'] for level in request.data['attributes'] if not level['parent']},
             {form['levels'][0]['name'] for form in self.data['attributes']}
         )
+
+        self.user.is_superuser = False
+        self.user.save()
+
+        request = self.client.get(f'{self.endpoint}{self.project.id}/')
+
+        self.assertTrue(request.status_code == 403)
+
+        self.project.user_visible.add(self.user.id)
+
+        request = self.client.get(f'{self.endpoint}{self.project.id}/')
+
+        self.assertTrue(request.status_code == 200)
+        self.assertTrue(request.data['name'] == self.project.name)
 
     def test_get_invalid_project(self):
         self.client.force_login(self.user)
@@ -172,3 +199,63 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT):
         self.assertTrue(unexisted_project_request.data == 'query project does not exist')
         self.assertTrue(updated_project.visible)
         self.assertFalse(updated_project.reason_if_hidden == 'd')
+
+
+class CollectorViewTest(TestCase, MOCK_PROJECT):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        CollectorViewTest.user = MOCK_CLASS.create_admin_user()
+        CollectorViewTest.project = Project.objects.create(
+            name=cls.data['name'],
+            description=cls.data['description'],
+        )
+
+    def test_get_collectors(self):
+        self.user.is_superuser = False
+        self.user.save()
+
+        self.project.user_visible.add(self.user.id)
+        self.project.user_edit.add(self.user.id)
+
+        self.client.force_login(self.user)
+        request = self.client.get(f'{MOCK_CLASS.collector_endpoint}{self.project.id}/')
+
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(
+            set(request.data[0].keys()),
+            {'id', 'username', 'permissions'},
+        )
+
+    def test_patch_collectors(self):
+        self.user.is_superuser = False
+        self.user.save()
+        self.project.user_edit.add(self.user.id)
+
+        self.client.force_login(self.user)
+        request = self.client.patch(
+            f'{MOCK_CLASS.collector_endpoint}{self.project.id}/',
+            {
+                'users': [
+                    {
+                        'user_id': self.user.id,
+                        'permissions': {
+                            'view': True,
+                            'upload': False,
+                            'validate': True,
+                            'stats': False,
+                            'download': True,
+                            'edit': False
+                        }
+                    }
+                ]
+            },
+            content_type='application/json'
+        )
+
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.data[0]['id'], self.user.id)
+        self.assertEqual(
+            request.data[0]['permissions'],
+            {'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
+        )

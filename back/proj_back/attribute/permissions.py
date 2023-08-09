@@ -15,13 +15,15 @@ class LevelPermission(BasePermission):
                 return bool(request.user.project_edit.filter(id=project_id))
 
             if method == 'DELETE':
-                level_ids = request.data.get('id_set', [])
+                level_ids = request.data.get('id_set', ())
                 project_ids = set(
                     Level.objects.filter(uid__in=level_ids).values_list('project_id', flat=True)
                 )
 
-                difference = set(request.user.project_edit.values_list('id', flat=True)) - project_ids
-                return len(difference) == 0
+                user_edit_permissions = set(request.user.project_edit.values_list('id', flat=True))
+                difference = user_edit_permissions - project_ids
+
+                return user_edit_permissions and len(difference) == 0
 
         except Level.DoesNotExist: return True
 
@@ -39,13 +41,13 @@ class AttributePermission(BasePermission):
                 return bool(request.user.project_edit.filter(id=project_id))
 
             if method == 'DELETE':
-                attribute_ids = request.data.get('id_set', [])
+                attribute_ids = request.data.get('id_set', ())
                 project_ids = set(
                     Attribute.objects.filter(id__in=attribute_ids).values_list('project_id', flat=True)
                 )
+                user_edit_permissions = set(request.user.project_edit.values_list('id', flat=True))
 
-                difference = set(request.user.project_edit.values_list('id', flat=True)) - project_ids
-                return len(difference) == 0
+                difference = user_edit_permissions - project_ids
+                return user_edit_permissions and len(difference) == 0
 
         except Attribute.DoesNotExist: return True
-# TODO: write not admin tests
