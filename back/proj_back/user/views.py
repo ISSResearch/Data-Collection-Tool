@@ -56,7 +56,9 @@ def create_user(request):
 
     response = {'isAuth': is_valid}
 
-    if is_valid: response['user'] = UserSerializer(form.instance).data
+    if is_valid:
+        response['user'] = UserSerializer(form.instance).data
+        login(request, form.instance)
     else: response['errors'] = form.errors
 
     return Response(response)

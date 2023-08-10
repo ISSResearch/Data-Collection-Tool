@@ -19,7 +19,7 @@ export default function AllProjects({ items }) {
             ))
           }
         </div>
-        : <span>No projects yet. Create one!</span>
+        : <span>No projects.</span>
     }
     </>
   )
