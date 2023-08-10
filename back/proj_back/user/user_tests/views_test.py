@@ -22,6 +22,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
             'password1': MOCK_COLLECTOR_DATA['password'],
             'password2': MOCK_COLLECTOR_DATA['password'],
         })
+        self.client.logout()
 
         response = self.client.post(self.login_endpoint, {
             'username': MOCK_COLLECTOR_DATA['username'],
@@ -30,7 +31,7 @@ class UserLoginViewTest(TestCase, MOCK_CLASS):
         status, valid = self.check_login()
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['isAuth'])
+        self.assertTrue(response.data['isAuth'], response.data)
         self.assertEqual(
             set(response.data['user'].keys()),
             {'id', 'username', 'is_superuser'}
