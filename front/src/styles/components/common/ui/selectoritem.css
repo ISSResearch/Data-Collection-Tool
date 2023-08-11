@@ -42,7 +42,8 @@
   outline: 1px solid transparent;
   transform: translateY(100%);
 }
-.iss__customSelector__options>div {
+.iss__customSelector__options>div,
+.iss__customSelector__options>form {
   padding: 4px 8px;
   display: flex;
   flex-direction: column;
@@ -78,6 +79,13 @@
   place-self: center;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iss__validationFilter__form .iss__selector,
+.iss__validationFilter__form .iss__customSelector {
+  padding: 0;
+}
+.iss__validationFilter__form .iss__selectorsWrap {
+  margin-bottom: 14px;
 }
 @media (hover:hover) {
   .iss__customSelector__option:hover {

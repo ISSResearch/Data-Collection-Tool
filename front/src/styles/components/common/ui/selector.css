@@ -4,6 +4,7 @@
   width: 100%;
   cursor: pointer;
   outline: none;
+  font-size: 14px;
 }
 .iss__selectorsWrap {
   margin-bottom: 16px;

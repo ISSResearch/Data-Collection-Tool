@@ -34,7 +34,7 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
     };
   }
 
-  function hadleFilterChange(filterType, query) {
+  function handleFilterChange(filterType, query) {
     const { card, attr, type } = getPageQuery();
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
@@ -61,9 +61,11 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
           {
             prettyName: 'Attribute Filter:',
             name: 'attr',
-            data: rawAttributes.reduce((acc, { attributes }) => [...acc, ...attributes], []),
+            data: attributes,
+            // data: rawAttributes.reduce((acc, { attributes }) => [...acc, ...attributes], []),
             selected: attr,
             manual: true,
+            attributeSelector: true
           },
           {
             prettyName: 'Filetype Filter:',
@@ -83,7 +85,7 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
 
   return (
     <>
-      <ValidationFilterGroup filterData={filterData} hadleChange={hadleFilterChange}/>
+      <ValidationFilterGroup filterData={filterData} handleChange={handleFilterChange}/>
       {
         fileManager.files.length
           ? <div className='iss__validation'>

@@ -12,3 +12,11 @@
   max-height: 56px;
   overflow-y: scroll;
 }
+.iss__validation__filters__item__attributes__wrap {
+  position: relative;
+  width: 100%;
+  padding: 4px 8px;
+  background-color: white;
+  border: 1px solid var(--issBrand);
+  height: fit-content;
+}

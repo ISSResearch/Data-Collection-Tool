@@ -32,7 +32,7 @@ export default function SelectorItem({
       return selectorOptions.find(({ id }) => {
         return id === (isAlpha ? selectedId : Number(selectedId));
       })?.name;
-    })
+    });
     setSelected(chosenNames);
     if (!skipEmit) handleSelect(selectedIds);
   }
@@ -91,11 +91,11 @@ export default function SelectorItem({
           </select>
           {
             manual &&
-            <button
-              onClick={handleManualSelect}
-              type="button"
-              className='iss__customSelector__submit'
-            >ok</button>
+              <button
+                onClick={handleManualSelect}
+                type="button"
+                className='iss__customSelector__submit'
+              >ok</button>
           }
         </div>
       </div>
