@@ -19,7 +19,7 @@ const TYPE_FILTER = [
   { name: 'videos', id: 'video' },
 ]
 
-export default function FilesValidate({ pathID, attributes, rawAttributes }) {
+export default function FilesValidate({ pathID, attributes }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState({});
@@ -62,7 +62,6 @@ export default function FilesValidate({ pathID, attributes, rawAttributes }) {
             prettyName: 'Attribute Filter:',
             name: 'attr',
             data: attributes,
-            // data: rawAttributes.reduce((acc, { attributes }) => [...acc, ...attributes], []),
             selected: attr,
             manual: true,
             attributeSelector: true

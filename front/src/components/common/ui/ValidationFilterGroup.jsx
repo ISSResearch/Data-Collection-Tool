@@ -22,6 +22,7 @@ export default function ValidationFilterGroup({ filterData, handleChange }) {
                 ? <ValidationFilterSelectorItem
                   selectorName={name}
                   data={data}
+                  defaultSelected={selected}
                   handleChange={handleChange}
                 />
                 : <SelectorItem

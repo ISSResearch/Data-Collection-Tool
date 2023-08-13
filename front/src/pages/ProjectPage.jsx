@@ -101,7 +101,6 @@ export default function ProjectPage() {
       }
       <PageVariant
         attributes={project.preparedAttributes}
-        rawAttributes={project.attributes}
         projectName={project.name}
         projectDescription={project.description}
         pathID={projectID}

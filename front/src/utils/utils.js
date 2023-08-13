@@ -66,16 +66,16 @@ export function formError(fileName, missedItems) {
   };
 }
 
-export function spreadChildren(data) {
-  refreshPath(data)
+export function spreadChildren(data, refresh=true) {
+  if (refresh) refreshPath(data);
   const stack = [data];
   const result = [];
   while (stack.length) {
     const current = stack.pop();
     result.push(...current);
     stack.push(
-      ...current.filter(({children}) => children.length)
-        .map(({children}) => children)
+      ...current.filter(({ children }) => children?.length)
+        .map(({ children }) => children)
     );
   }
   return result;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Selector from './Selector';
 import '../../../styles/components/common/ui/selectoritem.css';
+import { spreadChildren } from '../../../utils/utils';
 
 export default function ValidationFilterSelectorItem({
   selectorName,
@@ -36,7 +37,16 @@ export default function ValidationFilterSelectorItem({
   }
 
   useEffect(() => {
-  }, []);
+    const attributes = spreadChildren(data, false).reduce((acc, { attributes }) => {
+      return [...acc, ...attributes];
+    }, []);
+    const defaultNames = defaultSelected.reduce((acc, id) => {
+      const attribute = attributes.find(({ id: attrId }) => attrId === Number(id));
+      if (attribute) acc.push(attribute.name);
+      return acc;
+    }, []);
+    setSelected(defaultNames);
+  }, [defaultSelected]);
 
   return (
     <div className='iss__customSelector'>
@@ -69,7 +79,6 @@ export default function ValidationFilterSelectorItem({
                 key={attribute.id}
                 item={attribute}
                 setOption={(data) => setOption(data, index)}
-                // applyGroups={applyGroups && data[index]}
               />
             ))
           }
