@@ -24,8 +24,6 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-    volumes:
-      - ./back/proj_back:/app
     command: tail -f /dev/null
     # command: >
     #   sh -c "python manage.py makemigrations user &&
