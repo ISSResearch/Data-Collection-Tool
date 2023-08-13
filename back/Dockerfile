@@ -15,4 +15,4 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./proj_back/* ./
+COPY ./proj_back ./
