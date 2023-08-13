@@ -4,29 +4,18 @@ stages:
 build and tests application:
   stage: test
   before_script:
-    - echo "Setting environment up..."
     - echo "DEBUG=True" >> back/proj_back/.env
     - echo "SERVER_ORIGINS='127.0.0.1,localhost,iss-test-front,iss-front,iss-test-back,iss-back'" >> back/proj_back/.env
   script:
-    - echo $CI
-    - echo "Starting docker test app..."
     - docker-compose -f docker-compose.test.yml build
     - docker-compose -f docker-compose.test.yml up -d --force-recreate
     - sleep 30
-    - echo "Running tests..."
-    - echo "Backend tests:"
-    - ls
-    - ls ./back
-    - ls ./front
-    - ls ./tests
     # - docker logs iss-test-back
     # - docker exec iss-test-back ./manage.py test
-    # - echo "Frontend tests:"
     # - docker exec iss-test-front npm test
-    # - echo "Seleium tests:"
     # - docker exec iss-tests python3 test.py
     # - docker exec iss-tests flake8
     - docker exec iss-test-back ls
-    - docker exec iss-tests ls
+    - docker exec iss-test-back pwd
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
