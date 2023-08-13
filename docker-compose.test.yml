@@ -26,14 +26,15 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-    command: >
-      sh -c "python manage.py makemigrations user &&
-             python manage.py makemigrations project &&
-             python manage.py makemigrations attribute &&
-             python manage.py makemigrations file &&
-             python manage.py migrate &&
-             python manage.py createsuperuser --email=admin@example.ex --noinput &&
-             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
+    command: tail -f /dev/null
+    # command: >
+    #   sh -c "python manage.py makemigrations user &&
+    #          python manage.py makemigrations project &&
+    #          python manage.py makemigrations attribute &&
+    #          python manage.py makemigrations file &&
+    #          python manage.py migrate &&
+    #          python manage.py createsuperuser --email=admin@example.ex --noinput &&
+    #          gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
     networks:
       - iss_test_network
 
@@ -48,6 +49,19 @@ services:
       CASE: test
       CI: true
     command: npm start
+    networks:
+      - iss_test_network
+
+  iss-tests:
+    container_name: iss-tests
+    image: iss_tests
+    build: ./tests
+    depends_on:
+      - iss-selenium-chrome
+      - iss-selenium-fox
+    volumes:
+      - ./back/proj_back:/tests/backend_code/
+    command: tail -f /dev/null
     networks:
       - iss_test_network
 
@@ -86,20 +100,6 @@ services:
       SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
     networks:
       - iss_test_network
-
-  iss-tests:
-    container_name: iss-tests
-    image: iss_tests
-    build: ./tests
-    depends_on:
-      - iss-selenium-chrome
-      - iss-selenium-fox
-    volumes:
-      - ./back/proj_back:/tests/backend_code/
-    command: tail -f /dev/null
-    networks:
-      - iss_test_network
-
 
 networks:
   iss_test_network:
