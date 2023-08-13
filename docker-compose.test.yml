@@ -18,6 +18,8 @@ services:
     restart: always
     depends_on:
       - iss-test-db
+    volumes:
+      - ./back/proj_back:/app
     environment:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_PASSWORD: admin

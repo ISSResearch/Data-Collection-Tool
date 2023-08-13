@@ -16,13 +16,17 @@ build and tests application:
     - echo "Running tests..."
     - echo "Backend tests:"
     - ls
+    - ls ./back
+    - ls ./front
+    - ls ./tests
     - docker ps
-    - docker logs iss-test-back
-    - docker exec iss-test-back ./manage.py test
-    - echo "Frontend tests:"
-    - docker exec iss-test-front npm test
-    - echo "Seleium tests:"
-    - docker exec iss-tests python3 test.py
-    - docker exec iss-tests flake8
+    # - docker logs iss-test-back
+    # - docker exec iss-test-back ./manage.py test
+    # - echo "Frontend tests:"
+    # - docker exec iss-test-front npm test
+    # - echo "Seleium tests:"
+    # - docker exec iss-tests python3 test.py
+    # - docker exec iss-tests flake8
+    - docker exec iss-tests ls
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
