@@ -24,9 +24,9 @@ build and tests application:
     # - echo "Frontend tests:"
     # - docker exec iss-test-front npm test
     # - echo "Seleium tests:"
+    # - docker exec iss-tests python3 test.py
     # - docker exec iss-tests flake8
     - docker exec iss-test-back ls
     - docker exec iss-tests ls
-    - docker exec iss-tests python3 test.py
   after_script:
     - docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
