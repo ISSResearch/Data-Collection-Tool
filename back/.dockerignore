@@ -1,8 +1,0 @@
-.DS_Store
-.idea
-.vscode
-db
-venv
-__pycache__
-migrations
-file_store

@@ -14,7 +14,8 @@ services:
   iss-test-back:
     container_name: iss-test-back
     image: iss_back
-    build: ./back
+    build:
+      dockerfile: Dockerfile.tst
     restart: always
     depends_on:
       - iss-test-db
@@ -24,22 +25,22 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-    command: tail -f /dev/null
-    # command: >
-    #   sh -c "python manage.py makemigrations user &&
-    #          python manage.py makemigrations project &&
-    #          python manage.py makemigrations attribute &&
-    #          python manage.py makemigrations file &&
-    #          python manage.py migrate &&
-    #          python manage.py createsuperuser --email=admin@example.ex --noinput &&
-    #          gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
+    command: >
+      sh -c "python manage.py makemigrations user &&
+             python manage.py makemigrations project &&
+             python manage.py makemigrations attribute &&
+             python manage.py makemigrations file &&
+             python manage.py migrate &&
+             python manage.py createsuperuser --email=admin@example.ex --noinput &&
+             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
     networks:
       - iss_test_network
 
   iss-test-front:
     container_name: iss-test-front
     image: iss_front
-    build: ./front
+    build:
+      dockerfile: Dockerfile.frontend
     restart: always
     depends_on:
       - iss-test-back
@@ -53,12 +54,11 @@ services:
   iss-tests:
     container_name: iss-tests
     image: iss_tests
-    build: ./tests
+    build:
+      dockerfile: Dockerfile.tests
     depends_on:
       - iss-selenium-chrome
       - iss-selenium-fox
-    volumes:
-      - ./back/proj_back:/tests/backend_code/
     command: tail -f /dev/null
     networks:
       - iss_test_network

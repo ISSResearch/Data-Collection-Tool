@@ -12,7 +12,9 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt ./
+
+COPY ./back/requirements.txt ./
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./proj_back ./
+COPY ./back/proj_back ./

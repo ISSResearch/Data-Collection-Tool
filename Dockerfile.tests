@@ -5,8 +5,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /tests
 
-COPY requirements.txt ./
+COPY ./tests/requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . ./
+COPY ./tests ./
+
+COPY ./back/proj_back ./backend_code
