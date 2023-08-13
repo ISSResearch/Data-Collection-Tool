@@ -16,7 +16,8 @@ services:
   iss-back:
     container_name: iss-back
     image: iss_back
-    build: ./back
+    build:
+      dockerfile: Dockerfile.backend
     restart: always
     environment:
       DB_HOST: iss-db
@@ -38,7 +39,8 @@ services:
   iss-front:
     container_name: iss-front
     image: iss_front
-    build: ./front
+    build:
+      dockerfile: Dockerfile.frontend
     restart: always
     environment:
       - PORT=3001
