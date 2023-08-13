@@ -16,6 +16,8 @@ build and tests application:
     - echo "Running tests..."
     - echo "Backend tests:"
     - docker logs iss-test-back
+    - docker exec iss-test-back ls
+    - docker exec iss-test-back pwd
     - docker exec iss-test-back ./manage.py test
     - echo "Frontend tests:"
     - docker exec iss-test-front npm test
