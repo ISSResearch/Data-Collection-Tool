@@ -15,8 +15,8 @@ build and tests application:
     - sleep 30
     - echo "Running tests..."
     - echo "Backend tests:"
+    - ls
     - docker ps
-    - docker images
     - docker logs iss-test-back
     - docker exec iss-test-back ./manage.py test
     - echo "Frontend tests:"
