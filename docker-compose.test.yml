@@ -13,7 +13,7 @@ services:
 
   iss-test-back:
     container_name: iss-test-back
-    image: iss_back
+    image: iss_back_tst
     build:
       dockerfile: Dockerfile.tst
     restart: always
