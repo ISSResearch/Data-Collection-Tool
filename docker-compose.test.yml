@@ -59,8 +59,8 @@ services:
     depends_on:
       - iss-selenium-chrome
       - iss-selenium-fox
-    # volumes:
-    #   - ./back/proj_back:/tests/backend_code/
+    volumes:
+      - ./back/proj_back:/tests/backend_code/
     command: tail -f /dev/null
     networks:
       - iss_test_network
