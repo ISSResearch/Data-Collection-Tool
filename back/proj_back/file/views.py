@@ -68,12 +68,19 @@ class FilesViewSet(APIView):
             query_param = request.query_params.getlist(param)
             if query_param: filter_query[filter_name] = query_param
 
+        is_attribute_query = request.query_params.getlist('attr[]')
+
         files = File.objects \
             .select_related('author') \
             .prefetch_related('attributegroup_set') \
             .order_by('-status', '-upload_date') \
-            .filter(**filter_query) \
-            .distinct()
+            .filter(**filter_query)
+
+        if is_attribute_query:
+            files = files \
+                .annotate(count=Count('id')) \
+                .filter(count=len(is_attribute_query))
+        else: files = files.distinct()
 
         response = FileSerializer(files, many=True)
         return Response(response.data, status=status.HTTP_200_OK)
