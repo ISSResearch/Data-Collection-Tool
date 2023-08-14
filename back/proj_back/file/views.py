@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.db.models import Count
+from django.db.models import Count, Subquery
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +11,7 @@ from .serializers import File, FileSerializer, FilesSerializer
 from .services import FileUploader, prepare_zip_data, upload_chunk
 from os import remove
 from time import time
+from attribute.models import AttributeGroup
 
 
 class FileViewSet(APIView):
@@ -58,7 +59,6 @@ class FilesViewSet(APIView):
     def get(self, request, projectID):
         accepted_queries = (
             ('status__in', 'card[]'),
-            ('attributegroup__attribute__in', 'attr[]'),
             ('file_type__in', 'type[]')
         )
 
@@ -68,7 +68,7 @@ class FilesViewSet(APIView):
             query_param = request.query_params.getlist(param)
             if query_param: filter_query[filter_name] = query_param
 
-        is_attribute_query = request.query_params.getlist('attr[]')
+        attribute_query = request.query_params.getlist('attr[]')
 
         files = File.objects \
             .select_related('author') \
@@ -76,10 +76,13 @@ class FilesViewSet(APIView):
             .order_by('-status', '-upload_date') \
             .filter(**filter_query)
 
-        if is_attribute_query:
-            files = files \
-                .annotate(count=Count('id')) \
-                .filter(count=len(is_attribute_query))
+        if attribute_query:
+            sub_query = AttributeGroup.objects \
+                .filter(attribute__in=attribute_query) \
+                .annotate(count=Count('uid')) \
+                .filter(count=len(attribute_query)) \
+                .values('uid')
+            files = files.filter(attributegroup__in=Subquery(sub_query))
         else: files = files.distinct()
 
         response = FileSerializer(files, many=True)
