@@ -72,7 +72,11 @@ class FilesViewSet(APIView):
 
         files = File.objects \
             .select_related('author') \
-            .prefetch_related('attributegroup_set') \
+            .prefetch_related(
+                'attributegroup_set',
+                'attributegroup_set__attribute',
+                'attributegroup_set__attribute__level'
+            ) \
             .order_by('-status', '-upload_date') \
             .filter(**filter_query)
 

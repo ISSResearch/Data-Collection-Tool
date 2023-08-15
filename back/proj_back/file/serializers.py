@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import File
-from attribute.serializers import AttributeGroupSerializer
+# from attribute.serializers import AttributeGroupSerializer
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -12,7 +12,18 @@ class FileSerializer(serializers.ModelSerializer):
         exclude = ('hash_name', 'project', 'author')
 
     def get_attributes(self, instance):
-        return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
+        # TODO: temporary solution
+        return [
+            {
+                'uid': attribute_group.uid,
+                'attributes': [
+                    (attribute.id, attribute.level.order, attribute.name)
+                    for attribute in attribute_group.attribute.all()
+                ]
+            }
+            for attribute_group in instance.attributegroup_set.all()
+        ]
+        # return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data
 
     def get_author_name(self, instance): return instance.author.username
 
