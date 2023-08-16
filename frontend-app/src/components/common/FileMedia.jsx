@@ -10,7 +10,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     return typeVideo
       ? <video autoPlay muted controls playsInline {...props}/>
       : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
-  }, []);
+  }, [typeVideo]);
 
   let scale = 1,
     panning = false,
