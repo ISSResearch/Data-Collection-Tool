@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.db.models import Count, Subquery
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -19,9 +19,12 @@ class FileViewSet(APIView):
     permission_classes = (IsAuthenticated, FilePermission)
 
     def get(self, _, fileID):
-        file = File.objects.get(id=fileID)
+        try:
+            file = File.objects.get(id=fileID)
+            return FileResponse(file.path.open())
 
-        return HttpResponse(file.path.read(), content_type='image/jpeg')
+        except file.DoesNotExist:
+            return Response('no such file', status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, fileID):
         file = File.objects \
@@ -97,7 +100,7 @@ class FilesViewSet(APIView):
         uploader.proceed_upload()
 
         response = {'ok': uploader.status}
-        res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_500_INTERNAL_SERVER_ERROR
+        res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_406_NOT_ACCEPTABLE
 
         if uploader.status:
             response['created_files'] = FilesSerializer(uploader.created_files, many=True).data

@@ -25,7 +25,7 @@ services:
     depends_on:
       - iss-db
     volumes:
-      - ./back/proj_back:/app
+      - ./backend-app:/app
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
@@ -47,8 +47,8 @@ services:
     depends_on:
       - iss-back
     volumes:
-      - ./front/src:/app/src
-      - ./front/public:/app/public
+      - ./frontend-app/src:/app/src
+      - ./frontend-app/public:/app/public
     command: npm start
     networks:
       - iss_network

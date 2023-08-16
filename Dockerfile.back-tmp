@@ -13,8 +13,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY ./back/requirements.txt ./
+COPY ./backend-app/requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./back/proj_back ./
+COPY ./backend-app ./

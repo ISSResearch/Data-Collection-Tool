@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./tests ./
 
-COPY ./back/proj_back ./backend_code
+COPY ./backend-app ./backend_code

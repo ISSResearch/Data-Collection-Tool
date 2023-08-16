@@ -1,17 +1,16 @@
-import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
-import api from "../../config/api";
-import axios from "axios";
+import { useCallback, useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import { getOriginDomain } from "../../utils/utils";
 import "../../styles/components/common/filemedia.css";
 
 export const FileMedia = forwardRef(({ files, slide }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
 
-  function MediaItem(props) {
+  const MediaItem = useCallback((props) => {
     return typeVideo
-      ? <video muted controls playsInline loop {...props}/>
+      ? <video autoPlay muted controls playsInline {...props}/>
       : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
-  }
+  }, []);
 
   let scale = 1,
     panning = false,
@@ -74,25 +73,9 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     if (!files[slide]) return;
     const { id, file_type } = files[slide];
     setTypeVideo(file_type === 'video');
-    const controller = axios.CancelToken.source();
-    api.request(`/api/files/${id}/`, {
-      method: 'get',
-      cancelToken: controller.token,
-      responseType: "blob"
-    })
-      .then(response => {
-        const { file_type, file_name } = files[slide];
-        if (!file_type || !file_name) return response;
-        const [_, extension] = file_name.split('.');
-        const contentType = `${file_type}/${extension}`;
-        return new Blob([response.data], { type: contentType });
-      })
-      .then(blob => URL.createObjectURL(blob))
-      .then(url => setFileUrl(url))
-      .catch(err => console.error(err));
+    setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
 
     return () => {
-      controller.cancel();
       URL.revokeObjectURL(fileUrl);
     }
   }, [files, slide]);

@@ -15,7 +15,7 @@ services:
     container_name: iss-test-back
     image: iss_back_tst
     build:
-      dockerfile: Dockerfile.tst
+      dockerfile: Dockerfile.back-tmp
     restart: always
     depends_on:
       - iss-test-db
