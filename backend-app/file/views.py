@@ -1,4 +1,4 @@
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse
 from django.db.models import Count, Subquery
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view, permission_classes
