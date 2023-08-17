@@ -1,13 +1,106 @@
 from django.core.files.storage import default_storage as storage
 from django.db import connection
+from django.http import FileResponse
 from rest_framework import status
-from .serializers import File
+from .models import File
 from attribute.models import AttributeGroup as AGroup
 # from hashlib import md5
 from os import path, mkdir
 from json import loads, dumps
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile, ZIP_DEFLATED
+from re import compile, I
+from os import SEEK_SET
+
+
+class FileStreaming:
+    slots = (
+        'RANGE_RE',
+        'CHUNK_SIZE',
+        'file',
+        'file_size',
+        'content_type',
+        'range_match',
+        'chunk_start',
+        'chunk_end',
+        'chunk_length'
+    )
+    RANGE_RE = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
+    MB_MULTIPLIER = 8
+    CHUNK_SIZE = 1024 * MB_MULTIPLIER
+
+    def __init__(self, file):
+        self.file = file
+        self.file_size = self.file.path.size
+        self.content_type = self._get_file_type()
+        self._set_chunks()
+
+    def get_reponse(self, request):
+        self.range_match = self._get_range_match(request)
+
+        if self.range_match:
+            self._set_chunks()
+
+            response = FileResponse(iter(self), status=206)
+            response['Content-Range'] = f'bytes {self.chunk_start}-{self.chunk_end}/{self.file_size}'
+
+        else: response = FileResponse(self.file.path.open())
+
+        response['Content-Type'] = self.content_type
+        response['Accept-Ranges'] = 'bytes'
+
+        return response
+
+    def __iter__(self): return self._file_iterator()
+
+    def _file_iterator(self):
+        with self.file.path.open() as file:
+            file.seek(self.chunk_start, SEEK_SET)
+            remaining_chunk = self.chunk_length
+
+            while True:
+                bytes_length = (
+                    self.CHUNK_SIZE
+                    if remaining_chunk is None
+                    else min(remaining_chunk, self.CHUNK_SIZE)
+                )
+                data = file.read(bytes_length)
+
+                if not data: break
+                if remaining_chunk: remaining_chunk -= len(data)
+
+                yield data
+
+    def _get_file_type(self):
+        if '.' not in self.file.file_name: return self.file.file_type
+
+        [_, type] = self.file.file_name.split('.')
+        return f'{self.file.file_type}/{type}'
+
+    def _get_range_match(self, request):
+        range_header = request.headers.get('range', '')
+        return self.RANGE_RE.match(range_header)
+
+    def _set_chunks(self):
+        chunk_start, chunk_end = (
+            self.range_match.groups()
+            if self.__dict__.get('range_match')
+            else (0, 0)
+        )
+
+        chunk_start = int(chunk_start) if chunk_start else 0
+        chunk_end = (
+            int(chunk_end) if chunk_end
+            else chunk_start + 1024 * 1024 * self.MB_MULTIPLIER
+        )
+
+        if chunk_end >= self.file_size: chunk_end = self.file_size - 1
+
+        chunk_length = chunk_end - chunk_start + 1
+
+        self.chunk_start = chunk_start
+        self.chunk_end = chunk_end
+        self.chunk_length = chunk_length
 
 
 def prepare_zip_data(files, serialized_data, zip_name):

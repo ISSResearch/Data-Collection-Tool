@@ -8,7 +8,7 @@ from attribute.models import Level
 from project.permissions import ProjetcStatsPermission, ProjetcDownloadPermission
 from .permissions import FilePermission
 from .serializers import File, FileSerializer, FilesSerializer
-from .services import FileUploader, prepare_zip_data, upload_chunk
+from .services import FileUploader, prepare_zip_data, upload_chunk, FileStreaming
 from os import remove
 from time import time
 from attribute.models import AttributeGroup
@@ -18,10 +18,12 @@ class FileViewSet(APIView):
     http_method_names = ('get', 'patch', 'delete')
     permission_classes = (IsAuthenticated, FilePermission)
 
-    def get(self, _, fileID):
+    def get(self, request, fileID):
         try:
             file = File.objects.get(id=fileID)
-            return FileResponse(file.path.open())
+            file_streaming = FileStreaming(file)
+
+            return file_streaming.get_reponse(request)
 
         except file.DoesNotExist:
             return Response('no such file', status.HTTP_404_NOT_FOUND)
