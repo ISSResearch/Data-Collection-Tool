@@ -13,3 +13,13 @@
   display: flex;
   place-content: center;
 }
+@media (max-width: 768px) {
+  .iss__projects__card {
+    width: 50%;
+  }
+}
+@media (max-width: 575px) {
+  .iss__projects__card {
+    width: 100%;
+  }
+}

@@ -30,6 +30,7 @@
   text-decoration: none;
   color: var(--issBrand);
   transition: color 0.3s ease;
+  font-size: 42px;
 }
 @media (hover:hover) {
   .iss__titleSwitch__title>a:hover {
@@ -38,5 +39,20 @@
   .iss__titleSwitch__navItem:hover {
     outline-color: var(--issBrand);
     color: var(--issBrand);
+  }
+}
+@media (max-width: 768px) {
+  .iss__titleSwitch__title>* {
+    font-size: 36px;
+  }
+}
+@media (max-width: 575px) {
+  .iss__titleSwitch {
+    gap: 20px;
+  }
+}
+@media (max-width: 375px) {
+  .iss__titleSwitch__title>* {
+    font-size: 30px;
   }
 }

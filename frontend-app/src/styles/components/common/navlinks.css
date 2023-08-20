@@ -18,3 +18,8 @@
     color: white;
   }
 }
+@media (max-width: 575px) {
+  .iss__navLinks>li:last-of-type {
+    display: none;
+  }
+}

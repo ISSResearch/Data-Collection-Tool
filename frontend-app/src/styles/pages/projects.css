@@ -6,4 +6,7 @@
 .iss__projects {
   display: flex;
   flex-direction: column;
+  background-color: white;
+  border-radius: 12px;
+  padding: 40px 20px;
 }

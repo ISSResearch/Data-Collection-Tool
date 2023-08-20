@@ -5,25 +5,19 @@
   font-family: 'Roboto', sans-serif;
   color: var(--issBlack);
 }
-#root {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-#root main {
-  flex-grow: 1;
-  display: flex;
-  place-content: center;
-}
-.iss__pageContent {
-  max-width: var(--maxWidth);
-  width: 100%;
-  padding: 40px 20px;
-}
 h1 {
   color: var(--issBrand);
   font-size: 42px;
   line-height: 0.75;
+}
+h3 {
+  font-size: 24px;
+}
+p {
+  font-size: 18px;
+}
+span, button, time, a {
+  font-size: 16px
 }
 input[type="checkbox"] {
   appearance: none;
@@ -48,10 +42,64 @@ input[type="checkbox"]:checked::after {
   font-size: 16px;
   text-align: center;
 }
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+}
+#root main {
+  flex-grow: 1;
+  display: flex;
+  place-content: center;
+}
+.iss__pageContent {
+  max-width: var(--maxWidth);
+  width: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+}
 .iss__main__loadWrap {
   display: flex;
   flex-direction: column;
   height: 100%;
   place-content: center;
   place-items: center
+}
+@media (max-width: 768px) {
+  h1 {
+    font-size: 36px;
+  }
+  h3 {
+    font-size: 22px;
+  }
+  p {
+    font-size: 16px;
+  }
+  span, button, time, a {
+    font-size: 14px
+  }
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (max-width: 375px) {
+  h1 {
+    font-size: 30px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  p {
+    font-size: 14px;
+  }
+  span, button, time, a {
+    font-size: 12px
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
 }

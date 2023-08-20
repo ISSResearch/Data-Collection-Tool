@@ -1,6 +1,9 @@
 .iss__projectPage {
   display: flex;
   flex-direction: column;
+  background-color: white;
+  border-radius: 12px;
+  padding: 40px 20px;
 }
 .iss_projectPage__load {
   width: 100%;

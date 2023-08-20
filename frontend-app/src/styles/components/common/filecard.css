@@ -9,6 +9,9 @@
   color: var(--issBrand);
   transition: 0.3s ease;
 }
+.iss__fileCard>h3 {
+  word-break: break-all;
+}
 .card--accepted {
   background-color: rgb(153, 255, 98, 0.2);
   border: 1px solid var(--issGreen);

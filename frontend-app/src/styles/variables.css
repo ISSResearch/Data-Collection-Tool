@@ -6,6 +6,7 @@
   --issLightRed: #ff6262;
   --issGreen: #1a7700;
   --issLightGreen: #2fcc05;
+  --background: #e7edf4;
   /* --issRed: #ff0000; */
   /* --issGreen: #6db845; */
   /* --issLightRed: #ff6262; */
@@ -13,5 +14,5 @@
   /* --issBrand: #004077; */
   /* --issLightBrand: #01a4e0; */
 
-  --maxWidth: 1280px;
+  --maxWidth: 1320px;
 }

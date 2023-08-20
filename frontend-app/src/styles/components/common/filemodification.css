@@ -8,8 +8,8 @@
 }
 .iss__fileInfo__title {
   color: var(--issBrand);
-  font-size: 24px;
   margin-bottom: 20px;
+  word-break: break-all;
 }
 .iss__fileInfo__buttonsWrap {
   display: flex;

@@ -65,3 +65,8 @@
     background-color: white;
   }
 }
+@media (max-width: 375px) {
+  .iss__form {
+    margin-bottom: 40px;
+  }
+}
