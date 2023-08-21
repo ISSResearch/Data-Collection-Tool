@@ -95,9 +95,10 @@ export default function ProjectPage() {
       />
       {
         currentRoute === `projects/${projectID}` &&
-          <p className="iss__projectPage__description">
-            Description: {project.description}
-          </p>
+          <p
+            dangerouslySetInnerHTML={{ __html: "Description:<br>" + project.description }}
+            className="iss__projectPage__description"
+          />
       }
       <PageVariant
         attributes={project.preparedAttributes}

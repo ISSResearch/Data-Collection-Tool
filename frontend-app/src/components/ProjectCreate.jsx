@@ -11,15 +11,15 @@ export default function ProjectCreate() {
 
   function getFormData({target}) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
-    const description = target.querySelector('.iss__projectCreate__form__input textarea');
+    let description = target.querySelector('.iss__projectCreate__form__input textarea');
+    description = description.value.replaceAll(/\n/g, '<br>');
     const attributes = attributeManager.formHook.gatherAttributes();
-    return { name: name.value , description: description.value, attributes };
+    return { name: name.value , description, attributes };
   }
 
   function sendForm(event) {
     event.preventDefault();
     if (loading) return;
-    setLoading(true);
     const formData = getFormData(event);
     api.request('/api/projects/',
       {

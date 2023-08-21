@@ -2,7 +2,7 @@ import '../../styles/components/common/statusload.css';
 
 export default function StatusLoad({ progress, info, error }) {
   return (
-    <>
+    <div className='iss__statusLoad__wrapp'>
       <div className={'iss__statusLoad' + (error ? ' progress--fail' : '')}>
         <div
           data-testid='statusload'
@@ -11,6 +11,6 @@ export default function StatusLoad({ progress, info, error }) {
         />
       </div>
       { info && <span>{info}</span> }
-    </>
+    </div>
   )
 }

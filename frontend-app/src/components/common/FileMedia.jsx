@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { getOriginDomain } from "../../utils/utils";
 import "../../styles/components/common/filemedia.css";
 
@@ -9,7 +15,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
   const MediaItem = useCallback((props) => {
     return typeVideo
       ? <video autoPlay muted controls playsInline {...props}/>
-      : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>
+      : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>;
   }, [typeVideo]);
 
   let scale = 1,

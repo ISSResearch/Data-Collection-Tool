@@ -29,14 +29,15 @@ export default function ProjectEdit({
 
   function getFormData({target}) {
     const name = target.querySelector('.iss__projectEdit__form__input input');
-    const description = target.querySelector('.iss__projectEdit__form__input textarea');
+    let description = target.querySelector('.iss__projectEdit__form__input textarea');
+    description = description.value.replace(/\n/g, '<br>');
     const attributes = [
       ...attributeManager.formHook.gatherAttributes(),
       ...attributeManagerNew.formHook.gatherAttributes(
         Object.keys(attributeManager.formHook.forms).length
       )
     ];
-    return { name: name.value , description: description.value, attributes };
+    return { name: name.value , description, attributes };
   }
 
   async function performOriginalItemsDelete(idSet, endpoint) {
@@ -92,11 +93,11 @@ export default function ProjectEdit({
         alert(err);
         setLoading(false);
       });
-}
+  }
 
   return (
     <>
-    <fieldset className='iss__projectEdit__fieldset'>
+      <fieldset className='iss__projectEdit__fieldset'>
         <Link to={`/projects/${pathID}/visibility`} className='iss__projectEdit__visibilityLink'>
           USER VISIBILITY
         </Link>

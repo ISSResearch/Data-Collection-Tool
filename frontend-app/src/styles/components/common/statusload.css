@@ -1,3 +1,8 @@
+.iss__statusLoad__wrapp {
+  padding: 40px 20px 20px;
+  border-radius: 12px;
+  background-color: white;
+}
 .iss__statusLoad {
   width: 200px;
   height: 20px;

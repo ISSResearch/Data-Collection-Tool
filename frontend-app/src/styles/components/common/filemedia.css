@@ -15,7 +15,11 @@
   transform-origin: 0px 0px;
   transform: scale(1) translate(0px, 0px);
   cursor: grab;
+  display: flex;
+  place-content: center;
+  place-items: center;
 }
 .mediaFile {
-  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
 }
