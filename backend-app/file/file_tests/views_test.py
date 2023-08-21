@@ -64,7 +64,7 @@ class FilesViewSetTest(TestCase):
         self.assertTrue(len(request.data) == 2)
         self.assertEqual(
             set(request.data[0].keys()),
-            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date'}
+            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date', 'file_extension'}
         )
         self.assertEqual(
             {

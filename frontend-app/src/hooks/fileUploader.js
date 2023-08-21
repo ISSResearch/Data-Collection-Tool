@@ -43,15 +43,16 @@ export default function useFileUploader(projectID) {
     for (const file of files) {
       let file_id;
       const formData = new FormData();
-      const {name, extension, type, atrsGroups} = file;
-      formData.append('meta[]', JSON.stringify({name, extension, type, atrsGroups}));
+      const { name, extension, type, atrsGroups } = file;
+      formData.append('meta[]', JSON.stringify({ name, extension, type, atrsGroups }));
       try {
-        const data = await createFiles(formData);
-        file_id = data.data.created_files[0];
+        const { data } = await createFiles(formData);
+        file_id = data?.created_files[0];
+        if (!file_id && !file_id.id) throw new Error('corrupted file response');
         await sendChunk(file, file_id.id);
       }
       catch {
-        deleteFile(file_id.id)
+        if (file_id && file_id.id) deleteFile(file_id.id);
         file.status = 'f';
         setFiles([...files]);
       }

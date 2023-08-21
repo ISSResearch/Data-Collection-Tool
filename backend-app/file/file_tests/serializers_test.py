@@ -26,7 +26,7 @@ class FileSerializerTest(TestCase):
 
         self.assertEqual(
             set(data.keys()),
-            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date'}
+            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date', 'file_extension'}
         )
         self.assertEqual(
             {

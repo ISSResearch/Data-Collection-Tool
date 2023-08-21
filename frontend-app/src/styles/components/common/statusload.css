@@ -2,6 +2,9 @@
   padding: 40px 20px 20px;
   border-radius: 12px;
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  place-items: center;
 }
 .iss__statusLoad {
   width: 200px;

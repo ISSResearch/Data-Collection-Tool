@@ -43,7 +43,7 @@ input[type="checkbox"]:checked::after {
   text-align: center;
 }
 #root {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--background);
@@ -61,6 +61,7 @@ input[type="checkbox"]:checked::after {
   flex-direction: column;
 }
 .iss__main__loadWrap {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   height: 100%;

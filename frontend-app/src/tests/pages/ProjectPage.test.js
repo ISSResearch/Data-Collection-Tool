@@ -39,8 +39,8 @@ test("project page test", async () => {
   });
 
   expect(screen.queryByTestId('load-c')).toBeNull();
-  screen.getByText(mock_raw_project.name);
-  screen.getByText('Description: ' + mock_raw_project.description);
+  expect(screen.getByText(/Description/).innerHTML.split('<br>')[1])
+    .toBe(mock_raw_project.description);
 
   expect(screen.getByRole('navigation').children[0].children).toHaveLength(2);
 

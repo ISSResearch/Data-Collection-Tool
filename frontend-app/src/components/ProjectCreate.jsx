@@ -19,7 +19,10 @@ export default function ProjectCreate() {
 
   function sendForm(event) {
     event.preventDefault();
+
     if (loading) return;
+    else setLoading(true);
+
     const formData = getFormData(event);
     api.request('/api/projects/',
       {

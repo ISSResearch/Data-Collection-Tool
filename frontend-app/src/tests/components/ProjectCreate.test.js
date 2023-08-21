@@ -9,6 +9,7 @@ test("project create component test", () => {
   expect(screen.queryByTestId('load-c')).toBeNull();
 
   fireEvent.click(screen.getByRole('button', { name: 'Create Project' }));
+
   expect(screen.queryByText('Create Project')).toBeNull();
   expect(screen.getByTestId('load-c').className).toBe('iss__loadingMin');
 });

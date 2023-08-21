@@ -74,7 +74,7 @@ class FileStreaming:
     def _get_file_type(self):
         if '.' not in self.file.file_name: return self.file.file_type
 
-        [_, type] = self.file.file_name.split('.')
+        type = self.file.file_name.split('.')[-1]
         return f'{self.file.file_type}/{type}'
 
     def _get_range_match(self, request):
@@ -251,6 +251,7 @@ class FileUploader:
             # hash_name=new_hash,
             file_name=file_name,
             file_type=meta.get("type", 'file'),
+            file_extension=meta['extension'],
             project_id=self.project_id,
             author_id=self.author_id,
         )
@@ -260,7 +261,7 @@ class FileUploader:
         return file, file_groups, meta.get('atrsGroups', [])
 
     def _make_file_name(self, file_name, file_extension):
-        real_name = storage.generate_filename(file_name)
+        real_name = storage.generate_filename(file_name).replace('.', '_')
         save_path = path.join(storage.location, str(self.project_id), f'{real_name}.{file_extension}')
 
         if not path.exists(save_path):
