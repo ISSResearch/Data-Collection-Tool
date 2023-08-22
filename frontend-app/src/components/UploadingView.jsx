@@ -3,7 +3,6 @@ import { useFileUploader } from '../hooks';
 import Load from './common/Load';
 import '../styles/components/uploadingviews.css';
 
-
 export default function UploadingView({ fileManager, pathID }) {
   const { files, setFiles, proceedUpload } = useFileUploader(pathID);
   const [loading, setLoading] = useState(true);
@@ -25,7 +24,7 @@ export default function UploadingView({ fileManager, pathID }) {
   return (
     <>
     {
-      files.map(({ name, progress, status }, index) => (
+      files.map(({ name, progress, status, error }, index) => (
         <div key={index} className='iss__uploadProgress__item'>
           <div
             className={
@@ -50,6 +49,9 @@ export default function UploadingView({ fileManager, pathID }) {
               className='iss__uploadProgress__progress'
             />
           </div>
+          {
+            error && <p className='iss__uploadProgress__error'>{error}</p>
+          }
         </div>
       ))
     }

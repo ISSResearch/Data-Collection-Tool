@@ -267,14 +267,14 @@ class FileUploader:
         if not path.exists(save_path):
             save_name = f'{real_name}.{file_extension}'
         else:
-            copy_count = 1
+            copy_count = 0
             while path.exists(save_path):
+                copy_count += 1
                 save_path = path.join(
                     storage.location,
                     str(self.project_id),
                     f'{real_name}_{copy_count}.{file_extension}'
                 )
-                copy_count += 1
             save_name = f'{real_name}_{copy_count}.{file_extension}'
 
         return save_name, save_path

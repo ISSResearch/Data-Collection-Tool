@@ -25,7 +25,7 @@ class FileViewSet(APIView):
 
             return file_streaming.get_reponse(request)
 
-        except file.DoesNotExist:
+        except (file.DoesNotExist, FileNotFoundError):
             return Response('no such file', status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, fileID):
@@ -168,7 +168,11 @@ def download_project_data(request, projectID):
 
     files = File.objects \
         .select_related('author', 'project') \
-        .prefetch_related('attribute') \
+        .prefetch_related(
+            'attributegroup_set',
+            'attributegroup_set__attribute',
+            'attributegroup_set__attribute__level'
+        ) \
         .filter(project_id=projectID, status__in=files_filter)
 
     if not len(files): return Response(status=status.HTTP_204_NO_CONTENT)

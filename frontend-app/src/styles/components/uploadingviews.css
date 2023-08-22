@@ -39,3 +39,6 @@
   overflow-x: scroll;
   transition: color 0.3s ease;
 }
+.iss__uploadProgress__error {
+  color: var(--issLightRed);
+}

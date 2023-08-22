@@ -9,6 +9,11 @@
   width: 100%;
   display: flex;
   place-content: center;
+  background-color: white;
+  width: fit-content;
+  border-radius: 12px;
+  padding: 20px;
+  place-self: center;
 }
 .iss__projectPage__button {
   margin-bottom: 20px;
