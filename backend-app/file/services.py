@@ -26,7 +26,7 @@ class FileStreaming:
         'chunk_length'
     )
     RANGE_RE = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
-    MB_MULTIPLIER = 8
+    MB_MULTIPLIER = 4
     CHUNK_SIZE = 1024 * MB_MULTIPLIER
 
     def __init__(self, file):

@@ -11,7 +11,6 @@ export default function FileModification({ fileManager, sliderManager, attribute
   const { file, initFile, setAttributeGroups, validate } = useFile();
 
   function handleKeyPressed(key) {
-    if (key === file.status) return;
     if (key === 'd' || key === 'a') {
       const target = document.getElementById('button-' + key);
       if (target) target.click();
@@ -29,7 +28,6 @@ export default function FileModification({ fileManager, sliderManager, attribute
   }
 
   function updateFile(status) {
-    if (status === file.status) return;
     const { isValid, message } = validate(attributes);
     if (!isValid) return alert(message);
     const newFiles = [...files];
@@ -75,17 +73,13 @@ export default function FileModification({ fileManager, sliderManager, attribute
               id='button-d'
               type='button'
               onClick={() => updateFile('d')}
-              className={
-                `button--reject${file.status === 'd' ? ' button--block' : ''}`
-              }
+              className='button--reject'
             >Decline<br />(D)</button>
             <button
               id='button-a'
               type='button'
               onClick={() => updateFile('a')}
-              className={
-                `button--accept${file.status === 'a' ? ' button--block' : ''}`
-              }
+              className='button--accept'
             >Accept<br/>(A)</button>
           </div>
         }

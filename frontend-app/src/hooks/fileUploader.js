@@ -6,7 +6,7 @@ export default function useFileUploader(projectID) {
   const [project] = useState(projectID);
 
   async function sendChunk(file, id) {
-    const chunkSize = 1024 * 1024 * 10;
+    const chunkSize = 1024 * 1024 * 4;
     const numOfChunks = Math.ceil(file.file.size / chunkSize);
     for (let i = 0; i < numOfChunks; i++) {
       const form = new FormData();
