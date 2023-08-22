@@ -6,8 +6,17 @@ export default function useFileInput() {
 
   function handleUpload(uploaded) {
     const newFiles = uploaded.map((file) => {
-      const [name, extension] = file.name.split('.');
-      const [type] = file.type.split('/');
+      const [type, typeExt] = file.type.split('/');
+      const nameSplit = file.name.split('.');
+      let extension;
+      if (nameSplit.length > 1) {
+        const nameExt = nameSplit.pop()
+        extension = typeExt || nameExt;
+      }
+      else {
+        extension = typeExt || '';
+      }
+      const name = nameSplit.join('');
       return { file, name, extension, type, attributeGroups: {} };
     });
     const threshold = 20 - Object.values(files).length;
