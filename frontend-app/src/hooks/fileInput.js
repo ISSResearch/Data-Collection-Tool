@@ -20,15 +20,15 @@ export default function useFileInput() {
       return { file, name, extension, type, attributeGroups: {} };
     });
     const threshold = 20 - Object.values(files).length;
-    const newData = {...files};
+    const newData = { ...files };
     if (newFiles.length > threshold) newFiles.splice(threshold);
     newFiles.forEach(el => newData[formUID()] = el);
     setFiles(newData);
   }
 
-  function handleNameChange({value}, chandeID) {
+  function handleNameChange({ value }, chandeID) {
     setFiles(prev => {
-      const newFiles = {...prev};
+      const newFiles = { ...prev };
       newFiles[chandeID].name = value;
       return newFiles;
     });
@@ -36,7 +36,7 @@ export default function useFileInput() {
 
   function handleDelete(deleteId) {
     setFiles(prev => {
-      const newFiles = {...prev};
+      const newFiles = { ...prev };
       delete newFiles[deleteId]
       return newFiles;
     });
@@ -66,10 +66,10 @@ export default function useFileInput() {
   }
 
   function validate(attributes) {
-    if (!Object.values(files).length) return {isValid: false, message: 'No files attached!'};
+    if (!Object.values(files).length) return { isValid: false, message: 'No files attached!' };
     const requiredLevels = findRequired(attributes);
     if (!requiredLevels.length) return { isValid: true, message: 'ok' };
-    const requiredIds = requiredLevels.map(({attributes}) => attributes);
+    const requiredIds = requiredLevels.map(({ attributes }) => attributes);
     for (const file of Object.values(files)) {
       const { attributeGroups, name } = file;
       if (!Object.values(attributeGroups || {}).length) return formError(name, requiredLevels);

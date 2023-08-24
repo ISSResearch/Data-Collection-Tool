@@ -24,8 +24,8 @@ export const FileUploadCard = memo(({
       {
         type === 'image'
           ? <div
-            onClick={({target}) => handleZoom(target)}
-            style={{backgroundImage: `url(${URL.createObjectURL(fileObject)})`}}
+            onClick={({ target }) => handleZoom(target)}
+            style={{ backgroundImage: `url(${URL.createObjectURL(fileObject)})` }}
             data-testid='media'
             className='iss__fileuploadCard__file'
           />
@@ -37,9 +37,9 @@ export const FileUploadCard = memo(({
             className="iss__fileuploadCard__file"
           />
       }
-      <input value={name} onChange={({target}) => handleNameChange(target, fileID)}/>
+      <input value={name} onChange={({ target }) => handleNameChange(target, fileID)} />
       <button type="button" onClick={() => handleDelete(fileID)}>
-        <span/><span/>
+        <span /><span />
       </button>
       <div className='iss__fileuploadCard__selectWrap'>
         <SelectGroup

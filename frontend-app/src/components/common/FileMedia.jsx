@@ -14,8 +14,8 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
 
   const MediaItem = useCallback((props) => {
     return typeVideo
-      ? <video autoPlay muted controls playsInline {...props}/>
-      : <img alt="validate_item" loading='lazy' decoding="async" {...props}/>;
+      ? <video autoPlay muted controls playsInline {...props} />
+      : <img alt="validate_item" loading='lazy' decoding="async" {...props} />;
   }, [typeVideo]);
 
   let scale = 1,
@@ -56,7 +56,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     setTransform();
   }
 
-  function handleWheel (ev) {
+  function handleWheel(ev) {
     // TODO: precise translate
     let xs = (ev.clientX - pointX) / scale,
       ys = (ev.clientY - pointY) / scale,
@@ -94,7 +94,7 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
-      >{fileUrl && <MediaItem src={fileUrl} className='mediaFile'/>}</div>
+      >{fileUrl && <MediaItem src={fileUrl} className='mediaFile' />}</div>
     </div>
   );
 });

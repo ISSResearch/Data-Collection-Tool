@@ -22,15 +22,14 @@ export default function FilesUpload({ attributes, pathID }) {
     else setUploading(true);
   }
 
-  if (uploading) return <UploadingView fileManager={fileManager} pathID={pathID}/>;
+  if (uploading) return <UploadingView fileManager={fileManager} pathID={pathID} />;
 
   return (
     <form className='iss__filesUpload'>
       <button
         onClick={sendForm}
         className={
-          `iss__filesUpload__sendButton${
-            Object.values(fileManager.files).length ? '': ' send--disabled'
+          `iss__filesUpload__sendButton${Object.values(fileManager.files).length ? '' : ' send--disabled'
           }`
         }
       >SEND ALL</button>
@@ -39,7 +38,7 @@ export default function FilesUpload({ attributes, pathID }) {
         handleApply={handleApply}
         isFiles={Boolean(Object.values(fileManager.files).length)}
       />
-      <div className='iss__filesUpload__form__border'/>
+      <div className='iss__filesUpload__form__border' />
       <FileInput
         fileManager={fileManager}
         attributes={attributes}
