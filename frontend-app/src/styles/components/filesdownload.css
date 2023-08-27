@@ -1,29 +1,31 @@
 .iss__filesDownload {
-  max-width: 420px;
   width: 100%;
-  border: 1px solid var(--issBrand);
-  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin: 0 auto;
 }
 .iss__filesDownload__caption {
   font-size: 20px;
+}
+.iss__filesDownload__form {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    place-items: center;
 }
 .iss__filesDownload__selector {
   border: 1px solid var(--issBrand);
   position: relative;
   place-self: center;
-  max-width: 240px;
+  max-width: 160px;
   width: 100%;
 }
 .iss__filesDownload__selected {
   width: 100%;
   height: 100%;
-  padding: 8px 12px;
+  padding: 4px 8px;
   cursor: pointer;
-  position: relotive;
+  position: relative;
 }
 .arrow__pic {
   position: absolute;
@@ -45,6 +47,7 @@
   background-color: white;
   border: 1px solid var(--issBrand);
   box-shadow: 1px 1px 2px var(--issBrand);
+  z-index: 1;
 }
 .options--open {
   max-height: 500px;
@@ -53,16 +56,16 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
+  padding: 8px;
   gap: 8px;
 }
-.option--validation {
+.option--blue, .option--blue>span {
   color: var(--issBrand);
 }
-.option--accepted {
+.option--green, .option--green>span {
   color: var(--issGreen);
 }
-.option--declined {
+.option--red, .option--red>span {
   color: var(--issRed);
 }
 .iss__filesDownload__button {
@@ -85,18 +88,26 @@
 .iss__filesDownload__options>span {
   cursor: pointer;
 }
+.iss__filesDownload__inputBox__wrap {
+    display: flex;
+    gap: 4px;
+    place-content: center;
+}
+.iss__fielsDownload__fileSelector {
+    width: 100%;
+}
 @media (hover:hover) {
   .iss__filesDownload__button:hover {
     background-color: var(--issBrand);
     color: white;
   }
-  .option--declined:hover {
+  .option--red:hover {
     background-color: var(--issLightRed);
   }
-  .option--accepted:hover {
+  .option--green:hover {
     background-color: var(--issLightGreen);
   }
-  .option--validation:hover {
+  .option--blue:hover, .option--common:hover {
     background-color: var(--issLightBrand);
   }
 }

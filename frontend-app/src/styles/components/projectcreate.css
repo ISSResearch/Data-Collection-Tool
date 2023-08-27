@@ -30,7 +30,8 @@
   width: 100%;
   gap: 8px;
 }
-.iss__projectCreate__form__input textarea, .iss__projectCreate__form__input input {
+.iss__projectCreate__form__input>textarea,
+.iss__projectCreate__form__input>input {
   border: 1px solid var(--issBrand);
   padding: 12px;
 }
@@ -52,6 +53,16 @@
   text-transform: uppercase;
   white-space: nowrap;
   transition: color 0.3s ease;
+}
+.iss__projectCreate__preview::before {
+    content: "Preview Description:";
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.iss__projectCreate__preview {
+    width: 100%;
+    font-size: 14px;
 }
 @media (hover:hover) {
   .iss__projectCreate__form__createButton:hover {

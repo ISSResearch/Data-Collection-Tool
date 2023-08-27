@@ -1,0 +1,53 @@
+.iss__filesDownload__fileSelector {
+    max-width: 100%;
+    width: 100%;
+    border: 1px solid var(--issBrand);
+    max-height: 800px;
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    place-content: flex-start;
+    gap: 20px;
+    padding: 20px;
+}
+.iss__filesDownload__loadWrap {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    padding: 20px;
+    max-width: 100%;
+    width: 100%;
+    border: 1px solid var(--issBrand);
+}
+.iss__filesDownload__fileSelector__item {
+    width: 25%;
+    display: flex;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgb(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+.iss__filesDownload__fileSelector__item>input {
+    flex-shrink: 0;
+}
+.iss__filesDownload__fileSelector__item>span:last-of-type {
+    word-break: break-all;
+}
+.file--a>span {
+    color: var(--issLightGreen);
+}
+.file--d>span {
+    color: var(--issLightRed);
+}
+@media (hover:hover) {
+    .file--v:hover {
+        background-color: rgb(98, 171, 255, 0.2);
+    }
+    .file--a:hover {
+        background-color: rgb(47, 204, 5, 0.2);
+    }
+    .file--d:hover {
+        background-color: rgb(255, 98, 98, 0.2);
+}
+}

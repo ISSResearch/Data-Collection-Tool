@@ -1,26 +1,34 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useFiles } from '../hooks';
 import Load from './common/Load';
+import FileDownloadSelector from './common/FileDowloadSelector';
 import api from '../config/api';
 import '../styles/components/filesdownload.css';
+
+const OPTIONS = [
+  { name: 'all', value: 'all', color: 'common' },
+  { name: 'on validation', value: 'v', color: 'blue' },
+  { name: 'accepted', value: 'a', color: 'green' },
+  { name: 'declined', value: 'd', color: 'red' },
+];
 
 export default function FilesDownload({ pathID, projectName }) {
   const [isOpen, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [option, setOption] = useState({ name: 'all files', value: 'all' });
-
-  const options = [
-    { name: 'all files', value: 'all' },
-    { name: 'on validation', value: 'validation' },
-    { name: 'accepted files', value: 'accepted' },
-    { name: 'declined files', value: 'declined' },
-  ];
+  const [option, setOption] = useState(OPTIONS[0]);
+  const [manual, setManual] = useState(false);
+  const fileManager = useFiles();
+  const boxNew = useRef();
 
   const handleSelect = (index) => {
-    setOption(options[index]);
-    setOpen(!option);
+    setOption(OPTIONS[index]);
+    setOpen(!isOpen);
   };
 
-  function downloadSelected() {
+  function downloadSelected(event) {
+    event.preventDefault();
+    console.log(fileManager.filterBy('download', true).map(({ id }) => id));
+    return
     setLoading(true);
     api.get(
       `/api/files/download/project/${pathID}/?files=${option.value}`,
@@ -44,11 +52,12 @@ export default function FilesDownload({ pathID, projectName }) {
 
   return (
     <div className='iss__filesDownload'>
-        <h2 className='iss__filesDownload__caption'>Choose which files:</h2>
+      <h2 className='iss__filesDownload__caption'>Choose files to download</h2>
+      <form onSubmit={(event) => downloadSelected(event)} className='iss__filesDownload__form'>
         <div className='iss__filesDownload__selector'>
           <div
             onClick={() => setOpen(!isOpen)}
-            className={`iss__filesDownload__selected option--${option.value}`}
+            className={`iss__filesDownload__selected option--${option.color}`}
           >
             <span>{option.name}</span>
             <svg width="16" height="10" viewBox="0 0 14 8" className="arrow__pic">
@@ -58,22 +67,38 @@ export default function FilesDownload({ pathID, projectName }) {
           <div className={`iss__filesDownload__options__wrap${isOpen ? ' options--open' : ''}`}>
             <div className='iss__filesDownload__options'>
               {
-                options.map(({ name, value }, index) => (
+                OPTIONS.map(({ name, value, color }, index) => (
                   <span
                     key={value}
                     onClick={() => handleSelect(index)}
-                    className={`option--${value}`}
+                    className={`option--${color}`}
                   >{name}</span>
                 ))
               }
             </div>
           </div>
         </div>
-      <button
-        onClick={downloadSelected}
-        type='button'
-        className={`iss__filesDownload__button${loading ? ' block--button' : ''}`}
-      >{loading ? <Load isInline /> : <span>request</span>}</button>
+        <label className='iss__filesDownload__inputBox__wrap'>
+          <input ref={boxNew} type='checkbox' />
+          <span>not downloaded before</span>
+        </label>
+        <label className='iss__filesDownload__inputBox__wrap'>
+          <input type='checkbox' onChange={({ target }) => setManual(target.checked)} />
+          <span>select manually from option</span>
+        </label>
+        <button className={`iss__filesDownload__button${loading ? ' block--button' : ''}`}>
+          {loading ? <Load isInline /> : <span>request</span>}
+        </button>
+      </form>
+      {
+        manual &&
+        <FileDownloadSelector
+          pathID={pathID}
+          newFiles={boxNew.current.checked}
+          option={option}
+          fileManager={fileManager}
+        />
+      }
     </div>
   );
 }

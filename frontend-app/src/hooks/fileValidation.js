@@ -12,5 +12,9 @@ export default function useFiles() {
     setFiles(filesData);
   }
 
-  return { files, setFiles, initFiles };
+  function filterBy(field, value) {
+    return files.filter(file => file[field] === value);
+  }
+
+  return { files, setFiles, initFiles, filterBy };
 }

@@ -63,17 +63,26 @@ class FilesViewSet(APIView):
 
     def get(self, request, projectID):
         accepted_queries = (
-            ('status__in', 'card[]'),
-            ('file_type__in', 'type[]')
+            ('status__in', 'card[]', True),
+            ('file_type__in', 'type[]', True),
+            ('status', 'status', False),
+            ('is_downloaded', 'downloaded', False)
         )
 
         filter_query = {'project_id': projectID}
 
-        for filter_name, param in accepted_queries:
-            query_param = request.query_params.getlist(param)
-            if query_param: filter_query[filter_name] = query_param
-
-        attribute_query = request.query_params.getlist('attr[]')
+        for filter_name, param, is_list in accepted_queries:
+            query_param = (
+                request.query_params.getlist(param)
+                if is_list
+                else request.query_params.get(param)
+            )
+            if query_param:
+                filter_query[filter_name] = (
+                    False
+                    if filter_name == 'is_downloaded'
+                    else query_param
+                )
 
         files = File.objects \
             .select_related('author') \
@@ -84,6 +93,8 @@ class FilesViewSet(APIView):
             ) \
             .order_by('-status', '-upload_date') \
             .filter(**filter_query)
+
+        attribute_query = request.query_params.getlist('attr[]')
 
         if attribute_query:
             sub_query = AttributeGroup.objects \

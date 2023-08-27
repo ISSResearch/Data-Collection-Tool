@@ -8,13 +8,14 @@ import '../styles/components/projectcreate.css';
 export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const attributeManager = useAttributeManager();
+  const [preview, setPreview] = useState('');
 
-  function getFormData({target}) {
+  function getFormData({ target }) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
     let description = target.querySelector('.iss__projectCreate__form__input textarea');
     description = description.value.replaceAll(/\n/g, '<br>');
     const attributes = attributeManager.formHook.gatherAttributes();
-    return { name: name.value , description, attributes };
+    return { name: name.value, description, attributes };
   }
 
   function sendForm(event) {
@@ -47,14 +48,25 @@ export default function ProjectCreate() {
             <input placeholder='Enter project name' required />
           </label>
           <label className='iss__projectCreate__form__input'>
-            Project description:
-            <textarea autoComplete='off' placeholder='Enter project description'/>
+            Project description (raw):
+            <textarea
+              autoComplete='off'
+              placeholder='Enter project description'
+              onChange={({ target }) => setPreview(target.value)}
+            />
           </label>
+          {
+            preview &&
+            <p
+              dangerouslySetInnerHTML={{ __html: preview }}
+              className='iss__projectCreate__preview'
+            />
+          }
         </fieldset>
-        <div className='iss__projectCreate__form__border'/>
-        <AttributeCreatorForm attributeManager={attributeManager}/>
+        <div className='iss__projectCreate__form__border' />
+        <AttributeCreatorForm attributeManager={attributeManager} />
         <button className='iss__projectCreate__form__createButton'>
-          { loading ? <Load isInline/> : <span>Create Project</span> }
+          {loading ? <Load isInline /> : <span>Create Project</span>}
         </button>
       </form>
     </div>

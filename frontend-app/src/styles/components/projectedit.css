@@ -127,6 +127,16 @@
   overflow-x: scroll;
   outline: none;
 }
+.iss__projectEdit__preview::before {
+    content: "Preview Description:";
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.iss__projectEdit__preview {
+    width: 100%;
+    font-size: 14px;
+}
 @media (hover:hover) {
   .iss__projectEdit__delete--yes:hover {
     background-color: var(--issRed);

@@ -9,7 +9,7 @@ export default function useFile() {
     setFile(newFile);
   }
 
-  function changeName({value}) {
+  function changeName({ value }) {
     const updatedFile = deepCopy(file);
     updatedFile.file_name = value;
     setFile(updatedFile);
@@ -17,7 +17,7 @@ export default function useFile() {
 
   function setAttributeGroups({ ids, selectorKey, selInd, del, set }) {
     if (set) return file.attributeGroups = ids;
-    const {attributeGroups: target} = file;
+    const { attributeGroups: target } = file;
     if (del) return delete target[selectorKey];
     if (!target[selectorKey]) target[selectorKey] = {};
     target[selectorKey][selInd] = [...ids];
@@ -25,9 +25,9 @@ export default function useFile() {
 
   function validate(attributes) {
     const requiredLevels = findRequired(attributes);
-    const requiredIds = requiredLevels.map(({attributes}) => attributes);
+    const requiredIds = requiredLevels.map(({ attributes }) => attributes);
     const { attributeGroups, file_name } = file;
-    if (!Object.values(attributeGroups || {}).length ) return formError(file_name, requiredLevels);
+    if (!Object.values(attributeGroups || {}).length) return formError(file_name, requiredLevels);
     for (const group of Object.values(attributeGroups)) {
       const missingValues = [];
       const groupData = Object.values(group);

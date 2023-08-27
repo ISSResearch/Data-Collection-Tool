@@ -12,38 +12,38 @@ test("select group component test", () => {
   render(
     <SelectGroup
       attributes={mock_prepared_attributes}
-      handleApply={() => {}}
+      handleApply={() => { }}
       isFiles={false}
     />
   );
 
   expect(screen.getByRole('group').className).toBe('iss__selectGroup');
-  expect(screen.getAllByText('delete')).toHaveLength(1);
+  expect(screen.getAllByText('delete group')).toHaveLength(1);
   expect(screen.getAllByText('-not set-')).toHaveLength(2);
   expect(screen.getAllByText('apply to all')).toHaveLength(1);
   expect(screen.getByText('apply to all').className).toBe('iss__selectGroup__button button--disabled');
 
   fireEvent.click(screen.getByText('add object'));
 
-  expect(screen.getAllByText('delete')).toHaveLength(2);
+  expect(screen.getAllByText('delete group')).toHaveLength(2);
   expect(screen.getAllByText('-not set-')).toHaveLength(4);
 
   render(
     <SelectGroup
       attributes={mock_prepared_attributes}
-      handleApply={() => {}}
+      handleApply={() => { }}
       isFiles={true}
     />
   );
 
   expect(screen.getAllByText('apply to all')[1].className).toBe('iss__selectGroup__button');
-  expect(screen.getAllByText('delete')).toHaveLength(3);
+  expect(screen.getAllByText('delete group')).toHaveLength(3);
 
-  fireEvent.click(screen.getAllByText('delete')[0]);
-  expect(screen.getAllByText('delete')).toHaveLength(2);
-  fireEvent.click(screen.getAllByText('delete')[0]);
-  fireEvent.click(screen.getAllByText('delete')[0]);
-  expect(screen.queryAllByText('delete')).toHaveLength(0);
+  fireEvent.click(screen.getAllByText('delete group')[0]);
+  expect(screen.getAllByText('delete group')).toHaveLength(2);
+  fireEvent.click(screen.getAllByText('delete group')[0]);
+  fireEvent.click(screen.getAllByText('delete group')[0]);
+  expect(screen.queryAllByText('delete group')).toHaveLength(0);
 });
 
 
@@ -51,7 +51,7 @@ test("select group component test, case fileUploadCard", () => {
   const { result: filesManager } = renderHook(() => useFileInput());
   act(() => {
     filesManager.current.handleUpload([
-      {file: '', name: `file1.png`, type: 'image/png'}
+      { file: '', name: `file1.png`, type: 'image/png' }
     ]);
   });
   const fileID = Object.keys(filesManager.current.files)[0];
@@ -68,12 +68,12 @@ test("select group component test, case fileUploadCard", () => {
   expect(filesManager.current.files[fileID].attributeGroups).toEqual(mock_apply_groups);
   expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
   expect(screen.queryByText('apply to all')).toBe(null);
-  expect(screen.getAllByText('delete')).toHaveLength(1);
-  fireEvent.click(screen.getByText('delete'));
-  expect(screen.queryAllByText('delete')).toHaveLength(0);
+  expect(screen.getAllByText('delete group')).toHaveLength(1);
+  fireEvent.click(screen.getByText('delete group'));
+  expect(screen.queryAllByText('delete group')).toHaveLength(0);
 
   fireEvent.click(screen.getByText('add object'));
-  expect(screen.queryAllByText('delete')).toHaveLength(1);
+  expect(screen.queryAllByText('delete group')).toHaveLength(1);
 });
 
 test("select group component test, case fileInfo", () => {
@@ -90,10 +90,10 @@ test("select group component test, case fileInfo", () => {
 
   expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
   expect(screen.queryByText('apply to all')).toBe(null);
-  expect(screen.getAllByText('delete')).toHaveLength(1);
-  fireEvent.click(screen.getByText('delete'));
-  expect(screen.queryAllByText('delete')).toHaveLength(0);
+  expect(screen.getAllByText('delete group')).toHaveLength(1);
+  fireEvent.click(screen.getByText('delete group'));
+  expect(screen.queryAllByText('delete group')).toHaveLength(0);
 
   fireEvent.click(screen.getByText('add object'));
-  expect(screen.queryAllByText('delete')).toHaveLength(1);
+  expect(screen.queryAllByText('delete group')).toHaveLength(1);
 });

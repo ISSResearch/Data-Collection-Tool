@@ -15,6 +15,7 @@ export default function ProjectEdit({
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
   const [deleteNameForm, setDeleteNameForm] = useState('');
+  const [preview, setPreview] = useState(projectDescription);
 
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
@@ -27,7 +28,7 @@ export default function ProjectEdit({
     return true;
   }
 
-  function getFormData({target}) {
+  function getFormData({ target }) {
     const name = target.querySelector('.iss__projectEdit__form__input input');
     let description = target.querySelector('.iss__projectEdit__form__input textarea');
     description = description.value.replace(/\n/g, '<br>');
@@ -37,17 +38,17 @@ export default function ProjectEdit({
         Object.keys(attributeManager.formHook.forms).length
       )
     ];
-    return { name: name.value , description, attributes };
+    return { name: name.value, description, attributes };
   }
 
   async function performOriginalItemsDelete(idSet, endpoint) {
     return api.request(`/api/attributes/${endpoint}/`,
-        {
-          method: 'delete',
-          data: { id_set: idSet },
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      {
+        method: 'delete',
+        data: { id_set: idSet },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
   async function sendForm(event) {
@@ -84,7 +85,7 @@ export default function ProjectEdit({
     api.request(`/api/projects/${pathID}/`,
       {
         method: 'delete',
-        data: {approval: deleteNameForm},
+        data: { approval: deleteNameForm },
         headers: { 'Content-Type': 'application/json' }
       }
     )
@@ -107,7 +108,7 @@ export default function ProjectEdit({
               <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
               <input
                 placeholder='Exact Project name'
-                onChange={({target}) => setDeleteNameForm(target.value)}
+                onChange={({ target }) => setDeleteNameForm(target.value)}
                 className='iss__projectEdit__delete__input'
               />
               <button
@@ -119,12 +120,12 @@ export default function ProjectEdit({
                 type='button'
                 onClick={deleteProject}
                 className='iss__projectEdit__delete--yes'
-                >submit</button>
+              >submit</button>
             </div>
             : <button
-                onClick={() => setDeleteAccept(true)}
-                className='iss__projectEdit__deleteButton'
-              >DELETE PROJECT</button>
+              onClick={() => setDeleteAccept(true)}
+              className='iss__projectEdit__deleteButton'
+            >DELETE PROJECT</button>
         }
       </fieldset>
       <form onSubmit={sendForm} className='iss__projectEdit__form'>
@@ -138,20 +139,28 @@ export default function ProjectEdit({
             />
           </label>
           <label className='iss__projectEdit__form__input'>
-            Project description:
+            Project description (raw):
             <textarea
               autoComplete='off'
               placeholder='Enter project description'
               defaultValue={projectDescription}
+              onChange={({ target }) => setPreview(target.value)}
             />
           </label>
+          {
+            preview &&
+            <p
+              dangerouslySetInnerHTML={{ __html: preview }}
+              className='iss__projectEdit__preview'
+            />
+          }
         </fieldset>
-        <div className='iss__projectEdit__form__border'/>
+        <div className='iss__projectEdit__form__border' />
         <div className='iss__projectEdit__attributes'>
-          <AttributeCreatorForm attributeManager={attributeManagerNew}/>
+          <AttributeCreatorForm attributeManager={attributeManagerNew} />
           {
             Object.keys(attributeManagerNew.formHook.forms).length > 0 &&
-              <div className='iss__projectEdit__attributeSeparator'/>
+            <div className='iss__projectEdit__attributeSeparator' />
           }
           <AttributeCreatorForm
             attributeManager={attributeManager}
@@ -159,7 +168,7 @@ export default function ProjectEdit({
           />
         </div>
         <button type="submit" className='iss__projectEdit__form__submitButton'>
-          { loading ? <Load isInline/> : <span>Submit edit</span> }
+          {loading ? <Load isInline /> : <span>Submit edit</span>}
         </button>
       </form>
     </>

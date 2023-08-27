@@ -44,20 +44,29 @@
 }
 .add--group {
   background-color: rgb(153, 255, 98);
-  border: none;
   border: 1px solid var(--issGreen);
   color: var(--issGreen);
   width: 100%;
   margin-bottom: 12px;
 }
 .del--group {
-  border: none;
   width: 100%;
   background-color: rgb(255, 98, 98);
   border: 1px solid var(--issRed);
   color: var(--issRed);
 }
+.cop--group {
+    width: 100%;
+    border: 1px solid var(--issBrand);
+    color: var(--issBrand);
+    background-color: var(--issLightBrand);
+    margin-bottom: 8px;
+}
 @media (hover:hover) {
+  .iss__selectGroup__button:hover {
+    background-color: white;
+    color: var(--issBrand);
+  }
   .del--group:hover {
     background-color: var(--issRed);
     color: white;
@@ -66,8 +75,8 @@
     background-color: var(--issGreen);
     color: white;
   }
-  .iss__selectGroup__button:hover {
-    background-color: white;
-    color: var(--issBrand);
+  .cop--group:hover {
+      background-color: var(--issBrand);
+      color: white;
   }
 }

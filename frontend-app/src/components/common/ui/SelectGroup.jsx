@@ -14,16 +14,26 @@ export default function SelectGroup({
   const [groups, setGroups] = useState({});
 
   function addGroup() {
-    const newGroups = {...groups};
+    const newGroups = { ...groups };
     newGroups[formUID()] = {};
     setGroups(newGroups);
   }
 
   function deleteGroup(selectorKey) {
-    const newGroups = {...groups};
+    const newGroups = { ...groups };
     delete newGroups[selectorKey];
     setGroups(newGroups);
-    if (setAttributeGroups) setAttributeGroups({fileID, selectorKey, del: true});
+    if (setAttributeGroups) setAttributeGroups({ fileID, selectorKey, del: true });
+  }
+
+  function copyGroup(selectorKey) {
+    const newGroups = { ...groups };
+    const copyData = deepCopy(newGroups[selectorKey]);
+    newGroups[formUID()] = copyData;
+    setGroups(newGroups);
+    if (setAttributeGroups) setAttributeGroups({
+      fileID, ids: newGroups, set: true
+    });
   }
 
   function setOption({ selectorKey, id, index }, selInd) {
@@ -45,7 +55,7 @@ export default function SelectGroup({
         fileID, ids: newGroups, set: true
       });
     }
-    else setGroups({[formUID()]: {}});
+    else setGroups({ [formUID()]: {} });
   }, [applyGroups]);
 
   return (
@@ -73,11 +83,19 @@ export default function SelectGroup({
                 />
               ))
             }
+            {
+              !handleApply &&
+              <button
+                onClick={() => copyGroup(key)}
+                type="button"
+                className="iss__selectGroup__button cop--group"
+              >copy group</button>
+            }
             <button
               onClick={() => deleteGroup(key)}
               type='button'
               className='iss__selectGroup__button del--group'
-            >delete</button>
+            >delete group</button>
           </div>
         ))
       }

@@ -11,6 +11,7 @@ class File(models.Model):
     file_type = models.CharField(max_length=10)
     status = models.CharField(max_length=1, choices=STATUSES, default='v')
     upload_date = models.DateTimeField(auto_now_add=True)
+    is_downloaded = models.BooleanField(default=False)
 
     project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
     author = models.ForeignKey('user.CustomUser', on_delete=models.DO_NOTHING)

@@ -11,9 +11,7 @@ export default function FilesUpload({ attributes, pathID }) {
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();
 
-  function handleApply(groups) {
-    setApplyGroups(deepCopy(groups));
-  }
+  function handleApply(groups) { setApplyGroups(deepCopy(groups)); }
 
   function sendForm(event) {
     event.preventDefault();

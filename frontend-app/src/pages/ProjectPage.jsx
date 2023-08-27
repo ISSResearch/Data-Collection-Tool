@@ -14,7 +14,7 @@ import api from "../config/api";
 import '../styles/pages/project.css';
 
 const PROTECTED_ROUTE_LINKS = [
-  { name: 'upload data', link: 'upload', permission: 'upload'  },
+  { name: 'upload data', link: 'upload', permission: 'upload' },
   { name: 'validate data', link: 'validate', permission: 'validate' },
   { name: 'statistics', link: 'stats', permission: 'stats' },
   { name: 'download data', link: 'download', permission: 'download' },
@@ -32,7 +32,7 @@ export default function ProjectPage() {
   const { projectID } = useParams();
 
   const PageVariant = useCallback((props) => {
-    const [,,, variant] = location.pathname.split('/')
+    const [, , , variant] = location.pathname.split('/')
     const variants = {
       upload: FilesUpload,
       validate: FilesValidate,
@@ -81,7 +81,7 @@ export default function ProjectPage() {
     }
   }, [project, location]);
 
-  if (loading) return (<div className="iss_projectPage__load"><Load/></div>)
+  if (loading) return (<div className="iss_projectPage__load"><Load /></div>);
 
   return (
     <div className='iss__projectPage'>
@@ -95,10 +95,10 @@ export default function ProjectPage() {
       />
       {
         currentRoute === `projects/${projectID}` &&
-          <p
-            dangerouslySetInnerHTML={{ __html: "Description:<br>" + project.description }}
-            className="iss__projectPage__description"
-          />
+        <p
+          dangerouslySetInnerHTML={{ __html: "Description:<br>" + project.description }}
+          className="iss__projectPage__description"
+        />
       }
       <PageVariant
         attributes={project.preparedAttributes}
