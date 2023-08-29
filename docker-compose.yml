@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # todo: set admin user
   iss-db:
     container_name: iss-db
     image: postgres:15.3-alpine
@@ -32,7 +33,7 @@ services:
              python manage.py makemigrations attribute &&
              python manage.py makemigrations file &&
              python manage.py migrate &&
-             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application --bind 0.0.0.0:8000"
+             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"
     networks:
       - iss_network
 
@@ -62,7 +63,7 @@ services:
       - 3000:3000
       - 8000:8000
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/app:/etc/nginx/conf.d
     networks:
       - iss_network
 

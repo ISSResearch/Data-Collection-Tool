@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  iss-storage-db:
+    image: mongo:7.0.1-rc0
+    container_name: iss-storage-db
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: iss-admin
+        MONGO_INITDB_ROOT_PASSWORD: issadminpassword
+    volumes:
+      - ./storage:/data/db
+    restart: always
+    networks:
+      - iss_storage_network
+
+  iss-storage-back:
+    container_name: iss-storage-back
+    image: iss_storage_back
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    environment:
+      DB_HOST: iss-storage-db
+    depends_on:
+      - iss-storage-db
+    volumes:
+      - ./storage-app:/app
+    command: >
+      sh -c "python3 src/main.py"
+    networks:
+      - iss_storage_network
+
+  iss-storage-proxy:
+    container_name: iss-storage-proxy
+    image: nginx:1.25.1-alpine
+    ports:
+      - 9000:9000
+    volumes:
+      - ./nginx/storage:/etc/nginx/conf.d
+    depends_on:
+      - iss-storage-back
+    networks:
+      - iss_storage_network
+
+networks:
+  iss_storage_network:

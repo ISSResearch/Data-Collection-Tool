@@ -5,3 +5,4 @@ limit_request_fields = 32000
 limit_request_field_size = 0
 user = 'root'
 raw_env = 'DJANGO_SETTINGS_MODULE=proj_back.settings'
+bind = "0.0.0.0:8000"

@@ -6,6 +6,7 @@ venv
 __pycache__
 migrations
 file_store
+storage
 
 node_modules
 .pnp

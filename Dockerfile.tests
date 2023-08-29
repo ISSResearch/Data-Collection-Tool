@@ -12,3 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./tests ./
 
 COPY ./backend-app ./backend_code
+COPY ./storage-app/src ./storage_code
