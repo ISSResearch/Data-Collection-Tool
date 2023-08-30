@@ -2,11 +2,11 @@ from fastapi import FastAPI, Request, UploadFile
 from gridfs import GridFS
 from pymongo import MongoClient
 from uvicorn import run
-from settings import uvicorn_conf
+from settings import uvicorn_conf, get_db_uri
 
 APP = FastAPI()
-mongo_client = MongoClient("mongodb://localhost:27017/")
-db = mongo_client["test"]
+mongo_client = MongoClient(get_db_uri())
+db = mongo_client.files
 fs = GridFS(db)
 
 

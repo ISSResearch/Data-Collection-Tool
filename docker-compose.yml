@@ -7,8 +7,8 @@ services:
     image: postgres:15.3-alpine
     restart: always
     environment:
-      POSTGRES_DB: iss_app_db
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: ${DB_APP_DB_NAME}
+      POSTGRES_HOST_AUTH_METHOD: ${DB_APP_AUTH_METHOD}
     volumes:
       - ./db:/var/lib/postgresql/data
     networks:
@@ -22,7 +22,9 @@ services:
     restart: always
     environment:
       DB_HOST: iss-db
-      DB_NAME: iss_app_db
+      DB_NAME: ${DB_APP_DB_NAME}
+      SERVER_ORIGINS: ${SERVER_ORIGINS}
+      DEBUG: ${DEBUG}
     depends_on:
       - iss-db
     volumes:
@@ -44,7 +46,7 @@ services:
       dockerfile: Dockerfile.frontend
     restart: always
     environment:
-      - PORT=3001
+      PORT: ${FRONTEND_APP_PORT}
     depends_on:
       - iss-back
     volumes:
@@ -58,6 +60,7 @@ services:
     container_name: iss-proxy
     image: nginx:1.25.1-alpine
     depends_on:
+      - iss-back
       - iss-front
     ports:
       - 3000:3000

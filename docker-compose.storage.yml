@@ -5,8 +5,8 @@ services:
     image: mongo:7.0.1-rc0
     container_name: iss-storage-db
     environment:
-        MONGO_INITDB_ROOT_USERNAME: iss-admin
-        MONGO_INITDB_ROOT_PASSWORD: issadminpassword
+        MONGO_INITDB_ROOT_USERNAME: ${DB_STORAGE_USER}
+        MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD}
     volumes:
       - ./storage:/data/db
     restart: always
@@ -21,6 +21,9 @@ services:
     restart: always
     environment:
       DB_HOST: iss-storage-db
+      DB_USER: ${DB_STORAGE_USER}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      DEBUG: ${DEBUG}
     depends_on:
       - iss-storage-db
     volumes:

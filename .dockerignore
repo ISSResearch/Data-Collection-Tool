@@ -7,6 +7,7 @@ __pycache__
 migrations
 file_store
 storage
+worker_tmp
 
 node_modules
 .pnp
@@ -15,11 +16,6 @@ node_modules
 coverage
 
 build
-
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 npm-debug.log*
 yarn-debug.log*

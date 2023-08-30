@@ -3,6 +3,10 @@ FROM python:3.11-slim-bookworm
 ENV PYTHONDONTWRITEBYTECODE=1 \
   PYTHONUNBUFFERED=1
 
+RUN addgroup --system iss && adduser --system --group iss
+
+WORKDIR /app
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
         postgresql-client \
@@ -11,8 +15,10 @@ RUN apt-get update \
         musl-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-
 COPY ./backend-app/requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN chown -R iss:iss /app
+
+USER iss

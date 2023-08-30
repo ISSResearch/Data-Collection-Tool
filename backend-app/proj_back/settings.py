@@ -1,8 +1,5 @@
 from pathlib import Path
 from os import getenv
-from dotenv import load_dotenv
-
-load_dotenv()
 
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')

@@ -7,6 +7,7 @@ __pycache__
 migrations
 file_store
 storage
+worker_tmp
 
 node_modules
 .pnp
