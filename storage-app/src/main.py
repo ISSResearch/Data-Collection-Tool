@@ -1,31 +1,24 @@
 from fastapi import FastAPI, Request, UploadFile
-from gridfs import GridFS
-from pymongo import MongoClient
 from uvicorn import run
-from settings import uvicorn_conf, get_db_uri
+from settings import UVICORN_CONF, DB_STORAGE
+from utils import get_db_uri
+from db_manager import DataBase
 
 APP = FastAPI()
-mongo_client = MongoClient(get_db_uri())
-db = mongo_client.files
-fs = GridFS(db)
+db = DataBase(get_db_uri())
 
 
 @APP.get('/')
-def index(request: Request, a: int, b: str):
-    return {"reponse": 'some response message!', 'a': a, 'b': b}
+def index(request: Request):
+    return {"reponse": 'some response message!'}
 
 
 @APP.post("/api/upload")
-async def upload_chunk(
-    chunk: UploadFile,
-    filename: str,
-    chunk_index: int,
-    total_chunks: int
-):
-    with chunk.file as chunk_data:
-        fs.put(chunk_data.read(), filename=filename, chunkIndex=chunk_index)
+async def upload_chunk(request: Request, chunk: UploadFile, file_meta: object):
+    project = db.get_bucket(DB_STORAGE + "project_id")
+    result, status = project.put_object(chunk, file_meta, request.headers)
 
-    return {"message": "Chunk uploaded successfully"}
+    return {"ok": result, "status": status}
 
 
-if __name__ == "__main__": run(**uvicorn_conf)
+if __name__ == "__main__": run(**UVICORN_CONF)

@@ -59,6 +59,7 @@ services:
   iss-proxy:
     container_name: iss-proxy
     image: nginx:1.25.1-alpine
+    restart: always
     depends_on:
       - iss-back
       - iss-front

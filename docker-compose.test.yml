@@ -25,6 +25,7 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
+      SERVER_ORIGINS: ${SERVER_ORIGINS}
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
