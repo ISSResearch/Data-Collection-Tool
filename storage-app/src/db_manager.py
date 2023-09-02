@@ -1,24 +1,33 @@
 from pymongo import MongoClient
 from gridfs import GridFSBucket
-from settings import DB_STORAGE
-from models import FileManager
-
-
-class Bucket(FileManager):
-    CHUNK_SIZE = 1024 * int(1024 / 2)
-
-    def __init__(self, db, project_name):
-        self._fs = GridFSBucket(
-            database=db,
-            bucket_name=project_name,
-            chunk_size_bytes=self.CHUNK_SIZE
-        )
+from settings import DB_STORAGE, CHUNK_SIZE
+from utils import get_db_uri
 
 
 class DataBase:
-    def __init__(self, uri):
-        self.client = MongoClient(uri)
-        self.db = self.client[DB_STORAGE]
+    client = MongoClient
+    current_db = None
 
-    def get_bucket(self, project_name):
-        return Bucket(self.db, project_name)
+    @classmethod
+    def get_client(cls, uri: str) -> MongoClient:
+        cls.client = MongoClient(uri)
+
+        return cls.client
+
+    @classmethod
+    def get_db(cls, db_name: str = "") -> None:
+        if not cls.client: cls.get_client(get_db_uri())
+
+        cls.current_db = cls.client[db_name or DB_STORAGE]
+
+        return cls.current_db
+
+    @classmethod
+    def get_bucket(cls, project_name: str) -> GridFSBucket:
+        if not cls.current_db: cls.get_db(DB_STORAGE)
+
+        return GridFSBucket(
+            database=cls.current_db,
+            bucket_name=project_name,
+            chunk_size_bytes=CHUNK_SIZE
+        )
