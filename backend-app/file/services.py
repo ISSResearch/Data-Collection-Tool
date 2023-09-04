@@ -4,11 +4,8 @@ from django.http import FileResponse
 from rest_framework import status
 from .models import File
 from attribute.models import AttributeGroup as AGroup
-# from hashlib import md5
 from os import path, mkdir
-from json import loads, dumps
-from tempfile import NamedTemporaryFile
-from zipfile import ZipFile, ZIP_DEFLATED
+from json import loads
 from re import compile, I
 from os import SEEK_SET
 
@@ -101,28 +98,6 @@ class FileStreaming:
         self.chunk_start = chunk_start
         self.chunk_end = chunk_end
         self.chunk_length = chunk_length
-
-
-def prepare_zip_data(files, serialized_data, zip_name):
-    store_location = storage.location + '/temp/'
-
-    if not path.exists(store_location): mkdir(store_location)
-
-    zip_location = store_location + zip_name
-
-    filtered_files = tuple(filter(lambda f: f.path, files))
-
-    with ZipFile(zip_location, mode="w", compression=ZIP_DEFLATED) as zp:
-        for file in filtered_files: zp.write(file.path.path, arcname=file.file_name)
-
-        json_data = dumps(serialized_data, indent=4).encode('utf-8')
-
-        with NamedTemporaryFile() as temp_json:
-            temp_json.write(json_data)
-            temp_json.seek(0)
-            zp.write(temp_json.name, arcname='annotation.json')
-
-    return zip_location
 
 
 class FileUploader:

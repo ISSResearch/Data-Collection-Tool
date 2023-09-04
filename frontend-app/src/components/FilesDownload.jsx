@@ -27,8 +27,6 @@ export default function FilesDownload({ pathID, projectName }) {
 
   function downloadSelected(event) {
     event.preventDefault();
-    console.log(fileManager.filterBy('download', true).map(({ id }) => id));
-    return
     setLoading(true);
     api.get(
       `/api/files/download/project/${pathID}/?files=${option.value}`,

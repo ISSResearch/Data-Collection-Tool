@@ -5,8 +5,7 @@ from .project_tests.permissions_test import (
     ProjectsPermissionTest,
     ProjectPermissionTest,
     ProjectViewPermissionTest,
-    ProjetcDownloadPermissionTest,
-    ProjetcStatsPermissionTest,
+    ProjectStatsPermissionTest,
 )
 from .project_tests.views_test import (
     ProjectsViewSetTest,

@@ -22,7 +22,7 @@ class ProjectViewPermission(BasePermission):
         )
 
 
-class ProjetcStatsPermission(BasePermission):
+class ProjectStatsPermission(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_superuser or bool(
             request.user.project_stats.filter(id=view.kwargs['projectID'])

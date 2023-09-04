@@ -1,16 +1,13 @@
-from django.http import HttpResponse
 from django.db.models import Count, Subquery
 from rest_framework.views import Response, APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from attribute.models import Level
-from project.permissions import ProjetcStatsPermission, ProjetcDownloadPermission
+from project.permissions import ProjectStatsPermission
 from .permissions import FilePermission
 from .serializers import File, FileSerializer, FilesSerializer
-from .services import FileUploader, prepare_zip_data, upload_chunk, FileStreaming
-from os import remove
-from time import time
+from .services import FileUploader, upload_chunk, FileStreaming
 from attribute.models import AttributeGroup
 
 
@@ -122,7 +119,7 @@ class FilesViewSet(APIView):
 
 
 @api_view(('GET',))
-@permission_classes((IsAuthenticated, ProjetcStatsPermission))
+@permission_classes((IsAuthenticated, ProjectStatsPermission))
 def get_stats(_, projectID):
     stats = Level.objects \
         .filter(project_id=projectID) \
@@ -166,39 +163,6 @@ def get_stats(_, projectID):
     if empty_stats: stats = list(stats) + list(empty_stats)
 
     return Response(stats, status=status.HTTP_200_OK)
-
-
-@api_view(('GET',))
-@permission_classes((IsAuthenticated, ProjetcDownloadPermission))
-def download_project_data(request, projectID):
-    files_query = request.query_params.get('files')
-    files_filter = {'', 'a', 'd'}
-
-    if files_query in {'validation', 'accepted', 'declined'}:
-        files_filter = {'' if files_query == 'validation' else files_query[0]}
-
-    files = File.objects \
-        .select_related('author', 'project') \
-        .prefetch_related(
-            'attributegroup_set',
-            'attributegroup_set__attribute',
-            'attributegroup_set__attribute__level'
-        ) \
-        .filter(project_id=projectID, status__in=files_filter)
-
-    if not len(files): return Response(status=status.HTTP_204_NO_CONTENT)
-
-    serialized_data = FileSerializer(files, many=True).data
-    zip_name = f"proj_{projectID}_{int(time())}_data_set.zip"
-
-    zip_location = prepare_zip_data(files, serialized_data, zip_name)
-
-    response = HttpResponse(content_type="application/zip")
-    with open(zip_location, "rb") as new_zip: response.write(new_zip.read())
-
-    remove(zip_location)
-
-    return response
 
 
 @api_view(('POST',))

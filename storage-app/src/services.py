@@ -1,8 +1,14 @@
-from gridfs import NoFile, ObjectId
-from fastapi import Request, UploadFile
-from fastapi import status
-from models import File
-from re import compile, I
+from typing_extensions import Generator
+from gridfs import NoFile, ObjectId, GridOut, GridFSBucket
+from fastapi import Request, UploadFile, status
+from fastapi.responses import StreamingResponse
+from models import File, Downloads
+from re import compile, I, Match
+from settings import CHUNK_SIZE
+from os import SEEK_SET, path, mkdir # noqa
+from zipfile import ZipFile, ZIP_DEFLATED # noqa
+from tempfile import NamedTemporaryFile # noqa
+from json import dumps # noqa
 
 
 class Headers:
@@ -22,8 +28,7 @@ class Headers:
 
     @property
     def is_last_chunk(self) -> bool:
-        try:
-            return bool(self.is_valid and self.chunk == self.total_chunks)
+        try: return bool(self.is_valid and self.chunk == self.total_chunks)
 
         except AttributeError: return False
 
@@ -42,8 +47,89 @@ class FileMeta:
         }
 
 
-class FileManager:
-    __slots__ = ("_fs", "file_id", "meta", "headers")
+class ObjectStreaming:
+    slots = (
+        'RANGE_RE',
+        'file',
+        'meta',
+        'file_size',
+        'content_type',
+        'range_match',
+        'chunk_start',
+        'chunk_end',
+        'chunk_length'
+    )
+    RANGE_RE = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
+
+    def __init__(self, file: GridOut) -> None:
+        self.file = file
+        self.meta = file.metadata
+        self.file_size = file.metadata.file_size
+        self.content_type = self._get_file_type()
+        self._set_chunks()
+
+    def stream(self, request: Request) -> StreamingResponse:
+        self.range_match = self._get_range_match(request)
+        if self.range_match: self._set_chunks()
+
+        return StreamingResponse(
+            iter(self) if self.range_match else self.file,
+            media_type=self.content_type
+        )
+
+    def __iter__(self): return self._file_iterator()
+
+    def _file_iterator(self) -> Generator:
+        self.file.seek(self.chunk_start, SEEK_SET)
+        remaining_chunk = self.chunk_length
+
+        while True:
+            bytes_length = (
+                CHUNK_SIZE
+                if remaining_chunk is None
+                else min(remaining_chunk, CHUNK_SIZE)
+            )
+            data = self.file.read(bytes_length)
+
+            if not data: break
+            if remaining_chunk: remaining_chunk -= len(data)
+
+            yield data
+
+    def _get_file_type(self) -> str:
+        if '.' not in self.meta.file_name: return self.meta.file_type
+
+        type = self.meta.file_name.split('.')[-1]
+        return f'{self.meta.file_type}/{type}'
+
+    def _get_range_match(self, request: Request) -> Match[str] | None:
+        range_header = request.headers.get('range', '')
+
+        return self.RANGE_RE.match(range_header)
+
+    def _set_chunks(self) -> None:
+        chunk_start, chunk_end = (
+            self.range_match.groups()
+            if self.__dict__.get('range_match')
+            else (0, 0)
+        )
+
+        chunk_start = int(chunk_start) if chunk_start else 0
+        chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
+
+        if chunk_end >= self.file_size: chunk_end = self.file_size - 1
+
+        chunk_length = chunk_end - chunk_start + 1
+
+        self.chunk_start = chunk_start
+        self.chunk_end = chunk_end
+        self.chunk_length = chunk_length
+
+
+class BucketObject:
+    __slots__ = ("file_id", "meta", "headers", "_fs")
+
+    def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
 
     def put_object(self, request: Request, file_id: int, file: File) -> tuple:
         self._prepare_payload(file.file_meta, request.headers)
@@ -60,6 +146,13 @@ class FileManager:
             )
 
         except Exception: return False, status.HTTP_400_BAD_REQUEST
+
+    def delete_object(self, object_id: int) -> tuple:
+        try:
+            self._fs.delete(object_id)
+            return True, ""
+
+        except Exception: return False, "error message"
 
     def _prepare_payload(
         self,
@@ -97,91 +190,20 @@ class FileManager:
         except NoFile: self._create_file(chunk)
 
 
-class FileStreaming:
-    slots = (
-        'RANGE_RE',
-        'CHUNK_SIZE',
-        'file',
-        'file_size',
-        'content_type',
-        'range_match',
-        'chunk_start',
-        'chunk_end',
-        'chunk_length'
-    )
-    RANGE_RE = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
-    MB_MULTIPLIER = 4
-    CHUNK_SIZE = 1024 * MB_MULTIPLIER
+class Bucket(BucketObject):
+    __slots__ = ("_fs",)
+    def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
 
-    def __init__(self, file):
-        self.file = file
-        self.file_size = self.file.path.size
-        self.content_type = self._get_file_type()
-        self._set_chunks()
+    def put_object(self, request: Request, file_id: int, file: File) -> tuple:
+        return super().put_object(request, file_id, file)
 
-    # def get_reponse(self, request):
-    #     self.range_match = self._get_range_match(request)
+    def delete_object(self, object_id: int) -> tuple:
+        return super().delete_object(object_id)
 
-    #     if self.range_match:
-    #         self._set_chunks()
+    def get_object(self, object_id: int) -> ObjectStreaming:
+        file = self._fs.open_download_stream(object_id)
+        return ObjectStreaming(file)
 
-    #         response = FileResponse(iter(self), status=206)
-    #         response['Content-Range'] = f'bytes {self.chunk_start}-{self.chunk_end}/{self.file_size}'
-
-    #     else: response = FileResponse(self.file.path.open())
-
-    #     response['Content-Type'] = self.content_type
-    #     response['Accept-Ranges'] = 'bytes'
-
-    #     return response
-
-    # def __iter__(self): return self._file_iterator()
-
-    # def _file_iterator(self):
-    #     with self.file.path.open() as file:
-    #         file.seek(self.chunk_start, SEEK_SET)
-    #         remaining_chunk = self.chunk_length
-
-    #         while True:
-    #             bytes_length = (
-    #                 self.CHUNK_SIZE
-    #                 if remaining_chunk is None
-    #                 else min(remaining_chunk, self.CHUNK_SIZE)
-    #             )
-    #             data = file.read(bytes_length)
-
-    #             if not data: break
-    #             if remaining_chunk: remaining_chunk -= len(data)
-
-    #             yield data
-
-    # def _get_file_type(self):
-    #     if '.' not in self.file.file_name: return self.file.file_type
-
-    #     type = self.file.file_name.split('.')[-1]
-    #     return f'{self.file.file_type}/{type}'
-
-    # def _get_range_match(self, request):
-    #     range_header = request.headers.get('range', '')
-    #     return self.RANGE_RE.match(range_header)
-
-    # def _set_chunks(self):
-    #     chunk_start, chunk_end = (
-    #         self.range_match.groups()
-    #         if self.__dict__.get('range_match')
-    #         else (0, 0)
-    #     )
-
-    #     chunk_start = int(chunk_start) if chunk_start else 0
-    #     chunk_end = (
-    #         int(chunk_end) if chunk_end
-    #         else chunk_start + 1024 * 1024 * self.MB_MULTIPLIER
-    #     )
-
-    #     if chunk_end >= self.file_size: chunk_end = self.file_size - 1
-
-    #     chunk_length = chunk_end - chunk_start + 1
-
-    #     self.chunk_start = chunk_start
-    #     self.chunk_end = chunk_end
-    #     self.chunk_length = chunk_length
+    def download_objects(self, objects: Downloads):
+        bucket_objects = self._fs.find({"_id": {"$in": objects.file_ids}})
+        print(bucket_objects)

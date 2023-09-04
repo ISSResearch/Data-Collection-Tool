@@ -4,8 +4,7 @@ from project.permissions import (
     ProjectsPermission,
     ProjectPermission,
     ProjectViewPermission,
-    ProjetcDownloadPermission,
-    ProjetcStatsPermission
+    ProjectStatsPermission
 )
 
 
@@ -74,29 +73,15 @@ class ProjectViewPermissionTest(TestCase):
         self.assertTrue(ProjectViewPermission().has_permission(request, view))
 
 
-class ProjetcStatsPermissionTest(TestCase):
+class ProjectStatsPermissionTest(TestCase):
     def test_perission(self):
         [case, _] = case_set_up()
 
         request = type('request', (object, ), {'user': case.user})
         view = type('view', (object, ), {'kwargs': {'projectID': case.project.id}})
 
-        self.assertFalse(ProjetcStatsPermission().has_permission(request, view))
+        self.assertFalse(ProjectStatsPermission().has_permission(request, view))
 
         case.project.user_stats.add(case.user.id)
 
-        self.assertTrue(ProjetcStatsPermission().has_permission(request, view))
-
-
-class ProjetcDownloadPermissionTest(TestCase):
-    def test_perission(self):
-        [case, _] = case_set_up()
-
-        request = type('request', (object, ), {'user': case.user})
-        view = type('view', (object, ), {'kwargs': {'projectID': case.project.id}})
-
-        self.assertFalse(ProjetcDownloadPermission().has_permission(request, view))
-
-        case.project.user_download.add(case.user.id)
-
-        self.assertTrue(ProjetcDownloadPermission().has_permission(request, view))
+        self.assertTrue(ProjectStatsPermission().has_permission(request, view))
