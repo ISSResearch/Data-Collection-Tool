@@ -240,6 +240,7 @@ class CollectorViewTest(TestCase, MOCK_PROJECT):
                     {
                         'user_id': self.user.id,
                         'permissions': {
+                            'visible': True,
                             'view': True,
                             'upload': False,
                             'validate': True,
@@ -257,5 +258,5 @@ class CollectorViewTest(TestCase, MOCK_PROJECT):
         self.assertEqual(request.data[0]['id'], self.user.id)
         self.assertEqual(
             request.data[0]['permissions'],
-            {'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
+            {'visible': True, 'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
         )

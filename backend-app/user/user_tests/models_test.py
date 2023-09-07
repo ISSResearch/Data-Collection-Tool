@@ -18,6 +18,7 @@ class CustomUserModelTest(TestCase):
 
         self.assertEqual(
             {
+                'visible': bool(new_collector.project_visible.all()),
                 'view': bool(new_collector.project_view.all()),
                 'upload': bool(new_collector.project_upload.all()),
                 'validate': bool(new_collector.project_validate.all()),
@@ -25,16 +26,17 @@ class CustomUserModelTest(TestCase):
                 'download': bool(new_collector.project_download.all()),
                 'edit': bool(new_collector.project_edit.all())
             },
-            {'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
+            {'visible': False, 'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
         )
 
         new_collector.update_permissions(
-            {'view': True, 'upload': True, 'validate': True, 'stats': True, 'download': True, 'edit': True},
+            {'visible': True, 'view': True, 'upload': True, 'validate': True, 'stats': True, 'download': True, 'edit': True},
             project.id
         )
 
         self.assertEqual(
             {
+                'visible': bool(new_collector.project_visible.all()),
                 'view': bool(new_collector.project_view.all()),
                 'upload': bool(new_collector.project_upload.all()),
                 'validate': bool(new_collector.project_validate.all()),
@@ -42,5 +44,5 @@ class CustomUserModelTest(TestCase):
                 'download': bool(new_collector.project_download.all()),
                 'edit': bool(new_collector.project_edit.all())
             },
-            {'view': True, 'upload': True, 'validate': True, 'stats': True, 'download': True, 'edit': True},
+            {'visible': True, 'view': True, 'upload': True, 'validate': True, 'stats': True, 'download': True, 'edit': True},
         )

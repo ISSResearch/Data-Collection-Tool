@@ -15,7 +15,7 @@ import '../styles/pages/project.css';
 
 const PROTECTED_ROUTE_LINKS = [
   { name: 'upload data', link: 'upload', permission: 'upload' },
-  { name: 'validate data', link: 'validate', permission: 'validate' },
+  { name: 'validate data', link: 'validate', permission: 'view' },
   { name: 'statistics', link: 'stats', permission: 'stats' },
   { name: 'download data', link: 'download', permission: 'download' },
   { name: 'edit', link: 'edit', permission: 'edit' }
@@ -48,7 +48,8 @@ export default function ProjectPage() {
   // TODO: refactor routes validation and permission
   useEffect(() => {
     const getLocation = () => {
-      const [, mainPath, id, childPath] = location.pathname.split('/');
+      let [, mainPath, id, childPath] = location.pathname.split('/');
+      if (childPath === 'validate') childPath = 'view';
       return childPath || `${mainPath}/${id}`;
     };
     const page_loc = getLocation();
@@ -104,6 +105,7 @@ export default function ProjectPage() {
         attributes={project.preparedAttributes}
         projectName={project.name}
         projectDescription={project.description}
+        canValidate={user.is_superuser || project.permissions.validate}
         pathID={projectID}
       />
     </div>

@@ -10,8 +10,9 @@ class CustomUser(AbstractUser):
     def __str__(self): return self.username
 
     # TODO: optimize
-    def update_permissions(self, permissions, project_id=None):
+    def update_permissions(self, permissions, project_id):
         change_fields = (
+            (self.project_visible, 'visible'),
             (self.project_view, 'view'),
             (self.project_upload, 'upload'),
             (self.project_validate, 'validate'),
@@ -21,7 +22,7 @@ class CustomUser(AbstractUser):
         )
 
         for field, permission_name in change_fields:
-            is_permission = permissions[permission_name]
+            is_permission = permissions.get(permission_name)
 
             if is_permission: field.add(int(project_id))
             else: field.remove(int(project_id))

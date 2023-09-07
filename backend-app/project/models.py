@@ -15,8 +15,9 @@ class Project(models.Model):
     visible = models.BooleanField(default=True)
     reason_if_hidden = models.CharField(max_length=1, choices=HIDDEN_REASONS, blank=True)
 
-    user_visible = models.ManyToManyField('user.CustomUser', related_name='project_view')
+    user_visible = models.ManyToManyField('user.CustomUser', related_name='project_visible')
     user_upload = models.ManyToManyField('user.CustomUser', related_name='project_upload')
+    user_view = models.ManyToManyField('user.CustomUser', related_name='project_view')
     user_validate = models.ManyToManyField('user.CustomUser', related_name='project_validate')
     user_stats = models.ManyToManyField('user.CustomUser', related_name='project_stats')
     user_download = models.ManyToManyField('user.CustomUser', related_name='project_download')

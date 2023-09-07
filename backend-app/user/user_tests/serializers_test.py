@@ -38,7 +38,7 @@ class CollectorTest(TestCase):
         ).data
         self.assertEqual(
             initial_serialized_collectors[0]['permissions'],
-            {'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
+            {'visible': False, 'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
         )
 
         project.user_visible.add(collector_user)
@@ -52,5 +52,5 @@ class CollectorTest(TestCase):
 
         self.assertEqual(
             new_serialized_collectors[0]['permissions'],
-            {'view': True, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': True}
+            {'visible': True, 'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': True}
         )

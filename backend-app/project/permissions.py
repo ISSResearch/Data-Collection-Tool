@@ -18,7 +18,7 @@ class ProjectPermission(BasePermission):
 class ProjectViewPermission(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_superuser or bool(
-            request.user.project_view.filter(id=view.kwargs['pk'])
+            request.user.project_visible.filter(id=view.kwargs['pk'])
         )
 
 

@@ -71,6 +71,7 @@ class CollectorsViewSet(APIView):
     def get(self, _, projectID):
         collectors = CustomUser.objects \
             .prefetch_related(
+                'project_visible',
                 'project_view',
                 'project_upload',
                 'project_validate',

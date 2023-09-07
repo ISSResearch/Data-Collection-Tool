@@ -35,6 +35,7 @@ class ProjectSerializer(ProjectsSerializer):
         user_id = request.user.id
         return {
             'upload': user_id in {user.id for user in instance.user_upload.all()},
+            'view': user_id in {user.id for user in instance.user_view.all()},
             'validate': user_id in {user.id for user in instance.user_validate.all()},
             'stats': user_id in {user.id for user in instance.user_stats.all()},
             'download': user_id in {user.id for user in instance.user_download.all()},

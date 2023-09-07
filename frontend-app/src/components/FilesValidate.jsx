@@ -19,7 +19,7 @@ const TYPE_FILTER = [
   { name: 'videos', id: 'video' },
 ]
 
-export default function FilesValidate({ pathID, attributes }) {
+export default function FilesValidate({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState({});
@@ -45,7 +45,7 @@ export default function FilesValidate({ pathID, attributes }) {
 
   useEffect(() => {
     const { card, attr, type } = getPageQuery();
-    api.get(`/api/files/project/${pathID}/`, { params:  { card, attr, type } })
+    api.get(`/api/files/project/${pathID}/`, { params: { card, attr, type } })
       .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
@@ -80,21 +80,24 @@ export default function FilesValidate({ pathID, attributes }) {
       .catch(err => alert('err', err.message));
   }, [pageQuery]);
 
-  if (loading) return <div className='iss__validation__load'><Load/></div>
+  if (loading) return <div className='iss__validation__load'><Load /></div>
 
   return (
     <>
-      <ValidationFilterGroup filterData={filterData} handleChange={handleFilterChange}/>
+      <ValidationFilterGroup filterData={filterData} handleChange={handleFilterChange} />
       {
         fileManager.files.length
           ? <div className='iss__validation'>
             <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
             <FileSwiper fileManager={fileManager} sliderManager={sliderManager} />
-            <FileModification
-              fileManager={fileManager}
-              sliderManager={sliderManager}
-              attributes={attributes}
-            />
+            {
+              canValidate &&
+              <FileModification
+                fileManager={fileManager}
+                sliderManager={sliderManager}
+                attributes={attributes}
+              />
+            }
           </div>
           : <p>No files just yet or no query matches selected params.</p>
       }

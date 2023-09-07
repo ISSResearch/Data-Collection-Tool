@@ -20,6 +20,7 @@ class CollectorSerializer(UserSerializer):
         if not project_id: return {}
 
         return {
+            'visible': project_id in {project.id for project in instance.project_visible.all()},
             'view': project_id in {project.id for project in instance.project_view.all()},
             'upload': project_id in {project.id for project in instance.project_upload.all()},
             'validate': project_id in {project.id for project in instance.project_validate.all()},

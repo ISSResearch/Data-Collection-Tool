@@ -21,7 +21,7 @@ class SetUserPermissionTest(TestCase):
         init_permissions = CollectorSerializer(self.user, context={'project_id': self.project.id}).data
         self.assertEqual(
             init_permissions['permissions'],
-            {'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
+            {'visible': False, 'view': False, 'upload': False, 'validate': False, 'stats': False, 'download': False, 'edit': False}
         )
 
         set_user_permissions(
@@ -30,6 +30,7 @@ class SetUserPermissionTest(TestCase):
                     {
                         'user_id': self.user.id,
                         'permissions': {
+                            'visible': True,
                             'view': True,
                             'upload': False,
                             'validate': True,
@@ -46,5 +47,5 @@ class SetUserPermissionTest(TestCase):
         new_permissions = CollectorSerializer(self.user, context={'project_id': self.project.id}).data
         self.assertEqual(
             new_permissions['permissions'],
-            {'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
+            {'visible': True, 'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
         )

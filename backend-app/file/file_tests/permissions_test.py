@@ -16,7 +16,9 @@ class FilePermissionTest(TestCase):
 
         self.assertFalse(FilePermission().has_permission(request, view))
 
-        if method in {'GET', 'PATCH'}:
+        if method in {'GET'}:
+            self.case.project.user_view.add(self.case.user.id)
+        if method in {'PATCH'}:
             self.case.project.user_validate.add(self.case.user.id)
         if method in {'POST', 'DELETE'}:
             self.case.project.user_upload.add(self.case.user.id)
