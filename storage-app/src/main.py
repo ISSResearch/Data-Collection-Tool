@@ -32,4 +32,18 @@ def shutdown(): database.client.close()
 def index(request: Request): return "pong"
 
 
+
+
+from pydantic import BaseModel
+class some(BaseModel):
+    file: int
+    meta: str
+
+@APP.post('/ping')
+def index2(request: Request, some: some):
+    print(type(some.file), some.meta)
+    return "pong"
+
+
+
 if __name__ == "__main__": run(**UVICORN_CONF)

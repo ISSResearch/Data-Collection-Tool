@@ -6,14 +6,15 @@ from services import Bucket
 
 
 class DataBase:
-    client = MongoClient
+    client: MongoClient = None
     current_db = None
 
-    def __init__(self, uri: str) -> None: self.get_client(uri)
+    def __init__(self, uri: str) -> None:
+        if not self.client: self.get_client(uri)
 
     @classmethod
     def get_client(cls, uri: str) -> MongoClient:
-        cls.client = MongoClient(uri)
+        if not cls.client: cls.client = MongoClient(uri)
 
         return cls.client
 
@@ -27,10 +28,10 @@ class DataBase:
 
     @classmethod
     def get_bucket(cls, project_name: str) -> GridFSBucket:
-        if not cls.current_db: cls.get_db(DB_STORAGE)
+        if cls.current_db is None: cls.get_db(DB_STORAGE)
 
         fs_bucket = GridFSBucket(
-            database=cls.current_db,
+            db=cls.current_db,
             bucket_name=project_name,
             chunk_size_bytes=CHUNK_SIZE
         )
