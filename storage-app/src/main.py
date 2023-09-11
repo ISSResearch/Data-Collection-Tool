@@ -6,6 +6,7 @@ from router import file
 from utils import get_db_uri
 from settings import DB_STORAGE
 from db_manager import DataBase
+from fastapi.responses import HTMLResponse
 
 database = DataBase(get_db_uri())
 
@@ -32,18 +33,44 @@ def shutdown(): database.client.close()
 def index(request: Request): return "pong"
 
 
-
-
-from pydantic import BaseModel
-class some(BaseModel):
-    file: int
-    meta: str
-
-@APP.post('/ping')
-def index2(request: Request, some: some):
-    print(type(some.file), some.meta)
-    return "pong"
-
+@APP.get("/")
+async def main():
+    content = """
+        <body>
+            <style>
+                form {
+                    display: flex;
+                    flex-direction: column;
+                    width: 340px;
+                    gap: 20px;
+                }
+            </style>
+            <form onsubmit="hand(event, this)">
+                <input name="num", type="int">
+                <input name="file" type="file" multiple>
+                <input type="submit">
+            </form>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script>
+            const hand = (e, f) => {
+                e.preventDefault();
+                const [file] = f.file.files
+                if (!file) return;
+                axios.post('http://localhost:9000/api/bucket/1/file/' + f.num.value, {
+                    file,
+                    file_meta: JSON.stringify({
+                        file_name: 'some.mp4',
+                        file_extension: 'mp4',
+                        file_type: 'video'
+                    })
+                }, {
+                    headers: {"Content-type": "multipart/form-data"}
+                })
+            }
+            </script>
+        </body>
+    """
+    return HTMLResponse(content=content)
 
 
 if __name__ == "__main__": run(**UVICORN_CONF)

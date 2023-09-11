@@ -1,14 +1,14 @@
 from typing_extensions import Generator
 from gridfs import NoFile, ObjectId, GridOut, GridFSBucket
-from fastapi import Request, UploadFile, status
+from fastapi import Request, status
 from fastapi.responses import StreamingResponse
-from models import File, Downloads
+from models import Downloads, UploadFile
 from re import compile, I, Match
 from settings import CHUNK_SIZE
 from os import SEEK_SET, path, mkdir # noqa
 from zipfile import ZipFile, ZIP_DEFLATED # noqa
 from tempfile import NamedTemporaryFile # noqa
-from json import dumps # noqa
+from json import dumps, loads # noqa
 
 
 class Headers:
@@ -36,8 +36,8 @@ class Headers:
 class FileMeta:
     meta_fields = ("file_name", "file_extension", "file_type")
 
-    def __init__(self, data: dict) -> None:
-        self._meta = data
+    def __init__(self, data: str) -> None:
+        self._meta = loads(data)
         self.is_valid = False
 
     def get(self) -> dict:
@@ -64,7 +64,8 @@ class ObjectStreaming:
     def __init__(self, file: GridOut) -> None:
         self.file = file
         self.meta = file.metadata
-        self.file_size = file.metadata.file_size
+        self.file_size = file.metadata.get("file_size", 0)
+        self.file_size = file.length
         self.content_type = self._get_file_type()
         self._set_chunks()
 
@@ -72,10 +73,17 @@ class ObjectStreaming:
         self.range_match = self._get_range_match(request)
         if self.range_match: self._set_chunks()
 
-        return StreamingResponse(
+        response = StreamingResponse(
             iter(self) if self.range_match else self.file,
+            status_code=206,
             media_type=self.content_type
         )
+
+        chunk_range = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
+        response.headers["Content-Length"] = str(self.file.length)
+        response.headers["Content-Range"] = "bytes " + chunk_range
+
+        return response
 
     def __iter__(self): return self._file_iterator()
 
@@ -97,10 +105,11 @@ class ObjectStreaming:
             yield data
 
     def _get_file_type(self) -> str:
-        if '.' not in self.meta.file_name: return self.meta.file_type
+        if '.' not in self.meta.get("file_name", ""):
+            return self.meta.get("file_type", "image") + "/png"
 
-        type = self.meta.file_name.split('.')[-1]
-        return f'{self.meta.file_type}/{type}'
+        extension = self.meta.get("file_name", ".png").split('.')[-1]
+        return f'{self.meta.get("file_type", "image")}/{extension}'
 
     def _get_range_match(self, request: Request) -> Match[str] | None:
         range_header = request.headers.get('range', '')
@@ -131,9 +140,18 @@ class BucketObject:
 
     def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
 
-    def put_object(self, request: Request, file_id: int, file: File) -> tuple:
-        self._prepare_payload(file.file_meta, request.headers)
+    def put_object(
+        self,
+        request: Request,
+        file_id: int,
+        file: UploadFile,
+        file_meta: str
+    ) -> tuple:
+        self._prepare_payload(file_meta, request.headers)
         self.file_id = file_id
+
+        if self.headers.is_new: self._create_file(file)
+        else: self._append_file(file)
 
         try:
             if self.headers.is_new: self._create_file(file.chunk)
@@ -156,7 +174,7 @@ class BucketObject:
 
     def _prepare_payload(
         self,
-        file_meta: dict = {},
+        file_meta: str = "",
         request_headers: dict = {}
     ) -> None:
         self.meta = FileMeta(file_meta)
@@ -165,11 +183,13 @@ class BucketObject:
         self.headers.validate()
 
     def _create_file(self, chunk: UploadFile) -> ObjectId:
+        meta = self.meta.get()
+
         return self._fs.upload_from_stream_with_id(
             file_id=self.file_id,
-            filename="test_file",
+            filename=meta.get("file_name", ""),
             source=chunk.file,
-            metadata=self.meta.get()
+            metadata=meta
         )
 
     def _append_file(self, chunk: UploadFile) -> ObjectId | None:
@@ -194,15 +214,24 @@ class Bucket(BucketObject):
     __slots__ = ("_fs",)
     def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
 
-    def put_object(self, request: Request, file_id: int, file: File) -> tuple:
-        return super().put_object(request, file_id, file)
+    def put_object(
+        self,
+        request: Request,
+        file_id: int,
+        file: UploadFile,
+        file_meta: str
+    ) -> tuple:
+        return super().put_object(request, file_id, file, file_meta)
 
     def delete_object(self, object_id: int) -> tuple:
         return super().delete_object(object_id)
 
-    def get_object(self, object_id: int) -> ObjectStreaming:
-        file = self._fs.open_download_stream(object_id)
-        return ObjectStreaming(file)
+    def get_object(self, object_id: int) -> ObjectStreaming | None:
+        try:
+            file = self._fs.open_download_stream(object_id)
+            return ObjectStreaming(file)
+        except NoFile:
+            return None
 
     def download_objects(self, objects: Downloads):
         bucket_objects = self._fs.find({"_id": {"$in": objects.file_ids}})

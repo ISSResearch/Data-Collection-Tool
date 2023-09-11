@@ -1,10 +1,11 @@
 from pydantic import BaseModel
-from fastapi import UploadFile
+from fastapi import UploadFile, Form
+from typing import Annotated
 
 
 class File(BaseModel):
-    chunk: UploadFile
-    file_meta: dict
+    file: UploadFile
+    file_meta: Annotated[str, Form()]
 
 
 class Downloads(BaseModel):
