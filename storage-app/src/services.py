@@ -75,12 +75,11 @@ class ObjectStreaming:
 
         response = StreamingResponse(
             iter(self) if self.range_match else self.file,
-            status_code=206,
+            status_code=(206 if self.range_match else 200),
             media_type=self.content_type
         )
 
         chunk_range = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
-        response.headers["Content-Length"] = str(self.file.length)
         response.headers["Content-Range"] = "bytes " + chunk_range
 
         return response
@@ -150,12 +149,9 @@ class BucketObject:
         self._prepare_payload(file_meta, request.headers)
         self.file_id = file_id
 
-        if self.headers.is_new: self._create_file(file)
-        else: self._append_file(file)
-
         try:
-            if self.headers.is_new: self._create_file(file.chunk)
-            else: self._append_file(file.chunk)
+            if self.headers.is_new: self._create_file(file)
+            else: self._append_file(file)
 
             return True, (
                 status.HTTP_201_CREATED
@@ -199,7 +195,8 @@ class BucketObject:
             new_item = {
                 "file_id": previous_file._id,
                 "filename": previous_file.name,
-                "source": previous_file.read() + chunk.file,
+                # TODO: make generator
+                "source": previous_file.read() + chunk.file.read(),
                 "metadata": self.meta.get()
             }
 

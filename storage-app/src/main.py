@@ -29,8 +29,9 @@ def startup(): database.get_db(DB_STORAGE)
 def shutdown(): database.client.close()
 
 
-@APP.get('/ping')
-def index(request: Request): return "pong"
+@APP.get("/ping")
+def x(request: Request):
+    return request.client
 
 
 @APP.get("/")
@@ -47,25 +48,44 @@ async def main():
             </style>
             <form onsubmit="hand(event, this)">
                 <input name="num", type="int">
-                <input name="file" type="file" multiple>
+                <input id="a" name="file" type="file" multiple>
                 <input type="submit">
             </form>
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
             <script>
-            const hand = (e, f) => {
+            const hand = async (e, f) => {
                 e.preventDefault();
                 const [file] = f.file.files
-                if (!file) return;
-                axios.post('http://localhost:9000/api/bucket/1/file/' + f.num.value, {
-                    file,
-                    file_meta: JSON.stringify({
-                        file_name: 'some.mp4',
-                        file_extension: 'mp4',
-                        file_type: 'video'
-                    })
-                }, {
-                    headers: {"Content-type": "multipart/form-data"}
-                })
+                const [type, extension] = file.type.split('/');
+                if (!file || !type || !extension) return;
+
+                const chunkSize = 1024 * 1024 * 4;
+                const numOfChunks = Math.ceil(file.size / chunkSize);
+
+                for (let i = 0; i < numOfChunks; i++) {
+                    const chunk = file.slice(i * chunkSize, chunkSize * (i + 1));
+
+                    console.log(`sending chunk ${i} of ${numOfChunks}`);
+
+                    const d = await axios.post(
+                        'http://localhost:9000/api/bucket/1/file/' + f.num.value,
+                        {
+                            file: chunk,
+                            file_meta: JSON.stringify({
+                                file_name: file.name,
+                                file_extension: extension,
+                                file_type: type
+                            })
+                        }, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'Chunk': i + 1,
+                                'Total-Chunks': numOfChunks
+                            },
+                        }
+                    );
+                    console.log("response", d);
+                }
             }
             </script>
         </body>
