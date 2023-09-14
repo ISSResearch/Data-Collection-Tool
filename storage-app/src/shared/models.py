@@ -9,4 +9,5 @@ class File(BaseModel):
 
 
 class Downloads(BaseModel):
-    file_ids: list[int]
+    file_ids: str
+    # file_ids: list[int]

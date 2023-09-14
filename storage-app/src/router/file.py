@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from settings import BUCKET_PREFIX
-from models import Downloads, UploadFile, Form, Annotated
-from db_manager import DataBase
+from shared.settings import BUCKET_PREFIX
+from shared.models import Downloads, UploadFile, Form, Annotated
+from shared.app_services import Bucket
 
 router = APIRouter()
 
 
 @router.get("/api/bucket/{project_id}/file/{file_id}")
 def get_file(request: Request, project_id: str, file_id: int) -> dict:
-    project_bucket = DataBase.get_bucket(BUCKET_PREFIX + project_id)
+    project_bucket = Bucket(BUCKET_PREFIX + project_id)
 
     stream = project_bucket.get_object(file_id)
 
@@ -28,14 +28,14 @@ def upload_file_chunk(
     file: UploadFile,
     file_meta: Annotated[str, Form()]
 ) -> str:
-    project_bucket = DataBase.get_bucket(BUCKET_PREFIX + project_id)
+    project_bucket = Bucket(BUCKET_PREFIX + project_id)
     result, status = project_bucket.put_object(request, file_id, file, file_meta)
     return JSONResponse(status_code=status, content={"ok": result})
 
 
 @router.delete("/api/bucket/{project_id}/file/{file_id}")
 def delete_file(project_id: str, file_id: int):
-    project_bucket = DataBase.get_bucket(BUCKET_PREFIX + project_id)
+    project_bucket = Bucket(BUCKET_PREFIX + project_id)
     result = project_bucket.delete_object(file_id)
 
     return JSONResponse(content={"ok": True, "result": result})
@@ -43,7 +43,8 @@ def delete_file(project_id: str, file_id: int):
 
 @router.post("/api/bucket/{project_id}/download")
 def download_project(project_id: str, objects: Downloads):
-    project_bucket = DataBase.get_bucket(BUCKET_PREFIX + project_id)
-    project_bucket.download_objects(objects)
+    # project_bucket = Bucket(BUCKET_PREFIX + project_id)
+    print(type(objects.file_ids))
+    # id = project_bucket.get_download_objects(objects)
 
-    return JSONResponse(content={"ok": True})
+    return JSONResponse(content={"task_id": "id"})

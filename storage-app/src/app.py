@@ -1,13 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from uvicorn import run
-from settings import UVICORN_CONF, SELF_ORIGIN
-from router import file
-from utils import get_db_uri
-from settings import DB_STORAGE
-from tasks.worker import produce_download_task
-from db_manager import DataBase
 from fastapi.responses import HTMLResponse
+from uvicorn import run
+from shared.settings import UVICORN_CONF, SELF_ORIGIN, DB_STORAGE
+from shared.utils import get_db_uri
+from shared.db_manager import DataBase
+from router import file
+
 
 database = DataBase(get_db_uri())
 
@@ -31,12 +30,7 @@ def shutdown(): database.client.close()
 
 
 @APP.get("/ping")
-def x(request: Request):
-    r = produce_download_task.delay([1, 2, 3])
-    return {
-        "id": r.id,
-        "res": r.result
-    }
+def pong(): return "pong"
 
 
 @APP.get("/")

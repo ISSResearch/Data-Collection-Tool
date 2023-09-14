@@ -13,6 +13,13 @@ services:
     networks:
       - iss_storage_network
 
+  iss-storage-broker:
+    container_name: iss-storage-broker
+    image: redis:alpine3.18
+    restart: always
+    networks:
+      - iss_storage_network
+
   iss-storage-back:
     container_name: iss-storage-back
     image: iss_storage_back
@@ -29,10 +36,27 @@ services:
     depends_on:
       - iss-storage-db
     volumes:
-      - ./storage-app:/app
-    command: python3 src/main.py
+      - ./storage-app/src:/app/src
+    command: python3 src/app.py
     networks:
       - iss_storage_network
+
+  iss-storage-worker:
+      container_name: iss-storage-worker
+      build:
+        dockerfile: Dockerfile.storage
+      restart: always
+      command: python3 src/worker.py
+      volumes:
+        - ./storage-app/src:/app/src
+      environment:
+        CELERY_BROKER_URL: ${BROKER_URL}
+        CELERY_RESULT_BACKEND: ${RESULT_URL}
+      depends_on:
+        - iss-storage-broker
+        - iss-storage-back
+      networks:
+        - iss_storage_network
 
   iss-storage-proxy:
     container_name: iss-storage-proxy
@@ -46,30 +70,6 @@ services:
       - iss-storage-back
     networks:
       - iss_storage_network
-
-  iss-storage-broker:
-    container_name: iss-storage-broker
-    image: redis:alpine3.18
-    restart: always
-    networks:
-      - iss_storage_network
-
-  iss-storage-worker:
-      container_name: iss-storage-worker
-      build:
-        dockerfile: Dockerfile.storage
-      restart: always
-      command: python3 src/tasks/worker.py
-      volumes:
-        - ./storage-app:/app
-      environment:
-        CELERY_BROKER_URL: ${BROKER_URL}
-        CELERY_RESULT_BACKEND: ${RESULT_URL}
-      depends_on:
-        - iss-storage-broker
-        - iss-storage-back
-      networks:
-        - iss_storage_network
 
   dashboard:
     build:

@@ -1,12 +1,7 @@
 from celery import Celery
-import time
-
-if __name__ == "__main__":
-    from settings import CELERY_CONFIG, BROKER_URL, RESULT_URL
-    from services import * # noqa
-else:
-    from tasks.settings import CELERY_CONFIG, BROKER_URL, RESULT_URL
-    from tasks.services import * # noqa
+from time import sleep
+from shared.settings import BROKER_URL, RESULT_URL, CELERY_CONFIG
+from shared.worker_services import Zipper # noqa
 
 if not BROKER_URL or not RESULT_URL: raise ValueError("no broker variables")
 
@@ -17,7 +12,14 @@ WORKER.conf.result_backend = RESULT_URL
 
 @WORKER.task(name="produce_download_task")
 def produce_download_task(files: list) -> list:
-    time.sleep(20)
+    sleep(30)
+
+    # zipper = Zipper(files)
+    # zipper.archive_objects()
+    # zipper.write_archive()
+
+    # return zipper._archive_id
+
     return files
 
 

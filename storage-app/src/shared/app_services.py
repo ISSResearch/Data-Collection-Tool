@@ -1,14 +1,14 @@
 from typing_extensions import Generator
-from gridfs import NoFile, ObjectId, GridOut, GridFSBucket
+from gridfs import NoFile, ObjectId, GridOut
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
-from models import Downloads, UploadFile
 from re import compile, I, Match
-from settings import CHUNK_SIZE
-from os import SEEK_SET, path, mkdir # noqa
-from zipfile import ZipFile, ZIP_DEFLATED # noqa
-from tempfile import NamedTemporaryFile # noqa
 from json import dumps, loads # noqa
+from os import SEEK_SET
+from worker import produce_download_task
+from shared.settings import CHUNK_SIZE
+from shared.models import Downloads, UploadFile
+from shared.db_manager import DataBase, GridFSBucket
 
 
 class Headers:
@@ -209,7 +209,9 @@ class BucketObject:
 
 class Bucket(BucketObject):
     __slots__ = ("_fs",)
-    def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
+
+    def __init__(self, bucket_name: str) -> None:
+        self._fs = DataBase.get_fs_bucket(bucket_name)
 
     def put_object(
         self,
@@ -230,6 +232,9 @@ class Bucket(BucketObject):
         except NoFile:
             return None
 
-    def download_objects(self, objects: Downloads):
-        bucket_objects = self._fs.find({"_id": {"$in": objects.file_ids}})
-        print(bucket_objects)
+    def get_download_objects(self, objects: Downloads):
+        objects = self._fs.find({"_id": {"$in": objects.file_ids}})
+
+        task_id = produce_download_task.delay(objects)
+
+        return task_id

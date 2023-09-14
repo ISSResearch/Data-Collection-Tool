@@ -1,8 +1,7 @@
 from pymongo import MongoClient
 from gridfs import GridFSBucket
-from settings import DB_STORAGE, CHUNK_SIZE
-from utils import get_db_uri
-from services import Bucket
+from shared.settings import DB_STORAGE, CHUNK_SIZE
+from shared.utils import get_db_uri
 
 
 class DataBase:
@@ -27,13 +26,11 @@ class DataBase:
         return cls.current_db
 
     @classmethod
-    def get_bucket(cls, project_name: str) -> GridFSBucket:
+    def get_fs_bucket(cls, bucket_name: str) -> GridFSBucket:
         if cls.current_db is None: cls.get_db(DB_STORAGE)
 
-        fs_bucket = GridFSBucket(
+        return GridFSBucket(
             db=cls.current_db,
-            bucket_name=project_name,
+            bucket_name=bucket_name,
             chunk_size_bytes=CHUNK_SIZE
         )
-
-        return Bucket(fs_bucket)
