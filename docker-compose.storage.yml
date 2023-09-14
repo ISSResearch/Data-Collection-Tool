@@ -24,12 +24,13 @@ services:
       DB_USER: ${DB_STORAGE_USER}
       DB_PASSWORD: ${DB_STORAGE_PASSWORD}
       DEBUG: ${DEBUG}
+      CELERY_BROKER_URL: ${BROKER_URL}
+      CELERY_RESULT_BACKEND: ${RESULT_URL}
     depends_on:
       - iss-storage-db
     volumes:
       - ./storage-app:/app
-    command: >
-      sh -c "python3 src/main.py"
+    command: python3 src/main.py
     networks:
       - iss_storage_network
 
@@ -43,6 +44,46 @@ services:
       - ./nginx/storage:/etc/nginx/conf.d
     depends_on:
       - iss-storage-back
+    networks:
+      - iss_storage_network
+
+  iss-storage-broker:
+    container_name: iss-storage-broker
+    image: redis:alpine3.18
+    restart: always
+    networks:
+      - iss_storage_network
+
+  iss-storage-worker:
+      container_name: iss-storage-worker
+      build:
+        dockerfile: Dockerfile.storage
+      restart: always
+      command: python3 src/tasks/worker.py
+      volumes:
+        - ./storage-app:/app
+      environment:
+        CELERY_BROKER_URL: ${BROKER_URL}
+        CELERY_RESULT_BACKEND: ${RESULT_URL}
+      depends_on:
+        - iss-storage-broker
+        - iss-storage-back
+      networks:
+        - iss_storage_network
+
+  dashboard:
+    build:
+      dockerfile: Dockerfile.storage
+    command: celery --broker=redis://iss-storage-broker:6379/0 flower --port=5555
+    ports:
+      - 5556:5555
+    environment:
+      CELERY_BROKER_URL: ${BROKER_URL}
+      CELERY_RESULT_BACKEND: ${RESULT_URL}
+    restart: always
+    depends_on:
+      - iss-storage-broker
+      - iss-storage-worker
     networks:
       - iss_storage_network
 

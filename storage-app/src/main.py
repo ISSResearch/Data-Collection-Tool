@@ -5,6 +5,7 @@ from settings import UVICORN_CONF, SELF_ORIGIN
 from router import file
 from utils import get_db_uri
 from settings import DB_STORAGE
+from tasks.worker import produce_download_task
 from db_manager import DataBase
 from fastapi.responses import HTMLResponse
 
@@ -31,7 +32,11 @@ def shutdown(): database.client.close()
 
 @APP.get("/ping")
 def x(request: Request):
-    return request.client
+    r = produce_download_task.delay([1, 2, 3])
+    return {
+        "id": r.id,
+        "res": r.result
+    }
 
 
 @APP.get("/")
