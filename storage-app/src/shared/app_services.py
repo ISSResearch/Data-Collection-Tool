@@ -3,11 +3,10 @@ from gridfs import NoFile, ObjectId, GridOut
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match
-from json import dumps, loads # noqa
+from json import loads
 from os import SEEK_SET
-from worker import produce_download_task
 from shared.settings import CHUNK_SIZE
-from shared.models import Downloads, UploadFile
+from shared.models import UploadFile
 from shared.db_manager import DataBase, GridFSBucket
 
 
@@ -229,12 +228,8 @@ class Bucket(BucketObject):
         try:
             file = self._fs.open_download_stream(object_id)
             return ObjectStreaming(file)
-        except NoFile:
-            return None
 
-    def get_download_objects(self, objects: Downloads):
-        objects = self._fs.find({"_id": {"$in": objects.file_ids}})
+        except NoFile: return None
 
-        task_id = produce_download_task.delay(objects)
-
-        return task_id
+    def get_download_objects(self, file_ids: list[int]):
+        return self._fs.find({"_id": {"$in": file_ids}})

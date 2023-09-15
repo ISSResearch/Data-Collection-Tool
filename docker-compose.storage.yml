@@ -50,6 +50,10 @@ services:
       volumes:
         - ./storage-app/src:/app/src
       environment:
+        DB_HOST: iss-storage-db
+        DB_USER: ${DB_STORAGE_USER}
+        DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+        DEBUG: ${DEBUG}
         CELERY_BROKER_URL: ${BROKER_URL}
         CELERY_RESULT_BACKEND: ${RESULT_URL}
       depends_on:

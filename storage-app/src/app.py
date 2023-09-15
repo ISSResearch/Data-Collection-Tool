@@ -50,8 +50,17 @@ async def main():
                 <input id="a" name="file" type="file" multiple>
                 <input type="submit">
             </form>
+            <button type="button" onclick="asd()">asdasd</button>
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
             <script>
+            const asd = () => {
+                axios.post(
+                    'http://localhost:9000/api/bucket/project_1/download',
+                    {file_ids: [3,5,7,8]}, {
+                        headers: {'Content-Type': 'application/json',},
+                    }
+                );
+            }
             const hand = async (e, f) => {
                 e.preventDefault();
                 const [file] = f.file.files
@@ -67,7 +76,7 @@ async def main():
                     console.log(`sending chunk ${i} of ${numOfChunks}`);
 
                     const d = await axios.post(
-                        'http://localhost:9000/api/bucket/1/file/' + f.num.value,
+                        'http://localhost:9000/api/bucket/project_1/file/' + f.num.value,
                         {
                             file: chunk,
                             file_meta: JSON.stringify({

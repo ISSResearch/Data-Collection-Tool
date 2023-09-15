@@ -4,15 +4,20 @@ from io import BytesIO
 from datetime import datetime
 from shared.settings import TEMP_BUCKET
 from shared.db_manager import DataBase
+from shared.app_services import Bucket
 
 
 class Zipper:
     written: bool = False
     archive_extension: str = "zip"
 
-    def __init__(self, objects): self.object_set = objects
+    def __init__(self, bucket_name: str, file_ids: list[int]) -> None:
+        project_bucket = Bucket(bucket_name)
+        objects = project_bucket.get_download_objects(file_ids)
 
-    def archive_objects(self, add_data):
+        self.object_set = objects
+
+    def archive_objects(self, add_data=[]):
         # json_data = dumps(serialized_data, indent=4).encode('utf-8')`
         archive = BytesIO()
 
@@ -30,7 +35,7 @@ class Zipper:
         self.archive = archive
 
     def write_archive(self):
-        if self._archive_id: return self._archive_id
+        if self.archive_id: return self.archive_id
 
         if self.archive.closed: raise BufferError
 
@@ -50,9 +55,11 @@ class Zipper:
 
         self.archive.close()
 
-        return self._archive_id
+        return self.archive_id
 
     def _get_name(self) -> str: return 'name' + self.archive_extension
 
     @property
-    def archive_id(self): return self._archive_id
+    def archive_id(self):
+        if not self.__dict__.get("_archive_id"): return None
+        return str(self._archive_id)
