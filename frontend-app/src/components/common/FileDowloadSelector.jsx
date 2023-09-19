@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { api } from "../../config/api";
 import Load from "./Load";
-import api from "../../config/api";
 import '../../styles/components/common/filedownloadselector.css'
 
 export default function FileDownloadSelector({
@@ -14,7 +14,7 @@ export default function FileDownloadSelector({
 
   function selectFile(index, { checked }) {
     const newFiles = [...files];
-    newFiles[index].download = checked;
+    newFiles[index].is_downloaded = !checked;
     setFiles(newFiles);
   }
 
@@ -25,7 +25,6 @@ export default function FileDownloadSelector({
     if (option.value !== 'all') params.status = option.value;
     api.get(`/api/files/project/${pathID}/`, { params })
       .then(({ data }) => {
-        data.forEach(file => file.download = true);
         setFiles(data);
         setLoading(false)
       });
@@ -36,7 +35,7 @@ export default function FileDownloadSelector({
   return (
     <fieldset className='iss__filesDownload__fileSelector'>
       {
-        files.map(({ id, file_name, status, download }, index) => (
+        files.map(({ id, file_name, status, is_downloaded }, index) => (
           <label
             key={id}
             className={`iss__filesDownload__fileSelector__item file--${status}`}
@@ -45,7 +44,7 @@ export default function FileDownloadSelector({
             <input
               onChange={({ target }) => selectFile(index, target)}
               type='checkbox'
-              defaultChecked={download}
+              defaultChecked={!is_downloaded}
             />
             <span>{file_name}</span>
           </label>

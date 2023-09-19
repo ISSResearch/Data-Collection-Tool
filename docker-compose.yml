@@ -67,7 +67,7 @@ services:
       - 3000:3000
       - 8000:8000
     volumes:
-      - ./nginx/app:/etc/nginx/conf.d
+      - ./nginx/app-conf:/etc/nginx/conf.d
     networks:
       - iss_network
 

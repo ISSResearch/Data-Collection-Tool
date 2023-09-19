@@ -6,7 +6,7 @@ import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileModification from './common/FileModification';
 import Load from './common/Load';
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/components/filesvalidate.css';
 
 const CARD_FILTERS = [
@@ -89,7 +89,7 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
         fileManager.files.length
           ? <div className='iss__validation'>
             <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
-            <FileSwiper fileManager={fileManager} sliderManager={sliderManager} />
+            <FileSwiper pathID={pathID} fileManager={fileManager} sliderManager={sliderManager} />
             {
               canValidate &&
               <FileModification

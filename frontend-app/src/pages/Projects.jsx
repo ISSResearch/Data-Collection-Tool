@@ -5,7 +5,7 @@ import AllProjects from '../components/AllProjects';
 import Load from '../components/common/Load';
 import ProjectCreate from '../components/ProjectCreate';
 import TitleSwitch from "../components/common/TitleSwitch";
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/pages/projects.css';
 
 const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
@@ -54,8 +54,8 @@ export default function Projects() {
       />
       {
         !projects
-          ? <div className="iss__projects__load"><Load/></div>
-          : <PageVariant items={projects}/>
+          ? <div className="iss__projects__load"><Load /></div>
+          : <PageVariant items={projects} />
       }
     </div>
   );

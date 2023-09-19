@@ -1,6 +1,6 @@
 import { fireEvent, act, render, screen } from "@testing-library/react";
 import ProjectVisibility from "../../components/ProjectVisibility";
-import api from '../../config/api';
+import { api } from '../../config/api';
 
 jest.mock('../../config/api');
 

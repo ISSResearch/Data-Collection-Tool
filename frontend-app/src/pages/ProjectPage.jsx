@@ -10,7 +10,7 @@ import FilesStatistics from "../components/common/FilesStats";
 import TitleSwitch from "../components/common/TitleSwitch";
 import ProjectEdit from "../components/ProjectEdit";
 import Load from '../components/common/Load';
-import api from "../config/api";
+import { api } from "../config/api";
 import '../styles/pages/project.css';
 
 const PROTECTED_ROUTE_LINKS = [

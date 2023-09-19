@@ -1,9 +1,9 @@
 import { render, screen, act } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { MemoryRouter } from 'react-router-dom';
-import { mock_raw_project  } from '../_mock';
+import { mock_raw_project } from '../_mock';
 import Projects from '../../pages/Projects';
-import api from '../../config/api';
+import { api } from '../../config/api';
 jest.mock('../../config/api');
 
 jest.mock('react-router-dom', () => ({
@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 test("projects page test", async () => {
-  api.get.mockResolvedValue({data: [mock_raw_project]});
+  api.get.mockResolvedValue({ data: [mock_raw_project] });
 
   let rerender = null;
 
@@ -33,7 +33,7 @@ test("projects page test", async () => {
   expect(screen.getByRole('navigation').children[0].children).toHaveLength(1);
 
   rerender(
-    <UserContext.Provider value={{ user: { is_superuser: true }}}>
+    <UserContext.Provider value={{ user: { is_superuser: true } }}>
       <MemoryRouter initialEntries={['/project/1']}>
         <Projects />
       </MemoryRouter>

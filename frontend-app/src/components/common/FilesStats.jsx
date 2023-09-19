@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { statsAdapter } from '../../utils/adapters';
 import TableBodySet from './TableBodySet';
 import Load from './Load';
-import api from '../../config/api';
+import { api } from '../../config/api';
 import '../../styles/components/filesstats.css';
 
-export default function FilesStatistics({pathID}) {
+export default function FilesStatistics({ pathID }) {
   const [stats, setStats] = useState(null);
 
   const countItem = (a, b, c) => {
@@ -20,12 +20,12 @@ export default function FilesStatistics({pathID}) {
   };
 
   const countTotal = () => {
-    return Object.values(stats).reduce((sum, {a, d, v}) => sum + countItem(a, d, v), 0);
+    return Object.values(stats).reduce((sum, { a, d, v }) => sum + countItem(a, d, v), 0);
   };
 
   useEffect(() => {
     api.get(`/api/files/stats/project/${pathID}/`)
-      .then(({ data }) => setStats(statsAdapter(data)) )
+      .then(({ data }) => setStats(statsAdapter(data)))
       .catch(err => {
         alert(err.message);
         setStats([]);
@@ -46,7 +46,7 @@ export default function FilesStatistics({pathID}) {
         </tr>
       </thead>
       <tbody className='iss__stats__table-body'>
-        <TableBodySet bodySet={stats} countCallback={countItem} parent/>
+        <TableBodySet bodySet={stats} countCallback={countItem} parent />
       </tbody>
       <tfoot className='iss__stats__table-footer'>
         <tr className='iss__stats__table-row-outer'>

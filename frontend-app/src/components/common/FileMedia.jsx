@@ -8,7 +8,7 @@ import {
 import { getOriginDomain } from "../../utils/utils";
 import "../../styles/components/common/filemedia.css";
 
-export const FileMedia = forwardRef(({ files, slide }, ref) => {
+export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
 
@@ -66,11 +66,12 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     pointY = ev.clientY - ys * scale;
     setTransform();
   }
+
   useEffect(() => {
     const media = document.getElementById("mediaItem");
-    media.addEventListener('wheel', e => e.preventDefault());
+    media.addEventListener('wheel', event => event.preventDefault());
     return () => {
-      media.removeEventListener('wheel', e => e.preventDefault());
+      media.removeEventListener('wheel', event => event.preventDefault());
     }
   }, []);
 
@@ -79,7 +80,8 @@ export const FileMedia = forwardRef(({ files, slide }, ref) => {
     if (!files[slide]) return;
     const { id, file_type } = files[slide];
     setTypeVideo(file_type === 'video');
-    setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
+    // setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
+    setFileUrl(`http://127.0.0.1:9000/api/storage/project_${pathID}/${id}/`);
 
     return () => {
       URL.revokeObjectURL(fileUrl);

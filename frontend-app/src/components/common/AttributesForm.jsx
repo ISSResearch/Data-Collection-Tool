@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AttributeInput from './AttributeInput';
-import api from '../../config/api';
+import { api } from '../../config/api';
 import '../../styles/components/common/attributesform.css';
 
 export default function AttributesForm({
@@ -28,7 +28,7 @@ export default function AttributesForm({
     setDeletedOriginLevels
   } = levelHook;
 
-  async function proceedOriginalLevelDelete (index, id) {
+  async function proceedOriginalLevelDelete(index, id) {
     try {
       await api.request(`/api/attributes/levels/${id}/`,
         {
@@ -57,18 +57,18 @@ export default function AttributesForm({
 
   function handleSetMultiple(index, target) {
     try { setMultiple(formId, index, target); }
-    catch ({message}) { alert(message); }
+    catch ({ message }) { alert(message); }
   }
 
   function handleAddLevel() {
     try { addLevel(formId); }
-    catch ({message}) { alert(message); }
+    catch ({ message }) { alert(message); }
   }
 
   useEffect(() => {
     if (!levels[formId].length) {
       try { addLevel(formId); }
-      catch ({message}) { alert(message); }
+      catch ({ message }) { alert(message); }
     }
   }, []);
 
@@ -81,23 +81,23 @@ export default function AttributesForm({
             onClick={handleAddLevel}
             type="button"
             className='iss__attributesForm__button button-add'
-          ><span/><span/></button>
+          ><span /><span /></button>
         </div>
         {
-          levels[formId].map(({id, name, orig, multiple, required}, index) => (
+          levels[formId].map(({ id, name, orig, multiple, required }, index) => (
             <div key={id} className='iss__attributesForm__levelWrap'>
               <div className='iss__attributesForm__levelInput'>
                 <input
                   placeholder="Level name"
                   required
-                  onBlur={({target}) => changeLevel(formId, target, index)}
+                  onBlur={({ target }) => changeLevel(formId, target, index)}
                   defaultValue={name}
                 />
                 <button
                   type="button"
                   onClick={() => handleLevelDelete(index, orig, id)}
                   className='iss__attributesForm__button button-del'
-                ><span/></button>
+                ><span /></button>
                 {
                   acceptDelete === index &&
                   <div
@@ -129,7 +129,7 @@ export default function AttributesForm({
                 multiple choice
                 <input
                   type="checkbox"
-                  onChange={({target}) => handleSetMultiple(index, target)}
+                  onChange={({ target }) => handleSetMultiple(index, target)}
                   defaultChecked={multiple}
                 />
               </label>
@@ -144,7 +144,7 @@ export default function AttributesForm({
             onClick={() => addAttribute(formId)}
             type="button"
             className='iss__attributesForm__button button-add'
-          ><span/><span/></button>
+          ><span /><span /></button>
         </div>
         {
           Boolean(attributes[formId].length) &&

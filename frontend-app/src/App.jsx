@@ -4,7 +4,7 @@ import { useUser } from "./hooks";
 import Header from "./components/Header";
 import AppRouter from "./components/AppRouter";
 import StatusLoad from "./components/common/StatusLoad";
-import api from "./config/api";
+import { api } from "./config/api";
 import './styles/app.css';
 import './styles/variables.css';
 

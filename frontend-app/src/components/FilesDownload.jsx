@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useFiles } from '../hooks';
+import { api, fileApi } from '../config/api';
 import Load from './common/Load';
 import FileDownloadSelector from './common/FileDowloadSelector';
-import api from '../config/api';
+import DownloadingView from './DownloadingView';
 import '../styles/components/filesdownload.css';
 
 const OPTIONS = [
@@ -12,41 +13,65 @@ const OPTIONS = [
   { name: 'declined', value: 'd', color: 'red' },
 ];
 
-export default function FilesDownload({ pathID, projectName }) {
+export default function FilesDownload({ pathID }) {
   const [isOpen, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [option, setOption] = useState(OPTIONS[0]);
   const [manual, setManual] = useState(false);
+  const [isNew, setIsNew] = useState(false);
+  const [task, setTask] = useState("asdas-zxc1-123");
   const fileManager = useFiles();
-  const boxNew = useRef();
 
   const handleSelect = (index) => {
     setOption(OPTIONS[index]);
     setOpen(!isOpen);
   };
 
-  function downloadSelected(event) {
+  async function getFiles() {
+    let file_ids;
+    if (manual) file_ids = fileManager.map(({ id }) => id);
+    else {
+      const params = {};
+      if (isNew) params.downloaded = false;
+      if (option.value !== 'all') params.status = option.value;
+      const { data } = await api.get(`/api/files/project/${pathID}/`, { params });
+      file_ids = (
+        isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
+      ).map(({ id }) => id);
+    }
+    if (!file_ids.length) throw new Error("no content");
+    return file_ids
+  }
+
+  async function downloadSelected(event) {
     event.preventDefault();
     setLoading(true);
-    api.get(
-      `/api/files/download/project/${pathID}/?files=${option.value}`,
-      { responseType: 'blob' }
-    )
-      .then(({ status, data }) => {
-        if (status === 204) throw new Error('no content');
-        const url = window.URL.createObjectURL(new Blob([data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', projectName.toLowerCase() + '.zip');
-        document.body.appendChild(link);
-        link.click();
-        setLoading(false);
-      })
-      .catch(({ message }) => {
-        alert(message);
-        setLoading(false);
-      });
+    try {
+      // api.get(
+      //   `/api/files/download/project/${pathID}/?files=${option.value}`,
+      //   { responseType: 'blob' }
+      // )
+      const { data: taskID } = await fileApi.post(
+        `/api/storage/project_${pathID}/download/`,
+        { file_ids: await getFiles() },
+        { responseType: 'blob' }
+      );
+      if (taskID) setTask(taskID);
+    }
+    catch ({ message }) { alert(message); }
+    setLoading(false);
+    // .then(({ status, data }) => {
+    //   const url = window.URL.createObjectURL(new Blob([data]));
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.setAttribute('download', projectName.toLowerCase() + '.zip');
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   setLoading(false);
+    // })
   }
+
+  if (task) return <DownloadingView taskID={task} />;
 
   return (
     <div className='iss__filesDownload'>
@@ -77,7 +102,7 @@ export default function FilesDownload({ pathID, projectName }) {
           </div>
         </div>
         <label className='iss__filesDownload__inputBox__wrap'>
-          <input ref={boxNew} type='checkbox' />
+          <input type='checkbox' onChange={() => setIsNew(!isNew)} />
           <span>not downloaded before</span>
         </label>
         <label className='iss__filesDownload__inputBox__wrap'>
@@ -92,7 +117,7 @@ export default function FilesDownload({ pathID, projectName }) {
         manual &&
         <FileDownloadSelector
           pathID={pathID}
-          newFiles={boxNew.current.checked}
+          newFiles={isNew}
           option={option}
           fileManager={fileManager}
         />

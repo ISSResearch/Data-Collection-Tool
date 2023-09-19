@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from '../config/api';
+import { api, fileApi } from '../config/api';
 
 export default function useFileUploader(projectID) {
   const [files, setFiles] = useState([]);
@@ -9,20 +9,37 @@ export default function useFileUploader(projectID) {
     const chunkSize = 1024 * 1024 * 4;
     const numOfChunks = Math.ceil(file.file.size / chunkSize);
     for (let i = 0; i < numOfChunks; i++) {
-      const form = new FormData();
-      const chunk = file.file.slice(i * chunkSize, chunkSize * (i + 1));
-      form.append('chunk', chunk);
-      const data = await api.request(`/api/files/upload/${id}/`, {
+      // const form = new FormData();
+      // const chunk = file.file.slice(i * chunkSize, chunkSize * (i + 1));
+      // form.append('chunk', chunk);
+
+
+      const [type, extension] = file.type.split('/');
+      const data = {
+        file: file.file.slice(i * chunkSize, chunkSize * (i + 1)),
+        file_meta: JSON.stringify({
+          file_name: file.name,
+          file_extension: extension,
+          file_type: type
+        })
+      }
+
+      const config = {
         method: 'post',
-        data: form,
+        data,
         headers: {
           'Content-Type': 'multipart/form-data',
           'Chunk': i + 1,
           'Total-Chunks': numOfChunks
-        },
-      })
+        }
+      }
+      // const data = await api.request(`/api/files/upload/${id}/`, {
+      const response = await fileApi.request(
+        `/api/storage/project_${project}/${id}/`,
+        config
+      );
       file.progress = (i + 1) * 100 / numOfChunks;
-      if (data.data.transfer_complete) file.status = 'a';
+      if (response.data.transfer_complete) file.status = 'a';
       setFiles([...files]);
     }
   }
@@ -31,7 +48,7 @@ export default function useFileUploader(projectID) {
     return await api.request(`/api/files/project/${project}/`, {
       method: 'post',
       data: formData,
-      headers: {'Content-Type': 'multipart/form-data',}
+      headers: { 'Content-Type': 'multipart/form-data', }
     })
   }
 

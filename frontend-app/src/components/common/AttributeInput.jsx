@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import api from '../../config/api';
+import { api } from '../../config/api';
 import '../../styles/components/common/attributeinput.css';
 
 export default function AttributeInput({
@@ -34,8 +34,8 @@ export default function AttributeInput({
   }
 
   function handleDeleteAttribute(path, orig, index) {
-      if (orig) setAcceptDelete(index);
-      else delAttribute(formId, path, isChild);
+    if (orig) setAcceptDelete(index);
+    else delAttribute(formId, path, isChild);
   }
 
   useEffect(() => {
@@ -46,14 +46,14 @@ export default function AttributeInput({
   return (
     <div className='iss__form__attributes'>
       {
-        attributes.map(({id, name, path, children, orig}, index) => (
-          <div key={id} className={`iss__attributeForm${isChild ? ' attribute--child': ''}`}>
+        attributes.map(({ id, name, path, children, orig }, index) => (
+          <div key={id} className={`iss__attributeForm${isChild ? ' attribute--child' : ''}`}>
             {isChild ? <div className='iss__attributeForm__tree'>------|</div> : ''}
             <div className='iss__attributeForm__inputWrap'>
               <input
                 placeholder="Attribute name"
                 required
-                onBlur={({target}) => handleChange(formId, target, path, isChild)}
+                onBlur={({ target }) => handleChange(formId, target, path, isChild)}
                 defaultValue={name}
               />
               <div className="iss__attributeForm__inputButton">
@@ -61,14 +61,14 @@ export default function AttributeInput({
                   onClick={() => handleDeleteAttribute(path, orig, index)}
                   type="button"
                   className="inputButton--del"
-                ><span/></button>
+                ><span /></button>
                 {
                   !lastLevel &&
-                    <button
-                      onClick={() => addAttribute(formId, path)}
-                      type="button"
-                      className="inputButton--add"
-                    ><span /><span /></button>
+                  <button
+                    onClick={() => addAttribute(formId, path)}
+                    type="button"
+                    className="inputButton--add"
+                  ><span /><span /></button>
                 }
               </div>
               {
@@ -92,16 +92,16 @@ export default function AttributeInput({
             </div>
             {
               Boolean(children?.length) &&
-                <AttributeInput
-                  formId={formId}
-                  attributes={children}
-                  depth={depth}
-                  isChild={true}
-                  delAttribute={delAttribute}
-                  addAttribute={addAttribute}
-                  handleChange={handleChange}
-                  setDeletedOriginAttributes={setDeletedOriginAttributes}
-                />
+              <AttributeInput
+                formId={formId}
+                attributes={children}
+                depth={depth}
+                isChild={true}
+                delAttribute={delAttribute}
+                addAttribute={addAttribute}
+                handleChange={handleChange}
+                setDeletedOriginAttributes={setDeletedOriginAttributes}
+              />
             }
           </div>
         ))

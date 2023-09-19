@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import Logo from './common/Logo';
 import NavLinks from './common/NavLinks';
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/components/header.css'
 
 export default function Header() {

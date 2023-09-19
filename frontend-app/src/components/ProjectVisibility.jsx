@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useCollectors } from '../hooks';
 import { Fragment } from "react";
 import Load from './common/Load';
-import api from "../config/api";
+import { api } from "../config/api";
 import '../styles/components/projectvisibility.css';
 
 const PERMISSIONS = [

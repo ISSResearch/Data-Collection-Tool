@@ -152,7 +152,7 @@ class BucketObject:
             if self.headers.is_new: self._create_file(file)
             else: self._append_file(file)
 
-            return True, (
+            return True, self.headers.is_last_chunk, (
                 status.HTTP_201_CREATED
                 if self.headers.is_new
                 else status.HTTP_202_ACCEPTED
@@ -227,9 +227,11 @@ class Bucket(BucketObject):
     def get_object(self, object_id: int) -> ObjectStreaming | None:
         try:
             file = self._fs.open_download_stream(object_id)
+            print(file)
             return ObjectStreaming(file)
 
         except NoFile: return None
+
 
     def get_download_objects(self, file_ids: list[int]):
         return self._fs.find({"_id": {"$in": file_ids}})

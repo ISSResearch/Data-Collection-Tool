@@ -110,10 +110,16 @@ class FilesViewSet(APIView):
         uploader.proceed_upload()
 
         response = {'ok': uploader.status}
-        res_status = status.HTTP_201_CREATED if uploader.status else status.HTTP_406_NOT_ACCEPTABLE
+        res_status = (
+            status.HTTP_201_CREATED if uploader.status
+            else status.HTTP_406_NOT_ACCEPTABLE
+        )
 
         if uploader.status:
-            response['created_files'] = FilesSerializer(uploader.created_files, many=True).data
+            response['created_files'] = FilesSerializer(
+                uploader.created_files,
+                many=True
+            ).data
 
         return Response(response, status=res_status)
 

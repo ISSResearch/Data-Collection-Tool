@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { MemoryRouter } from 'react-router-dom';
 import { mock_raw_project } from '../_mock';
-import api from '../../config/api';
+import { api } from '../../config/api';
 import ProjectPage from '../../pages/ProjectPage';
 
 jest.mock('../../config/api');
@@ -24,7 +24,7 @@ test("project page test", async () => {
     { name: 'statistics', value: 'stats' },
   ];
 
-  api.get.mockResolvedValue({data: mock_raw_project});
+  api.get.mockResolvedValue({ data: mock_raw_project });
 
   let unmount = null;
 

@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import Form from '../components/common/Form';
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/pages/login.css';
 
 export default function Login() {
@@ -25,7 +25,7 @@ export default function Login() {
       .then(({ data }) => {
         if (!data.isAuth) throw new Error(data.message);
         initUser(data.user);
-        if (window.location.pathname  === '/login') navigate('/');
+        if (window.location.pathname === '/login') navigate('/');
       })
       .catch(({ message }) => {
         setErrors(message);
@@ -35,8 +35,8 @@ export default function Login() {
   }
 
   const fieldSet = [
-    {label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true},
-    {label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true},
+    { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
+    { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
   ];
 
   return (

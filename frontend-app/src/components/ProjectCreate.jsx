@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/components/projectcreate.css';
 
 export default function ProjectCreate() {

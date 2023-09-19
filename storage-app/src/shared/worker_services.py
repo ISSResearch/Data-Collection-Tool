@@ -13,10 +13,9 @@ class Zipper:
 
     def __init__(self, bucket_name: str, file_ids: list[int]) -> None:
         project_bucket = Bucket(bucket_name)
-        objects = project_bucket.get_download_objects(file_ids)
+        self.object_set = project_bucket.get_download_objects(file_ids)
 
-        self.object_set = objects
-
+    # TODO: find out how to count items
     def archive_objects(self, add_data=[]):
         # json_data = dumps(serialized_data, indent=4).encode('utf-8')`
         archive = BytesIO()

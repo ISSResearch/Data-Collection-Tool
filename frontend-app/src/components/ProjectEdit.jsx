@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../hooks';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
-import api from '../config/api';
+import { api } from '../config/api';
 import '../styles/components/projectedit.css';
 
 export default function ProjectEdit({
