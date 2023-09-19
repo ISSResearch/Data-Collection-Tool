@@ -117,7 +117,7 @@ class ObjectStreaming:
         return self.RANGE_RE.match(range_header)
 
     def _set_chunks(self) -> None:
-        chunk_start, chunk_end = self.__dict__.get('range_match', (0,0))
+        chunk_start, chunk_end = self.__dict__.get('range_match', (0, 0))
 
         chunk_start = int(chunk_start) if chunk_start else 0
         chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE

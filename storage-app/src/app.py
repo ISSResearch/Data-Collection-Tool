@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
 from uvicorn import run
 from shared.settings import UVICORN_CONF, SELF_ORIGIN, DB_STORAGE
 from shared.utils import get_db_uri

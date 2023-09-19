@@ -14,4 +14,4 @@ stop-test:
 	docker compose -f docker-compose.test.yml down
 
 restart-test:
-	make stoptest && make starttest
+	make stop-test && make start-test
