@@ -24,7 +24,7 @@
 
 .iss__downloadingView__title__id>svg>path {
     opacity: 0.2;
-    fill: black;
+    fill: var(--issBlack);
 }
 
 .iss__downloadingView__clipboardTip {
@@ -38,8 +38,8 @@
     box-shadow: 1px 1px 1px 0px var(--issLightBrand);
 }
 
-.iss__downloadingView__clipboardTip--visible {
-    opacity: 1;
+.clipboardTip--error {
+    background-color: var(--issLightRed) !important;
 }
 
 .id--anchor {
@@ -66,6 +66,18 @@
 
 .iss__downloadingView__explanation:after {
     margin-left: 12px;
+}
+
+.iss__downloadingView__downloadWrap {
+    padding: 20px 0;
+    display: flex;
+    gap: 20px;
+}
+
+.iss__downloadingView__downloadWrap>.iss__statusLoad__wrap {
+    padding: 0;
+    width: fit-content;
+    display: block;
 }
 
 @media(hover:hover) {

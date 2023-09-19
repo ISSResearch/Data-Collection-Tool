@@ -17,6 +17,8 @@ services:
     container_name: iss-storage-broker
     image: redis:alpine3.18
     restart: always
+    volumes:
+      - ./broker-db:/data
     networks:
       - iss_storage_network
 
@@ -75,21 +77,21 @@ services:
     networks:
       - iss_storage_network
 
-  # dashboard:
-  #   build:
-  #     dockerfile: Dockerfile.storage
-  #   command: celery --broker=redis://iss-storage-broker:6379/0 flower --port=5555
-  #   ports:
-  #     - 5556:5555
-  #   environment:
-  #     CELERY_BROKER_URL: ${BROKER_URL}
-  #     CELERY_RESULT_BACKEND: ${RESULT_URL}
-  #   restart: always
-  #   depends_on:
-  #     - iss-storage-broker
-  #     - iss-storage-worker
-  #   networks:
-  #     - iss_storage_network
+  dashboard:
+    build:
+      dockerfile: Dockerfile.storage
+    command: celery --broker=redis://iss-storage-broker:6379/0 flower --port=5555
+    ports:
+      - 9090:5555
+    environment:
+      CELERY_BROKER_URL: ${BROKER_URL}
+      CELERY_RESULT_BACKEND: ${RESULT_URL}
+    restart: always
+    depends_on:
+      - iss-storage-broker
+      - iss-storage-worker
+    networks:
+      - iss_storage_network
 
 networks:
   iss_storage_network:

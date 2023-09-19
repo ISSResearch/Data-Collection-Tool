@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get("/api/storage/{bucket_name}/{file_id}/")
-def get_file(request: Request, bucket_name: str, file_id: int) -> StreamingResponse:
+def get_file(request: Request, bucket_name: str, file_id: str) -> StreamingResponse:
     project_bucket = Bucket(bucket_name)
 
     stream = project_bucket.get_object(file_id)
@@ -23,7 +23,7 @@ def get_file(request: Request, bucket_name: str, file_id: int) -> StreamingRespo
 def upload_file(
     request: Request,
     bucket_name: str,
-    file_id: int,
+    file_id: str,
     # TODO: rewrite into model
     file: UploadFile,
     file_meta: Annotated[str, Form()]
@@ -44,7 +44,7 @@ def upload_file(
 
 
 @router.delete("/api/storage/{bucket_name}/{file_id}/")
-def delete_file(bucket_name: str, file_id: int) -> JSONResponse:
+def delete_file(bucket_name: str, file_id: str) -> JSONResponse:
     project_bucket = Bucket(bucket_name)
     result = project_bucket.delete_object(file_id)
 
@@ -58,6 +58,7 @@ def download_bucket(bucket_name: str, object_ids: Downloads) -> JSONResponse:
     return JSONResponse(content={"task_id": task.id})
 
 
+# TODO: didint find the way to check if no such task
 @router.get("/api/task/{task_id}/")
 def check_task_status(task_id: str) -> JSONResponse:
     task = WORKER.AsyncResult(task_id)

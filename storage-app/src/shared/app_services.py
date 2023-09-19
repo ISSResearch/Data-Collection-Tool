@@ -6,6 +6,7 @@ from re import compile, I, Match
 from json import loads
 from os import SEEK_SET
 from shared.settings import CHUNK_SIZE
+from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.db_manager import DataBase, GridFSBucket
 
@@ -80,6 +81,7 @@ class ObjectStreaming:
 
         chunk_range = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
         response.headers["Content-Range"] = "bytes " + chunk_range
+        response.headers["Content-Length"] = str(self.file.length)
 
         return response
 
@@ -115,11 +117,7 @@ class ObjectStreaming:
         return self.RANGE_RE.match(range_header)
 
     def _set_chunks(self) -> None:
-        chunk_start, chunk_end = (
-            self.range_match.groups()
-            if self.__dict__.get('range_match')
-            else (0, 0)
-        )
+        chunk_start, chunk_end = self.__dict__.get('range_match', (0,0))
 
         chunk_start = int(chunk_start) if chunk_start else 0
         chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
@@ -141,12 +139,12 @@ class BucketObject:
     def put_object(
         self,
         request: Request,
-        file_id: int,
+        file_id: str,
         file: UploadFile,
         file_meta: str
     ) -> tuple:
         self._prepare_payload(file_meta, request.headers)
-        self.file_id = file_id
+        self.file_id = get_object_id(file_id)
 
         try:
             if self.headers.is_new: self._create_file(file)
@@ -160,7 +158,7 @@ class BucketObject:
 
         except Exception: return False, status.HTTP_400_BAD_REQUEST
 
-    def delete_object(self, object_id: int) -> tuple:
+    def delete_object(self, object_id: str) -> tuple:
         try:
             self._fs.delete(object_id)
             return True, ""
@@ -215,23 +213,21 @@ class Bucket(BucketObject):
     def put_object(
         self,
         request: Request,
-        file_id: int,
+        file_id: str,
         file: UploadFile,
         file_meta: str
     ) -> tuple:
         return super().put_object(request, file_id, file, file_meta)
 
-    def delete_object(self, object_id: int) -> tuple:
+    def delete_object(self, object_id: str) -> tuple:
         return super().delete_object(object_id)
 
-    def get_object(self, object_id: int) -> ObjectStreaming | None:
+    def get_object(self, object_id: str) -> ObjectStreaming | None:
         try:
-            file = self._fs.open_download_stream(object_id)
-            print(file)
+            file = self._fs.open_download_stream(get_object_id(object_id))
             return ObjectStreaming(file)
 
         except NoFile: return None
-
 
     def get_download_objects(self, file_ids: list[int]):
         return self._fs.find({"_id": {"$in": file_ids}})

@@ -1,5 +1,7 @@
 from os import getenv
 from os.path import sep, join, realpath
+from bson import ObjectId
+from bson.errors import InvalidId
 
 
 def get_db_uri() -> str:
@@ -21,3 +23,8 @@ def get_path(from_dir: str = "") -> str:
         if from_dir in path_list
         else join(*path_list)
     )
+
+
+def get_object_id(object_id: str) -> str | ObjectId:
+    try: return ObjectId(object_id)
+    except InvalidId: return object_id
