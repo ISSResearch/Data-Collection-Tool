@@ -1,9 +1,10 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
-import Form from '../components/common/Form';
 import { api } from '../config/api';
+import Form from '../components/common/Form';
 import '../styles/pages/login.css';
+import jwt_decode from "jwt-decode";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -11,27 +12,27 @@ export default function Login() {
   const { initUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  function sendForm(event) {
+  async function sendForm(event) {
     event.preventDefault();
     setLoading(true);
     const [name, pass] = event.target;
-    api.request('/api/users/login/',
-      {
+    try {
+      const { data, status } = await api.request('/api/users/login/', {
         method: 'post',
         data: { username: name.value, password: pass.value },
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }
-    )
-      .then(({ data }) => {
-        if (!data.isAuth) throw new Error(data.message);
-        initUser(data.user);
-        if (window.location.pathname === '/login') navigate('/');
-      })
-      .catch(({ message }) => {
-        setErrors(message);
-        setLoading(false);
-        setTimeout(() => setErrors(null), 5000);
       });
+      if (!data.isAuth || status !== 200) throw new Error(data.message);
+      const { accessToken } = data;
+      localStorage.setItem("dtcAccess", accessToken);
+      initUser(jwt_decode(accessToken));
+      if (window.location.pathname === '/login') navigate('/');
+    }
+    catch ({ message }) {
+      setErrors(message);
+      setLoading(false);
+      setTimeout(() => setErrors(null), 5000);
+    }
   }
 
   const fieldSet = [

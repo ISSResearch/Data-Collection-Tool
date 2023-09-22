@@ -1,9 +1,10 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
-import Form from '../components/common/Form';
 import { api } from '../config/api';
+import Form from '../components/common/Form';
 import '../styles/pages/registration.css';
+import jwt_decode from "jwt-decode";
 
 export default function Registration() {
   const [loading, setLoading] = useState(false);
@@ -11,33 +12,31 @@ export default function Registration() {
   const { initUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  function sendForm(event) {
+  async function sendForm(event) {
     event.preventDefault();
     setLoading(true);
     const [name, pass1, pass2] = event.target;
-    api.request('/api/users/create/',
-      {
+    try {
+      const { data, status } = await api.request('/api/users/create/', {
         method: 'post',
         data: { username: name.value, password1: pass1.value, password2: pass2.value },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    )
-      .then(({ status, data }) => {
-        if (!data.isAuth) {
-          const errorMessage = Object.entries(data.errors)
-            .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
-          throw new Error(errorMessage);
-        }
-        initUser(data.user);
-        navigate('/');
-      })
-      .catch(({ message }) => {
-        setErrors(message);
-        setLoading(false);
-        setTimeout(() => setErrors(null), 5000);
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
+      if (!data.isAuth || status !== 200) {
+        const errorMessage = Object.entries(data.errors)
+          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
+        throw new Error(errorMessage);
+      }
+      const { accessToken } = data;
+      localStorage.setItem("dtcAccess", accessToken);
+      initUser(jwt_decode(accessToken));
+      navigate('/');
+    }
+    catch ({ message }) {
+      setErrors(message);
+      setLoading(false);
+      setTimeout(() => setErrors(null), 5000);
+    }
   }
 
   const fieldSet = [

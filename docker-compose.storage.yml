@@ -35,6 +35,8 @@ services:
       DEBUG: ${DEBUG}
       CELERY_BROKER_URL: ${BROKER_URL}
       CELERY_RESULT_BACKEND: ${RESULT_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
     depends_on:
       - iss-storage-db
     volumes:
@@ -58,6 +60,8 @@ services:
         DEBUG: ${DEBUG}
         CELERY_BROKER_URL: ${BROKER_URL}
         CELERY_RESULT_BACKEND: ${RESULT_URL}
+        SECRET_KEY: ${SECRET_KEY}
+        SECRET_ALGO: ${SECRET_ALGO}
       depends_on:
         - iss-storage-broker
         - iss-storage-back

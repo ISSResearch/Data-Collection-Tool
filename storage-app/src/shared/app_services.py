@@ -1,5 +1,6 @@
-from typing_extensions import Generator
-from gridfs import NoFile, ObjectId, GridOut
+from typing_extensions import Generator, Iterator
+from typing import Any, Pattern
+from gridfs import NoFile, ObjectId, GridOut, GridOutCursor
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match
@@ -12,16 +13,16 @@ from shared.db_manager import DataBase, GridFSBucket
 
 
 class Headers:
-    headers_fields = ("chunk", "total_chunks")
+    headers_fields: tuple = ("chunk", "total_chunks")
 
-    def __init__(self, data: dict) -> None:
-        self._headers = data
-        self.is_valid = False
+    def __init__(self, data: dict[str, str]) -> None:
+        self._headers: dict[str, str] = data
+        self.is_valid: bool = False
 
     def validate(self) -> None:
-        self.chunk = self._headers.get("chunk")
-        self.total_chunks = self._headers.get("total_chunks")
-        self.is_valid = self.chunk and self.total_chunks
+        self.chunk: str | None = self._headers.get("chunk")
+        self.total_chunks: str | None = self._headers.get("total_chunks")
+        self.is_valid = bool(self.chunk and self.total_chunks)
 
     @property
     def is_new(self) -> bool: return not self.chunk or self.chunk == 1
@@ -37,8 +38,8 @@ class FileMeta:
     meta_fields = ("file_name", "file_extension", "file_type")
 
     def __init__(self, data: str) -> None:
-        self._meta = loads(data)
-        self.is_valid = False
+        self._meta: Any = loads(data)
+        self.is_valid: bool = False
 
     def get(self) -> dict:
         return {
@@ -59,45 +60,48 @@ class ObjectStreaming:
         'chunk_end',
         'chunk_length'
     )
-    RANGE_RE = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
+    RANGE_RE: Pattern = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
 
     def __init__(self, file: GridOut) -> None:
-        self.file = file
-        self.meta = file.metadata
-        self.file_size = file.metadata.get("file_size", 0)
-        self.file_size = file.length
-        self.content_type = self._get_file_type()
+        self.file: GridOut = file
+        self.meta: dict[str, Any] = file.metadata
+        self.file_size: int = file.length
+        self.content_type: str = self._get_file_type()
         self._set_chunks()
 
     def stream(self, request: Request) -> StreamingResponse:
-        self.range_match = self._get_range_match(request)
+        self.range_match: Match[str] | None = self._get_range_match(request)
         if self.range_match: self._set_chunks()
 
-        response = StreamingResponse(
-            iter(self) if self.range_match else self.file,
+        response: StreamingResponse = StreamingResponse(
+            iter(self),
             status_code=(206 if self.range_match else 200),
             media_type=self.content_type
         )
 
-        chunk_range = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
+        chunk_range: str = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
         response.headers["Content-Range"] = "bytes " + chunk_range
         response.headers["Content-Length"] = str(self.file.length)
 
         return response
 
-    def __iter__(self): return self._file_iterator()
+    def __iter__(self) -> Iterator: return self._file_iterator()
 
     def _file_iterator(self) -> Generator:
         self.file.seek(self.chunk_start, SEEK_SET)
-        remaining_chunk = self.chunk_length
+        remaining_chunk: int = self.chunk_length
 
         while True:
-            bytes_length = (
-                CHUNK_SIZE
-                if remaining_chunk is None
-                else min(remaining_chunk, CHUNK_SIZE)
+            bytes_length: int = (
+                self.file.length if not self.range_match
+                else (
+                    CHUNK_SIZE
+                    if remaining_chunk is None
+                    else min(remaining_chunk, CHUNK_SIZE)
+                )
             )
-            data = self.file.read(bytes_length)
+
+            data: bytes = self.file.read(bytes_length)
 
             if not data: break
             if remaining_chunk: remaining_chunk -= len(data)
@@ -108,27 +112,27 @@ class ObjectStreaming:
         if '.' not in self.meta.get("file_name", ""):
             return self.meta.get("file_type", "image") + "/png"
 
-        extension = self.meta.get("file_name", ".png").split('.')[-1]
+        extension: str = self.meta.get("file_name", ".png").split('.')[-1]
         return f'{self.meta.get("file_type", "image")}/{extension}'
 
     def _get_range_match(self, request: Request) -> Match[str] | None:
-        range_header = request.headers.get('range', '')
+        range_header: str = request.headers.get('range', '')
 
         return self.RANGE_RE.match(range_header)
 
     def _set_chunks(self) -> None:
         chunk_start, chunk_end = self.__dict__.get('range_match', (0, 0))
 
-        chunk_start = int(chunk_start) if chunk_start else 0
+        chunk_start = int(chunk_start)
         chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
 
         if chunk_end >= self.file_size: chunk_end = self.file_size - 1
 
         chunk_length = chunk_end - chunk_start + 1
 
-        self.chunk_start = chunk_start
-        self.chunk_end = chunk_end
-        self.chunk_length = chunk_length
+        self.chunk_start: int = chunk_start
+        self.chunk_end: int = chunk_end
+        self.chunk_length: int = chunk_length
 
 
 class BucketObject:
@@ -144,7 +148,7 @@ class BucketObject:
         file_meta: str
     ) -> tuple:
         self._prepare_payload(file_meta, request.headers)
-        self.file_id = get_object_id(file_id)
+        self.file_id: ObjectId | str = get_object_id(file_id)
 
         try:
             if self.headers.is_new: self._create_file(file)
@@ -170,13 +174,13 @@ class BucketObject:
         file_meta: str = "",
         request_headers: dict = {}
     ) -> None:
-        self.meta = FileMeta(file_meta)
-        self.headers = Headers(request_headers)
+        self.meta: FileMeta = FileMeta(file_meta)
+        self.headers: Headers = Headers(request_headers)
 
         self.headers.validate()
 
     def _create_file(self, chunk: UploadFile) -> ObjectId:
-        meta = self.meta.get()
+        meta: dict[str, Any] = self.meta.get()
 
         return self._fs.upload_from_stream_with_id(
             file_id=self.file_id,
@@ -187,9 +191,9 @@ class BucketObject:
 
     def _append_file(self, chunk: UploadFile) -> ObjectId | None:
         try:
-            previous_file = self._fs.open_download_stream(self.file_id)
+            previous_file: GridOut = self._fs.open_download_stream(self.file_id)
 
-            new_item = {
+            new_item: dict[str, Any] = {
                 "file_id": previous_file._id,
                 "filename": previous_file.name,
                 # TODO: make generator
@@ -208,7 +212,7 @@ class Bucket(BucketObject):
     __slots__ = ("_fs",)
 
     def __init__(self, bucket_name: str) -> None:
-        self._fs = DataBase.get_fs_bucket(bucket_name)
+        self._fs: GridFSBucket = DataBase.get_fs_bucket(bucket_name)
 
     def put_object(
         self,
@@ -224,10 +228,10 @@ class Bucket(BucketObject):
 
     def get_object(self, object_id: str) -> ObjectStreaming | None:
         try:
-            file = self._fs.open_download_stream(get_object_id(object_id))
+            file: GridOut = self._fs.open_download_stream(get_object_id(object_id))
             return ObjectStreaming(file)
 
         except NoFile: return None
 
-    def get_download_objects(self, file_ids: list[int]):
+    def get_download_objects(self, file_ids: list[int]) -> GridOutCursor:
         return self._fs.find({"_id": {"$in": file_ids}})

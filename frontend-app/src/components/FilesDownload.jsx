@@ -53,11 +53,7 @@ export default function FilesDownload({ pathID }) {
   async function downloadSelected(event) {
     event.preventDefault();
     const taskInput = event.target.taskID;
-    if (taskInput.value) {
-      if (taskInput.value !== 24) alert("Wrong taskId. Supposed to have 24 length alphanumeric code.")
-      else setTask(taskInput.value);
-      return;
-    }
+    if (taskInput.value) return setTask(taskInput.value);
     setLoading(true);
     try {
       const { data } = await fileApi.post(

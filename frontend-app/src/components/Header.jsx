@@ -1,23 +1,23 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
+import { api } from '../config/api';
 import Logo from './common/Logo';
 import NavLinks from './common/NavLinks';
-import { api } from '../config/api';
 import '../styles/components/header.css'
 
 export default function Header() {
   const { user, initUser } = useContext(UserContext);
   const navigate = useNavigate();
-  function logOutUser() {
-    api.get('/api/users/logout/')
-      .then(({ data }) => {
-        if (data.ok) {
-          initUser(null);
-          navigate('/login');
-        }
-      })
-      .catch(err => console.log('err', err.message));
+  async function logOutUser() {
+    try {
+      const { data } = await api.get('/api/users/logout/')
+      if (data.ok) {
+        initUser(null);
+        navigate('/login');
+      }
+    }
+    catch (err) { console.log('err', err.message); }
   }
 
   const linkSet = [

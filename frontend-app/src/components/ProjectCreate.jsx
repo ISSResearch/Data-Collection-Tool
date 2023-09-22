@@ -32,7 +32,7 @@ export default function ProjectCreate() {
         headers: { 'Content-Type': 'application/json' }
       }
     )
-      .then(() => window.location.reload())
+      .then(() => window.open("/projects/", "_self"))
       .catch(err => {
         alert(err);
         setLoading(false);

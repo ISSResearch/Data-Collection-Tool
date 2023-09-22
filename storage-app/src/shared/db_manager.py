@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.database import Database
 from gridfs import GridFSBucket
 from shared.settings import DB_STORAGE, CHUNK_SIZE
 from shared.utils import get_db_uri
@@ -6,7 +7,7 @@ from shared.utils import get_db_uri
 
 class DataBase:
     client: MongoClient = None
-    current_db = None
+    current_db: Database = None
 
     def __init__(self, uri: str) -> None:
         if not self.client: self.get_client(uri)

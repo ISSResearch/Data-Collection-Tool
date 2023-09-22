@@ -25,6 +25,8 @@ services:
       DB_NAME: ${DB_APP_DB_NAME}
       SERVER_ORIGINS: ${SERVER_ORIGINS}
       DEBUG: ${DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
     depends_on:
       - iss-db
     volumes:

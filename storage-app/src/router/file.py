@@ -1,17 +1,20 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from gridfs import GridFSBucket
+from typing import Any
 from shared.models import Downloads, UploadFile, Form, Annotated
-from shared.app_services import Bucket
+from shared.app_services import Bucket, ObjectStreaming
 from worker import produce_download_task, WORKER
+from celery.result import AsyncResult
 
 router = APIRouter()
 
 
 @router.get("/api/storage/{bucket_name}/{file_id}/")
 def get_file(request: Request, bucket_name: str, file_id: str) -> StreamingResponse:
-    project_bucket = Bucket(bucket_name)
+    project_bucket: Bucket = Bucket(bucket_name)
 
-    stream = project_bucket.get_object(file_id)
+    stream: ObjectStreaming | None = project_bucket.get_object(file_id)
 
     return (
         stream.stream(request) if stream
@@ -28,7 +31,7 @@ def upload_file(
     file: UploadFile,
     file_meta: Annotated[str, Form()]
 ) -> JSONResponse:
-    project_bucket = Bucket(bucket_name)
+    project_bucket: Bucket = Bucket(bucket_name)
 
     result, is_completed, status = project_bucket.put_object(
         request,
@@ -45,15 +48,15 @@ def upload_file(
 
 @router.delete("/api/storage/{bucket_name}/{file_id}/")
 def delete_file(bucket_name: str, file_id: str) -> JSONResponse:
-    project_bucket = Bucket(bucket_name)
-    result = project_bucket.delete_object(file_id)
+    project_bucket: Bucket = Bucket(bucket_name)
+    result: tuple = project_bucket.delete_object(file_id)
 
     return JSONResponse(content={"ok": True, "result": result})
 
 
 @router.post("/api/storage/{bucket_name}/download/")
 def download_bucket(bucket_name: str, object_ids: Downloads) -> JSONResponse:
-    task = produce_download_task.delay(bucket_name, object_ids.file_ids)
+    task: AsyncResult = produce_download_task.delay(bucket_name, object_ids.file_ids)
 
     return JSONResponse(content={"task_id": task.id})
 
@@ -61,8 +64,8 @@ def download_bucket(bucket_name: str, object_ids: Downloads) -> JSONResponse:
 # TODO: didint find the way to check if no such task
 @router.get("/api/task/{task_id}/")
 def check_task_status(task_id: str) -> JSONResponse:
-    task = WORKER.AsyncResult(task_id)
-    response = {"task_id": task_id, "status": task.status}
+    task: AsyncResult = WORKER.AsyncResult(task_id)
+    response: dict[str, Any] = {"task_id": task_id, "status": task.status}
 
     if task.status == "SUCCESS": response["archive_id"] = task.result
 

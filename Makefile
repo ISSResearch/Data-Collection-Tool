@@ -1,6 +1,9 @@
 start:
 	docker compose -f docker-compose.yml -f docker-compose.storage.yml up -d
 
+start-b:
+	docker compose -f docker-compose.yml -f docker-compose.storage.yml up -d --build
+
 stop:
 	docker compose -f docker-compose.yml -f docker-compose.storage.yml down
 

@@ -1,5 +1,6 @@
 from pathlib import Path
 from os import getenv
+from datetime import timedelta
 
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
@@ -17,7 +18,7 @@ if RAW_ORIGIN:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-%o*gv0gtraw6@&@_a*c)$x%wuy8w55a2n3x^c2%0$9wm+0q8ot'
+SECRET_KEY = getenv("SECRET_KEY", "")
 
 ALLOWED_HOSTS = RAW_ORIGIN or ()
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'user',
     'api',
@@ -135,8 +137,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication'
     ]
+}
+
+SIMPLE_JWT = {
+    "ALGORITHM": getenv("SECRET_ALGO", "HS256"),
+    "SIGNING_KEY": SECRET_KEY,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
 }
 
 __LOGGING = {
