@@ -21,6 +21,7 @@ class CustomUser(AbstractUser):
           "token_type": "access",
           "exp": time_now + token_settings.get("ACCESS_TOKEN_LIFETIME", 1),
           "iat": time_now,
+          "jti": f"emited-token-{time_now}",
           "user_id": self.id,
           "user_name": self.username,
           "is_superuser": self.is_superuser

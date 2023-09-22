@@ -10,14 +10,16 @@ export default function Header() {
   const { user, initUser } = useContext(UserContext);
   const navigate = useNavigate();
   async function logOutUser() {
-    try {
-      const { data } = await api.get('/api/users/logout/')
-      if (data.ok) {
-        initUser(null);
-        navigate('/login');
-      }
-    }
-    catch (err) { console.log('err', err.message); }
+    localStorage.removeItem("dtcAccess");
+    initUser(null);
+    // try {
+    //   const { data } = await api.get('/api/users/logout/')
+    //   if (data.ok) {
+    //     initUser(null);
+    //     navigate('/login');
+    //   }
+    // }
+    // catch (err) { console.log('err', err.message); }
   }
 
   const linkSet = [
