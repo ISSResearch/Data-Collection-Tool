@@ -5,7 +5,6 @@ import {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import { getOriginDomain } from "../../utils/utils";
 import { fileApi } from "../../config/api";
 import "../../styles/components/common/filemedia.css";
 
@@ -83,7 +82,6 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
       if (!files[slide]) return;
       const { id, file_type } = files[slide];
       setTypeVideo(file_type === 'video');
-      // setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
       setFileUrl(
         `http://127.0.0.1:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
       );

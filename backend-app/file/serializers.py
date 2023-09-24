@@ -9,7 +9,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = File
-        exclude = ('hash_name', 'project', 'author')
+        exclude = ('project', 'author')
 
     def get_attributes(self, instance):
         # TODO: temporary solution

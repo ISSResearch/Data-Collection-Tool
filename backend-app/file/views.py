@@ -7,23 +7,13 @@ from attribute.models import Level
 from project.permissions import ProjectStatsPermission
 from .permissions import FilePermission
 from .serializers import File, FileSerializer, FilesSerializer
-from .services import FileUploader, upload_chunk, FileStreaming
+from .services import FileUploader
 from attribute.models import AttributeGroup
 
 
 class FileViewSet(APIView):
-    http_method_names = ('get', 'patch', 'delete')
+    http_method_names = ('patch', 'delete')
     permission_classes = (IsAuthenticated, FilePermission)
-
-    def get(self, request, fileID):
-        try:
-            file = File.objects.get(id=fileID)
-            file_streaming = FileStreaming(file)
-
-            return file_streaming.get_reponse(request)
-
-        except (file.DoesNotExist, FileNotFoundError):
-            return Response('no such file', status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, fileID):
         file = File.objects \
@@ -169,9 +159,3 @@ def get_stats(_, projectID):
     if empty_stats: stats = list(stats) + list(empty_stats)
 
     return Response(stats, status=status.HTTP_200_OK)
-
-
-@api_view(('POST',))
-def upload_file_chunk(request, fileID):
-    response, response_status = upload_chunk(request, fileID)
-    return Response(response, status=response_status)

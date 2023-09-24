@@ -57,7 +57,7 @@ export default function Selector({ selectorKey, item, setOption, applyGroups }) 
                   selectorName={name}
                   selectorOptions={attributes}
                   handleSelect={(ids) => handleSelect(ids, children, index)}
-                  defaultSelected={applyGroups.splice(index)}
+                  defaultSelected={applyGroups?.splice(index)}
                 />
                 : <select
                   onChange={({ target }) => handleSelect(target, children, index)}
