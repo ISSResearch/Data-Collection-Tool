@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from rest_framework_simplejwt.tokens import RefreshToken
 from jose import jwt
 from django.conf import settings
 from datetime import datetime
@@ -18,13 +17,13 @@ class CustomUser(AbstractUser):
         time_now: datetime = datetime.utcnow()
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
         token_data: dict[str, Any] = {
-          "token_type": "access",
-          "exp": time_now + token_settings.get("ACCESS_TOKEN_LIFETIME", 1),
-          "iat": time_now,
-          "jti": f"emited-token-{time_now}",
-          "user_id": self.id,
-          "user_name": self.username,
-          "is_superuser": self.is_superuser
+            "token_type": "access",
+            "exp": time_now + token_settings.get("ACCESS_TOKEN_LIFETIME", 1),
+            "iat": time_now,
+            "jti": f"emited-token-{time_now}",
+            "user_id": self.id,
+            "user_name": self.username,
+            "is_superuser": self.is_superuser
         }
 
         return jwt.encode(

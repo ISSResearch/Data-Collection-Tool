@@ -1,29 +1,26 @@
 from rest_framework.views import Response, APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.http import require_GET
-from django.http import JsonResponse
+from django.contrib.auth import authenticate
 from typing import Any
-from .serializers import UserSerializer, CollectorSerializer
+from .serializers import CollectorSerializer
 from .forms import CreateUserForm, CustomUser
 from .permissions import UserPermission
 from .services import set_user_permissions
 
 
 @api_view(('GET',))
-@permission_classes([])
+@permission_classes(())
 def check_user(request):
     user = request.user
     response = {'isAuth': user.is_authenticated}
-
-    # if user.is_authenticated: response['user'] = UserSerializer(user).data
 
     return Response(response)
 
 
 @api_view(('POST',))
-@permission_classes([])
+@permission_classes(())
+@authentication_classes(())
 def login_user(request):
     response: dict[str, Any] = {'isAuth': False}
 
@@ -32,9 +29,6 @@ def login_user(request):
         user = authenticate(username=username, password=password)
 
         if user:
-            # login(request, user)
-            # serialized_user = UserSerializer(user)
-            # response['user'] = serialized_user.data
             response['accessToken'] = user.emit_token()
             response['isAuth'] = True
         else: response['message'] = 'No user found or wrong credentials'
@@ -42,14 +36,9 @@ def login_user(request):
     return Response(response)
 
 
-@require_GET
-def logout_user(request):
-    logout(request)
-    return JsonResponse({'ok': True})
-
-
 @api_view(('POST',))
-@permission_classes([])
+@permission_classes(())
+@authentication_classes(())
 def create_user(request):
     form = CreateUserForm(request.data)
 
@@ -58,10 +47,7 @@ def create_user(request):
 
     response = {'isAuth': is_valid}
 
-    if is_valid:
-        # response['user'] = UserSerializer(form.instance).data
-        # login(request, form.instance)
-        response["accessToken"] = form.instance.emit_token()
+    if is_valid: response["accessToken"] = form.instance.emit_token()
     else: response['errors'] = form.errors
 
     return Response(response)

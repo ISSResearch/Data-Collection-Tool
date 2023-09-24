@@ -23,7 +23,10 @@ export default function FileDownloadSelector({
     const params = {};
     if (newFiles) params.downloaded = false;
     if (option.value !== 'all') params.status = option.value;
-    api.get(`/api/files/project/${pathID}/`, { params })
+    api.get(`/api/files/project/${pathID}/`, {
+      params,
+      header: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+    })
       .then(({ data }) => {
         setFiles(data);
         setLoading(false)

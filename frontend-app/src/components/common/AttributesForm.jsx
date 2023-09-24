@@ -33,7 +33,10 @@ export default function AttributesForm({
       await api.request(`/api/attributes/levels/${id}/`,
         {
           method: 'get',
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+          }
         }
       );
       setAcceptDelete(null);

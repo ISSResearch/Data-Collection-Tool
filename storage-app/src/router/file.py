@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-from gridfs import GridFSBucket
 from typing import Any
 from shared.models import Downloads, UploadFile, Form, Annotated
 from shared.app_services import Bucket, ObjectStreaming

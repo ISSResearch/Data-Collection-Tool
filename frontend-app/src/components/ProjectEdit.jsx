@@ -46,7 +46,10 @@ export default function ProjectEdit({
       {
         method: 'delete',
         data: { id_set: idSet },
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+        }
       }
     );
   }
@@ -66,7 +69,10 @@ export default function ProjectEdit({
       {
         method: 'patch',
         data: formData,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+        }
       }
     )
       .then(() => window.location.reload())
@@ -86,7 +92,10 @@ export default function ProjectEdit({
       {
         method: 'delete',
         data: { approval: deleteNameForm },
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+        }
       }
     )
       .then(() => navigate('/'))

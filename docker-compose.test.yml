@@ -26,6 +26,7 @@ services:
       DB_NAME: iss_test_app_db
       CASE: test
       SERVER_ORIGINS: 'iss-test-front,iss-test-back'
+      SECRET_KEY: test-secret-key
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&

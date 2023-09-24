@@ -45,7 +45,10 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
 
   useEffect(() => {
     const { card, attr, type } = getPageQuery();
-    api.get(`/api/files/project/${pathID}/`, { params: { card, attr, type } })
+    api.get(`/api/files/project/${pathID}/`, {
+      params: { card, attr, type },
+      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+    })
       .then(({ data }) => {
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);

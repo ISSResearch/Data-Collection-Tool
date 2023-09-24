@@ -58,7 +58,8 @@ export default function FilesDownload({ pathID }) {
     try {
       const { data } = await fileApi.post(
         `/api/storage/project_${pathID}/download/`,
-        { file_ids: await getFiles() }
+        { file_ids: await getFiles() },
+        { headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") } }
       );
       if (data.taskID) setTask(data.taskID);
     }

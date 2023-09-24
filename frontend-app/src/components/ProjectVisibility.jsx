@@ -26,7 +26,10 @@ export default function ProjectVisibility({ pathID }) {
     api.request(`/api/users/collectors/${pathID}/`, {
       method: 'patch',
       data: formData,
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+      }
     })
       .then(({ data }) => {
         initData(data);
@@ -36,7 +39,9 @@ export default function ProjectVisibility({ pathID }) {
   }
 
   useEffect(() => {
-    api.get(`api/users/collectors/${pathID}/`)
+    api.get(`api/users/collectors/${pathID}/`, {
+      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+    })
       .then(({ data }) => {
         initData(data);
         setLoading({ ...loading, page: false });

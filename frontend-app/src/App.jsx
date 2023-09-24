@@ -14,33 +14,28 @@ export default function App() {
   const [statusData, setStatusData] = useState({ done: false });
 
   useEffect(() => {
-    const checkSession = async token => {
-      setStatusData({ ...statusData, progress: 60, info: 'checking session...' });
-      try {
-        const { data } = await api.get('/api/users/check/', {
-          headers: { "Authorization": "Bearer " + token }
-        });
-        return { success: data.isAuth }
-      }
-      catch ({ message }) { return { success: false, message } }
-    }
     setStatusData({ ...statusData, progress: 20, info: 'initializing...' });
     setStatusData({ ...statusData, progress: 40, info: 'getting session...' });
     const accessToken = localStorage.getItem("dtcAccess");
-    const { success, message } = checkSession(accessToken);
-    if (success) {
-      setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
-      initUser(jwt_decode(accessToken));
-      setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
-    }
-    else {
-      setStatusData({
-        error: true,
-        done: false,
-        progress: 0,
-        info: 'app is not available ' + message
+    setStatusData({ ...statusData, progress: 60, info: 'checking session...' });
+    api.get('/api/users/check/', { headers: { "Authorization": "Bearer " + accessToken } })
+      .then(({ data }) => {
+        if (data.isAuth) {
+          setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
+          initUser(jwt_decode(accessToken));
+        }
+        setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
+      })
+      .catch(({ message, response }) => {
+        if (response.status !== 401)
+          setStatusData({
+            error: true,
+            done: false,
+            progress: 0,
+            info: 'app is not available ' + message
+          });
+        else setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       });
-    }
   }, []);
 
   return (

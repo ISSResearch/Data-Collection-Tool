@@ -26,7 +26,8 @@ async def authenticate_request(request: Request, call_next):
     try:
         type, token = request.headers.get("authorization").split(" ")
         if type != "Bearer": raise JWTError
-        user_token = jwt.decode(token, SECRET_KEY, algorithms=SECRET_ALGO)
+        user_data = jwt.decode(token, SECRET_KEY, algorithms=SECRET_ALGO)
+        request.state.user = user_data
     except Exception: return PlainTextResponse(
         status_code=401,
         content="authentication failed",
@@ -43,8 +44,5 @@ def startup(): database.get_db(DB_STORAGE)
 @APP.on_event("shutdown")
 def shutdown(): database.client.close()
 
-
-@APP.get("/test")
-def qwe(): return "ok"
 
 if __name__ == "__main__": run(**UVICORN_CONF)

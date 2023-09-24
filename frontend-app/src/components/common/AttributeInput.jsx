@@ -20,7 +20,10 @@ export default function AttributeInput({
       await api.request(`/api/attributes/attributes/${id}/`,
         {
           method: 'get',
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+          }
         }
       );
       setAcceptDelete(null);

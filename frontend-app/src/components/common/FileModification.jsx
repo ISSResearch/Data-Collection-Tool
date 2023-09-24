@@ -22,7 +22,10 @@ export default function FileModification({ fileManager, sliderManager, attribute
       {
         method: 'patch',
         data: { status, attribute: newAttributes },
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+        },
       }
     ).catch(err => alert(err.message));
   }

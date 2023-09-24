@@ -63,7 +63,9 @@ export default function ProjectPage() {
     setCurrentRoute(page_loc);
 
     if (!project) {
-      api.get(`/api/projects/${projectID}/`)
+      api.get(`/api/projects/${projectID}/`, {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      })
         .then(({ data }) => {
           const preparedData = attributeAdapter(data);
           setProject(preparedData);

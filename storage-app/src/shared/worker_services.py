@@ -6,7 +6,6 @@ from gridfs import GridOutCursor, GridFSBucket
 from shared.settings import TEMP_BUCKET
 from shared.db_manager import DataBase
 from shared.app_services import Bucket
-from typing import Any
 from bson import ObjectId
 
 

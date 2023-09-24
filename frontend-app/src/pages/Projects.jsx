@@ -31,7 +31,9 @@ export default function Projects() {
   }
 
   useEffect(() => {
-    api.get('/api/projects/')
+    api.get('/api/projects/', {
+      headers: "Authorization: Bearer " + localStorage.getItem("dtcAccess")
+    })
       .then(({ data }) => { setProjects(data); })
       .catch(err => alert(err.message));
   }, []);

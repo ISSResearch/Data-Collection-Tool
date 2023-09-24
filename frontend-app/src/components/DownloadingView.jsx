@@ -60,6 +60,7 @@ export default function DownloadView({ taskID }) {
     const { data } = await fileApi.get(
       `/api/storage/temp_storage/${taskID}/`,
       {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") },
         responseType: 'blob', onDownloadProgress: ({ total, loaded, progress }) => {
           const calculated = progress
             ? Math.ceil(progress * 100)
@@ -73,7 +74,9 @@ export default function DownloadView({ taskID }) {
   }
 
   async function checkTaskStatus() {
-    const { data } = await fileApi.get(`/api/task/${taskID}/`);
+    const { data } = await fileApi.get(`/api/task/${taskID}/`, {
+      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+    });
     const { status, archive_id } = data;
     const handler = statusHandlers[status];
     if (handler) {

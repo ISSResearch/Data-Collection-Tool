@@ -28,6 +28,7 @@ export default function useFileUploader(projectID) {
         method: 'post',
         data,
         headers: {
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess"),
           'Content-Type': 'multipart/form-data',
           'Chunk': i + 1,
           'Total-Chunks': numOfChunks

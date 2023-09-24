@@ -7,7 +7,7 @@ from bson.errors import InvalidId
 def get_db_uri() -> str:
     db_user: str | None = getenv("DB_USER")
     db_password: str | None = getenv("DB_PASSWORD")
-    db_host: str | None= getenv("DB_HOST")
+    db_host: str | None = getenv("DB_HOST")
     db_port: int = 27017
 
     if not all((db_user, db_password, db_host, db_port)): raise AttributeError
