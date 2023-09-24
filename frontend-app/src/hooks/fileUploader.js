@@ -9,11 +9,6 @@ export default function useFileUploader(projectID) {
     const chunkSize = 1024 * 1024 * 4;
     const numOfChunks = Math.ceil(file.file.size / chunkSize);
     for (let i = 0; i < numOfChunks; i++) {
-      // const form = new FormData();
-      // const chunk = file.file.slice(i * chunkSize, chunkSize * (i + 1));
-      // form.append('chunk', chunk);
-
-
       const [type, extension] = file.type.split('/');
       const data = {
         file: file.file.slice(i * chunkSize, chunkSize * (i + 1)),
@@ -34,7 +29,6 @@ export default function useFileUploader(projectID) {
           'Total-Chunks': numOfChunks
         }
       }
-      // const data = await api.request(`/api/files/upload/${id}/`, {
       const response = await fileApi.request(
         `/api/storage/project_${project}/${id}/`,
         config
@@ -49,7 +43,10 @@ export default function useFileUploader(projectID) {
     return await api.request(`/api/files/project/${project}/`, {
       method: 'post',
       data: formData,
-      headers: { 'Content-Type': 'multipart/form-data', }
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        "Authorization": "Bearer " + localStorage.getItem("dtcAccess"),
+      }
     })
   }
 

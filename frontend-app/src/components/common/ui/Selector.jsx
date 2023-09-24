@@ -11,16 +11,16 @@ export default function Selector({ selectorKey, item, setOption, applyGroups }) 
     if (Array.isArray(selected)) return setOption({ selectorKey, id: selected, index });
     const id = typeof selected === 'number' ? selected : Number(selected.value);
     const clear = !Boolean(id);
-    newOptions.splice(index+1);
+    newOptions.splice(index + 1);
     valueIds.splice(index);
     setValuesIds(prev => {
-      const newValues =  [...prev];
+      const newValues = [...prev];
       if (id) newValues.push(id);
       return newValues;
     });
     if (!clear && children) {
       const option = { ...children[0] };
-      option.attributes = option.attributes.filter(({parent}) => parent === id);
+      option.attributes = option.attributes.filter(({ parent }) => parent === id);
       newOptions.push(option);
     }
     setOptions(newOptions);
@@ -30,10 +30,10 @@ export default function Selector({ selectorKey, item, setOption, applyGroups }) 
   function addSelected(group) {
     setValuesIds(group);
     const newOptions = group.reduce((acc, id) => {
-      const { children } = acc[acc.length-1];
+      const { children } = acc[acc.length - 1];
       if (!children) return acc;
       const option = { ...children[0] };
-      option.attributes = option.attributes.filter(({parent}) => parent === id);
+      option.attributes = option.attributes.filter(({ parent }) => parent === id);
       return [...acc, option];
     }, [item]);
     setOptions(newOptions);
@@ -57,16 +57,16 @@ export default function Selector({ selectorKey, item, setOption, applyGroups }) 
                   selectorName={name}
                   selectorOptions={attributes}
                   handleSelect={(ids) => handleSelect(ids, children, index)}
-                  defaultSelected={applyGroups}
+                  defaultSelected={applyGroups.splice(index)}
                 />
                 : <select
-                  onChange={({target}) => handleSelect(target, children, index)}
+                  onChange={({ target }) => handleSelect(target, children, index)}
                   className="iss__selector"
                   value={valueIds[index] || ''}
                 >
                   <option value="clear">-not set-</option>
                   {
-                    attributes?.map(({name, id}) =>
+                    attributes?.map(({ name, id }) =>
                       <option key={id} value={id}>{name}</option>
                     )
                   }

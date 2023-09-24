@@ -6,11 +6,13 @@ import {
   forwardRef,
 } from "react";
 import { getOriginDomain } from "../../utils/utils";
+import { fileApi } from "../../config/api";
 import "../../styles/components/common/filemedia.css";
 
 export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
+  const [tempFileToken, setTempFileToken] = useState("");
 
   const MediaItem = useCallback((props) => {
     return typeVideo
@@ -76,12 +78,29 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   }, []);
 
   useEffect(() => {
-    resetZoom();
-    if (!files[slide]) return;
-    const { id, file_type } = files[slide];
-    setTypeVideo(file_type === 'video');
-    // setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
-    setFileUrl(`http://127.0.0.1:9000/api/storage/project_${pathID}/${id}/`);
+    const setFile = (token) => {
+      resetZoom();
+      if (!files[slide]) return;
+      const { id, file_type } = files[slide];
+      setTypeVideo(file_type === 'video');
+      // setFileUrl(`${getOriginDomain()}:8000/api/files/${id}/`);
+      setFileUrl(
+        `http://127.0.0.1:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
+      );
+    }
+    // TODO: spread token and file
+    if (!tempFileToken) {
+      fileApi.get("/api/temp_token/", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      })
+        .then(({ data }) => {
+          setTempFileToken(() => data);
+          setTimeout(() => setTempFileToken(""), 1000 * 60 * 5);
+          setFile(data);
+        })
+        .catch(({ message }) => console.log(message));
+    }
+    else setFile();
 
     return () => {
       URL.revokeObjectURL(fileUrl);

@@ -21,7 +21,7 @@ class Headers:
 
     def validate(self) -> None:
         self.chunk: str | None = self._headers.get("chunk")
-        self.total_chunks: str | None = self._headers.get("total_chunks")
+        self.total_chunks: str | None = self._headers.get("total-chunks")
         self.is_valid = bool(self.chunk and self.total_chunks)
 
     @property

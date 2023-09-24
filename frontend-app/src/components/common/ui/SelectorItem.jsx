@@ -21,7 +21,7 @@ export default function SelectorItem({
   }
 
   // TODO: move out
-  function handleSelectChange(handleOptions, skipEmit=false) {
+  function handleSelectChange(handleOptions, skipEmit = false) {
     // TODO: number is propably used due to income value - adapt them to strings to avoid different comparers
     const selectedIds = Array.isArray(handleOptions)
       ? handleOptions
@@ -55,7 +55,7 @@ export default function SelectorItem({
       >
         {
           selected.length
-            ? <>{ selected.map(name => <span key={name}>{name}</span>) }</>
+            ? <>{selected.map(name => <span key={name}>{name}</span>)}</>
             : <span className='off--title'>-not set-</span>
         }
         <svg width="12" height="6" viewBox="0 0 14 8">
@@ -70,7 +70,7 @@ export default function SelectorItem({
         <div>
           <label
             htmlFor={`selector--${selectorName}_${selectorId}`}
-            onClick={({target}) => resetSelector(target)}
+            onClick={({ target }) => resetSelector(target)}
             className='iss__customSelector__level'
           >clear {selectorName}</label>
           <select
@@ -91,11 +91,11 @@ export default function SelectorItem({
           </select>
           {
             manual &&
-              <button
-                onClick={handleManualSelect}
-                type="button"
-                className='iss__customSelector__submit'
-              >ok</button>
+            <button
+              onClick={handleManualSelect}
+              type="button"
+              className='iss__customSelector__submit'
+            >ok</button>
           }
         </div>
       </div>
