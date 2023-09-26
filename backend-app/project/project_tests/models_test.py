@@ -13,9 +13,8 @@ class ProjectModelTest(TestCase, MOCK_PROJECT):
 
         self.assertTrue(
             all([
-                key in set(new_project.__dict__)
-                for key
-                in {'id', 'name', 'description', 'created_at', 'visible', 'reason_if_hidden'}
+                key in set(new_project.__dict__) for key
+                in {'id', 'name', 'description', 'created_at', 'visible'}
             ])
         )
         self.assertEqual(new_project.name, self.data['name'])

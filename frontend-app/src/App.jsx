@@ -44,7 +44,11 @@ export default function App() {
       {
         !statusData.done
           ? <div className="iss__main__loadWrap">
-            <StatusLoad progress={statusData.progress} info={statusData.info} error={statusData.error} />
+            <StatusLoad
+              progress={statusData.progress}
+              info={statusData.info}
+              error={statusData.error}
+            />
           </div>
           : <AppRouter />
       }

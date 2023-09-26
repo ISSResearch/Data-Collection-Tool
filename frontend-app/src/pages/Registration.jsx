@@ -6,6 +6,12 @@ import Form from '../components/common/Form';
 import '../styles/pages/registration.css';
 import jwt_decode from "jwt-decode";
 
+const FIELD_SET = [
+  { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
+  { label: 'Enter password:', type: 'password', name: 'password1', placeholder: 'password', required: true },
+  { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
+]
+
 export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -39,12 +45,6 @@ export default function Registration() {
     }
   }
 
-  const fieldSet = [
-    { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
-    { label: 'Enter password:', type: 'password', name: 'password1', placeholder: 'password', required: true },
-    { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
-  ]
-
   return (
     <div className="iss__registrationPage">
       <h1>Registration Page</h1>
@@ -52,7 +52,7 @@ export default function Registration() {
         loading={loading}
         errors={errors}
         callback={sendForm}
-        fields={fieldSet}
+        fields={FIELD_SET}
         link={{ to: '/login', text: 'Or Login' }}
       />
     </div>

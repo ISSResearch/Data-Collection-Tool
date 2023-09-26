@@ -6,6 +6,11 @@ import Form from '../components/common/Form';
 import '../styles/pages/login.css';
 import jwt_decode from "jwt-decode";
 
+const FIELD_SET = [
+  { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
+  { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
+];
+
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -35,11 +40,6 @@ export default function Login() {
     }
   }
 
-  const fieldSet = [
-    { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
-    { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
-  ];
-
   return (
     <div className="iss__loginPage">
       <h1>Login Page</h1>
@@ -47,7 +47,7 @@ export default function Login() {
         callback={sendForm}
         loading={loading}
         errors={errors}
-        fields={fieldSet}
+        fields={FIELD_SET}
         link={{ to: '/registration', text: 'Or Registry' }}
       />
     </div>

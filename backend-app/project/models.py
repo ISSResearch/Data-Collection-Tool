@@ -3,17 +3,10 @@ from attribute.models import Level, Attribute
 
 
 class Project(models.Model):
-    HIDDEN_REASONS = (
-        ('d', 'deleted'),
-        ('h', 'manually_hidden'),
-        ('b', 'broken_data'),
-    )
-
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     visible = models.BooleanField(default=True)
-    reason_if_hidden = models.CharField(max_length=1, choices=HIDDEN_REASONS, blank=True)
 
     user_visible = models.ManyToManyField('user.CustomUser', related_name='project_visible')
     user_upload = models.ManyToManyField('user.CustomUser', related_name='project_upload')
