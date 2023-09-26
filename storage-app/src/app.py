@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from shared.utils import get_db_uri, emit_token
 from shared.db_manager import DataBase
-from router import file
+from router import storage, task
 from jose import JWTError, jwt
 from shared.settings import (
     UVICORN_CONF,
@@ -18,7 +18,8 @@ database: DataBase = DataBase(get_db_uri())
 
 APP: FastAPI = FastAPI(docs_url="/docs", redoc_url=None)
 APP.add_middleware(CORSMiddleware, allow_origins=SELF_ORIGIN)
-APP.include_router(file.router)
+APP.include_router(storage.router)
+APP.include_router(task.router)
 
 
 @APP.middleware("http")
@@ -49,7 +50,7 @@ async def authenticate_request(request: Request, call_next):
 
 
 @APP.on_event("startup")
-def startup(): database.get_db(DB_STORAGE)
+def startup(): database.set_db(DB_STORAGE)
 
 
 @APP.on_event("shutdown")

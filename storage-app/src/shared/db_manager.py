@@ -19,7 +19,7 @@ class DataBase:
         return cls.client
 
     @classmethod
-    def get_db(cls, db_name: str = "") -> None:
+    def set_db(cls, db_name: str = "") -> None:
         if not cls.client: cls.get_client(get_db_uri())
 
         cls.current_db = cls.client[db_name or DB_STORAGE]
@@ -28,7 +28,7 @@ class DataBase:
 
     @classmethod
     def get_fs_bucket(cls, bucket_name: str) -> GridFSBucket:
-        if cls.current_db is None: cls.get_db(DB_STORAGE)
+        if cls.current_db is None: cls.set_db(DB_STORAGE)
 
         return GridFSBucket(
             db=cls.current_db,

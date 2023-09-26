@@ -4,6 +4,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from jose import jwt
 from datetime import datetime, timedelta
+from typing import Any
 
 
 def get_db_uri() -> str:
@@ -32,6 +33,11 @@ def get_object_id(object_id: str) -> str | ObjectId:
     except InvalidId: return object_id
 
 
-def emit_token(delta: dict, secret: str, algorithm: str) -> str:
+def emit_token(
+    delta: dict,
+    secret: str,
+    algorithm: str,
+    payload: dict[str, Any] = {}
+) -> str:
     expire = datetime.utcnow() + timedelta(**delta)
-    return jwt.encode({"exp": expire}, secret, algorithm)
+    return jwt.encode({"exp": expire, **payload}, secret, algorithm)

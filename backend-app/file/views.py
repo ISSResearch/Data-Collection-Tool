@@ -159,3 +159,30 @@ def get_stats(_, projectID):
     if empty_stats: stats = list(stats) + list(empty_stats)
 
     return Response(stats, status=status.HTTP_200_OK)
+
+
+@api_view(('POST',))
+@permission_classes((IsAuthenticated, ProjectStatsPermission))
+def get_annotation(request):
+    project_id = request.data.get("project_id")
+    file_ids = request.data.get("file_ids")
+
+    files = File.objects \
+        .select_related('author', 'project') \
+        .prefetch_related(
+            'attributegroup_set',
+            'attributegroup_set__attribute',
+            'attributegroup_set__attribute__level'
+        ) \
+        .filter(project_id=project_id, id__in=file_ids)
+
+    annotated = files.update(is_downloaded=True)
+
+    serialized_data = FileSerializer(files, many=True).data
+
+    response_data = {
+        "annotated": annotated,
+        "data": serialized_data
+    }
+
+    return Response(response_data, status=status.HTTP_200_OK)

@@ -8,5 +8,6 @@ class File(BaseModel):
     file_meta: Annotated[str, Form()]
 
 
-class Downloads(BaseModel):
+class ArchiveTask(BaseModel):
+    bucket_name: str
     file_ids: list[int]

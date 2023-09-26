@@ -2,7 +2,7 @@ from celery import Celery
 from shared.settings import BROKER_URL, RESULT_URL, CELERY_CONFIG
 from shared.worker_services import Zipper
 
-if not BROKER_URL or not RESULT_URL: raise ValueError("no broker variables")
+if not BROKER_URL or not RESULT_URL: raise ValueError("no broker environment")
 
 WORKER: Celery = Celery()
 WORKER.conf.broker_url = BROKER_URL
