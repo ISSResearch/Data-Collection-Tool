@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { findRequired, formError, formUID } from '../utils/utils';
 
+const TYPES_MAP = {
+  'mkv': "video"
+}
+
 export default function useFileInput() {
   const [files, setFiles] = useState({});
 
@@ -17,7 +21,13 @@ export default function useFileInput() {
         extension = typeExt || '';
       }
       const name = nameSplit.join('');
-      return { file, name, extension, type, attributeGroups: {} };
+      return {
+        file,
+        name,
+        extension,
+        type: type || TYPES_MAP[extension],
+        attributeGroups: {}
+      };
     });
     const threshold = 20 - Object.values(files).length;
     const newData = { ...files };

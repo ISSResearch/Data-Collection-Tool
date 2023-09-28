@@ -11,11 +11,12 @@ class CustomUser(AbstractUser):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
-    def __str__(self): return self.username
+    def __str__(self) -> None: return self.username
 
     def emit_token(self) -> str:
         time_now: datetime = datetime.utcnow()
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
+
         token_data: dict[str, Any] = {
             "token_type": "access",
             "exp": time_now + token_settings.get("ACCESS_TOKEN_LIFETIME", 1),
@@ -33,7 +34,7 @@ class CustomUser(AbstractUser):
         )
 
     # TODO: optimize
-    def update_permissions(self, permissions, project_id):
+    def update_permissions(self, permissions: dict[str, bool], project_id: int) -> None:
         change_fields = (
             (self.project_visible, 'visible'),
             (self.project_view, 'view'),
@@ -47,5 +48,5 @@ class CustomUser(AbstractUser):
         for field, permission_name in change_fields:
             is_permission = permissions.get(permission_name)
 
-            if is_permission: field.add(int(project_id))
-            else: field.remove(int(project_id))
+            if is_permission: field.add(project_id)
+            else: field.remove(project_id)

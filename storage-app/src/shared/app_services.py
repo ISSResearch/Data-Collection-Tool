@@ -13,8 +13,6 @@ from shared.db_manager import DataBase, GridFSBucket
 
 
 class Headers:
-    headers_fields: tuple = ("chunk", "total_chunks")
-
     def __init__(self, data: dict[str, str]) -> None:
         self._headers: dict[str, str] = data
         self.is_valid: bool = False
@@ -22,10 +20,11 @@ class Headers:
     def validate(self) -> None:
         self.chunk: str | None = self._headers.get("chunk")
         self.total_chunks: str | None = self._headers.get("total-chunks")
+
         self.is_valid = bool(self.chunk and self.total_chunks)
 
     @property
-    def is_new(self) -> bool: return not self.chunk or self.chunk == 1
+    def is_new(self) -> bool: return not self.chunk or int(self.chunk) == 1
 
     @property
     def is_last_chunk(self) -> bool:
@@ -35,26 +34,28 @@ class Headers:
 
 
 class FileMeta:
-    meta_fields = ("file_name", "file_extension", "file_type")
+    __slots__ = ("_meta", "_prepared_meta")
+    META_FIELDS = ("file_name", "file_extension", "file_type")
 
-    def __init__(self, data: str) -> None:
-        self._meta: Any = loads(data)
-        self.is_valid: bool = False
+    def __init__(self, data: str) -> None: self._meta: str = data
 
     def get(self) -> dict:
         return {
-            meta_name: self._meta.get(meta_name)
-            for meta_name in self.meta_fields
+            meta_name: self.prepared_meta.get(meta_name)
+            for meta_name in self.META_FIELDS
         }
+
+    @property
+    def prepared_meta(self) -> Any:
+        if not self.__dict__.get("prepared_meta"):
+            self._prepared_meta: Any = loads(self._meta)
+
+        return self._prepared_meta
 
 
 class ObjectStreaming:
-    slots = (
-        'RANGE_RE',
+    __slots__ = (
         'file',
-        'meta',
-        'file_size',
-        'content_type',
         'range_match',
         'chunk_start',
         'chunk_end',
@@ -64,9 +65,6 @@ class ObjectStreaming:
 
     def __init__(self, file: GridOut) -> None:
         self.file: GridOut = file
-        self.meta: dict[str, Any] = file.metadata
-        self.file_size: int = file.length
-        self.content_type: str = self._get_file_type()
         self._set_chunks()
 
     def stream(self, request: Request) -> StreamingResponse:
@@ -80,8 +78,8 @@ class ObjectStreaming:
         )
 
         chunk_range: str = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
+        response.headers["Accept-Ranges"] = "bytes"
         response.headers["Content-Range"] = "bytes " + chunk_range
-        response.headers["Content-Length"] = str(self.file.length)
 
         return response
 
@@ -108,12 +106,16 @@ class ObjectStreaming:
 
             yield data
 
-    def _get_file_type(self) -> str:
-        if '.' not in self.meta.get("file_name", ""):
-            return self.meta.get("file_type", "image") + "/png"
+    @property
+    def content_type(self) -> str:
+        type: str = self.file.meta.get("file_type")
+        extension: str = self.file.meta.get("file_extension")
 
-        extension: str = self.meta.get("file_name", ".png").split('.')[-1]
-        return f'{self.meta.get("file_type", "image")}/{extension}'
+        return (
+            f'{type}/{extension}'
+            if type and extension
+            else "application/octet-stream"
+        )
 
     def _get_range_match(self, request: Request) -> Match[str] | None:
         range_header: str = request.headers.get('range', '')
@@ -121,15 +123,15 @@ class ObjectStreaming:
         return self.RANGE_RE.match(range_header)
 
     def _set_chunks(self) -> None:
-        range = self.__dict__.get('range_match')
+        range: Any | None = self.__dict__.get('range_match')
         chunk_start, chunk_end = range.groups() if range else (0, 0)
 
         chunk_start = int(chunk_start)
         chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
 
-        if chunk_end >= self.file_size: chunk_end = self.file_size - 1
+        if chunk_end >= self.file.length: chunk_end = self.file.length - 1
 
-        chunk_length = chunk_end - chunk_start + 1
+        chunk_length: int = chunk_end - chunk_start + 1
 
         self.chunk_start: int = chunk_start
         self.chunk_end: int = chunk_end
@@ -163,12 +165,11 @@ class BucketObject:
 
         except Exception: return False, status.HTTP_400_BAD_REQUEST
 
-    def delete_object(self, object_id: str) -> tuple:
-        try:
-            self._fs.delete(object_id)
-            return True, ""
-
+    def delete_object(self, object_id: str) -> tuple[bool, str]:
+        try: self._fs.delete(get_object_id(object_id))
         except Exception: return False, "error message"
+
+        return True, ""
 
     def _prepare_payload(
         self,
@@ -176,8 +177,8 @@ class BucketObject:
         request_headers: dict = {}
     ) -> None:
         self.meta: FileMeta = FileMeta(file_meta)
-        self.headers: Headers = Headers(request_headers)
 
+        self.headers: Headers = Headers(request_headers)
         self.headers.validate()
 
     def _create_file(self, chunk: UploadFile) -> ObjectId:
@@ -199,7 +200,7 @@ class BucketObject:
                 "filename": previous_file.name,
                 # TODO: make generator
                 "source": previous_file.read() + chunk.file.read(),
-                "metadata": self.meta.get()
+                "metadata": previous_file.metadata
             }
 
             self._fs.delete(previous_file._id)
@@ -221,8 +222,7 @@ class Bucket(BucketObject):
         file_id: str,
         file: UploadFile,
         file_meta: str
-    ) -> tuple:
-        return super().put_object(request, file_id, file, file_meta)
+    ) -> tuple: return super().put_object(request, file_id, file, file_meta)
 
     def delete_object(self, object_id: str) -> tuple:
         return super().delete_object(object_id)

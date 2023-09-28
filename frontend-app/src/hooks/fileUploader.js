@@ -9,13 +9,12 @@ export default function useFileUploader(projectID) {
     const chunkSize = 1024 * 1024 * 4;
     const numOfChunks = Math.ceil(file.file.size / chunkSize);
     for (let i = 0; i < numOfChunks; i++) {
-      const [type, extension] = file.type.split('/');
       const data = {
         file: file.file.slice(i * chunkSize, chunkSize * (i + 1)),
         file_meta: JSON.stringify({
           file_name: file.name,
-          file_extension: extension,
-          file_type: type
+          file_extension: file.extension,
+          file_type: file.type
         })
       }
 

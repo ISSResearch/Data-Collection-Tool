@@ -28,12 +28,8 @@ def upload_file(
 ) -> JSONResponse:
     project_bucket: Bucket = Bucket(bucket_name)
 
-    result, is_completed, status = project_bucket.put_object(
-        request,
-        file_id,
-        file,
-        file_meta
-    )
+    result, is_completed, status = project_bucket \
+        .put_object(request, file_id, file, file_meta)
 
     return JSONResponse(status_code=status, content={
         "ok": result,

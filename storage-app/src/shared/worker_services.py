@@ -2,7 +2,7 @@ from json import dumps, loads # noqa
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from datetime import datetime
-from gridfs import GridOutCursor, GridFSBucket
+from gridfs import GridOutCursor
 from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO
 from shared.db_manager import DataBase
 from shared.app_services import Bucket
@@ -17,11 +17,11 @@ class Zipper:
     archive_extension: str = "zip"
 
     def __init__(self, bucket_name: str, file_ids: list[int]) -> None:
-        project_bucket: Bucket = Bucket(bucket_name)
-        self.object_set: GridOutCursor = project_bucket.get_download_objects(file_ids)
+        self.object_set: GridOutCursor = Bucket(bucket_name) \
+            .get_download_objects(file_ids)
         self._get_annotation(bucket_name, file_ids)
 
-    def archive_objects(self, add_data: tuple = ()) -> None:
+    def archive_objects(self) -> None:
         archive: BytesIO = BytesIO()
 
         if not self.annotated:
@@ -42,8 +42,6 @@ class Zipper:
                 with BytesIO(json_data) as annotation:
                     zip.writestr("annotation.json", annotation.read())
 
-            for name, data in add_data: zip.writestr(name, data)
-
         archive.seek(0)
 
         self.archive: BytesIO = archive
@@ -55,17 +53,13 @@ class Zipper:
 
         if self.archive.tell(): self.archive.seek(0)
 
-        bucket: GridFSBucket = DataBase.get_fs_bucket(TEMP_BUCKET)
-
-        create_time: datetime = datetime.now()
-
-        self._archive_id: ObjectId = bucket.upload_from_stream(
-            filename=self._get_name(),
-            source=self.archive.read(),
-            metadata={
-                "created_at": create_time.isoformat()
-            }
-        )
+        self._archive_id: ObjectId = DataBase \
+            .get_fs_bucket(TEMP_BUCKET) \
+            .upload_from_stream(
+                filename=self._get_name(),
+                source=self.archive.read(),
+                metadata={"created_at": datetime.now().isoformat()}
+            )
 
         self.archive.close()
 
@@ -103,5 +97,5 @@ class Zipper:
 
     @property
     def archive_id(self) -> str | None:
-        if not self.__dict__.get("_archive_id"): return None
-        return str(self._archive_id)
+        id = self.__dict__.get("_archive_id")
+        if id: return str(id)

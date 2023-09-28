@@ -1,16 +1,16 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import CustomUser
 
 
-class CollectorSerializer(serializers.ModelSerializer):
-    permissions = serializers.SerializerMethodField()
+class CollectorSerializer(ModelSerializer):
+    permissions = SerializerMethodField()
 
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'permissions')
 
-    def get_permissions(self, instance):
-        project_id = self.context.get('project_id')
+    def get_permissions(self, instance: CustomUser) -> dict[str, bool]:
+        project_id: int = self.context.get('project_id')
         if not project_id: return {}
 
         return {

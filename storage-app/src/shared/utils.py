@@ -2,15 +2,17 @@ from os import getenv
 from os.path import sep, join, realpath
 from bson import ObjectId
 from bson.errors import InvalidId
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from typing import Any
+from fastapi import Request
+from shared.settings import SECRET_ALGO, SECRET_KEY
 
 
 def get_db_uri() -> str:
-    db_user: str | None = getenv("DB_USER")
-    db_password: str | None = getenv("DB_PASSWORD")
-    db_host: str | None = getenv("DB_HOST")
+    db_user: str = getenv("DB_USER", "")
+    db_password: str = getenv("DB_PASSWORD", "")
+    db_host: str = getenv("DB_HOST", "")
     db_port: int = 27017
 
     if not all((db_user, db_password, db_host, db_port)): raise AttributeError
@@ -41,3 +43,17 @@ def emit_token(
 ) -> str:
     expire = datetime.utcnow() + timedelta(**delta)
     return jwt.encode({"exp": expire, **payload}, secret, algorithm)
+
+
+def parse_request_for_jwt(request: Request) -> dict[str, Any]:
+    request_token: str = (
+        "Bearer " + request.url.query.split("=")[1]
+        if request.url.query
+        else request.headers.get("authorization")
+    )
+
+    token_type, token = request_token.split(" ")
+
+    if token_type != "Bearer": raise JWTError
+
+    return jwt.decode(token, SECRET_KEY, algorithms=SECRET_ALGO)
