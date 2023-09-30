@@ -1,38 +1,41 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import Project
 from attribute.serializers import LevelSerializer
+from typing import Any
+from rest_framework.views import Request
 
 
-class ProjectsSerializer(serializers.ModelSerializer):
+class ProjectsSerializer(ModelSerializer):
 
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'created_at')
 
     def add_attributes(self):
-        attributeForm = self.initial_data.get('attributes', ())
+        attributeForm: list[list[dict[str, Any]]] = self.initial_data.get('attributes', ())
         for form in attributeForm: self.instance.add_attributes(form)
 
 
 class ProjectSerializer(ProjectsSerializer):
-    attributes = serializers.SerializerMethodField()
-    permissions = serializers.SerializerMethodField()
+    attributes: SerializerMethodField = SerializerMethodField()
+    permissions: SerializerMethodField = SerializerMethodField()
 
     class Meta(ProjectsSerializer.Meta):
         fields = ('id', 'name', 'description', 'attributes', 'permissions')
 
-    def get_attributes(self, instance):
-        levels = LevelSerializer(
+    def get_attributes(self, instance: Project) -> dict[str, Any]:
+        levels: LevelSerializer = LevelSerializer(
             instance.level_set.order_by('order', 'id').all(),
             many=True
         )
         return levels.data
 
-    def get_permissions(self, instance):
-        request = self.context.get('request')
+    def get_permissions(self, instance: Project) -> dict[str, bool]:
+        request: Request = self.context.get('request')
         if not request: return {}
 
-        user_id = request.user.id
+        user_id: int = request.user.id
+
         return {
             'upload': user_id in {user.id for user in instance.user_upload.all()},
             'view': user_id in {user.id for user in instance.user_view.all()},

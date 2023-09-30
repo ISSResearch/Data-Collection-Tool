@@ -65,6 +65,7 @@ class ObjectStreaming:
 
     def __init__(self, file: GridOut) -> None:
         self.file: GridOut = file
+        self.range_match: Match[str] | None = None
         self._set_chunks()
 
     def stream(self, request: Request) -> StreamingResponse:
@@ -108,8 +109,8 @@ class ObjectStreaming:
 
     @property
     def content_type(self) -> str:
-        type: str = self.file.meta.get("file_type")
-        extension: str = self.file.meta.get("file_extension")
+        type: str = self.file.metadata.get("file_type")
+        extension: str = self.file.metadata.get("file_extension")
 
         return (
             f'{type}/{extension}'
@@ -123,8 +124,10 @@ class ObjectStreaming:
         return self.RANGE_RE.match(range_header)
 
     def _set_chunks(self) -> None:
-        range: Any | None = self.__dict__.get('range_match')
-        chunk_start, chunk_end = range.groups() if range else (0, 0)
+        chunk_start, chunk_end = (
+            self.range_match.groups() if self.range_match
+            else (0, 0)
+        )
 
         chunk_start = int(chunk_start)
         chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE

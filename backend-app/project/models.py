@@ -1,41 +1,71 @@
-from django.db import models
+from django.db.models import (
+    Model,
+    CharField,
+    TextField,
+    DateTimeField,
+    BooleanField,
+    ManyToManyField
+)
 from attribute.models import Level, Attribute
+from typing import Any
 
 
-class Project(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    visible = models.BooleanField(default=True)
+class Project(Model):
+    name: CharField = CharField(max_length=255)
+    description: TextField = TextField(blank=True)
+    created_at: DateTimeField = DateTimeField(auto_now_add=True)
+    visible: BooleanField = BooleanField(default=True)
 
-    user_visible = models.ManyToManyField('user.CustomUser', related_name='project_visible')
-    user_upload = models.ManyToManyField('user.CustomUser', related_name='project_upload')
-    user_view = models.ManyToManyField('user.CustomUser', related_name='project_view')
-    user_validate = models.ManyToManyField('user.CustomUser', related_name='project_validate')
-    user_stats = models.ManyToManyField('user.CustomUser', related_name='project_stats')
-    user_download = models.ManyToManyField('user.CustomUser', related_name='project_download')
-    user_edit = models.ManyToManyField('user.CustomUser', related_name='project_edit')
+    user_visible: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_visible"
+    )
+    user_upload: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_upload"
+    )
+    user_view: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_view"
+    )
+    user_validate: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_validate"
+    )
+    user_stats: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_stats"
+    )
+    user_download: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_download"
+    )
+    user_edit: ManyToManyField = ManyToManyField(
+        to="user.CustomUser",
+        related_name="project_edit"
+    )
 
     class Meta:
         db_table = 'project'
 
     def __str__(self): return self.name
 
-    def add_attributes(self, form):
+    def add_attributes(self, form: dict[str, Any]) -> None:
         self._create_attributes(form['attributes'], form['levels'])
 
     def _create_attributes(
         self,
-        attributes,
-        levels,
-        parent_attribute=None,
-        parent_level=None
-    ):
+        attributes: list[dict[str, Any]],
+        levels: list[dict[str, Any]],
+        parent_attribute: None | Attribute = None,
+        parent_level: None | Level = None
+    ) -> None:
         current_level, *rest = levels
+        current_level_id: str = current_level.get('uid', current_level['id'])
 
         try:
-            lookup_value = current_level.get('uid', current_level['id'])
-            LEVEL, changed = self.level_set.get(uid=lookup_value), False
+            LEVEL: Level = self.level_set.get(uid=current_level_id)
+            changed: bool = False
 
             if LEVEL.name != current_level['name']:
                 LEVEL.name = current_level['name']
@@ -53,7 +83,7 @@ class Project(models.Model):
 
         except Level.DoesNotExist:
             LEVEL = self.level_set.create(
-                uid=lookup_value,
+                uid=current_level_id,
                 name=current_level['name'],
                 parent=parent_level,
                 multiple=current_level.get('multiple'),
@@ -64,13 +94,15 @@ class Project(models.Model):
         if rest and not attributes: self._create_attributes([], rest, None, LEVEL)
 
         for attribute in attributes:
-            name, children = attribute['name'], attribute['children']
+            name: str = attribute['name']
+            children: list[dict[str, Any]] = attribute['children']
 
             try:
                 PARENT = self.attribute_set.get(id=attribute['id'])
                 if PARENT.name != name:
                     PARENT.name = name
                     PARENT.save()
+
             except Attribute.DoesNotExist:
                 PARENT = self.attribute_set.create(
                     name=name,

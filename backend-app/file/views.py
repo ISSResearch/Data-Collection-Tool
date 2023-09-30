@@ -20,6 +20,7 @@ class FileViewSet(APIView):
             .select_related('author') \
             .prefetch_related('attributegroup_set') \
             .get(id=fileID)
+
         updated_file = FileSerializer(file, request.data, partial=True)
         update_valid = updated_file.is_valid()
 

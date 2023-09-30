@@ -4,16 +4,21 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import QuerySet
 from .serializers import CollectorSerializer, CustomUser
 from .permissions import UserPermission
-from .services import _set_user_permissions, _proceed_create, _proceed_login
+from .services import (
+    _set_user_permissions,
+    _proceed_create,
+    _proceed_login,
+    _get_collectors
+)
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 @permission_classes(())
 def check_user(request: Request) -> Response:
-    return Response({'isAuth': request.user.is_authenticated})
+    return Response({"isAuth": request.user.is_authenticated})
 
 
-@api_view(('POST',))
+@api_view(("POST",))
 @permission_classes(())
 @authentication_classes(())
 def login_user(request: Request) -> Response:
@@ -24,7 +29,7 @@ def login_user(request: Request) -> Response:
     )
 
 
-@api_view(('POST',))
+@api_view(("POST",))
 @permission_classes(())
 @authentication_classes(())
 def create_user(request: Request) -> Response:
@@ -32,37 +37,12 @@ def create_user(request: Request) -> Response:
 
 
 class CollectorsViewSet(APIView):
-    http_method_names = ('get', 'patch')
+    http_method_names = ("get", "patch")
     permission_classes = (IsAuthenticated, UserPermission)
 
     def get(self, _, projectID: int) -> Response:
-        return Response(self._get_collectors(projectID, True).data)
+        return Response(_get_collectors(projectID, True).data)
 
     def patch(self, request: Request, projectID: int) -> Response:
         _set_user_permissions(request.data, projectID)
-        return Response(self._get_collectors(projectID, True).data)
-
-    def _get_collectors(
-        self,
-        project_id: int,
-        serialized: bool = False
-    ) -> QuerySet | CollectorSerializer:
-        collectors: QuerySet = CustomUser.objects \
-            .prefetch_related(
-                'project_view',
-                'project_upload',
-                'project_validate',
-                'project_stats',
-                'project_download',
-                'project_edit'
-            ) \
-            .filter(is_superuser=False)
-
-        return (
-            collectors if not serialized
-            else CollectorSerializer(
-                collectors,
-                many=True,
-                context={'project_id': project_id}
-            )
-        )
+        return Response(_get_collectors(projectID, True).data)

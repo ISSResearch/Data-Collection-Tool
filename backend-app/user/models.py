@@ -7,9 +7,9 @@ from typing import Any
 
 class CustomUser(AbstractUser):
     class Meta:
-        db_table = 'user'
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        db_table = "user"
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     def __str__(self) -> None: return self.username
 
@@ -36,13 +36,13 @@ class CustomUser(AbstractUser):
     # TODO: optimize
     def update_permissions(self, permissions: dict[str, bool], project_id: int) -> None:
         change_fields = (
-            (self.project_visible, 'visible'),
-            (self.project_view, 'view'),
-            (self.project_upload, 'upload'),
-            (self.project_validate, 'validate'),
-            (self.project_stats, 'stats'),
-            (self.project_download, 'download'),
-            (self.project_edit, 'edit'),
+            (self.project_visible, "visible"),
+            (self.project_view, "view"),
+            (self.project_upload, "upload"),
+            (self.project_validate, "validate"),
+            (self.project_stats, "stats"),
+            (self.project_download, "download"),
+            (self.project_edit, "edit"),
         )
 
         for field, permission_name in change_fields:
