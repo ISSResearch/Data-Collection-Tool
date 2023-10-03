@@ -48,7 +48,11 @@ class ViewSetServices:
             HTTP_201_CREATED if valid else HTTP_400_BAD_REQUEST
         )
 
-    def _get_project(self, pk: int, request: Request) -> tuple[dict[str, Any], int]:
+    def _get_project(
+        self,
+        pk: int,
+        request: Request
+    ) -> tuple[dict[str, Any], int]:
         response: dict[str, Any] = {}
         status: int = HTTP_200_OK
 
@@ -69,7 +73,9 @@ class ViewSetServices:
         pk: int,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
-        project: Project = Project.objects.prefetch_related("attribute_set").get(id=id)
+        project: Project = Project.objects \
+            .prefetch_related("attribute_set") \
+            .get(id=pk)
 
         updated: ProjectSerializer = ProjectSerializer(
             project,

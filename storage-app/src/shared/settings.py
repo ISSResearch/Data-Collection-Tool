@@ -2,6 +2,7 @@ from multiprocessing import cpu_count
 from os import getenv
 from typing import Any
 
+APP_BACKEND_URL = getenv("APP_BACKEND_URL", "http://127.0.0.1")
 SECRET_KEY: str = getenv("SECRET_KEY", "")
 SECRET_ALGO: str = getenv("SECRET_ALGO", "HS256")
 

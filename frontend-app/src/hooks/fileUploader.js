@@ -50,7 +50,10 @@ export default function useFileUploader(projectID) {
   }
 
   async function deleteFile(fileId) {
-    await api.delete(`/api/files/${fileId}/`)
+    await api.delete(
+      `/api/files/${fileId}/`,
+      { headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") } }
+    );
   }
 
   async function proceedUpload() {

@@ -3,7 +3,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from datetime import datetime
 from gridfs import GridOutCursor
-from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO
+from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
 from shared.db_manager import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
@@ -68,7 +68,7 @@ class Zipper:
     def _get_name(self) -> str: return 'name' + self.archive_extension
 
     def _get_annotation(self, bucket_name: str, file_ids: list[int]) -> Any:
-        url: str = "http://localhost:8000/api/files/annotation/"
+        url: str = APP_BACKEND_URL + "/api/files/annotation/"
         payload_token: str = emit_token(
             {"minutes": 1},
             SECRET_KEY,

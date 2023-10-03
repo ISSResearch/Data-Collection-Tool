@@ -15,13 +15,13 @@ class PermissionMixIn(BasePermission):
     ) -> dict[str, Any]:
         if self.model.__name__ == "Attribute":
             return (
-                {"id": view.kwargs["attributeID"]}
+                {"id": view.kwargs["itemID"]}
                 if for_get else
                 {"id__in": request.data.get("id_set", ())}
             )
         else:
             return (
-                {"uid": view.kwargs["levelID"]}
+                {"uid": view.kwargs["itemID"]}
                 if for_get else
                 {"uid__in": request.data.get("id_set", ())}
             )
@@ -50,7 +50,7 @@ class PermissionMixIn(BasePermission):
                 )
 
                 return bool(
-                    user_project_ids and not user_project_ids - request_project_ids
+                    user_project_ids and not request_project_ids - user_project_ids
                 )
 
         except self.model.DoesNotExist: return True

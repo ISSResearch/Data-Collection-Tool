@@ -1,96 +1,107 @@
+from rest_framework.status import (
+    HTTP_404_NOT_FOUND,
+    HTTP_403_FORBIDDEN,
+    HTTP_200_OK,
+    HTTP_202_ACCEPTED,
+    HTTP_206_PARTIAL_CONTENT
+)
+from rest_framework.views import Request, Response, APIView
 from django.db import transaction, IntegrityError
+from typing import Any
 from file.models import File
+from .models import Level, Attribute
 
 
-@transaction.atomic
-def perform_level_delete(level):
-    project_id = level.project_id
-    current_file_attributes = set(
-        # TODO: optimize query
-        File.objects
-            .filter(project_id=project_id)
-            .values_list('attributegroup__attribute', flat=True)
-    )
-    level_delete_attributes = set(
-        level.descendants().reverse().values_list('attribute', flat=True)
-    )
-    # TODO: optimize query
-    level_delete_attributes = level_delete_attributes.union(level.attribute_set.values_list('id', flat=True))
+# TODO: optimize queries
+class ViewMixIn(APIView):
+    http_method_names: tuple = ("get", "delete")
+    permission_classes: tuple
+    model: Level | Attribute
 
-    if current_file_attributes.intersection(level_delete_attributes): return
+    def get(self, request: Request, itemID: int) -> Response:
+        response, status = self._can_delete_response(itemID)
+        return Response(response, status=status)
 
-    try:
-        with transaction.atomic():
-            for child_level in level.descendants().reverse():
-                child_level.attribute_set.all().delete()
-                child_level.delete()
+    def delete(self, request: Request) -> Response:
+        response, status = self._delete_items(request.data)
+        return Response(response, status=status)
 
-            level.attribute_set.all().delete()
-            level.delete()
+    def _can_delete_response(self, id: int) -> tuple[dict[str, Any], int]:
+        try:
+            delete_item: Level | Attribute = self.model.objects.get(id=id)
+
+            if not self.__check_intersection(delete_item):
+                return {"is_safe": True}, HTTP_200_OK
+
+            else: return {
+                "is_safe": False,
+                "message": "attribute violation"
+            }, HTTP_403_FORBIDDEN
+
+        except self.model.DoesNotExist:
+            return {
+                "is_safe": False,
+                "message": "queried id does not exist"
+            }, HTTP_404_NOT_FOUND
+
+    def _delete_items(self, request_data: dict[str, Any]) -> tuple[dict[int, Any], int]:
+        delete_id_set: list[int] = request_data.get("id_set", [])
+        response: dict[int, Any] = {}
+        status: int = HTTP_202_ACCEPTED
+
+        for delete_id in delete_id_set:
+            try:
+                result = self.__perform_delete(delete_id)
+                response[delete_id] = result or "attribute violation"
+                if not result: status = HTTP_206_PARTIAL_CONTENT
+
+            except self.model.DoesNotExist:
+                response[delete_id] = "queried id does not exist"
+                status = HTTP_206_PARTIAL_CONTENT
+
+        return response, status
+
+    @transaction.atomic
+    def __perform_delete(self, id: int) -> bool:
+        delete_item: Level | Attribute = self.model.objects.get(id=id)
+
+        if self.__check_intersection(delete_item): return False
+
+        try:
+            with transaction.atomic():
+                if isinstance(delete_item, Level):
+                    for child_level in delete_item.descendants().reverse():
+                        child_level.attribute_set.all().delete()
+                        child_level.delete()
+
+                    delete_item.attribute_set.all().delete()
+
+                else: delete_item.descendants().delete()
+
+                delete_item.delete()
+
+        except IntegrityError: return False
+
         return True
 
-    except IntegrityError: return
+    def __check_intersection(self, item: Level | Attribute) -> bool:
+        file_attributes: set[int] = set(
+            File.objects
+            .filter(project_id=item.project_id)
+            .values_list("attributegroup__attribute", flat=True)
+        )
 
+        delete_ids: set[int] = set(
+            item.descendants().reverse().values_list("attribute", flat=True)
+            if isinstance(item, Level) else
+            item.descendants().values_list("id", flat=True)
+        )
 
-def check_level_delete(level):
-    project_id = level.project_id
-    current_file_attributes = set(
-        # TODO: optimize query
-        File.objects
-            .filter(project_id=project_id)
-            .values_list('attributegroup__attribute', flat=True)
-    )
-    level_delete_attributes = set(
-        level.descendants().reverse().values_list('attribute', flat=True)
-    )
-    # TODO: optimize query
-    level_delete_attributes = level_delete_attributes.union(level.attribute_set.values_list('id', flat=True))
+        if isinstance(item, Level):
+            delete_ids = delete_ids.union(
+                item.attribute_set.values_list("id", flat=True)
+            )
 
-    if current_file_attributes.intersection(level_delete_attributes): return
+        else: delete_ids.add(item.id)
 
-    return True
-
-
-@transaction.atomic
-def perform_attribute_delete(attribute):
-    project_id = attribute.project_id
-    current_file_attributes = set(
-        File.objects
-        # TODO: optimize query
-            .filter(project_id=project_id)
-            .values_list('attributegroup__attribute', flat=True)
-    )
-    delete_attributes = set(
-        # TODO: optimize query
-        attribute.descendants().values_list('id', flat=True)
-    )
-    delete_attributes.add(attribute.id)
-
-    if current_file_attributes.intersection(delete_attributes): return
-
-    try:
-        with transaction.atomic():
-            attribute.descendants().delete()
-            attribute.delete()
-        return True
-
-    except IntegrityError: return
-
-
-def check_attribute_delete(attribute):
-    project_id = attribute.project_id
-    current_file_attributes = set(
-        # TODO: optimize query
-        File.objects
-            .filter(project_id=project_id)
-            .values_list('attributegroup__attribute', flat=True)
-    )
-    delete_attributes = set(
-        # TODO: optimize query
-        attribute.descendants().values_list('id', flat=True)
-    )
-    delete_attributes.add(attribute.id)
-
-    if current_file_attributes.intersection(delete_attributes): return
-
-    return True
+        return bool(file_attributes.intersection(delete_ids))

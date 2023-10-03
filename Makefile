@@ -18,3 +18,12 @@ stop-test:
 
 restart-test:
 	make stop-test && make start-test
+
+appdb-dump-schema:
+	docker exec iss-db pg_dump -U postgres -d iss_app_db --schema-only > app_dump_schema
+
+appdb-dump-data:
+	docker exec iss-db pg_dump -U postgres -d iss_app_db --data-only > app_dump_data
+
+dump-database:
+	make appdb-dump-schema && make appdb-dump-data

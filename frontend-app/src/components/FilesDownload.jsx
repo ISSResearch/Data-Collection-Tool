@@ -29,12 +29,15 @@ export default function FilesDownload({ pathID }) {
 
   async function getFiles() {
     let file_ids;
-    if (manual) file_ids = fileManager.map(({ id }) => id);
+    if (manual) file_ids = fileManager.files.map(({ id }) => id);
     else {
       const params = {};
       if (isNew) params.downloaded = false;
       if (option.value !== 'all') params.status = option.value;
-      const { data } = await api.get(`/api/files/project/${pathID}/`, { params });
+      const { data } = await api.get(`/api/files/project/${pathID}/`, {
+        params,
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      });
       file_ids = (
         isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
       ).map(({ id }) => id);
@@ -63,7 +66,7 @@ export default function FilesDownload({ pathID }) {
         },
         { headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") } }
       );
-      if (data.taskID) setTask(data.taskID);
+      if (data.task_id) setTask(data.task_id);
     }
     catch ({ message }) { alert(message); }
     setLoading(false);

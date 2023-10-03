@@ -37,6 +37,7 @@ services:
       CELERY_RESULT_BACKEND: ${RESULT_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
+      APP_BACKEND_URL: ${APP_BACKEND_URL}
     depends_on:
       - iss-storage-db
     volumes:
@@ -62,6 +63,7 @@ services:
         CELERY_RESULT_BACKEND: ${RESULT_URL}
         SECRET_KEY: ${SECRET_KEY}
         SECRET_ALGO: ${SECRET_ALGO}
+        APP_BACKEND_URL: ${APP_BACKEND_URL}
       depends_on:
         - iss-storage-broker
         - iss-storage-back

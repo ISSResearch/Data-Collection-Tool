@@ -28,9 +28,11 @@ class File(Model):
     def __str__(self): return self.file_name
 
     def update_attributes(self, new_attributes: dict[str, list[int | str]]) -> None:
-        current_attributes: QuerySet = self.attributegroup_set.all()
+        current_attributes: QuerySet = self.attributegroup_set \
+            .prefetch_related("attribute") \
+            .all()
         attributes_by_group: dict[UUID, list[int]] = self._get_attribute_ids(
-            current_attributes.values_list('uid', 'attribute')
+            current_attributes.values_list("uid", "attribute")
         )
 
         new_groups = {
@@ -63,16 +65,16 @@ class File(Model):
                 upd_group.attribute.set(new_ids)
 
         else:
-            new_group = self.instance.attributegroup_set.create()
+            new_group = self.attributegroup_set.create()
             new_group.attribute.set(new_ids)
             newKey = str(new_group.uid)
 
         return newKey or key
 
     def _get_attribute_ids(self, groups: QuerySet) -> dict[UUID, list[int]]:
-        result = {}
+        result: dict[UUID, list[int]] = {}
 
-        for group in groups:
-            result[group["uid"]] = result.get(group["uid"], []) + [group["attribute"]]
+        for uid, attribute_id in groups:
+            result[uid] = result.get(uid, []) + [attribute_id]
 
         return result

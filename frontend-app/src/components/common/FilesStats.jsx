@@ -25,7 +25,7 @@ export default function FilesStatistics({ pathID }) {
 
   useEffect(() => {
     api.get(`/api/files/stats/project/${pathID}/`, {
-      header: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => setStats(statsAdapter(data)))
       .catch(err => {

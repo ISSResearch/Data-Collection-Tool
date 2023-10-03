@@ -37,7 +37,10 @@ class FileMeta:
     __slots__ = ("_meta", "_prepared_meta")
     META_FIELDS = ("file_name", "file_extension", "file_type")
 
-    def __init__(self, data: str) -> None: self._meta: str = data
+    def __init__(self, data: str) -> None:
+        self._meta: str = data
+        self._prepared_meta: Any | None = None
+
 
     def get(self) -> dict:
         return {
@@ -47,8 +50,8 @@ class FileMeta:
 
     @property
     def prepared_meta(self) -> Any:
-        if not self.__dict__.get("prepared_meta"):
-            self._prepared_meta: Any = loads(self._meta)
+        if not self._prepared_meta:
+            self._prepared_meta = loads(self._meta)
 
         return self._prepared_meta
 
@@ -166,7 +169,7 @@ class BucketObject:
                 else status.HTTP_202_ACCEPTED
             )
 
-        except Exception: return False, status.HTTP_400_BAD_REQUEST
+        except Exception: return False, False, status.HTTP_400_BAD_REQUEST
 
     def delete_object(self, object_id: str) -> tuple[bool, str]:
         try: self._fs.delete(get_object_id(object_id))
