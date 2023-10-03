@@ -46,12 +46,12 @@ class Project(Model):
     )
 
     class Meta:
-        db_table = 'project'
+        db_table = "project"
 
     def __str__(self): return self.name
 
     def add_attributes(self, form: dict[str, Any]) -> None:
-        self._create_attributes(form['attributes'], form['levels'])
+        self._create_attributes(form["attributes"], form["levels"])
 
     def _create_attributes(
         self,
@@ -61,50 +61,50 @@ class Project(Model):
         parent_level: None | Level = None
     ) -> None:
         current_level, *rest = levels
-        current_level_id: str = current_level.get('uid', current_level['id'])
+        current_level_id: str = current_level.get("uid", current_level["id"])
 
         try:
             LEVEL: Level = self.level_set.get(uid=current_level_id)
             changed: bool = False
 
-            if LEVEL.name != current_level['name']:
-                LEVEL.name = current_level['name']
+            if LEVEL.name != current_level["name"]:
+                LEVEL.name = current_level["name"]
                 changed = True
 
-            if LEVEL.multiple != current_level.get('multiple', False):
-                LEVEL.multiple = current_level.get('multiple', False)
+            if LEVEL.multiple != current_level.get("multiple", False):
+                LEVEL.multiple = current_level.get("multiple", False)
                 changed = True
 
-            if LEVEL.required != current_level.get('required', False):
-                LEVEL.required = current_level.get('required', False)
+            if LEVEL.required != current_level.get("required", False):
+                LEVEL.required = current_level.get("required", False)
                 changed = True
 
             if changed: LEVEL.save()
 
         except Level.DoesNotExist:
-            LEVEL = self.level_set.create(
+            LEVEL: Level = self.level_set.create(
                 uid=current_level_id,
-                name=current_level['name'],
+                name=current_level["name"],
                 parent=parent_level,
-                multiple=current_level.get('multiple'),
-                required=current_level.get('required'),
-                order=current_level.get('order', 0)
+                multiple=current_level.get("multiple"),
+                required=current_level.get("required"),
+                order=current_level.get("order", 0)
             )
 
         if rest and not attributes: self._create_attributes([], rest, None, LEVEL)
 
         for attribute in attributes:
-            name: str = attribute['name']
-            children: list[dict[str, Any]] = attribute['children']
+            name: str = attribute["name"]
+            children: list[dict[str, Any]] = attribute["children"]
 
             try:
-                PARENT = self.attribute_set.get(id=attribute['id'])
+                PARENT: Attribute = self.attribute_set.get(id=attribute["id"])
                 if PARENT.name != name:
                     PARENT.name = name
                     PARENT.save()
 
             except Attribute.DoesNotExist:
-                PARENT = self.attribute_set.create(
+                PARENT: Attribute = self.attribute_set.create(
                     name=name,
                     parent=parent_attribute,
                     level=LEVEL

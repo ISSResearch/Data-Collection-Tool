@@ -1,42 +1,55 @@
-from django.db import models
+from django.db.models import (
+    CharField,
+    ForeignKey,
+    DO_NOTHING,
+    BigIntegerField,
+    Model,
+    ManyToManyField,
+    UUIDField,
+    BooleanField
+)
 from tree_queries.models import TreeNode
+from django.db.models import QuerySet
 from uuid import uuid4
 
 
 class Attribute(TreeNode):
-    name = models.CharField(max_length=255)
+    name: CharField = CharField(max_length=255)
 
-    project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
-    level = models.ForeignKey('attribute.Level', on_delete=models.DO_NOTHING)
+    project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
+    level: ForeignKey = ForeignKey("attribute.Level", on_delete=DO_NOTHING)
 
-    class Meta: db_table = 'attribute'
+    class Meta:
+        db_table = "attribute"
 
-    def __str__(self): return self.name
+    def __str__(self) -> str: return self.name
 
 
 class Level(TreeNode):
-    uid = models.BigIntegerField()
-    name = models.CharField(max_length=255)
-    multiple = models.BooleanField(default=False, null=True)
-    required = models.BooleanField(default=False, null=True)
-    order = models.BigIntegerField(default=0)
+    uid: BigIntegerField = BigIntegerField()
+    name: CharField = CharField(max_length=255)
+    multiple: BooleanField = BooleanField(default=False, null=True)
+    required: BooleanField = BooleanField(default=False, null=True)
+    order: BigIntegerField = BigIntegerField(default=0)
 
-    project = models.ForeignKey('project.Project', on_delete=models.DO_NOTHING)
+    project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
 
-    class Meta: db_table = 'level'
+    class Meta:
+        db_table = "level"
 
-    def __str__(self): return self.name
+    def __str__(self) -> str: return self.name
 
 
-class AttributeGroup(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+class AttributeGroup(Model):
+    uid: UUIDField = UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    file = models.ForeignKey('file.File', null=True, on_delete=models.DO_NOTHING)
-    attribute = models.ManyToManyField('attribute.Attribute')
+    file: ForeignKey = ForeignKey("file.File", null=True, on_delete=DO_NOTHING)
+    attribute: ManyToManyField = ManyToManyField("attribute.Attribute")
 
-    class Meta: db_table = 'attribute_group'
+    class Meta:
+        db_table = "attribute_group"
 
-    def __str__(self): return str(self.uid)
+    def __str__(self) -> str: return str(self.uid)
 
     @classmethod
-    def get_free_groups(cls): return cls.objects.filter(file_id=None)
+    def get_free_groups(cls) -> QuerySet: return cls.objects.filter(file_id=None)

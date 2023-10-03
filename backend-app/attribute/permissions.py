@@ -1,53 +1,64 @@
 from rest_framework.permissions import BasePermission
+from rest_framework.views import Request, APIView
+from typing import Any
 from .models import Level, Attribute
 
 
-class LevelPermission(BasePermission):
-    def has_permission(self, request, view):
+class PermissionMixIn(BasePermission):
+    model: Attribute | Level
+
+    def _get_lookup(
+        self,
+        request: Request,
+        view: APIView,
+        for_get: bool
+    ) -> dict[str, Any]:
+        if self.model.__name__ == "Attribute":
+            return (
+                {"id": view.kwargs["attributeID"]}
+                if for_get else
+                {"id__in": request.data.get("id_set", ())}
+            )
+        else:
+            return (
+                {"uid": view.kwargs["levelID"]}
+                if for_get else
+                {"uid__in": request.data.get("id_set", ())}
+            )
+
+    def has_permission(self, request: Request, view: APIView) -> bool | None:
         if request.user.is_superuser: return True
 
-        method = request.method
         try:
-            if method == 'GET':
-                level_id = view.kwargs['levelID']
-                project_id = Level.objects.get(uid=level_id).project_id
+            if request.method == "GET":
+                item = self.model.objects.get(
+                    **self._get_lookup(request, view, True)
+                )
+                return bool(request.user.project_edit.filter(id=item.project_id))
 
-                return bool(request.user.project_edit.filter(id=project_id))
-
-            if method == 'DELETE':
-                level_ids = request.data.get('id_set', ())
-                project_ids = set(
-                    Level.objects.filter(uid__in=level_ids).values_list('project_id', flat=True)
+            if request.method == "DELETE":
+                request_project_ids: set[int] = set(
+                    self.model.objects
+                    .filter(
+                        **self._get_lookup(request, view, False)
+                    )
+                    .values_list("project_id", flat=True)
                 )
 
-                user_edit_permissions = set(request.user.project_edit.values_list('id', flat=True))
-                difference = user_edit_permissions - project_ids
-
-                return user_edit_permissions and len(difference) == 0
-
-        except Level.DoesNotExist: return True
-
-
-class AttributePermission(BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser: return True
-
-        method = request.method
-        try:
-            if method == 'GET':
-                attribute_id = view.kwargs['attributeID']
-                project_id = Attribute.objects.get(id=attribute_id).project_id
-
-                return bool(request.user.project_edit.filter(id=project_id))
-
-            if method == 'DELETE':
-                attribute_ids = request.data.get('id_set', ())
-                project_ids = set(
-                    Attribute.objects.filter(id__in=attribute_ids).values_list('project_id', flat=True)
+                user_project_ids: set[int] = set(
+                    request.user.project_edit.values_list("id", flat=True)
                 )
-                user_edit_permissions = set(request.user.project_edit.values_list('id', flat=True))
 
-                difference = user_edit_permissions - project_ids
-                return user_edit_permissions and len(difference) == 0
+                return bool(
+                    user_project_ids and not user_project_ids - request_project_ids
+                )
 
-        except Attribute.DoesNotExist: return True
+        except self.model.DoesNotExist: return True
+
+
+class LevelPermission(PermissionMixIn):
+    model = Level
+
+
+class AttributePermission(PermissionMixIn):
+    model = Attribute

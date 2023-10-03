@@ -1,8 +1,8 @@
-from .forms import CustomUser, CreateUserForm
-from typing import Any
 from django.contrib.auth import authenticate
 from django.db.models import QuerySet
+from typing import Any
 from .serializers import CollectorSerializer
+from .forms import CustomUser, CreateUserForm
 
 
 def _set_user_permissions(data, projectID: int) -> None:

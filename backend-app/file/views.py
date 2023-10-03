@@ -1,189 +1,46 @@
-from django.db.models import Count, Subquery
-from rest_framework.views import Response, APIView
+from rest_framework.views import Response, APIView, Request
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from attribute.models import Level
 from project.permissions import ProjectStatsPermission
 from .permissions import FilePermission
-from .serializers import File, FileSerializer, FilesSerializer
-from .services import FileUploader
-from attribute.models import AttributeGroup
+from .services import ViewSetServices, _form_project_stats, _annotate_files
 
 
-class FileViewSet(APIView):
-    http_method_names = ('patch', 'delete')
+class FileViewSet(APIView, ViewSetServices):
+    http_method_names = ("patch", "delete")
     permission_classes = (IsAuthenticated, FilePermission)
 
-    def patch(self, request, fileID):
-        file = File.objects \
-            .select_related('author') \
-            .prefetch_related('attributegroup_set') \
-            .get(id=fileID)
+    def patch(self, request: Request, fileID: int) -> Response:
+        response, status = self._patch_file(fileID, request.data)
+        return Response(response, status=status)
 
-        updated_file = FileSerializer(file, request.data, partial=True)
-        update_valid = updated_file.is_valid()
-
-        if update_valid: updated_file.update_file()
-
-        response = {'ok': update_valid}
-
-        if not update_valid: response['errors'] = updated_file.errors
-        response_status = status.HTTP_202_ACCEPTED if update_valid else status.HTTP_400_BAD_REQUEST
-
-        return Response(response, status=response_status)
-
-    def delete(self, _, fileID):
-        try:
-            file = File.objects.get(id=fileID)
-            file.attributegroup_set.clear()
-            file.delete()
-
-            return Response({'deleted': True}, status=status.HTTP_202_ACCEPTED)
-
-        except Exception:
-            return Response({'deleted': False}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, _, fileID: int) -> Response:
+        response, status = self._delete_file(fileID)
+        return Response(response, status=status)
 
 
-class FilesViewSet(APIView):
-    http_method_names = ('get', 'post')
+class FilesViewSet(APIView, ViewSetServices):
+    http_method_names = ("get", "post")
     permission_classes = (IsAuthenticated, FilePermission)
 
-    def get(self, request, projectID):
-        accepted_queries = (
-            ('status__in', 'card[]', True),
-            ('file_type__in', 'type[]', True),
-            ('status', 'status', False),
-            ('is_downloaded', 'downloaded', False)
-        )
+    def get(self, request: Request, projectID: int) -> Response:
+        response, status = self._get_files(projectID, request.query_params)
+        return Response(response, status=status)
 
-        filter_query = {'project_id': projectID}
-
-        for filter_name, param, is_list in accepted_queries:
-            query_param = (
-                request.query_params.getlist(param)
-                if is_list
-                else request.query_params.get(param)
-            )
-            if query_param:
-                filter_query[filter_name] = (
-                    False
-                    if filter_name == 'is_downloaded'
-                    else query_param
-                )
-
-        files = File.objects \
-            .select_related('author') \
-            .prefetch_related(
-                'attributegroup_set',
-                'attributegroup_set__attribute',
-                'attributegroup_set__attribute__level'
-            ) \
-            .order_by('-status', '-upload_date') \
-            .filter(**filter_query)
-
-        attribute_query = request.query_params.getlist('attr[]')
-
-        if attribute_query:
-            sub_query = AttributeGroup.objects \
-                .filter(attribute__in=attribute_query) \
-                .annotate(count=Count('uid')) \
-                .filter(count=len(attribute_query)) \
-                .values('uid')
-            files = files.filter(attributegroup__in=Subquery(sub_query))
-        else: files = files.distinct()
-
-        response = FileSerializer(files, many=True)
-        return Response(response.data, status=status.HTTP_200_OK)
-
-    def post(self, request, projectID):
-        uploader = FileUploader(request, projectID)
-        uploader.proceed_upload()
-
-        response = {'ok': uploader.status}
-        res_status = (
-            status.HTTP_201_CREATED if uploader.status
-            else status.HTTP_406_NOT_ACCEPTABLE
-        )
-
-        if uploader.status:
-            response['created_files'] = FilesSerializer(
-                uploader.created_files,
-                many=True
-            ).data
-
-        return Response(response, status=res_status)
+    def post(self, request: Request, projectID: int) -> Response:
+        response, status = self._create_file(projectID, request)
+        return Response(response, status=status)
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 @permission_classes((IsAuthenticated, ProjectStatsPermission))
-def get_stats(_, projectID):
-    stats = Level.objects \
-        .filter(project_id=projectID) \
-        .order_by('order', 'id') \
-        .values(
-            'name',
-            'order',
-            'attribute__id',
-            'attribute__name',
-            'attribute__parent',
-            'attribute__attributegroup__file__file_type',
-            'attribute__attributegroup__file__status'
-        ) \
-        .annotate(count=Count('attribute__attributegroup__file__file_type'))
-
-    empty_attributes_files = File.objects \
-        .filter(project_id=projectID, attributegroup__isnull=False) \
-        .values('file_type', 'status') \
-        .annotate(file_count=Count('file_type'), attribute_count=Count('attributegroup__attribute')) \
-        .filter(attribute_count=0)
-
-    empty_attributegroups_files = File.objects \
-        .filter(project_id=projectID, attributegroup__isnull=True) \
-        .annotate(file_count=Count('file_type'), attribute_count=Count('attributegroup')) \
-        .values('file_type', 'status', 'file_count') \
-        .filter(attribute_count=0)
-
-    empty_stats = [
-        {
-            'name': 'no level',
-            'attribute__name': 'No attribute',
-            'attribute__parent': None,
-            'attribute__id': 'no-id',
-            'attribute__attributegroup__file__file_type': entry['file_type'],
-            'attribute__attributegroup__file__status': entry['status'],
-            'count': entry['file_count']
-        }
-        for entry in tuple(empty_attributes_files) + tuple(empty_attributegroups_files)
-    ]
-
-    if empty_stats: stats = list(stats) + list(empty_stats)
-
-    return Response(stats, status=status.HTTP_200_OK)
+def get_stats(_, projectID: int) -> Response:
+    response, status = _form_project_stats(projectID)
+    return Response(response, status=status)
 
 
-@api_view(('POST',))
+@api_view(("POST",))
 @permission_classes((IsAuthenticated, ProjectStatsPermission))
-def get_annotation(request):
-    project_id = request.data.get("project_id")
-    file_ids = request.data.get("file_ids")
-
-    files = File.objects \
-        .select_related('author', 'project') \
-        .prefetch_related(
-            'attributegroup_set',
-            'attributegroup_set__attribute',
-            'attributegroup_set__attribute__level'
-        ) \
-        .filter(project_id=project_id, id__in=file_ids)
-
-    annotated = files.update(is_downloaded=True)
-
-    serialized_data = FileSerializer(files, many=True).data
-
-    response_data = {
-        "annotated": annotated,
-        "data": serialized_data
-    }
-
-    return Response(response_data, status=status.HTTP_200_OK)
+def get_annotation(request: Request) -> Response:
+    response, status = _annotate_files(request.data)
+    return Response(response, status=status)

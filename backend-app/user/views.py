@@ -1,8 +1,6 @@
 from rest_framework.views import Response, APIView, Request
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import QuerySet
-from .serializers import CollectorSerializer, CustomUser
 from .permissions import UserPermission
 from .services import (
     _set_user_permissions,

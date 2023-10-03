@@ -1,5 +1,3 @@
-from typing import Any
-from uuid import UUID
 from django.db.models import (
     Model,
     CharField,
@@ -9,6 +7,7 @@ from django.db.models import (
     DO_NOTHING,
     QuerySet
 )
+from uuid import UUID
 
 
 class File(Model):

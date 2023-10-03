@@ -11,7 +11,7 @@ class ProjectsViewSet(APIView, ViewSetServices):
     def get(self, request: Request) -> Response:
         return Response(self._get_available_projects(request.user).data)
 
-    def post(self, request: Request) -> Response :
+    def post(self, request: Request) -> Response:
         response, status = self._create_project(request.data)
         return Response(response, status=status)
 

@@ -12,8 +12,7 @@ class FilePermission(BasePermission):
         try:
             file_id = view.kwargs.get("fileID")
 
-            if file_id:
-                project_id = File.objects.get(id=file_id).project_id
+            if file_id: project_id = File.objects.get(id=file_id).project_id
             else: project_id = view.kwargs["projectID"]
 
             if method in {"GET"}:

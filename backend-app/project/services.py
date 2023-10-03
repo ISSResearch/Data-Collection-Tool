@@ -1,4 +1,3 @@
-from .serializers import ProjectSerializer, Project, ProjectsSerializer
 from rest_framework.views import Request
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -7,9 +6,10 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_202_ACCEPTED
 )
+from django.db.models import QuerySet
 from typing import Any
 from user.models import CustomUser
-from django.db.models import QuerySet
+from .serializers import ProjectSerializer, Project, ProjectsSerializer
 
 
 class ViewSetServices:
