@@ -2,14 +2,14 @@ from json import dumps, loads # noqa
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from datetime import datetime
-from gridfs import GridOutCursor
+from gridfs import GridOutCursor, GridOut
 from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
 from shared.db_manager import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
 from bson import ObjectId
 from typing import Any
-from requests import post
+from requests import post, Response
 
 
 class Zipper:
@@ -19,6 +19,7 @@ class Zipper:
     def __init__(self, bucket_name: str, file_ids: list[int]) -> None:
         self.object_set: GridOutCursor = Bucket(bucket_name) \
             .get_download_objects(file_ids)
+
         self._get_annotation(bucket_name, file_ids)
 
     def archive_objects(self) -> None:
@@ -35,7 +36,7 @@ class Zipper:
         with ZipFile(archive, 'w', ZIP_DEFLATED) as zip:
             if not self.written:
                 for object in self.object_set:
-                    zip.writestr(object.name, object.read())
+                    zip.writestr(self._get_object_name(object), object.read())
 
                 self.written = True
 
@@ -56,7 +57,7 @@ class Zipper:
         self._archive_id: ObjectId = DataBase \
             .get_fs_bucket(TEMP_BUCKET) \
             .upload_from_stream(
-                filename=self._get_name(),
+                filename="name" + self.archive_extension,
                 source=self.archive.read(),
                 metadata={"created_at": datetime.now().isoformat()}
             )
@@ -65,7 +66,13 @@ class Zipper:
 
         return self.archive_id
 
-    def _get_name(self) -> str: return 'name' + self.archive_extension
+    def _get_object_name(self, object) -> str:
+        prepared_name: str = object.name
+        extension: str = object.metadata.get("file_extension", "")
+
+        if extension: prepared_name += f".{extension}"
+
+        return prepared_name
 
     def _get_annotation(self, bucket_name: str, file_ids: list[int]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"
@@ -79,21 +86,23 @@ class Zipper:
         try: prefix, project_id = bucket_name.split('_')
         except Exception: project_id = ""
 
-        headers = {
+        headers: dict[str, Any] = {
             "Authorization": "Bearer " + payload_token,
             "Content-Type": "application/json"
         }
-        payload: str = dumps({
+        payload: dict[str, Any] = {
             "project_id": project_id,
             "file_ids": file_ids
-        })
+        }
 
-        request = post(url, headers=headers, json=payload)
+        response: Response = post(url, headers=headers, json=payload)
 
-        response = loads(request.json())
+        if response.status_code != 202: raise ConnectionError
 
-        self.annotation: dict[str, Any] = response.annotation
-        self.annotated: int = response.annotated
+        response_data: Any = response.json()
+
+        self.annotation: dict[str, Any] = response_data["annotation"]
+        self.annotated: int = response_data["annotated"]
 
     @property
     def archive_id(self) -> str | None:

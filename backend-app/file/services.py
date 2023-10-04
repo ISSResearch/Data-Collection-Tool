@@ -325,5 +325,5 @@ def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
 
     return {
         "annotated": annotated,
-        "data": FileSerializer(annotation_files, many=True).data
-    }, HTTP_200_OK
+        "annotation": FileSerializer(annotation_files, many=True).data
+    }, HTTP_202_ACCEPTED

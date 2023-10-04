@@ -6,7 +6,9 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from typing import Any
 from fastapi import Request
-from shared.settings import SECRET_ALGO, SECRET_KEY
+from shared.settings import SECRET_ALGO, SECRET_KEY, APP_BACKEND_URL
+from requests import get, Response, ConnectTimeout
+from time import sleep
 
 
 def get_db_uri() -> str:
@@ -41,8 +43,17 @@ def emit_token(
     algorithm: str,
     payload: dict[str, Any] = {}
 ) -> str:
-    expire = datetime.utcnow() + timedelta(**delta)
-    return jwt.encode({"exp": expire, **payload}, secret, algorithm)
+    time_now: datetime = datetime.utcnow()
+
+    token_data: dict[str, Any] = {
+        "token_type": "access",
+        "exp": time_now + timedelta(**delta),
+        "iat": time_now,
+        "jti": f"emited-token-{time_now}",
+        **payload
+    }
+
+    return jwt.encode(token_data, secret, algorithm)
 
 
 def parse_request_for_jwt(request: Request) -> dict[str, Any]:
@@ -57,3 +68,30 @@ def parse_request_for_jwt(request: Request) -> dict[str, Any]:
     if token_type != "Bearer": raise JWTError
 
     return jwt.decode(token, SECRET_KEY, algorithms=SECRET_ALGO)
+
+
+def healthcheck_backend_app() -> bool:
+    url: str = APP_BACKEND_URL + "/api/users/check/"
+
+    payload_token: str = emit_token(
+        {"minutes": 1},
+        SECRET_KEY,
+        SECRET_ALGO,
+        {"user_id": 1, "is_superuser": True}
+    )
+
+    headers: dict[str, Any] = {"Authorization": "Bearer " + payload_token}
+
+    for attempt_n in range(5):
+        print(f"backend app healthcheck attempt {attempt_n + 1}...")
+
+        sleep(3)
+
+        try:
+            response: Response = get(url, headers=headers)
+
+            if response.status_code == 200 and response.json()["isAuth"]: return True
+
+        except ConnectTimeout: continue
+
+    return False

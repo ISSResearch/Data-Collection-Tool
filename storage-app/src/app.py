@@ -3,9 +3,14 @@ from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from typing import Any
-from shared.utils import get_db_uri, emit_token, parse_request_for_jwt
-from shared.db_manager import DataBase
 from router import storage, task
+from shared.db_manager import DataBase
+from shared.utils import (
+    get_db_uri,
+    emit_token,
+    parse_request_for_jwt,
+    healthcheck_backend_app
+)
 from shared.settings import (
     UVICORN_CONF,
     SELF_ORIGIN,
@@ -25,11 +30,14 @@ APP.include_router(task.router)
 
 
 @APP.on_event("startup")
-def startup(): database.set_db(DB_STORAGE)
+def startup():
+    if not healthcheck_backend_app(): raise ConnectionError
+    database.set_db(DB_STORAGE)
 
 
 @APP.on_event("shutdown")
-def shutdown(): database.client.close()
+def shutdown():
+    if database.client: database.client.close()
 
 
 @APP.middleware("http")

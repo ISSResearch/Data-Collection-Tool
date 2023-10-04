@@ -41,7 +41,6 @@ class FileMeta:
         self._meta: str = data
         self._prepared_meta: Any | None = None
 
-
     def get(self) -> dict:
         return {
             meta_name: self.prepared_meta.get(meta_name)
@@ -241,4 +240,9 @@ class Bucket(BucketObject):
         except NoFile: return None
 
     def get_download_objects(self, file_ids: list[int]) -> GridOutCursor:
-        return self._fs.find({"_id": {"$in": file_ids}})
+        prepared_ids: list[str | ObjectId] = [
+            get_object_id(str(object_id))
+            for object_id in file_ids
+        ]
+
+        return self._fs.find({"_id": {"$in": prepared_ids}})
