@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Any
 from fastapi import Request
 from shared.settings import SECRET_ALGO, SECRET_KEY, APP_BACKEND_URL
-from requests import get, Response, ConnectTimeout
+from requests import get, Response, ConnectTimeout, ConnectionError
 from time import sleep
 
 
@@ -83,15 +83,17 @@ def healthcheck_backend_app() -> bool:
     headers: dict[str, Any] = {"Authorization": "Bearer " + payload_token}
 
     for attempt_n in range(5):
-        print(f"backend app healthcheck attempt {attempt_n + 1}...")
+        print(f"1/2 backend app healthcheck attempt {attempt_n + 1}...")
 
         sleep(3)
 
         try:
             response: Response = get(url, headers=headers)
 
-            if response.status_code == 200 and response.json()["isAuth"]: return True
+            if response.status_code == 200 and response.json()["isAuth"]:
+                print("2/2 healthcheck passed!")
+                return True
 
-        except ConnectTimeout: continue
+        except (ConnectTimeout, ConnectionError): continue
 
     return False

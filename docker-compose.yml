@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   # todo: set admin user
-  iss-db:
-    container_name: iss-db
+  iss-main-db:
+    container_name: iss-main-db
     image: postgres:15.3-alpine
     restart: always
     environment:
@@ -14,21 +14,33 @@ services:
     networks:
       - iss_network
 
+  iss-storage-db:
+      image: mongo:7.0.1-rc0
+      container_name: iss-storage-db
+      environment:
+          MONGO_INITDB_ROOT_USERNAME: ${DB_STORAGE_USER}
+          MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD}
+      volumes:
+        - ./storage:/data/db
+      restart: always
+      networks:
+        - iss_network
+
   iss-back:
     container_name: iss-back
-    image: iss_back
+    image: iss-back
     build:
       dockerfile: Dockerfile.backend
     restart: always
     environment:
-      DB_HOST: iss-db
+      DB_HOST: iss-main-db
       DB_NAME: ${DB_APP_DB_NAME}
       SERVER_ORIGINS: ${SERVER_ORIGINS}
       DEBUG: ${DEBUG}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
     depends_on:
-      - iss-db
+      - iss-main-db
     volumes:
       - ./backend-app:/app
     command: >
@@ -41,20 +53,76 @@ services:
     networks:
       - iss_network
 
+  iss-storage:
+      container_name: iss-storage
+      image: iss-storage
+      build:
+        dockerfile: Dockerfile.storage
+      restart: always
+      environment:
+        DB_HOST: iss-storage-db
+        APP_BACKEND_URL: iss-back:8000
+        DB_USER: ${DB_STORAGE_USER}
+        DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+        DEBUG: ${DEBUG}
+        CELERY_BROKER_URL: ${BROKER_URL}
+        SECRET_KEY: ${SECRET_KEY}
+        SECRET_ALGO: ${SECRET_ALGO}
+      depends_on:
+        - iss-storage-db
+        - iss-back
+      volumes:
+        - ./storage-app/src:/app/src
+      command: python3 src/app.py
+      networks:
+        - iss_network
+
   iss-front:
     container_name: iss-front
     image: iss_front
     build:
       dockerfile: Dockerfile.frontend
     restart: always
-    environment:
-      PORT: ${FRONTEND_APP_PORT}
     depends_on:
       - iss-back
+    ports:
+      - 3000:3000
     volumes:
       - ./frontend-app/src:/app/src
       - ./frontend-app/public:/app/public
     command: npm start
+    networks:
+      - iss_network
+
+  iss-broker:
+    container_name: iss-broker
+    image: redis:alpine3.18
+    restart: always
+    volumes:
+      - ./broker-db:/data
+    networks:
+      - iss_network
+
+  iss-worker:
+    container_name: iss-worker
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    volumes:
+      - ./storage-app/src:/app/src
+    environment:
+      DB_HOST: iss-storage-db
+      APP_BACKEND_URL: iss-back:8000
+      DB_USER: ${DB_STORAGE_USER}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      DEBUG: ${DEBUG}
+      CELERY_BROKER_URL: ${BROKER_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
+    depends_on:
+      - iss-broker
+      - iss-back
+    command: python3 src/worker.py
     networks:
       - iss_network
 
@@ -64,12 +132,29 @@ services:
     restart: always
     depends_on:
       - iss-back
-      - iss-front
+      - iss-storage
     ports:
-      - 3000:3000
+      - 9000:9000
       - 8000:8000
     volumes:
-      - ./nginx/app-conf:/etc/nginx/conf.d
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - iss_network
+
+  dashboard:
+    container_name: iss_dashboard
+    build:
+      dockerfile: Dockerfile.storage
+    ports:
+      - 9090:5555
+    environment:
+      CELERY_BROKER_URL: ${BROKER_URL}
+      CELERY_RESULT_BACKEND: ${BROKER_URL}
+    restart: always
+    depends_on:
+      - iss-broker
+      - iss-worker
+    command: celery --broker=redis://iss-storage-broker:6379/0 flower --port=5555
     networks:
       - iss_network
 

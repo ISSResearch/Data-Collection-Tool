@@ -1,11 +1,11 @@
 start:
-	docker compose -f docker-compose.yml -f docker-compose.storage.yml up -d
+	docker compose up -d
 
 start-b:
-	docker compose -f docker-compose.yml -f docker-compose.storage.yml up -d --build
+	docker compose up -d --build
 
 stop:
-	docker compose -f docker-compose.yml -f docker-compose.storage.yml down
+	docker compose down
 
 restart:
 	make stop && make start

@@ -1,18 +1,18 @@
 # ISS Data Collection Tool
 
 ## Makefile convinience commands (**docker** and **.env** file are supposed to be set):
-- star all apps:
+- start project:
 `make start`
-- stop all apps:
+- stop project:
 `make stop`
-- restart all appps:
+- restart project:
 `make restart`
-- start all apps and revuild them:
+- start project with rebuild:
 `make start-b`
 - start tests:
 `make start-test`
 - stop tests:
-`stop-test`
+`make stop-test`
 - restart tests:
 `make restart-test`
 - dump main apps database (schema and data separately):
@@ -22,21 +22,9 @@
 
 ### 1. Install Docker
 
-### 2. Create and fill **.env** file:
+### 2. Create and fill **.env** file
+For local development copiyng sample is enough:
 `cp .env.sample .env`
-
-#### For local development only one field required attention:
-`APP_BACKEND_URL=http://127.0.0.1:8000`
-
-The **domain** value needs to be external for storage container
-"http://{**DOMAIN**}:8000"
-**NOT** localhost or 127.0.0.1, its external ip
-But the structure supposed to be the same
-
-Linux ip example:
-`hostname -I`
-
-##### For prod deploy environment values meant to be set manually
 
 ### 2. Run Containers:
 #### Main App:
@@ -45,18 +33,10 @@ Docker Compose file: docker-compose.yml
 Docker files:
 - Dockerfile.backend
 - Dockerfile.frontend
-
-Command:
-`docker-compose up -d --build`
-
-#### Storage App:
-Docker Compose file: docker-composes.storage.yml
-
-Docker files:
 - Dockerfile.storage
 
 Command:
-`docker-compose -f docker-compose.storage.yml up -d --build`
+`docker-compose up -d --build`
 
 ## Testing
 Docker Compose file: docker-compose.test.yml
@@ -69,8 +49,10 @@ Command (rebuild is important):
 `docker-compose -f docker-compose.test.yml up -d --build`
 
 Available tests:
-- Main App Backend:
+- Main Backend:
 `docker exec iss-test-back ./manage.py test`
+- Storage Backend:
+`tdb`
 - Frontend:
 `docker exec iss-test-front npm test`
 - Selenium Tests (browser emulation):

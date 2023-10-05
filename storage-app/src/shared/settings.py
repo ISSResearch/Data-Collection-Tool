@@ -2,7 +2,7 @@ from multiprocessing import cpu_count
 from os import getenv
 from typing import Any
 
-APP_BACKEND_URL = getenv("APP_BACKEND_URL", "http://127.0.0.1")
+APP_BACKEND_URL: str = "http://" + getenv("APP_BACKEND_URL", "127.0.0.1")
 SECRET_KEY: str = getenv("SECRET_KEY", "")
 SECRET_ALGO: str = getenv("SECRET_ALGO", "HS256")
 
@@ -10,7 +10,7 @@ BUCKET_PREFIX: str = "project_"
 TEMP_BUCKET: str = "temp_storage"
 
 BROKER_URL: str | None = getenv("CELERY_BROKER_URL")
-RESULT_URL: str | None = getenv("CELERY_RESULT_BACKEND")
+RESULT_URL: str | None = BROKER_URL
 
 CHUNK_SIZE: int = 1024 * int(1024 / 2)
 
