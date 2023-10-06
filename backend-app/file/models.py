@@ -5,13 +5,16 @@ from django.db.models import (
     BooleanField,
     ForeignKey,
     DO_NOTHING,
-    QuerySet
+    QuerySet,
+    FileField
 )
 from uuid import UUID
 
 
 class File(Model):
     STATUSES: tuple = (('d', "declined"), ('a', "accepted"), ('v', "validation"))
+
+    path = FileField(max_length=350, upload_to="", null=True)
 
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)

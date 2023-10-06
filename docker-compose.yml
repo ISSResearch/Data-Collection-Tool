@@ -73,6 +73,7 @@ services:
         - iss-back
       volumes:
         - ./storage-app/src:/app/src
+        - ./backend-app/file_store:/app/file_store
       command: python3 src/app.py
       networks:
         - iss_network
