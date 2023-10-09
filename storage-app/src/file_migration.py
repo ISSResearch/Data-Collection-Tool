@@ -2,7 +2,7 @@ from sys import argv, exit
 from os.path import sep, join
 from math import ceil
 from typing import Any
-from threading import Thread
+from threading import Thread, Lock
 from shared.db_manager import DataBase, GridFSBucket
 from shared.utils import (
     APP_BACKEND_URL,
@@ -13,6 +13,8 @@ from shared.utils import (
 )
 from requests import get, Response
 
+
+LOCK = Lock()
 
 class File:
     TYPE_MAP: dict[str, str] = {
@@ -69,7 +71,11 @@ class File:
                 print(f"{self._fs._bucket_name}: writing file - {self.file_id} || {self._fs._bucket_name}: file - {self.file_id} wrote succdeed")
 
         except Exception as e:
-            print(f"{self._fs._bucket_name}: writing file - {self.file_id} || {self._fs._bucket_name}: file - {self.file_id} wrote fail exception: {e}")
+            message: str = f"{self._fs._bucket_name}: writing file - {self.file_id} || {self._fs._bucket_name}: file - {self.file_id} wrote fail exception: {e}"
+            print(message)
+            with LOCK:
+                with open("migration_results.txt", "a") as error_file:
+                    error_file.write(message)
 
 
 class Project:
