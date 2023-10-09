@@ -74,8 +74,8 @@ class File:
             message: str = f"{self._fs._bucket_name}: writing file - {self.file_id} || {self._fs._bucket_name}: file - {self.file_id} wrote fail exception: {e}"
             print(message)
             with LOCK:
-                with open("migration_results.txt", "a") as error_file:
-                    error_file.write(message)
+                with open("file_errors.txt", "a") as error_file:
+                    error_file.write(message + '\n')
 
 
 class Project:
@@ -156,11 +156,7 @@ def run_migration(project_ids: list[int]):
         for result in results: result_file.write(f"{result}" + "\n")
 
 def prepared_args(args: str) -> list[int]:
-    if ',' not in args: raise ValueError
-
     prepared: list[str] = args.split(',')
-
-    if not prepared: raise ValueError
 
     return [int(p_id) for p_id in prepared]
 

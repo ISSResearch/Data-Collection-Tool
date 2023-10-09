@@ -7,6 +7,7 @@ import {
 } from "react";
 import { fileApi } from "../../config/api";
 import "../../styles/components/common/filemedia.css";
+import { getOriginDomain } from "../../utils/utils";
 
 export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
@@ -83,7 +84,7 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
       const { id, file_type } = files[slide];
       setTypeVideo(file_type === 'video');
       setFileUrl(
-        `http://127.0.0.1:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
+        `${getOriginDomain}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
       );
     }
     // TODO: spread token and file
