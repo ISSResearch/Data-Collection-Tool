@@ -84,7 +84,7 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
       const { id, file_type } = files[slide];
       setTypeVideo(file_type === 'video');
       setFileUrl(
-        `${getOriginDomain}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
+        `${getOriginDomain()}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
       );
     }
     // TODO: spread token and file
