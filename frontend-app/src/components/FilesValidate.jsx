@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSwiper, useFiles } from '../hooks';
 import ValidationFilterGroup from './common/ui/ValidationFilterGroup';
 import FileSelector from './common/FileSelector';
@@ -25,6 +25,7 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
   const [filterData, setFilterData] = useState({});
   const fileManager = useFiles();
   const sliderManager = useSwiper();
+  const navigate = useNavigate();
 
   function getPageQuery() {
     return {
@@ -45,6 +46,9 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
 
   useEffect(() => {
     const { card, attr, type } = getPageQuery();
+
+    if (!card.length) handleFilterChange("card", ['v']);
+
     api.get(`/api/files/project/${pathID}/`, {
       params: { card, attr, type },
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }

@@ -74,7 +74,7 @@ class File:
 
         try:
             with open(self.file_path, 'rb') as origin_file:
-                return self._fs.upload_from_stream_with_id(
+                self._fs.upload_from_stream_with_id(
                     file_id=self.file_id,
                     filename=self.file_meta.get("file_name", ""),
                     source=origin_file,
