@@ -1,5 +1,6 @@
 from sys import argv, exit
 from os.path import sep, join
+from urllib.parse import unquote
 from math import ceil
 from typing import Any
 from threading import Thread, Lock
@@ -93,9 +94,7 @@ class File:
             if sign in name:
                 name = name.replace(sign, char)
 
-        return name
-
-
+        return unquote(name)
 
 
 class Project:
