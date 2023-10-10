@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { findRequired, formError, formUID } from '../utils/utils';
 
 const TYPES_MAP = {
-  'mkv': "video"
+  'jpg': "image",
+  'mkv': "video",
+  'mov': "video",
+  'x-matroska': "video",
+  'mp4': "video",
+  'quicktime': "video",
+  'jpeg': "image",
+  "png": "image",
+  "webp": "video"
 }
 
 export default function useFileInput() {
@@ -17,9 +25,7 @@ export default function useFileInput() {
         const nameExt = nameSplit.pop()
         extension = typeExt || nameExt;
       }
-      else {
-        extension = typeExt || '';
-      }
+      else extension = typeExt || '';
       const name = nameSplit.join('');
       return {
         file,

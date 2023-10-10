@@ -28,6 +28,17 @@ class File:
         "png": "image",
         "webp": "video"
     }
+    REPLACE_SYMBOLS = (
+        ("%20", ' '),
+        ("%2C", ','),
+        ("%2F", '/'),
+        ("%3A", ':'),
+        ("%3D", '='),
+        ("%3F", '?'),
+        ("%26", '&'),
+        ("%23", '#'),
+        ("%25", '%')
+    )
 
     def __init__(
         self,
@@ -43,8 +54,8 @@ class File:
         is_downloaded: Any = None
     ) -> None:
         self.file_id: str = str(id)
-        self.file_path: str | None  = path
-        self.name: str = file_name or "."
+        self.file_path: str | None  = self._prepare_str(path or "")
+        self.name: str = self._prepare_str(file_name or '.')
         self._fs: GridFSBucket = bucket
         self.form_meta()
 
@@ -74,8 +85,17 @@ class File:
             message: str = f"{self._fs._bucket_name}: writing file - {self.file_id} || {self._fs._bucket_name}: file - {self.file_id} wrote fail exception: {e}"
             print(message)
             with LOCK:
-                with open("file_errors.txt", "a") as error_file:
+                with open("migration_errors.txt", "a") as error_file:
                     error_file.write(message + '\n')
+
+    def _prepare_str(self, name: str) -> str:
+        for sign, char in self.REPLACE_SYMBOLS:
+            if sign in name:
+                name = name.replace(sign, char)
+
+        return name
+
+
 
 
 class Project:
