@@ -7,7 +7,6 @@ import AppRouter from "./components/AppRouter";
 import StatusLoad from "./components/common/StatusLoad";
 import './styles/app.css';
 import './styles/variables.css';
-import jwt_decode from "jwt-decode";
 
 export default function App() {
   const { user, initUser } = useUser();
@@ -22,19 +21,21 @@ export default function App() {
       .then(({ data }) => {
         if (data.isAuth) {
           setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
-          initUser(jwt_decode(accessToken));
+          initUser(data.user);
         }
         setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       })
       .catch(({ message, response }) => {
-        if (response.status !== 401)
-          setStatusData({
-            error: true,
-            done: false,
-            progress: 0,
-            info: 'app is not available ' + message
-          });
-        else setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
+        if (response.status === 403) {
+          localStorage.removeItem("dtcAccess");
+          setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
+        }
+        else setStatusData({
+          error: true,
+          done: false,
+          progress: 0,
+          info: 'app is not available ' + message
+        });
       });
   }, []);
 

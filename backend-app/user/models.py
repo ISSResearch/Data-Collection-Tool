@@ -1,17 +1,39 @@
 from django.contrib.auth.models import AbstractUser
-from jose import jwt
+from django.db.models import CharField
+from jose import jwt, JWTError
 from django.conf import settings
 from datetime import datetime
 from typing import Any
 
 
 class CustomUser(AbstractUser):
+
+    token: CharField = CharField(max_length=225, null=True)
+
     class Meta:
         db_table = "user"
         verbose_name = "User"
         verbose_name_plural = "Users"
 
     def __str__(self) -> None: return self.username
+
+    def validate_token(self) -> bool:
+        token_settings: dict[str, Any] = settings.SIMPLE_JWT
+
+        try:
+            jwt.decode(
+                self.token,
+                token_settings.get("SIGNING_KEY", ""),
+                algorithms=token_settings.get("ALGORITHM", "HS256")
+            )
+
+        except JWTError:
+            self.token = None
+            self.save()
+
+            return False
+
+        return True
 
     def emit_token(self) -> str:
         time_now: datetime = datetime.utcnow()
@@ -22,16 +44,17 @@ class CustomUser(AbstractUser):
             "exp": time_now + token_settings.get("ACCESS_TOKEN_LIFETIME", 1),
             "iat": time_now,
             "jti": f"emited-token-{time_now}",
-            "user_id": self.id,
-            "user_name": self.username,
-            "is_superuser": self.is_superuser
         }
 
-        return jwt.encode(
+        self.token = jwt.encode(
             token_data,
             token_settings.get("SIGNING_KEY", ""),
             algorithm=token_settings.get("ALGORITHM", "HS256")
         )
+
+        self.save()
+
+        return self.token
 
     # TODO: optimize
     def update_permissions(self, permissions: dict[str, bool], project_id: int) -> None:

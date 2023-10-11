@@ -137,7 +137,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication'
+        'user.authentication.CustomAuthentication'
+        # 'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication'
     ]
 }
 
@@ -147,7 +148,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
 }
 
-__LOGGING = {
+LOGGING = {
     'version': 1,
     'filters': {
         'require_debug_true': {

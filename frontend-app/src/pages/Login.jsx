@@ -4,7 +4,6 @@ import { UserContext } from '../context/User';
 import { api } from '../config/api';
 import Form from '../components/common/Form';
 import '../styles/pages/login.css';
-import jwt_decode from "jwt-decode";
 
 const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
@@ -30,7 +29,7 @@ export default function Login() {
       if (!data.isAuth || status !== 200) throw new Error(data.message);
       const { accessToken } = data;
       localStorage.setItem("dtcAccess", accessToken);
-      initUser(jwt_decode(accessToken));
+      initUser(data.user);
       if (window.location.pathname === '/login') navigate('/');
     }
     catch ({ message }) {

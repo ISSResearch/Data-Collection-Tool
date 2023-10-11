@@ -2,6 +2,12 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import CustomUser
 
 
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("id", "username", "is_superuser")
+
+
 class CollectorSerializer(ModelSerializer):
     permissions: SerializerMethodField = SerializerMethodField()
 

@@ -4,7 +4,6 @@ import { UserContext } from '../context/User';
 import { api } from '../config/api';
 import Form from '../components/common/Form';
 import '../styles/pages/registration.css';
-import jwt_decode from "jwt-decode";
 
 const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
@@ -35,7 +34,7 @@ export default function Registration() {
       }
       const { accessToken } = data;
       localStorage.setItem("dtcAccess", accessToken);
-      initUser(jwt_decode(accessToken));
+      initUser(data.user);
       navigate('/');
     }
     catch ({ message }) {

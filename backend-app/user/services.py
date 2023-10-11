@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.db.models import QuerySet
 from typing import Any
-from .serializers import CollectorSerializer
+from .serializers import CollectorSerializer, UserSerializer
 from .forms import CustomUser, CreateUserForm
 
 
@@ -23,7 +23,10 @@ def _proceed_create(request_data: dict[str, Any]) -> dict[str, Any]:
 
     response: dict[str, Any] = {"isAuth": is_valid}
 
-    if is_valid: response["accessToken"] = form.instance.emit_token()
+    if is_valid:
+        response["accessToken"] = form.instance.emit_token()
+        response["user"] = UserSerializer(form.instance).data
+
     else: response["errors"] = form.errors
 
     return response
@@ -38,6 +41,7 @@ def _proceed_login(request_data: dict[str, Any]) -> dict[str, Any]:
     ):
         response["accessToken"] = user.emit_token()
         response["isAuth"] = True
+        response["user"] = UserSerializer(user).data
 
     else: response["message"] = "No user found or wrong credentials"
 
