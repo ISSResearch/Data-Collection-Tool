@@ -49,7 +49,6 @@ def _proceed_login(request_data: dict[str, Any]) -> dict[str, Any]:
 
 
 def _get_collectors(
-    self,
     project_id: int,
     serialized: bool = False
 ) -> QuerySet | CollectorSerializer:
