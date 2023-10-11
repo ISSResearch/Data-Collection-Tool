@@ -26,7 +26,7 @@ export default function App() {
         setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
       })
       .catch(({ message, response }) => {
-        if (response.status === 403) {
+        if (response.status === 403 || response.status === 401) {
           localStorage.removeItem("dtcAccess");
           setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
         }

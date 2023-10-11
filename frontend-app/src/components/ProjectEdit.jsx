@@ -62,24 +62,28 @@ export default function ProjectEdit({
     const formData = getFormData(event);
     const deleteLevels = attributeManager.levelHook.deletedOriginLevels;
     const deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;
-    if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');
-    if (deleteLevels) await performOriginalItemsDelete(deleteLevels, 'levels');
 
-    api.request(`/api/projects/${pathID}/`,
-      {
-        method: 'patch',
-        data: formData,
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+    try {
+      if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');
+      if (deleteLevels) await performOriginalItemsDelete(deleteLevels, 'levels');
+      await api.request(`/api/projects/${pathID}/`,
+        {
+          method: 'patch',
+          data: formData,
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+          }
         }
-      }
-    )
-      .then(() => window.location.reload())
-      .catch(err => {
-        alert(err);
-        setLoading(false);
-      });
+      );
+      window.location.reload();
+    }
+    catch ({ message, response }) {
+      const authFailed = response.status === 401 || response.status === 403;
+      alert(authFailed ? "authentication failed" : message);
+      if (authFailed) navigate("/login");
+      setLoading(false);
+    }
   }
 
   function deleteProject() {
@@ -99,8 +103,10 @@ export default function ProjectEdit({
       }
     )
       .then(() => navigate('/'))
-      .catch(err => {
-        alert(err);
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
         setLoading(false);
       });
   }

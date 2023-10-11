@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { useCollectors } from '../hooks';
 import { Fragment } from "react";
 import Load from './common/Load';
@@ -18,6 +19,7 @@ const PERMISSIONS = [
 export default function ProjectVisibility({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();
+  const navigate = useNavigate();
 
   function sendForm(event) {
     event.preventDefault();
@@ -35,7 +37,11 @@ export default function ProjectVisibility({ pathID }) {
         initData(data);
         setLoading({ ...loading, submit: false });
       })
-      .catch(error => alert(error.message));
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
+      });
   }
 
   useEffect(() => {
@@ -46,7 +52,11 @@ export default function ProjectVisibility({ pathID }) {
         initData(data);
         setLoading({ ...loading, page: false });
       })
-      .catch(error => alert(error.message));
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
+      });
   }, []);
 
   if (loading.page) return <div className='iss__visibility__load'><Load /></div>

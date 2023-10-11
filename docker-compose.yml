@@ -109,6 +109,7 @@ services:
     build:
       dockerfile: Dockerfile.storage
     restart: always
+    mem_limit: 10g
     volumes:
       - ./storage-app/src:/app/src
     environment:

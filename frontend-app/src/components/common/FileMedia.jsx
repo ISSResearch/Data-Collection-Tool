@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   forwardRef,
 } from "react";
+import { useNavigate } from 'react-router-dom';
 import { fileApi } from "../../config/api";
 import "../../styles/components/common/filemedia.css";
 import { getOriginDomain } from "../../utils/utils";
@@ -13,6 +14,7 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
+  const navigate = useNavigate();
 
   const MediaItem = useCallback((props) => {
     return typeVideo
@@ -97,7 +99,11 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
           setTimeout(() => setTempFileToken(""), 1000 * 60 * 5);
           setFile(data);
         })
-        .catch(({ message }) => console.log(message));
+        .catch(({ message, response }) => {
+          const authFailed = response.status === 401 || response.status === 403;
+          alert(authFailed ? "authentication failed" : message);
+          if (authFailed) navigate("/login");
+        });
     }
     else setFile();
 

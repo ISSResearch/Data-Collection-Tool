@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFiles } from '../hooks';
 import { api, fileApi } from '../config/api';
+import { useNavigate } from 'react-router-dom';
 import Load from './common/Load';
 import FileDownloadSelector from './common/FileDowloadSelector';
 import DownloadingView from './DownloadingView';
@@ -21,6 +22,7 @@ export default function FilesDownload({ pathID }) {
   const [isNew, setIsNew] = useState(false);
   const [task, setTask] = useState("");
   const fileManager = useFiles();
+  const navigate = useNavigate();
 
   const handleSelect = (index) => {
     setOption(OPTIONS[index]);
@@ -34,13 +36,20 @@ export default function FilesDownload({ pathID }) {
       const params = {};
       if (isNew) params.downloaded = false;
       if (option.value !== 'all') params.status = option.value;
-      const { data } = await api.get(`/api/files/project/${pathID}/`, {
-        params,
-        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
-      });
-      file_ids = (
-        isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
-      ).map(({ id }) => id);
+      try {
+        const { data } = await api.get(`/api/files/project/${pathID}/`, {
+          params,
+          headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+        });
+        file_ids = (
+          isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
+        ).map(({ id }) => id);
+      }
+      catch ({ message, response }) {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
+      }
     }
     if (!file_ids.length) throw new Error("no content");
     return file_ids
@@ -68,7 +77,11 @@ export default function FilesDownload({ pathID }) {
       );
       if (data.task_id) setTask(data.task_id);
     }
-    catch ({ message }) { alert(message); }
+    catch ({ message, response }) {
+      const authFailed = response.status === 401 || response.status === 403;
+      alert(authFailed ? "authentication failed" : message);
+      if (authFailed) navigate("/login");
+    }
     setLoading(false);
   }
 

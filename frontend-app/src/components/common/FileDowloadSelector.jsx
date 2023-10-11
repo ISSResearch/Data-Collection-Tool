@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { api } from "../../config/api";
 import Load from "./Load";
 import '../../styles/components/common/filedownloadselector.css'
@@ -11,6 +12,7 @@ export default function FileDownloadSelector({
 }) {
   const { files, setFiles } = fileManager;
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   function selectFile(index, { checked }) {
     const newFiles = [...files];
@@ -30,6 +32,11 @@ export default function FileDownloadSelector({
       .then(({ data }) => {
         setFiles(data);
         setLoading(false)
+      })
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
       });
   }, [newFiles, option]);
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { statsAdapter } from '../../utils/adapters';
 import TableBodySet from './TableBodySet';
 import Load from './Load';
@@ -7,6 +8,7 @@ import '../../styles/components/filesstats.css';
 
 export default function FilesStatistics({ pathID }) {
   const [stats, setStats] = useState(null);
+  const navigate = useNavigate();
 
   const countItem = (a, b, c) => {
     const acc = (a?.image || 0) + (a?.video || 0);
@@ -28,8 +30,10 @@ export default function FilesStatistics({ pathID }) {
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => setStats(statsAdapter(data)))
-      .catch(err => {
-        alert(err.message);
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
         setStats([]);
       });
   }, []);

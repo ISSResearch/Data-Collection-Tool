@@ -80,7 +80,12 @@ export default function ProjectPage() {
 
           setLoading(false);
         })
-        .catch(() => navigate('/404'));
+        .catch(({ message, response }) => {
+          const authFailed = response.status === 401 || response.status === 403;
+          alert(authFailed ? "authentication failed" : message);
+          if (authFailed) navigate("/login");
+          navigate('/404')
+        });
     }
   }, [project, location]);
 

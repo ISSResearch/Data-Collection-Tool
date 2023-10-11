@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
+import { useNavigate } from 'react-router-dom';
 import AttributeCreatorForm from './common/ui/AttributeCreatorForm';
 import Load from './common/Load';
 import { api } from '../config/api';
@@ -9,6 +10,7 @@ export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const attributeManager = useAttributeManager();
   const [preview, setPreview] = useState('');
+  const navigate = useNavigate();
 
   function getFormData({ target }) {
     const name = target.querySelector('.iss__projectCreate__form__input input');
@@ -35,9 +37,11 @@ export default function ProjectCreate() {
         }
       }
     )
-      .then(() => window.open("/projects/", "_self"))
-      .catch(err => {
-        alert(err);
+      .then(() => navigate("/projects/"))
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
         setLoading(false);
       });
   }

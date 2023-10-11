@@ -84,7 +84,11 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
         ]);
         setLoading(false);
       })
-      .catch(err => alert('err', err.message));
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
+      });
   }, [pageQuery]);
 
   if (loading) return <div className='iss__validation__load'><Load /></div>

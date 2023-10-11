@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import AllProjects from '../components/AllProjects';
 import Load from '../components/common/Load';
@@ -18,6 +18,7 @@ export default function Projects() {
   const [currentRoute, setCurrentRoute] = useState('projects');
   const { user } = useContext(UserContext);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const userOptions = [...ROUTE_LINKS];
   if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
@@ -35,7 +36,11 @@ export default function Projects() {
       headers: "Authorization: Bearer " + localStorage.getItem("dtcAccess")
     })
       .then(({ data }) => { setProjects(data); })
-      .catch(err => alert(err.message));
+      .catch(({ message, response }) => {
+        const authFailed = response.status === 401 || response.status === 403;
+        alert(authFailed ? "authentication failed" : message);
+        if (authFailed) navigate("/login");
+      });
   }, []);
 
   useEffect(() => {

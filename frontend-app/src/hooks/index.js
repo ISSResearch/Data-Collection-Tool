@@ -15,5 +15,5 @@ export {
   useFiles,
   useFileUploader,
   useCollectors,
-  useUser
+  useUser,
 }

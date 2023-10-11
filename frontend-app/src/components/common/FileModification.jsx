@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useFile } from '../../hooks'
+import { useNavigate } from 'react-router-dom';
 import SelectGroup from './ui/SelectGroup';
 import { api } from '../../config/api';
 import '../../styles/components/common/filemodification.css';
@@ -9,6 +10,7 @@ export default function FileModification({ fileManager, sliderManager, attribute
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
   const { file, initFile, setAttributeGroups, validate } = useFile();
+  const navigate = useNavigate();
 
   function handleKeyPressed(key) {
     if (key === 'd' || key === 'a') {
@@ -27,7 +29,11 @@ export default function FileModification({ fileManager, sliderManager, attribute
           "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
         },
       }
-    ).catch(err => alert(err.message));
+    ).catch(({ message, response }) => {
+      const authFailed = response.status === 401 || response.status === 403;
+      alert(authFailed ? "authentication failed" : message);
+      if (authFailed) navigate("/login");
+    });
   }
 
   function updateFile(status) {

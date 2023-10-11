@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AttributeInput from './AttributeInput';
 import { api } from '../../config/api';
 import '../../styles/components/common/attributesform.css';
@@ -27,6 +28,7 @@ export default function AttributesForm({
     setRequired,
     setDeletedOriginLevels
   } = levelHook;
+  const navigate = useNavigate();
 
   async function proceedOriginalLevelDelete(index, id) {
     try {
@@ -43,10 +45,12 @@ export default function AttributesForm({
       setDeletedOriginLevels(prev => [...prev, id]);
       handleLevelDelete(index, false, id);
     }
-    catch {
+    catch ({ message, response }) {
+      const authFailed = response.status === 401 || response.status === 403;
+      alert(authFailed ? "authentication failed" : 'Current Level or child Levels Attributes are set for Files.');
+      if (authFailed) navigate("/login");
       setAcceptDelete(null);
-      alert('Current Level or child Levels Attributes are set for Files.');
-    }
+    };
   }
 
   function handleLevelDelete(index, orig) {

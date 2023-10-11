@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import { api } from '../config/api';
@@ -38,6 +38,11 @@ export default function Login() {
       setTimeout(() => setErrors(null), 5000);
     }
   }
+
+  useEffect(() => {
+    localStorage.removeItem("dtcAccess");
+    initUser(null);
+  }, []);
 
   return (
     <div className="iss__loginPage">

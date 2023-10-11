@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../config/api';
 import '../../styles/components/common/attributeinput.css';
 
@@ -14,6 +15,7 @@ export default function AttributeInput({
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
+  const navigate = useNavigate();
 
   async function proceedOriginalAttributeDelete(path, id) {
     try {
@@ -30,10 +32,12 @@ export default function AttributeInput({
       setDeletedOriginAttributes(prev => [...prev, id]);
       handleDeleteAttribute(path, false, id);
     }
-    catch {
+    catch ({ message, response }) {
+      const authFailed = response.status === 401 || response.status === 403;
+      alert(authFailed ? "authentication failed" : 'Current or child Attributes are set for Files.');
+      if (authFailed) navigate("/login");
       setAcceptDelete(null);
-      alert('Current or child Attributes are set for Files.');
-    }
+    };
   }
 
   function handleDeleteAttribute(path, orig, index) {
