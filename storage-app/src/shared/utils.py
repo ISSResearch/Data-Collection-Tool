@@ -77,10 +77,9 @@ def healthcheck_backend_app() -> bool:
         {"minutes": 1},
         SECRET_KEY,
         SECRET_ALGO,
-        {"user_id": 1, "is_superuser": True}
     )
 
-    headers: dict[str, Any] = {"Authorization": "Bearer " + payload_token}
+    headers: dict[str, Any] = {"Authorization": "Internal " + payload_token}
 
     for attempt_n in range(5):
         print(f"1/2 backend app healthcheck attempt {attempt_n + 1}...")

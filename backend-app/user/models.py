@@ -17,19 +17,20 @@ class CustomUser(AbstractUser):
 
     def __str__(self) -> None: return self.username
 
-    def validate_token(self) -> bool:
+    def validate_token(self, token: None | str) -> bool:
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
 
         try:
             jwt.decode(
-                self.token,
+                token or self.token,
                 token_settings.get("SIGNING_KEY", ""),
                 algorithms=token_settings.get("ALGORITHM", "HS256")
             )
 
         except JWTError:
-            self.token = None
-            self.save()
+            if not token:
+                self.token = None
+                self.save()
 
             return False
 

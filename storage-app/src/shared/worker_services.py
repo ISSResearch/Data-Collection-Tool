@@ -80,14 +80,13 @@ class Zipper:
             {"minutes": 1},
             SECRET_KEY,
             SECRET_ALGO,
-            {"user_id": 1, "is_superuser": True}
         )
 
         try: prefix, project_id = bucket_name.split('_')
         except Exception: project_id = ""
 
         headers: dict[str, Any] = {
-            "Authorization": "Bearer " + payload_token,
+            "Authorization": "Internal " + payload_token,
             "Content-Type": "application/json"
         }
         payload: dict[str, Any] = {
