@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
 import { useEffect, useState, useContext, useCallback } from "react";
-import { attributeAdapter } from '../utils/adapters';
+import { attributeAdapter } from '../utils/';
 import { UserContext } from '../context/User';
 import ProjectVisibility from "../components/ProjectVisibility";
 import FilesValidate from "../components/FilesValidate";

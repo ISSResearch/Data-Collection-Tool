@@ -1,3 +1,4 @@
+from sys import exit
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,7 +32,10 @@ APP.include_router(task.router)
 
 @APP.on_event("startup")
 def startup():
-    if not healthcheck_backend_app(): raise ConnectionError
+    if not healthcheck_backend_app():
+        print("healthcheck failed. Could'nt connect to main backend")
+        exit(1)
+
     database.set_db(DB_STORAGE)
 
 

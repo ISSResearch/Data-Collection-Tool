@@ -8,7 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { fileApi } from "../../config/api";
 import "../../styles/components/common/filemedia.css";
-import { getOriginDomain } from "../../utils/utils";
+import { getOriginDomain } from "../../utils/";
 
 export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSwiper, useFiles } from '../hooks';
-import ValidationFilterGroup from './common/ui/ValidationFilterGroup';
+import { ValidationFilterGroup } from './common/ValidationFilterGroup';
 import FileSelector from './common/FileSelector';
 import FileSwiper from './common/FileSwiper';
 import FileModification from './common/FileModification';
@@ -35,7 +35,7 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
     };
   }
 
-  function handleFilterChange(filterType, query) {
+  function handleChange(filterType, query) {
     const { card, attr, type } = getPageQuery();
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
@@ -47,7 +47,7 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
   useEffect(() => {
     const { card, attr, type } = getPageQuery();
 
-    if (!card.length) handleFilterChange("card", ['v']);
+    if (!card.length) handleChange("card", ['v']);
 
     api.get(`/api/files/project/${pathID}/`, {
       params: { card, attr, type },
@@ -62,24 +62,19 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
             name: 'card',
             data: CARD_FILTERS,
             selected: card,
-            manual: true,
-            isAlpha: true
           },
           {
             prettyName: 'Attribute Filter:',
             name: 'attr',
             data: attributes,
             selected: attr,
-            manual: true,
-            attributeSelector: true
+            attributes: true
           },
           {
             prettyName: 'Filetype Filter:',
             name: 'type',
             data: TYPE_FILTER,
             selected: type,
-            manual: true,
-            isAlpha: true
           },
         ]);
         setLoading(false);
@@ -95,7 +90,7 @@ export default function FilesValidate({ pathID, attributes, canValidate }) {
 
   return (
     <>
-      <ValidationFilterGroup filterData={filterData} handleChange={handleFilterChange} />
+      <ValidationFilterGroup filterData={filterData} onChange={handleChange} />
       {
         fileManager.files.length
           ? <div className='iss__validation'>

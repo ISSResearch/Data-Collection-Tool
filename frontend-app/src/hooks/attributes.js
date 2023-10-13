@@ -1,26 +1,26 @@
 import { useState, useCallback } from 'react';
-import { deepFind, refreshPath, formUID, spreadChildren } from '../utils/utils';
+import { deepFind, refreshPath, formUID, spreadChildren } from '../utils/';
 
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
   const [deletedOriginAttributes, setDeletedOriginAttributes] = useState([]);
 
-  function initAttribute(formId, initData=[]) {
+  function initAttribute(formId, initData = []) {
     setAttributes((prev) => {
       return { ...prev, [formId]: initData }
     });
   }
 
   function destroyAttribute(formId) {
-    const newAttributes = {...attributes};
+    const newAttributes = { ...attributes };
     delete newAttributes[formId];
     setAttributes(newAttributes);
   }
 
-  function addAttribute(formId, position=null) {
+  function addAttribute(formId, position = null) {
     let path;
     const id = formUID();
-    const newAttributes = {...attributes};
+    const newAttributes = { ...attributes };
     const target = newAttributes[formId];
     if (position) {
       const atrPath = position.split('_');
@@ -36,7 +36,7 @@ export default function useAttributes() {
   }
 
   function delAttribute(formId, position, isChild) {
-    const newAttributes = {...attributes};
+    const newAttributes = { ...attributes };
     const target = newAttributes[formId];
     const path = position.split('_');
     const targetNode = isChild
@@ -48,7 +48,7 @@ export default function useAttributes() {
   }
 
   function handleLevelRemove(formId, levelIndex) {
-    const newAttributes = {...attributes};
+    const newAttributes = { ...attributes };
     const target = newAttributes[formId];
     spreadChildren(target).forEach(el => {
       if (el.path.split('_').length === levelIndex) el.children.splice(0);
@@ -56,9 +56,9 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  const handleChange = useCallback((formId, {value}, position, isChild) => {
+  const handleChange = useCallback((formId, { value }, position, isChild) => {
     setAttributes((prevAttributes) => {
-      const newAttributes = {...prevAttributes};
+      const newAttributes = { ...prevAttributes };
       const path = position.split('_');
       const target = isChild
         ? deepFind(newAttributes[formId], path)

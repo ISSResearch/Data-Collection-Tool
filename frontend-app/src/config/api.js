@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getOriginDomain } from '../utils/utils';
+import { getOriginDomain } from '../utils/';
 
 const origin = process.env.REACT_APP_CASE === 'test'
   ? 'http://iss-test-back'

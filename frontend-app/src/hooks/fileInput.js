@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { findRequired, formError, formUID } from '../utils/utils';
+import { findRequired, formError, formUID } from '../utils/';
 
 const TYPES_MAP = {
   'jpg': "image",

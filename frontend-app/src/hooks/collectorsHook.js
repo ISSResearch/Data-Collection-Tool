@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deepCopy } from "../utils/utils";
+import { deepCopy } from "../utils/";
 
 export default function useCollectors() {
   const [collectors, setCollectors] = useState({});

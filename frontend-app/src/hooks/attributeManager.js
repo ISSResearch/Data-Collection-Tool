@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deepCopy, refreshPath, formUID } from "../utils/utils";
+import { deepCopy, refreshPath, formUID } from "../utils/";
 import useAttributes from "./attributes";
 import useLevels from "./levels";
 
@@ -18,7 +18,7 @@ export default function useAttributeManager() {
   }
 
   function deleteForm(formId) {
-    const newForms = {...forms};
+    const newForms = { ...forms };
     delete newForms[formId];
     levelHook.destroyLevel(formId);
     attributeHook.destroyAttribute(formId);
@@ -27,7 +27,7 @@ export default function useAttributeManager() {
 
   function clearForms() { setForms({}); }
 
-  function gatherAttributes(initLen=0) {
+  function gatherAttributes(initLen = 0) {
     return Object.keys(forms).map((key, index) => {
       const preparedLevels = levelHook.levels[key].map(el => {
         el.order = index + initLen;
@@ -57,11 +57,11 @@ export default function useAttributeManager() {
       attributes.forEach(el => {
         el.orig = true;
         if (!el.children) el.children = [];
-        const parent = attributes.find(({id}) => el.parent === id);
+        const parent = attributes.find(({ id }) => el.parent === id);
         if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
       });
 
-      boundForm.attributes = attributes.filter(({parent}) => !parent);
+      boundForm.attributes = attributes.filter(({ parent }) => !parent);
       boundForm.attributes.forEach((item, index) => item.path = String(index));
       refreshPath(boundForm.attributes);
 

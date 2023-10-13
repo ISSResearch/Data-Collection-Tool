@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useFile } from '../../hooks'
 import { useNavigate } from 'react-router-dom';
-import SelectGroup from './ui/SelectGroup';
+import { SelectGroup } from './SelectGroup';
 import { api } from '../../config/api';
 import '../../styles/components/common/filemodification.css';
 

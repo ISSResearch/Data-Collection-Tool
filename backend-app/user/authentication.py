@@ -13,10 +13,6 @@ class CustomAuthentication(BaseAuthentication):
             request.META.get('HTTP_AUTHORIZATION', "")
         )
 
-        print()
-        print()
-        print(token)
-        print()
         if not token: raise AuthenticationFailed('corrupted token')
 
         try:

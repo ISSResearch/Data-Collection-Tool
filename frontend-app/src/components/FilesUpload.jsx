@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useFileInput } from '../hooks';
-import { deepCopy } from '../utils/utils';
-import SelectGroup from './common/ui/SelectGroup';
-import FileInput from './common/ui/FileInput';
+import { deepCopy } from '../utils/';
+import { SelectGroup } from './common/SelectGroup';
+import FileInput from './common/FileInput';
 import UploadingView from './UploadingView';
 import '../styles/components/filesupload.css';
 
 export default function FilesUpload({ attributes, pathID }) {
-  const [applyGroups, setApplyGroups] = useState({});
+  const [applyGroups, setApplyGroups] = useState({ "9279148115849110": { "0": [300, 301] } });
+  // const [applyGroups, setApplyGroups] = useState({});
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();
 
@@ -15,6 +16,8 @@ export default function FilesUpload({ attributes, pathID }) {
 
   function sendForm(event) {
     event.preventDefault();
+
+    return console.log(JSON.stringify(fileManager.gatherFiles()))
     const { isValid, message } = fileManager.validate(attributes);
     if (!isValid) alert(message);
     else setUploading(true);
@@ -31,11 +34,11 @@ export default function FilesUpload({ attributes, pathID }) {
           }`
         }
       >SEND ALL</button>
-      <SelectGroup
+      {/* <SelectGroup
         attributes={attributes}
         handleApply={handleApply}
         isFiles={Boolean(Object.values(fileManager.files).length)}
-      />
+      /> */}
       <div className='iss__filesUpload__form__border' />
       <FileInput
         fileManager={fileManager}

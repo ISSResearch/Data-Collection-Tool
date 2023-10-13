@@ -1,5 +1,5 @@
 import { memo, useState } from "react"
-import SelectGroup from "./ui/SelectGroup";
+import { SelectGroup } from "./SelectGroup";
 import '../../styles/components/common/fileuploadcard.css';
 
 export const FileUploadCard = memo(({
