@@ -1,4 +1,4 @@
-import { deepCopy } from "./utils";
+import { deepCopy } from "../utils";
 
 export function attributeAdapter(data) {
   const attributes = deepCopy(data.attributes);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { attributeGroupsAdapter } from "../utils/adapters";
+import { attributeGroupsAdapter } from "../adapters";
 
 export default function useFiles() {
   const [files, setFiles] = useState([]);

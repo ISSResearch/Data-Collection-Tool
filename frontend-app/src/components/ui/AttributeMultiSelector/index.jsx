@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Selector } from '../Selector';
+import { SelectorWrap } from '../../common/SelectorWrap';
 import { spreadChildren } from '../../../utils/';
 import "./styles.css";
 
-export function ValidationFilterSelectorItem({
+export function AttributeMultiSelector({
   selectorName,
   data,
   onChange,
@@ -18,45 +18,45 @@ export function ValidationFilterSelectorItem({
     setIsOpen(false);
   }
 
-  function setOption({ id, index }, selInd) {
-    const target = selectors[selInd] || [];
+  function setOption({ selected, index }, selInd) {
+    var target = selectors[selInd] || [];
     target.splice(index);
-    if (Array.isArray(id)) target.push(...id);
-    else if (id) target.push(id);
+    target.push(...selected);
     setSelectors({ ...selectors, [selInd]: target });
   };
 
-
   function handleManualSelect(event) {
     event.preventDefault();
-    const selectorData = Object.values(selectors).reduce((acc, item) => {
-      return [...acc, ...item];
-    }, [])
+    var selectorData = Object.values(selectors)
+      .reduce((acc, item) => [...acc, ...item], []);
     onChange(selectorName, selectorData);
     setIsOpen(false);
   }
 
   useEffect(() => {
-    const attributes = spreadChildren(data, false).reduce((acc, { attributes }) => {
-      return [...acc, ...attributes];
-    }, []);
-    const defaultNames = defaultSelected.reduce((acc, id) => {
-      const attribute = attributes.find(({ id: attrId }) => attrId === Number(id));
+    var attributes = spreadChildren(data, false)
+      .reduce((acc, { attributes }) => [...acc, ...attributes], []);
+
+    var defaultNames = defaultSelected.reduce((acc, id) => {
+      var attribute = attributes.find(({ id: attrId }) => attrId === Number(id) || id);
       if (attribute) acc.push(attribute.name);
       return acc;
     }, []);
+
     setSelected(defaultNames);
   }, [defaultSelected]);
 
   return (
-    <div className='iss__customSelector'>
+    <div className='iss__filterSelector'>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className='iss__customSelector__selected'
+        className='iss__filterSelector__selected'
       >
         {
           selected.length
-            ? <>{selected.map(name => <span key={name}>{name}</span>)}</>
+            ? <>
+              {selected.map((name, index) => <span key={name + index}>{name}</span>)}
+            </>
             : <span className='off--title'>-not set-</span>
         }
         <svg width="12" height="6" viewBox="0 0 14 8">
@@ -65,28 +65,26 @@ export function ValidationFilterSelectorItem({
       </div>
       <div
         className={
-          `iss__customSelector__options${isOpen ? ' options--open' : ''}`
+          `iss__filterSelector__options${isOpen ? ' options--open' : ''}`
         }
       >
         <form onSubmit={event => handleManualSelect(event)} className='iss__validationFilter__form'>
           <label
             onClick={({ target }) => resetSelector(target)}
-            className='iss__customSelector__level'
+            className='iss__filterSelector__level'
           >clear {selectorName}</label>
           {
             data?.map((attribute, index) => (
-              <Selector
+              <SelectorWrap
                 key={attribute.id}
                 item={attribute}
-                setOption={(data) => setOption(data, index)}
+                onChange={data => setOption(data, index)}
               />
             ))
           }
-          <button className='iss__customSelector__submit'>ok</button>
+          <button className='iss__filterSelector__submit'>select</button>
         </form>
       </div>
     </div>
   );
 }
-
-// TODO: new component - test it

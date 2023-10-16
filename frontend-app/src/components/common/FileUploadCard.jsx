@@ -1,5 +1,5 @@
 import { memo, useState } from "react"
-import { SelectGroup } from "./SelectGroup";
+import { SelectorGroup } from "./SelectorGroup";
 import '../../styles/components/common/fileuploadcard.css';
 
 export const FileUploadCard = memo(({
@@ -7,11 +7,10 @@ export const FileUploadCard = memo(({
   file,
   fileManager,
   attributes,
-  applyGroups
 }) => {
   const [zoom, setZoom] = useState(false);
-  const { handleNameChange, handleDelete, setAttributeGroups } = fileManager;
-  const { file: fileObject, name, type } = file;
+  const { handleNameChange, handleDelete } = fileManager;
+  const { file: fileObject, name, type, attributeGroups } = file;
 
   function handleZoom(target) {
     if (!zoom) target.classList.add('file--zoom');
@@ -42,11 +41,10 @@ export const FileUploadCard = memo(({
         <span /><span />
       </button>
       <div className='iss__fileuploadCard__selectWrap'>
-        <SelectGroup
+        <SelectorGroup
           attributes={attributes}
-          applyGroups={applyGroups}
           fileID={fileID}
-          setAttributeGroups={setAttributeGroups}
+          attributeGroups={attributeGroups}
         />
       </div>
     </div>

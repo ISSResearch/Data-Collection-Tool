@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { statsAdapter } from '../../utils/adapters';
+import { statsAdapter } from '../../adapters';
 import TableBodySet from './TableBodySet';
 import Load from './Load';
 import { api } from '../../config/api';

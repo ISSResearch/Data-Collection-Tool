@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useFile } from '../../hooks'
 import { useNavigate } from 'react-router-dom';
-import { SelectGroup } from './SelectGroup';
+import { SelectorGroup } from './SelectorGroup';
 import { api } from '../../config/api';
 import '../../styles/components/common/filemodification.css';
 
@@ -69,7 +69,7 @@ export default function FileModification({ fileManager, sliderManager, attribute
   return (
     <div className='iss__fileInfo'>
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
-      <SelectGroup
+      <SelectorGroup
         attributes={attributes}
         applyGroups={file.attributeGroups}
         fileIndex={slide}

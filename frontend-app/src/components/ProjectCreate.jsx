@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAttributeManager } from '../hooks';
 import { useNavigate } from 'react-router-dom';
-import AttributeCreatorForm from './common/AttributeCreatorForm';
+import { AttributeCreatorForm } from './common/AttributeCreatorForm';
 import Load from './common/Load';
 import { api } from '../config/api';
 import '../styles/components/projectcreate.css';

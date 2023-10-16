@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { findRequired, formError, formUID } from '../utils/';
+import { findRequired, formError, formUID, deepCopy } from '../utils/';
 
 const TYPES_MAP = {
   'jpg': "image",
@@ -15,14 +15,15 @@ const TYPES_MAP = {
 
 export default function useFileInput() {
   const [files, setFiles] = useState({});
+  const [applyGroups, setApplyGroups] = useState(null);
 
   function handleUpload(uploaded) {
-    const newFiles = uploaded.map((file) => {
-      const [type, typeExt] = file.type.split('/');
-      const nameSplit = file.name.split('.');
-      let extension;
+    var newFiles = uploaded.map((file) => {
+      var [type, typeExt] = file.type.split('/');
+      var nameSplit = file.name.split('.');
+      var extension;
       if (nameSplit.length > 1) {
-        const nameExt = nameSplit.pop()
+        var nameExt = nameSplit.pop()
         extension = typeExt || nameExt;
       }
       else extension = typeExt || '';
@@ -32,7 +33,7 @@ export default function useFileInput() {
         name,
         extension,
         type: type || TYPES_MAP[extension],
-        attributeGroups: {}
+        attributeGroups: useState(deepCopy(applyGroups || {}))
       };
     });
     const threshold = 20 - Object.values(files).length;
@@ -40,6 +41,12 @@ export default function useFileInput() {
     if (newFiles.length > threshold) newFiles.splice(threshold);
     newFiles.forEach(el => newData[formUID()] = el);
     setFiles(newData);
+  }
+
+  function handleApplyGroups(groups) {
+    var newApplyGroups = deepCopy(groups);
+    setApplyGroups(() => newApplyGroups);
+    files.forEach(file => file.attributeGroups = useState(deepCopy(newApplyGroups || {})));
   }
 
   function handleNameChange({ value }, chandeID) {
@@ -115,6 +122,7 @@ export default function useFileInput() {
     handleDelete,
     setAttributeGroups,
     gatherFiles,
-    validate
+    validate,
+    handleApplyGroups
   };
 }

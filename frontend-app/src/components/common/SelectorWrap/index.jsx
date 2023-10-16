@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { MultiSelector } from "../ui/MultiSelector";
+import { MultiSelector } from "../../ui/MultiSelector";
 import "./styles.css";
 
-export function Selector({ selectorKey, item, setOption, applyGroups }) {
+export function SelectorWrap({ selectorKey, item, onChange, applyGroups }) {
   const [options, setOptions] = useState([]);
   const [valueIds, setValuesIds] = useState([]);
 
@@ -15,31 +15,31 @@ export function Selector({ selectorKey, item, setOption, applyGroups }) {
     newOptions.splice(index + 1);
     valueIds.splice(index);
 
-    setValuesIds(prev => {
-      var newValues = [...prev];
-      if (selected) newValues.push(selected);
-      return newValues;
-    });
+    if (!clear) setValuesIds(prev => [...prev, selected]);
 
     if (!clear && children) {
-      const option = { ...children[0] };
+      var option = { ...children[0] };
       option.attributes = option.attributes.filter(({ parent }) => parent === selected);
       newOptions.push(option);
     }
 
     setOptions(newOptions);
-    setOption({ selectorKey, id, index });
+    onChange({ selectorKey, selected: !clear ? [selected] : [], index });
   }
 
   function addSelected(group) {
     setValuesIds(group);
-    const newOptions = group.reduce((acc, id) => {
-      const { children } = acc[acc.length - 1];
+
+    var newOptions = group.reduce((acc, id) => {
+      var { children } = acc[acc.length - 1];
       if (!children) return acc;
-      const option = { ...children[0] };
+
+      var option = { ...children[0] };
       option.attributes = option.attributes.filter(({ parent }) => parent === id);
+
       return [...acc, option];
     }, [item]);
+
     setOptions(newOptions);
   }
 
@@ -49,7 +49,7 @@ export function Selector({ selectorKey, item, setOption, applyGroups }) {
   }, [applyGroups]);
 
   return (
-    <div className='iss__selectorsWrap'>
+    <div className='iss__selectorWrap'>
       {
         options.map(({ id, name, children, attributes, multiple }, index) => (
           <label key={`${id}_${index}`}>
@@ -59,7 +59,7 @@ export function Selector({ selectorKey, item, setOption, applyGroups }) {
                 ? <MultiSelector
                   selectorLabel={name}
                   selectorOptions={attributes}
-                  onChange={ids => setOption({ selectorKey, id: ids, index })}
+                  onChange={ids => onChange({ selectorKey, selected: ids, index })}
                   defaultSelected={applyGroups?.splice(index)}
                 />
                 : <select

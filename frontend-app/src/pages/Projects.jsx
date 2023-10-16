@@ -32,23 +32,25 @@ export default function Projects() {
   }
 
   useEffect(() => {
+    const getLocation = () => {
+      const [, mainPath, childPath] = location.pathname.split('/');
+      return childPath || mainPath;
+    };
+    var pageRoute = getLocation();
+
+    setCurrentRoute(() => pageRoute);
+
+    if (pageRoute === "create") return;
+
     api.get('/api/projects/', {
       headers: "Authorization: Bearer " + localStorage.getItem("dtcAccess")
     })
       .then(({ data }) => { setProjects(data); })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
+        var authFailed = response.status === 401 || response.status === 403;
         alert(authFailed ? "authentication failed" : message);
         if (authFailed) navigate("/login");
       });
-  }, []);
-
-  useEffect(() => {
-    const getLocation = () => {
-      const [, mainPath, childPath] = location.pathname.split('/');
-      return childPath || mainPath;
-    };
-    setCurrentRoute(getLocation());
   }, [location]);
 
   return (

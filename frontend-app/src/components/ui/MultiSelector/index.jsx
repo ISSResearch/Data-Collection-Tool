@@ -29,11 +29,12 @@ export function MultiSelector({
         .map(({ value }) => Number(value) || value);
 
     setSelected(
-      selectedOptions.map(option => {
-        return selectorOptions.find(({ id }) => {
-          id === (Number(option) || option)
-        })?.name;
-      })
+      selectedOptions.reduce((acc, id) => {
+        var attribute = selectorOptions
+          .find(({ id: attrId }) => attrId === (Number(id) || id));
+        if (attribute) acc.push(attribute.name);
+        return acc;
+      }, [])
     );
 
     if (!defaults) onChange(selectedOptions);
@@ -81,7 +82,7 @@ export function MultiSelector({
             }
           </select>
           <button
-            onClick={handleManualSelect}
+            onClick={() => handleManualSelect()}
             type="button"
             className='iss__manualSelector__submit'
           >select</button>

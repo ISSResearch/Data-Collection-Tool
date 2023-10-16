@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import AttributesForm from './AttributesForm';
+import AttributesForm from '../AttributesForm';
 import './styles.css';
 
 export function AttributeCreatorForm({

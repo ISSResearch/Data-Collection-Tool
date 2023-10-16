@@ -1,5 +1,5 @@
-import { MultiSelector } from "../ui/MultiSelector";
-import { ValidationFilterSelectorItem } from "../ValidationFilterSelectorItem";
+import { MultiSelector } from "../../ui/MultiSelector";
+import { AttributeMultiSelector } from "../../ui/AttributeMultiSelector";
 import './styles.css';
 
 export function ValidationFilterGroup({ filterData, onChange }) {
@@ -17,7 +17,7 @@ export function ValidationFilterGroup({ filterData, onChange }) {
             <label>{prettyName}</label>
             {
               attributes
-                ? <ValidationFilterSelectorItem
+                ? <AttributeMultiSelector
                   selectorName={name}
                   data={data}
                   defaultSelected={selected}

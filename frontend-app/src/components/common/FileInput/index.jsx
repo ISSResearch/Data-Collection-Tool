@@ -1,7 +1,7 @@
-import { FileUploadCard } from './FileUploadCard';
+import { FileUploadCard } from '../FileUploadCard';
 import './styles.css';
 
-export function FileInput({ fileManager, attributes, applyGroups }) {
+export function FileInput({ fileManager, attributes }) {
   const { files, handleUpload } = fileManager;
 
   const handleDrop = (ev) => {
@@ -35,7 +35,6 @@ export function FileInput({ fileManager, attributes, applyGroups }) {
                 file={file}
                 fileID={key}
                 attributes={attributes}
-                applyGroups={applyGroups}
                 fileManager={fileManager}
               />
             </div>
