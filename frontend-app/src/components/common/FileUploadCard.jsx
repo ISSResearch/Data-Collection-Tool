@@ -1,16 +1,16 @@
-import { memo, useState } from "react"
+import { useState } from "react"
 import { SelectorGroup } from "./SelectorGroup";
 import '../../styles/components/common/fileuploadcard.css';
 
-export const FileUploadCard = memo(({
+export const FileUploadCard = ({
   fileID,
   file,
   fileManager,
   attributes,
 }) => {
   const [zoom, setZoom] = useState(false);
-  const { handleNameChange, handleDelete } = fileManager;
-  const { file: fileObject, name, type, attributeGroups } = file;
+  const { handleNameChange, handleDelete, handleGroupChange } = fileManager;
+  const { blob, name, type, attributeGroups } = file;
 
   function handleZoom(target) {
     if (!zoom) target.classList.add('file--zoom');
@@ -24,12 +24,12 @@ export const FileUploadCard = memo(({
         type === 'image'
           ? <div
             onClick={({ target }) => handleZoom(target)}
-            style={{ backgroundImage: `url(${URL.createObjectURL(fileObject)})` }}
+            style={{ backgroundImage: `url(${blob})` }}
             data-testid='media'
             className='iss__fileuploadCard__file'
           />
           : <video
-            src={URL.createObjectURL(fileObject)}
+            src={blob}
             muted
             controls
             data-testid='media'
@@ -45,8 +45,9 @@ export const FileUploadCard = memo(({
           attributes={attributes}
           fileID={fileID}
           attributeGroups={attributeGroups}
+          handleGroupChange={handleGroupChange}
         />
       </div>
     </div>
   )
-})
+}

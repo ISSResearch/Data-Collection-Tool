@@ -1,4 +1,16 @@
-import { deepCopy } from "../utils";
+import { deepCopy, extractFileMeta, formUID } from "../utils";
+
+export function inputFilesAdapter(files, groups) {
+  return files.reduce((acc, file) => {
+    acc[formUID()] = {
+      file,
+      blob: URL.createObjectURL(file),
+      attributeGroups: deepCopy(groups || {}),
+      ...extractFileMeta(file)
+    };
+    return acc;
+  }, {});
+}
 
 export function attributeAdapter(data) {
   const attributes = deepCopy(data.attributes);

@@ -3,70 +3,83 @@ import { SelectorWrap } from "../SelectorWrap";
 import { deepCopy, formUID } from "../../../utils/";
 import './styles.css';
 
-export function SelectorGroup({ attributes, isFiles, handleApply, attributeGroups }) {
-  const [groups, setGroups] = attributeGroups || useState({});
+export function SelectorGroup({
+  attributes,
+  fileID,
+  isFiles,
+  handleApply,
+  attributeGroups,
+  handleGroupChange
+}) {
+  const [groups, setGroups] = useState({ [formUID()]: {} });
 
   function addGroup() {
-    setGroups(prev => {
+    if (handleGroupChange) handleGroupChange({ fileID, type: "add" });
+    else setGroups(prev => {
       return { ...prev, [formUID()]: {} }
     });
   }
 
-  function deleteGroup(selectorKey) {
-    setGroups(prev => {
-      delete prev[selectorKey];
+  function deleteGroup(key) {
+    if (handleGroupChange) handleGroupChange({ fileID, key, type: "delete" });
+    else setGroups(prev => {
+      delete prev[key];
       return { ...prev };
     });
   }
 
-  function copyGroup(selectorKey) {
-    var newGroups = { ...groups };
-    newGroups[formUID()] = deepCopy(newGroups[selectorKey]);
-    setGroups(() => newGroups);
+  function copyGroup(key) {
+    if (handleGroupChange) handleGroupChange({ fileID, key, type: "copy" });
+    else setGroups(prev => {
+      return { ...prev, [formUID()]: deepCopy(prev[key]) }
+    });
   }
 
-  function setOption({ selectorKey, selected, index }, selInd) {
-    setGroups(prev => {
+  function setOption(key, payload, selInd) {
+    if (handleGroupChange) handleGroupChange({
+      fileID,
+      key,
+      payload: { ...payload, selInd },
+      type: "set"
+    });
+    else setGroups(prev => {
+      var { selected, index } = payload;
+
       var newGroups = { ...prev };
+      var target = newGroups[key];
 
-      var target = newGroups[selectorKey];
-
-      if (!target[selInd]) target[selInd] = [];
-
-      target[selInd].splice(index);
-      target[selInd].push(...selected);
+      if (!target[selInd]) target[selInd] = selected;
+      else {
+        target[selInd].splice(index);
+        target[selInd].push(...selected);
+      }
 
       return newGroups
     });
   };
 
   return (
-    <fieldset
-      className={
-        `iss__selectGroup${attributeGroups ? ' style--min' : ''}`
-      }
-    >
+    <fieldset className={`iss__selectGroup${fileID ? ' style--min' : ''}`}>
       <button
         onClick={addGroup}
         type='button'
         className='iss__selectGroup__button add--group'
       >add object</button>
       {
-        Object.entries(groups).map(([key, data]) => (
+        Object.entries(fileID ? attributeGroups : groups).map(([key, data]) => (
           <div key={key} className='iss__selectGroup__selectWrapper'>
             {
               attributes?.map((attribute, index) => (
                 <SelectorWrap
                   key={attribute.id}
                   item={attribute}
-                  onChange={data => setOption(data, index)}
-                  applyGroups={applyGroups && data[index]}
-                  selectorKey={key}
+                  onChange={data => setOption(key, data, index)}
+                  applyGroups={fileID && data[index]}
                 />
               ))
             }
             {
-              !handleApply &&
+              fileID &&
               <button
                 onClick={() => copyGroup(key)}
                 type="button"

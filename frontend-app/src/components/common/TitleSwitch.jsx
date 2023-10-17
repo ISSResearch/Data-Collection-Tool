@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import '../../styles/components/common/titleswitch.css';
 
-export default function TitleSwitch({title, titleLink, links, currentRoute, parent }) {
+export default function TitleSwitch({ title, titleLink, links, currentRoute, parent }) {
   const createLink = (link) => '/' + [parent, link].join('/');
 
   return (
@@ -14,7 +14,7 @@ export default function TitleSwitch({title, titleLink, links, currentRoute, pare
       <nav className='iss__titleSwitch__navWrap'>
         <ul className='iss__titleSwitch__nav'>
           {
-            links?.map(({name, link}) => (
+            links?.map(({ name, link }) => (
               <li key={link}>
                 <Link
                   to={createLink(link)}

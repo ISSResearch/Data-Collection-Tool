@@ -1,3 +1,21 @@
+import { TYPES_MAP } from "../config/settings";
+
+export function extractFileMeta({ type: fileType, name: fileName }) {
+  var [type, typeExt] = fileType.split('/');
+  var nameSplit = fileName.split('.');
+
+  var extension;
+  if (nameSplit.length > 1) {
+    var nameExt = nameSplit.pop()
+    extension = typeExt || nameExt;
+  }
+  else extension = typeExt || '';
+
+  var name = nameSplit.join('');
+
+  return { name, extension, type: type || TYPES_MAP[extension] }
+}
+
 export function getOriginDomain() {
   const { origin } = window.location;
   return origin.split(':', 2).join(':');

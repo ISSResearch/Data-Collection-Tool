@@ -37,7 +37,7 @@ export function MultiSelector({
       }, [])
     );
 
-    if (!defaults) onChange(selectedOptions);
+    if (!defaults) onChange([...selectedOptions]);
   }
 
   useEffect(() => {

@@ -48,19 +48,20 @@ export default function ProjectPage() {
   // TODO: refactor routes validation and permission
   useEffect(() => {
     const getLocation = () => {
-      let [, mainPath, id, childPath] = location.pathname.split('/');
-      if (childPath === 'validate') childPath = 'view';
+      var [, mainPath, id, childPath] = location.pathname.split('/');
       return childPath || `${mainPath}/${id}`;
     };
-    const page_loc = getLocation();
 
-    if (project && !user.is_superuser && page_loc !== `projects/${projectID}`) {
-      const check_path = { ...project.permissions };
+    var pageLoc = getLocation();
+
+    if (project && !user.is_superuser && pageLoc !== `projects/${projectID}`) {
+      var check_path = { ...project.permissions };
       check_path.visibility = check_path.edit;
-      if (!check_path[page_loc]) navigate('/404');
+      check_path.validate = check_path.view;
+      if (!check_path[pageLoc]) navigate('/404');
     }
 
-    setCurrentRoute(page_loc);
+    setCurrentRoute(pageLoc);
 
     if (!project) {
       api.get(`/api/projects/${projectID}/`, {
@@ -70,7 +71,8 @@ export default function ProjectPage() {
           const preparedData = attributeAdapter(data);
           setProject(preparedData);
 
-          const { permissions } = data;
+          var { permissions } = data;
+
           if (user.is_superuser) setUserOptions([...PROTECTED_ROUTE_LINKS]);
           else {
             setUserOptions([

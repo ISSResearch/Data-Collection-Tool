@@ -1,57 +1,32 @@
 import { useState } from 'react';
-import { findRequired, formError, formUID, deepCopy } from '../utils/';
-
-const TYPES_MAP = {
-  'jpg': "image",
-  'mkv': "video",
-  'mov': "video",
-  'x-matroska': "video",
-  'mp4': "video",
-  'quicktime': "video",
-  'jpeg': "image",
-  "png": "image",
-  "webp": "video"
-}
+import { findRequired, formError, deepCopy, formUID } from '../utils/';
+import { inputFilesAdapter } from '../adapters';
 
 export default function useFileInput() {
   const [files, setFiles] = useState({});
-  const [applyGroups, setApplyGroups] = useState(null);
+  const [applyGroups, setApplyGroups] = useState({ "1510981773704534": { "1": [310, 311, 312] } });
 
   function handleUpload(uploaded) {
-    var newFiles = uploaded.map((file) => {
-      var [type, typeExt] = file.type.split('/');
-      var nameSplit = file.name.split('.');
-      var extension;
-      if (nameSplit.length > 1) {
-        var nameExt = nameSplit.pop()
-        extension = typeExt || nameExt;
-      }
-      else extension = typeExt || '';
-      const name = nameSplit.join('');
-      return {
-        file,
-        name,
-        extension,
-        type: type || TYPES_MAP[extension],
-        attributeGroups: useState(deepCopy(applyGroups || {}))
-      };
-    });
-    const threshold = 20 - Object.values(files).length;
-    const newData = { ...files };
-    if (newFiles.length > threshold) newFiles.splice(threshold);
-    newFiles.forEach(el => newData[formUID()] = el);
+    var threshold = 20 - Object.values(files).length;
+
+    var newData = {
+      ...files,
+      ...inputFilesAdapter(uploaded.slice(0, threshold), applyGroups)
+    };
+
     setFiles(newData);
   }
 
   function handleApplyGroups(groups) {
     var newApplyGroups = deepCopy(groups);
     setApplyGroups(() => newApplyGroups);
-    files.forEach(file => file.attributeGroups = useState(deepCopy(newApplyGroups || {})));
+    Object.values(files)
+      .forEach(file => file.attributeGroups = deepCopy(newApplyGroups || {}));
   }
 
   function handleNameChange({ value }, chandeID) {
     setFiles(prev => {
-      const newFiles = { ...prev };
+      var newFiles = { ...prev };
       newFiles[chandeID].name = value;
       return newFiles;
     });
@@ -59,49 +34,71 @@ export default function useFileInput() {
 
   function handleDelete(deleteId) {
     setFiles(prev => {
-      const newFiles = { ...prev };
-      delete newFiles[deleteId]
+      var newFiles = { ...prev };
+      URL.revokeObjectURL(newFiles[deleteId].blob);
+      delete newFiles[deleteId];
       return newFiles;
     });
   }
 
-  function setAttributeGroups({ fileID, ids, selectorKey, selInd, del, set }) {
-    if (set) return files[fileID].attributeGroups = ids;
-    const { attributeGroups: target } = files[fileID];
-    if (del) return delete target[selectorKey];
-    if (!target[selectorKey]) target[selectorKey] = {};
-    target[selectorKey][selInd] = [...ids];
+  function handleGroupChange({ fileID, key, type, payload }) {
+    var changeMap = {
+      "add": ({ attributeGroups }) => attributeGroups[formUID()] = {},
+      "delete": ({ attributeGroups }, key) => delete attributeGroups[key],
+      "copy": ({ attributeGroups }, key) => attributeGroups[formUID()] = deepCopy(attributeGroups[key]),
+      "set": ({ attributeGroups }, key, { selected, index, selInd }) => {
+        var target = attributeGroups[key];
+        if (!target[selInd]) target[selInd] = [...selected];
+        else {
+          target[selInd].splice(index);
+          target[selInd].push(...selected);
+        }
+      }
+    }
+
+    setFiles(prev => {
+      var newFiles = { ...prev };
+      changeMap[type](newFiles[fileID], key, payload);
+      return newFiles;
+    });
   }
 
   function gatherFiles() {
     Object.values(files).forEach((file) => {
-      const preparedAtrs = Object.values(file.attributeGroups)
-        .reduce((acc, ids) => {
-          return [
-            ...acc,
-            (Array.isArray(ids) ? ids : Object.values(ids))
-              .reduce((a, b) => [...a, ...(b || [])], [])
-          ]
+      // TODO: move somewhere v
+      URL.revokeObjectURL(file.blob);
+
+      file.atrsGroups = Object.values(file.attributeGroups)
+        .reduce((acc, group) => {
+          var groupIds = Object.values(group)
+            .reduce((acc, ids) => {
+              if (ids && ids.length) acc.push(...ids);
+              return acc;
+            }, []);
+          acc.push(groupIds);
+          return acc;
         }, []);
-      file.atrsGroups = preparedAtrs;
     });
+
     return Object.values(files);
   }
 
-  function validate(attributes) {
-    if (!Object.values(files).length) return { isValid: false, message: 'No files attached!' };
-    const requiredLevels = findRequired(attributes);
-    if (!requiredLevels.length) return { isValid: true, message: 'ok' };
-    const requiredIds = requiredLevels.map(({ attributes }) => attributes);
-    for (const file of Object.values(files)) {
-      const { attributeGroups, name } = file;
-      if (!Object.values(attributeGroups || {}).length) return formError(name, requiredLevels);
-      for (const group of Object.values(attributeGroups)) {
-        const missingValues = [];
-        const groupData = Object.values(group);
+  function checkRequired(requiredLevels) {
+    var requiredIds = requiredLevels.map(({ attributes }) => attributes);
+
+    for (var file of Object.values(files)) {
+      var { attributeGroups, name } = file;
+      var fileGroups = Object.values(attributeGroups);
+
+      if (!fileGroups.length) return formError(name, requiredLevels);
+
+      for (var group of fileGroups) {
+        var missingValues = [];
+        var groupData = Object.values(group);
+
         requiredIds.forEach((ids, index) => {
-          let found;
-          for (const idx in groupData) {
+          var found;
+          for (var idx in groupData) {
             if (groupData[idx].filter(id => ids.includes(id)).length) {
               found = true;
               break;
@@ -109,10 +106,26 @@ export default function useFileInput() {
           }
           if (!found) missingValues.push(requiredLevels[index]);
         });
+
         if (missingValues.length) return formError(name, missingValues);
       }
     }
-    return { isValid: true, message: 'ok' };
+  }
+
+  function validate(attributes) {
+    var resultMap = {
+      "ok": { isValid: true, message: 'ok' },
+      "noFiles": { isValid: false, message: 'No files attached!' }
+    }
+
+    if (!Object.values(files).length) return resultMap.noFiles;
+
+    var requiredLevels = findRequired(attributes);
+    if (!requiredLevels.length) return resultMap.ok;
+
+    var error = checkRequired(requiredLevels);
+
+    return error || resultMap.ok;
   }
 
   return {
@@ -120,7 +133,7 @@ export default function useFileInput() {
     handleUpload,
     handleNameChange,
     handleDelete,
-    setAttributeGroups,
+    handleGroupChange,
     gatherFiles,
     validate,
     handleApplyGroups

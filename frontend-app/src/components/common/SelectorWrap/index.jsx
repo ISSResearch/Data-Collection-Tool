@@ -2,20 +2,23 @@ import { useEffect, useState } from 'react';
 import { MultiSelector } from "../../ui/MultiSelector";
 import "./styles.css";
 
-export function SelectorWrap({ selectorKey, item, onChange, applyGroups }) {
+export function SelectorWrap({ item, onChange, applyGroups }) {
   const [options, setOptions] = useState([]);
   const [valueIds, setValuesIds] = useState([]);
 
   function handleSelect(selected, children, index) {
     selected = Number(selected);
     var clear = !Boolean(selected);
-
     var newOptions = [...options];
 
     newOptions.splice(index + 1);
-    valueIds.splice(index);
 
-    if (!clear) setValuesIds(prev => [...prev, selected]);
+    setValuesIds(prev => {
+      var newValues = [...prev];
+      newValues.splice(index);
+      if (!clear) newValues.push(selected);
+      return newValues
+    });
 
     if (!clear && children) {
       var option = { ...children[0] };
@@ -24,7 +27,7 @@ export function SelectorWrap({ selectorKey, item, onChange, applyGroups }) {
     }
 
     setOptions(newOptions);
-    onChange({ selectorKey, selected: !clear ? [selected] : [], index });
+    onChange({ selected: !clear ? [selected] : [], index });
   }
 
   function addSelected(group) {
@@ -59,7 +62,7 @@ export function SelectorWrap({ selectorKey, item, onChange, applyGroups }) {
                 ? <MultiSelector
                   selectorLabel={name}
                   selectorOptions={attributes}
-                  onChange={ids => onChange({ selectorKey, selected: ids, index })}
+                  onChange={selected => onChange({ selected, index })}
                   defaultSelected={applyGroups?.splice(index)}
                 />
                 : <select
