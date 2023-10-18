@@ -4,7 +4,7 @@ import { inputFilesAdapter } from '../adapters';
 
 export default function useFileInput() {
   const [files, setFiles] = useState({});
-  const [applyGroups, setApplyGroups] = useState({ "1510981773704534": { "1": [310, 311, 312] } });
+  const [applyGroups, setApplyGroups] = useState({});
 
   function handleUpload(uploaded) {
     var threshold = 20 - Object.values(files).length;

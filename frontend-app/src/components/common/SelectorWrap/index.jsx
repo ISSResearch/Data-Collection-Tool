@@ -63,7 +63,7 @@ export function SelectorWrap({ item, onChange, applyGroups }) {
                   selectorLabel={name}
                   selectorOptions={attributes}
                   onChange={selected => onChange({ selected, index })}
-                  defaultSelected={applyGroups?.splice(index)}
+                  defaultSelected={applyGroups?.slice(index)}
                 />
                 : <select
                   onChange={({ target }) => handleSelect(target.value, children, index)}

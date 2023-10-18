@@ -56,7 +56,7 @@ class ViewSetServices:
     def _delete_file(self, file_id: int) -> tuple[dict[str, Any], int]:
         try:
             file = File.objects.get(id=file_id)
-            file.attributegroup_set.clear()
+            file.attributegroup_set.all().delete()
             file.delete()
 
             return {"deleted": True}, HTTP_202_ACCEPTED

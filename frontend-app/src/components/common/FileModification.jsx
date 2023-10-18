@@ -9,7 +9,7 @@ export default function FileModification({ fileManager, sliderManager, attribute
   const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
-  const { file, initFile, setAttributeGroups, validate } = useFile();
+  const { file, initFile, handleGroupChange, validate } = useFile();
   const navigate = useNavigate();
 
   function handleKeyPressed(key) {
@@ -70,10 +70,11 @@ export default function FileModification({ fileManager, sliderManager, attribute
     <div className='iss__fileInfo'>
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
       <SelectorGroup
+        fileID={file.id}
         attributes={attributes}
-        applyGroups={file.attributeGroups}
+        attributeGroups={file.attributeGroups}
         fileIndex={slide}
-        setAttributeGroups={setAttributeGroups}
+        handleGroupChange={handleGroupChange}
       />
       {
         file?.id &&

@@ -57,8 +57,8 @@ export default function ProjectPage() {
     if (project && !user.is_superuser && pageLoc !== `projects/${projectID}`) {
       var check_path = { ...project.permissions };
       check_path.visibility = check_path.edit;
-      check_path.validate = check_path.view;
-      if (!check_path[pageLoc]) navigate('/404');
+      var checkAgainst = pageLoc === "validate" ? "view" : pageLoc;
+      if (!check_path[checkAgainst]) navigate('/404');
     }
 
     setCurrentRoute(pageLoc);

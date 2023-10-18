@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deepCopy, findRequired, formError } from '../utils/';
+import { deepCopy, findRequired, formError, formUID } from '../utils/';
 
 export default function useFile() {
   const [file, setFile] = useState({});
@@ -10,17 +10,30 @@ export default function useFile() {
   }
 
   function changeName({ value }) {
-    const updatedFile = deepCopy(file);
-    updatedFile.file_name = value;
-    setFile(updatedFile);
+    setFile(prev => {
+      return { ...prev, file_name: value };
+    });
   }
 
-  function setAttributeGroups({ ids, selectorKey, selInd, del, set }) {
-    if (set) return file.attributeGroups = ids;
-    const { attributeGroups: target } = file;
-    if (del) return delete target[selectorKey];
-    if (!target[selectorKey]) target[selectorKey] = {};
-    target[selectorKey][selInd] = [...ids];
+  function handleGroupChange({ key, type, payload }) {
+    var changeMap = {
+      "add": ({ attributeGroups }) => attributeGroups[formUID()] = {},
+      "delete": ({ attributeGroups }, key) => delete attributeGroups[key],
+      "copy": ({ attributeGroups }, key) => attributeGroups[formUID()] = deepCopy(attributeGroups[key]),
+      "set": ({ attributeGroups }, key, { selected, index, selInd }) => {
+        var target = attributeGroups[key];
+        if (!target[selInd]) target[selInd] = [...selected];
+        else {
+          target[selInd].splice(index);
+          target[selInd].push(...selected);
+        }
+      }
+    }
+
+    setFile(prev => {
+      changeMap[type](prev, key, payload);
+      return { ...prev };
+    });
   }
 
   function validate(attributes) {
@@ -50,7 +63,7 @@ export default function useFile() {
     file,
     initFile,
     changeName,
-    setAttributeGroups,
+    handleGroupChange,
     validate
   };
 }
