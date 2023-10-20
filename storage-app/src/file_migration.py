@@ -149,12 +149,11 @@ class Project:
             {"minutes": 1},
             SECRET_KEY,
             SECRET_ALGO,
-            {"user_id": 1, "is_superuser": True}
         )
 
         response: Response = get(
             APP_BACKEND_URL + "/api/files/project/" + str(self.project_id),
-            headers={"Authorization": "Bearer " + token}
+            headers={"Authorization": "Internal " + token}
         )
 
         if response.status_code != 200: raise ConnectionError
