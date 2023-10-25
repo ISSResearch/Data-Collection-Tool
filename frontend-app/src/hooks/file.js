@@ -37,16 +37,19 @@ export default function useFile() {
   }
 
   function validate(attributes) {
-    const requiredLevels = findRequired(attributes);
-    const requiredIds = requiredLevels.map(({ attributes }) => attributes);
-    const { attributeGroups, file_name } = file;
+    var requiredLevels = findRequired(attributes);
+    var requiredIds = requiredLevels.map(({ attributes }) => attributes);
+    var { attributeGroups, file_name } = file;
+
+    if (!requiredIds.length) return { isValid: true, message: 'ok' };
     if (!Object.values(attributeGroups || {}).length) return formError(file_name, requiredLevels);
+
     for (const group of Object.values(attributeGroups)) {
-      const missingValues = [];
-      const groupData = Object.values(group);
+      var missingValues = [];
+      var groupData = Object.values(group);
       requiredIds.forEach((ids, index) => {
         let found;
-        for (const idx in groupData) {
+        for (var idx in groupData) {
           if (groupData[idx].filter(id => ids.includes(id)).length) {
             found = true;
             break;
