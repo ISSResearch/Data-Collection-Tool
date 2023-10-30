@@ -16,6 +16,7 @@ def produce_download_task(bucket_name: str, file_ids: list[int]) -> str | None:
 
     zipper.archive_objects()
     zipper.write_archive()
+    zipper.delete_temp_zip()
 
     return zipper.archive_id
 

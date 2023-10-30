@@ -16,7 +16,7 @@
     place-items: flex-start;
 }
 
-.iss__filesDownload__form>input {
+.iss__filesDownload__form > input {
     border: 1px solid var(--issBrand);
     padding: 4px 8px;
     outline: none;
@@ -38,7 +38,7 @@
     pointer-events: none;
 }
 
-.iss__filesDownload__mainSet>div {
+.iss__filesDownload__mainSet > div {
     place-self: flex-start;
 }
 
@@ -46,7 +46,6 @@
     border: 1px solid var(--issBrand);
     position: relative;
     place-self: center;
-    max-width: 160px;
     width: 100%;
 }
 
@@ -95,17 +94,17 @@
 }
 
 .option--blue,
-.option--blue>span {
+.option--blue > span {
     color: var(--issBrand);
 }
 
 .option--green,
-.option--green>span {
+.option--green > span {
     color: var(--issGreen);
 }
 
 .option--red,
-.option--red>span {
+.option--red > span {
     color: var(--issRed);
 }
 
@@ -120,14 +119,16 @@
     text-decoration: none;
     display: flex;
     place-content: center;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
 }
 
 .block--button {
     pointer-events: none;
 }
 
-.iss__filesDownload__options>span {
+.iss__filesDownload__options > span {
     cursor: pointer;
 }
 
@@ -141,7 +142,7 @@
     width: 100%;
 }
 
-@media (hover:hover) {
+@media (hover: hover) {
     .iss__filesDownload__button:hover {
         background-color: var(--issBrand);
         color: white;

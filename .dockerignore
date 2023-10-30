@@ -8,6 +8,7 @@ migrations
 file_store
 storage
 worker_tmp
+temp_zip
 
 node_modules
 .pnp
