@@ -33,7 +33,7 @@ class Zipper:
     def archive_objects(self) -> None:
         if not self.annotated or self.written: return
 
-        self.archive = f"{self.temp_prefix}/{time()}.{self.archive_extension}"
+        self.archive = f"{self.temp_prefix}/{int(time())}.{self.archive_extension}"
         json_data: Any = dumps(self.annotation, indent=4).encode('utf-8')
 
         # TODO: check other compress types
@@ -56,7 +56,7 @@ class Zipper:
                 .get_fs_bucket(TEMP_BUCKET) \
                 .upload_from_stream(
                     filename="{self.bucket_name}{archive.name}",
-                    source=archive.read(),
+                    source=archive,
                     metadata={"created_at": datetime.now().isoformat()}
                 )
 
