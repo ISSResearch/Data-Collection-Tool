@@ -4,7 +4,7 @@
     margin-bottom: 20px;
 }
 
-.iss__downloadingView__title>* {
+.iss__downloadingView__title > * {
     font-size: 20px;
 }
 
@@ -15,14 +15,14 @@
     position: relative;
 }
 
-.iss__downloadingView__title__id>svg {
+.iss__downloadingView__title__id > svg {
     position: absolute;
     top: 50%;
     right: 0;
     transform: translate(120%, -50%);
 }
 
-.iss__downloadingView__title__id>svg>path {
+.iss__downloadingView__title__id > svg > path {
     opacity: 0.2;
     fill: var(--issBlack);
 }
@@ -54,7 +54,7 @@
 
 .iss__downloadingView__explanation:before,
 .iss__downloadingView__explanation:after {
-    content: '!';
+    content: "!";
     display: inline-block;
     color: var(--issLightRed);
     font-size: 24px;
@@ -68,24 +68,16 @@
     margin-left: 12px;
 }
 
-.iss__downloadingView__downloadWrap {
-    padding: 20px 0;
-    display: flex;
-    gap: 20px;
+.iss__downloadingView__download {
+    margin-top: 20px;
 }
 
-.iss__downloadingView__downloadWrap>.iss__statusLoad__wrap {
-    padding: 0;
-    width: fit-content;
-    display: block;
-}
-
-@media(hover:hover) {
+@media (hover: hover) {
     .iss__downloadingView__title__id:hover {
         color: var(--issLightBrand);
     }
 
-    .iss__downloadingView__title__id:hover>svg>path {
+    .iss__downloadingView__title__id:hover > svg > path {
         fill: var(--issBrand);
     }
 

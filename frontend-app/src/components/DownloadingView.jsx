@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { fileApi } from "../config/api";
-import StatusLoad from "./common/StatusLoad";
+import { getOriginDomain } from "../utils";
 import "../styles/components/downloadingview.css";
 
 export default function DownloadView({ taskID }) {
   const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");
-  const [download, setDownload] = useState(null);
+  const [download, setDownload] = useState(false);
 
   // TODO: couldnt clear interval the normal way.
   const Helper = () => {
@@ -48,39 +48,27 @@ export default function DownloadView({ taskID }) {
       ),
   };
 
-  function downloadDataset(data) {
-    if (!data) return alert("Error! No data found");
-    let url = window.URL.createObjectURL(new Blob([data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "dataset.zip");
-    document.body.appendChild(link);
-    link.click();
-  }
-
-  async function getDataset(taskID) {
-    if (!taskID) return alert("corrupted task id");
-    setDownload({ ready: false, progress: 0 });
-    const { data } = await fileApi.get(`/api/storage/temp_storage/${taskID}/`, {
-      headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
-      responseType: "blob",
-      onDownloadProgress: ({ total, loaded, progress }) => {
-        const calculated = progress
-          ? Math.ceil(progress * 100)
-          : Math.ceil((loaded * 100) / total);
-        setDownload((prev) => ({ ...prev, progress: calculated }));
-      },
+  async function getDataset(archiveId) {
+    setDownload(true);
+    if (!archiveId) return alert("Error! No data found");
+    var { data: token } = await fileApi.get("/api/temp_token/", {
+      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     });
-    setDownload({ ready: true, progress: 100 });
-    downloadDataset(data);
+    var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
+    var accessQuery = `/?access=${token}&archive=1`;
+    const link = document.createElement("a");
+    link.href = baseUrl + archiveId + accessQuery;
+    link.setAttribute("download", "dataset.zip");
+    link.click();
+    link.remove();
   }
 
   async function checkTaskStatus() {
-    const { data } = await fileApi.get(`/api/task/${taskID}/`, {
+    var { data } = await fileApi.get(`/api/task/${taskID}/`, {
       headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
     });
-    const { status, archive_id } = data;
-    const handler = statusHandlers[status];
+    var { status, archive_id } = data;
+    var handler = statusHandlers[status];
     if (handler) {
       setIntervalCheck(false);
       handler(archive_id);
@@ -107,41 +95,26 @@ export default function DownloadView({ taskID }) {
           </svg>
         </span>
       </div>
-      {message ? (
-        <p>{message}</p>
-      ) : (
-        <p>
+      {
+        message
+        ? <p>{message}</p>
+        : <p>
           The DataSet is preparing. The download will start soon...
           <br />
-          You can close the window and download it later using
-          <b onClick={(ev) => copyID(ev)} className="id--anchor">
-            {" "}
-            task ID
-          </b>{" "}
-          given.
+          You can close the window and download it later using {" "}
+          <b onClick={(ev) => copyID(ev)} className="id--anchor">task ID</b> given.
           <br />
           Your DataSet will be available at any time whithin a week.
           <br />
           <span className="iss__downloadingView__explanation">
-            Dont forget to write the
-            <b onClick={(ev) => copyID(ev)} className="id--anchor">
-              {" "}
-              task ID
-            </b>{" "}
-            down.
+            Dont forget to write the {" "}
+            <b onClick={(ev) => copyID(ev)} className="id--anchor">task ID</b> down.
           </span>
         </p>
-      )}
-      {download && (
-        <div className="iss__downloadingView__downloadWrap">
-          <StatusLoad progress={download.progress} />
-          {download.ready ? (
-            <span>downloading...</span>
-          ) : (
-            <span>getting from server...</span>
-          )}
-        </div>
-      )}
+      }
+      <b className="iss__downloadingView__download">
+        { download ? "Download started..." : "getting data..." }
+      </b>
     </>
   );
 }

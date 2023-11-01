@@ -58,8 +58,8 @@ def emit_token(
 
 def parse_request_for_jwt(request: Request) -> dict[str, Any]:
     request_token: str = (
-        "Bearer " + request.url.query.split("=")[1]
-        if request.url.query
+        "Bearer " + query_token
+        if (query_token := request.query_params.get("access"))
         else request.headers.get("authorization")
     )
 

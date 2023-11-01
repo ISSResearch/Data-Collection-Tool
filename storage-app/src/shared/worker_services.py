@@ -55,7 +55,7 @@ class Zipper:
             self._archive_id: ObjectId = DataBase \
                 .get_fs_bucket(TEMP_BUCKET) \
                 .upload_from_stream(
-                    filename="{self.bucket_name}{archive.name}",
+                    filename=f"{self.bucket_name}_dataset.zip",
                     source=archive,
                     metadata={"created_at": datetime.now().isoformat()}
                 )

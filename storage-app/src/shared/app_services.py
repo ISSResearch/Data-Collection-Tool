@@ -57,11 +57,11 @@ class FileMeta:
 
 class ObjectStreaming:
     __slots__ = (
-        'file',
-        'range_match',
-        'chunk_start',
-        'chunk_end',
-        'chunk_length'
+        "file",
+        "range_match",
+        "chunk_start",
+        "chunk_end",
+        "chunk_length",
     )
     RANGE_RE: Pattern = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
 
@@ -71,6 +71,13 @@ class ObjectStreaming:
         self._set_chunks()
 
     def stream(self, request: Request) -> StreamingResponse:
+        return (
+            self._stream_dataset()
+            if request.query_params.get("archive") == "1"
+            else self._stream_file(request)
+        )
+
+    def _stream_file(self, request: Request):
         self.range_match: Match[str] | None = self._get_range_match(request)
         if self.range_match: self._set_chunks()
 
@@ -83,6 +90,14 @@ class ObjectStreaming:
         chunk_range: str = f"{self.chunk_start}-{self.chunk_end}/{self.file.length}"
         response.headers["Accept-Ranges"] = "bytes"
         response.headers["Content-Range"] = "bytes " + chunk_range
+
+        return response
+
+    def _stream_dataset(self):
+        response: StreamingResponse = StreamingResponse(self.file)
+        file_name: str = self.file.filename + ".zip"
+
+        response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
 
         return response
 
@@ -121,9 +136,7 @@ class ObjectStreaming:
         )
 
     def _get_range_match(self, request: Request) -> Match[str] | None:
-        range_header: str = request.headers.get('range', '')
-
-        return self.RANGE_RE.match(range_header)
+        return self.RANGE_RE.match(request.headers.get('range', ''))
 
     def _set_chunks(self) -> None:
         chunk_start, chunk_end = (
