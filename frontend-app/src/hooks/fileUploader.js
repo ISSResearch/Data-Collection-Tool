@@ -68,10 +68,10 @@ export default function useFileUploader(projectID) {
         if (!file_id && !file_id.id) throw new Error('corrupted file response');
         await sendChunk(file, file_id.id);
       }
-      catch (error) {
+      catch ({ message, response }) {
         if (file_id && file_id.id) deleteFile(file_id.id);
         file.status = 'f';
-        file.error = error.message;
+        file.error = response.data?.ok || message;
         setFiles([...files]);
       }
     }

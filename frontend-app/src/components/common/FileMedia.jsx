@@ -101,7 +101,7 @@ export const FileMedia = forwardRef(({ files, slide, pathID }, ref) => {
         })
         .catch(({ message, response }) => {
           if (!response) console.log(message);
-          const authFailed = response.status === 401 || response.status === 403;
+          const authFailed = response?.status === 401 || response?.status === 403;
           alert(authFailed ? "authentication failed" : message);
           if (authFailed) navigate("/login");
         });

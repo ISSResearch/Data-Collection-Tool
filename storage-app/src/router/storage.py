@@ -31,10 +31,13 @@ def upload_file(
     result, is_completed, status = project_bucket \
         .put_object(request, file_id, file, file_meta)
 
-    return JSONResponse(status_code=status, content={
-        "ok": result,
-        "transfer_complete": is_completed
-    })
+    return JSONResponse(
+        status_code=status,
+        content={
+            "ok": result,
+            "transfer_complete": is_completed
+        }
+    )
 
 
 @router.delete("/api/storage/{bucket_name}/{file_id}/")

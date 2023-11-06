@@ -7,14 +7,9 @@ export default function useFileInput() {
   const [applyGroups, setApplyGroups] = useState({});
 
   function handleUpload(uploaded) {
-    var threshold = 20 - Object.values(files).length;
-
-    var newData = {
-      ...files,
-      ...inputFilesAdapter(uploaded.slice(0, threshold), applyGroups)
-    };
-
-    setFiles(newData);
+    setFiles(prev => {
+      return { ...prev, ...inputFilesAdapter(uploaded, applyGroups) }
+    });
   }
 
   function handleApplyGroups(groups) {

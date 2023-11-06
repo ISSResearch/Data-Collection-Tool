@@ -10,6 +10,7 @@ from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.db_manager import DataBase, GridFSBucket
+from hashlib import md5
 
 
 class Headers:
@@ -167,7 +168,7 @@ class BucketObject:
         file_id: str,
         file: UploadFile,
         file_meta: str
-    ) -> tuple:
+    ) -> tuple[Any, bool, int]:
         self._prepare_payload(file_meta, request.headers)
         self.file_id: ObjectId | str = get_object_id(file_id)
 
@@ -181,7 +182,12 @@ class BucketObject:
                 else status.HTTP_202_ACCEPTED
             )
 
-        except Exception: return False, False, status.HTTP_400_BAD_REQUEST
+        except AssertionError:
+            return "Such file already exists", False, status.HTTP_400_BAD_REQUEST
+
+        except Exception as error:
+            message: str = error.args[0]
+            return message, False, status.HTTP_400_BAD_REQUEST
 
     def delete_object(self, object_id: str) -> tuple[bool, str]:
         try: self._fs.delete(get_object_id(object_id))
@@ -200,14 +206,17 @@ class BucketObject:
         self.headers.validate()
 
     def _create_file(self, chunk: UploadFile) -> ObjectId:
-        meta: dict[str, Any] = self.meta.get()
+        meta: dict[str, Any]  = self.meta.get()
+        new_item: dict[str, Any] = {
+            "file_id": self.file_id,
+            "filename": meta.get("file_name", ""),
+            "source": chunk.file,
+            "metadata": meta
+        }
 
-        return self._fs.upload_from_stream_with_id(
-            file_id=self.file_id,
-            filename=meta.get("file_name", ""),
-            source=chunk.file,
-            metadata=meta
-        )
+        if self.headers.is_last_chunk: self._set_hash(new_item)
+
+        return self._fs.upload_from_stream_with_id(**new_item)
 
     def _append_file(self, chunk: UploadFile) -> ObjectId | None:
         try:
@@ -223,9 +232,26 @@ class BucketObject:
 
             self._fs.delete(previous_file._id)
 
+            if self.headers.is_last_chunk: self._set_hash(new_item)
+
             return self._fs.upload_from_stream_with_id(**new_item)
 
         except NoFile: self._create_file(chunk)
+
+    def _set_hash(self, file_item: dict[str, Any]) -> None:
+        if type(file_item["source"]) != bytes:
+            content: bytes = file_item["source"].read()
+            file_item["source"].seek(0)
+        else: content: bytes = file_item["source"]
+
+        new_hash: bytes = md5(content).digest()
+
+        search_result: set[GridOut] = set(self._fs.find({"metadata.hash": new_hash}))
+
+        if bool(len(search_result)): raise AssertionError
+
+        file_item["metadata"]["hash"] = new_hash
+
 
 
 class Bucket(BucketObject):
