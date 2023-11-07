@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import './styles.css';
 
-export function MultiSelector({
+export default function({
   selectorLabel,
   selectorOptions,
   onChange,

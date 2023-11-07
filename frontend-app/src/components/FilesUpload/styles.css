@@ -1,0 +1,32 @@
+.iss__filesUpload {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    position: relative;
+}
+.iss__filesUpload__form__border {
+    background-color: var(--issBrand);
+    margin: -20px 0;
+    width: 1px;
+}
+.iss__filesUpload__sendButton {
+    border: 1px solid var(--issBrand);
+    padding: 4px 8px;
+    background-color: var(--issBrand);
+    color: white;
+    width: fit-content;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 5;
+    font-size: 16px;
+}
+.send--disabled {
+    filter: grayscale(1);
+    pointer-events: none;
+}
+.iss__filesUpload__sendButton:hover {
+    color: var(--issBrand);
+    background-color: white;
+}

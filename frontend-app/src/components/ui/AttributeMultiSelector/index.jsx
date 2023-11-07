@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { SelectorWrap } from '../../common/SelectorWrap';
 import { spreadChildren } from '../../../utils/';
+import SelectorWrap from '../../common/SelectorWrap';
 import "./styles.css";
 
-export function AttributeMultiSelector({
+export default function({
   selectorName,
   data,
   onChange,

@@ -4,9 +4,8 @@ import { useUser } from "./hooks";
 import { api } from "./config/api";
 import Header from "./components/Header";
 import AppRouter from "./components/AppRouter";
-import StatusLoad from "./components/common/StatusLoad";
-import './styles/app.css';
-import './styles/variables.css';
+import StatusLoad from "./components/ui/StatusLoad";
+import './app.css';
 
 export default function App() {
   const { user, initUser } = useUser();
