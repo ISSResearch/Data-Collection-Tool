@@ -26,35 +26,6 @@
     outline: 1px solid var(--issBrand);
 }
 
-.iss__fileuploadCard>button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 22px;
-    height: 22px;
-    border: none;
-    background-color: unset;
-    cursor: pointer;
-}
-
-.iss__fileuploadCard>button span {
-    position: absolute;
-    top: 9px;
-    left: 0px;
-    display: block;
-    width: 22px;
-    height: 4px;
-    background-color: var(--issLightRed);
-}
-
-.iss__fileuploadCard>button span:nth-child(1) {
-    rotate: 45deg;
-}
-
-.iss__fileuploadCard>button span:nth-child(2) {
-    rotate: -45deg;
-}
-
 .iss__fileuploadCard__selectWrap {
     padding: 8px;
     display: flex;
@@ -77,10 +48,4 @@
     z-index: 5;
     background-color: unset;
     transition: scale 0.2s ease;
-}
-
-@media (hover:hover) {
-    .iss__fileuploadCard>button:hover span {
-        background-color: var(--issRed);
-    }
 }

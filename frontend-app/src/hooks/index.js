@@ -6,6 +6,7 @@ import useFiles from './fileValidation';
 import useFileUploader from './fileUploader';
 import useCollectors from './collectorsHook';
 import useUser from './user';
+import useAlerts from './alertManager';
 
 export {
   useFileInput,
@@ -16,4 +17,5 @@ export {
   useFileUploader,
   useCollectors,
   useUser,
+  useAlerts
 }

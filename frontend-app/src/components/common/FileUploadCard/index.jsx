@@ -1,5 +1,6 @@
 import { useState } from "react"
 import SelectorGroup from "../../forms/SelectorGroup";
+import CloseCross from "../../ui/CloseCross";
 import './styles.css';
 
 export default function({
@@ -37,9 +38,7 @@ export default function({
           />
       }
       <input value={name} onChange={({ target }) => handleNameChange(target, fileID)} />
-      <button type="button" onClick={() => handleDelete(fileID)}>
-        <span /><span />
-      </button>
+      <CloseCross action={() => handleDelete(fileID)} />
       <div className='iss__fileuploadCard__selectWrap'>
         <SelectorGroup
           attributes={attributes}

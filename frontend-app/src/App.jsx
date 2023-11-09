@@ -1,14 +1,17 @@
 import { UserContext } from "./context/User";
+import { AlertContext } from "./context/Alert";
 import { useState, useEffect } from "react";
-import { useUser } from "./hooks";
+import { useUser, useAlerts } from "./hooks";
 import { api } from "./config/api";
 import Header from "./components/Header";
 import AppRouter from "./components/AppRouter";
 import StatusLoad from "./components/ui/StatusLoad";
+import AlertManager from "./components/AlertManager";
 import './app.css';
 
 export default function App() {
   const { user, initUser } = useUser();
+  const alertManager = useAlerts();
   const [statusData, setStatusData] = useState({ done: false });
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export default function App() {
 
   return (
     <UserContext.Provider value={{ user, initUser }}>
+    <AlertContext.Provider value={ alertManager }>
       <Header />
       {
         !statusData.done
@@ -52,6 +56,8 @@ export default function App() {
           </div>
           : <AppRouter />
       }
+      <AlertManager maxOnScreen={5} />
+    </AlertContext.Provider>
     </UserContext.Provider>
   );
 }

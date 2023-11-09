@@ -1,0 +1,31 @@
+.alertCard {
+    padding: 24px;
+    text-align: left;
+    width: 100%;
+    background-color: #d8eaff82;
+    border: 1px solid;
+    border-color: var(--issBrand);
+    position: relative;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+.alertCard > button > span {
+    background-color: var(--issBrand);
+}
+
+.alert--red {
+    background-color: #ff62627d;
+    border-color: var(--issRed);
+}
+.alert--red > button > span {
+    background-color: var(--issRed);
+}
+.alert--green {
+    background-color: #91df977a;
+    border-color: var(--issGreen);
+}
+.alert--green > button > span {
+    background-color: var(--issGreen);
+}
