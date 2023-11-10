@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../../hooks';
 import { api } from '../../config/api';
+import { AlertContext } from "../../context/Alert";
 import Load from '../ui/Load';
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import './styles.css';
@@ -16,29 +17,33 @@ export default function({
   const [deleteAccept, setDeleteAccept] = useState(false);
   const [deleteNameForm, setDeleteNameForm] = useState('');
   const [preview, setPreview] = useState(projectDescription);
-
+  const { addAlert } = useContext(AlertContext);
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
   const navigate = useNavigate();
 
   function validateNewAttributes() {
-    for (let attributes of Object.values(attributeManagerNew.attributeHook.attributes)) {
+    var newAttirbutes = Object.values(attributeManagerNew.attributeHook.attributes);
+    for (let attributes of newAttirbutes) {
       if (!attributes.length) return false;
     }
     return true;
   }
 
   function getFormData({ target }) {
-    const name = target.querySelector('.iss__projectEdit__form__input input');
-    let description = target.querySelector('.iss__projectEdit__form__input textarea');
-    description = description.value.replace(/\n/g, '<br>');
-    const attributes = [
+    var name = target.project_name.value;
+    var description = target.project_description.value || "";
+
+    description = description.replace(/\n/g, '<br>');
+
+    var attributes = [
       ...attributeManager.formHook.gatherAttributes(),
       ...attributeManagerNew.formHook.gatherAttributes(
         Object.keys(attributeManager.formHook.forms).length
       )
     ];
-    return { name: name.value, description, attributes };
+
+    return { name, description, attributes };
   }
 
   async function performOriginalItemsDelete(idSet, endpoint) {
@@ -57,15 +62,18 @@ export default function({
   async function sendForm(event) {
     event.preventDefault();
     if (loading) return;
+
     setLoading(true);
+
     if (!validateNewAttributes()) return alert('Some attribute forms are missed.')
-    const formData = getFormData(event);
-    const deleteLevels = attributeManager.levelHook.deletedOriginLevels;
-    const deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;
+    var formData = getFormData(event);
+    var deleteLevels = attributeManager.levelHook.deletedOriginLevels;
+    var deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;
 
     try {
       if (deleteAttributes.length) await performOriginalItemsDelete(deleteAttributes, 'attributes');
       if (deleteLevels) await performOriginalItemsDelete(deleteLevels, 'levels');
+
       await api.request(`/api/projects/${pathID}/`,
         {
           method: 'patch',
@@ -76,22 +84,29 @@ export default function({
           }
         }
       );
+
+      addAlert(`Project ${projectName} changed`, "success");
+
       window.location.reload();
     }
     catch ({ message, response }) {
-      const authFailed = response.status === 401 || response.status === 403;
-      alert(authFailed ? "authentication failed" : message);
+      var authFailed = response.status === 401 || response.status === 403;
+
+      addAlert("Updating project error: " + message, "error", authFailed);
+
       if (authFailed) navigate("/login");
+
       setLoading(false);
     }
   }
 
   function deleteProject() {
     if (deleteNameForm !== projectName) {
-      alert('Entered name differs from the actual Project name.');
+      addAlert("Entered name differs from the actual Project name.", "error");
       setDeleteAccept(false);
       return;
     }
+
     api.request(`/api/projects/${pathID}/`,
       {
         method: 'delete',
@@ -102,11 +117,17 @@ export default function({
         }
       }
     )
-      .then(() => navigate('/'))
+      .then(() => {
+        addAlert(`Project ${projectName} deleted`, "success");
+        navigate('/');
+      })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+
+        addAlert("Deleting project error: " + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
+
         setLoading(false);
       });
   }
@@ -148,6 +169,7 @@ export default function({
           <label className='iss__projectEdit__form__input'>
             Name of project:
             <input
+              name="project_name"
               placeholder='Enter project name'
               defaultValue={projectName}
               required
@@ -156,6 +178,7 @@ export default function({
           <label className='iss__projectEdit__form__input'>
             Project description (raw):
             <textarea
+              name="project_description"
               autoComplete='off'
               placeholder='Enter project description'
               defaultValue={projectDescription}

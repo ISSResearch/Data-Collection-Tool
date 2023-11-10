@@ -16,21 +16,27 @@ export default function App() {
 
   useEffect(() => {
     setStatusData({ ...statusData, progress: 20, info: 'initializing...' });
-    setStatusData({ ...statusData, progress: 40, info: 'getting session...' });
+
     const accessToken = localStorage.getItem("dtcAccess");
     setStatusData({ ...statusData, progress: 60, info: 'checking session...' });
+
     api.get('/api/users/check/', { headers: { "Authorization": "Bearer " + accessToken } })
       .then(({ data }) => {
         if (data.isAuth) {
           setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
           initUser(data.user);
+          alertManager.addAlert("Session checked", "success");
         }
-        setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
+        setStatusData({ ...statusData, done: true });
       })
       .catch(({ message, response }) => {
-        if (response.status === 403 || response.status === 401) {
+        var authFailed = response?.status === 403 || response?.status === 401;
+
+        alertManager.addAlert("User check failed: " + message, "error", authFailed);
+
+        if (authFailed) {
           localStorage.removeItem("dtcAccess");
-          setTimeout(() => setStatusData({ ...statusData, done: true }), 1000);
+          setStatusData({ ...statusData, done: true });
         }
         else setStatusData({
           error: true,

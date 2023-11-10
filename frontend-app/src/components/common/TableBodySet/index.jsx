@@ -5,12 +5,14 @@ function TableBodySet({ bodySet, countCallback, parent, depth }) {
   const [childWrap, setWrap] = useState([]);
 
   function handleWrap(index) {
-    const newWraps = [...childWrap];
+    var newWraps = [...childWrap];
+
     if (newWraps.includes(index)) {
       const pos = newWraps.findIndex(i => i === index);
       newWraps.splice(pos, 1);
     }
     else newWraps.push(index);
+
     setWrap(newWraps);
   }
 

@@ -2,6 +2,7 @@ import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
 import { useEffect, useState, useContext, useCallback } from "react";
 import { attributeAdapter } from '../../adapters';
 import { UserContext } from '../../context/User';
+import { AlertContext } from "../../context/Alert";
 import { api } from "../../config/api";
 import ProjectVisibility from "../../components/ProjectVisibility";
 import FilesValidate from "../../components/FilesValidate";
@@ -21,33 +22,35 @@ const PROTECTED_ROUTE_LINKS = [
   { name: 'edit', link: 'edit', permission: 'edit' }
 ];
 
+const VARIANTS = {
+  upload: FilesUpload,
+  validate: FilesValidate,
+  stats: FileStats,
+  download: FilesDownload,
+  edit: ProjectEdit,
+  visibility: ProjectVisibility
+}
+
 export default function() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);
   const [userOptions, setUserOptions] = useState([]);
   const [currentRoute, setCurrentRoute] = useState('projects');
-  const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useContext(UserContext);
   const { projectID } = useParams();
+  const { addAlert } = useContext(AlertContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const PageVariant = useCallback((props) => {
-    const [, , , variant] = location.pathname.split('/')
-    const variants = {
-      upload: FilesUpload,
-      validate: FilesValidate,
-      stats: FileStats,
-      download: FilesDownload,
-      edit: ProjectEdit,
-      visibility: ProjectVisibility
-    }
-    const Component = variants[variant];
+    var [, , , variant] = location.pathname.split('/')
+    var Component = VARIANTS[variant];
     return Component && <Component {...props} />;
   }, [location]);
 
   // TODO: refactor routes validation and permission
   useEffect(() => {
-    const getLocation = () => {
+    var getLocation = () => {
       var [, mainPath, id, childPath] = location.pathname.split('/');
       return childPath || `${mainPath}/${id}`;
     };
@@ -57,8 +60,13 @@ export default function() {
     if (project && !user.is_superuser && pageLoc !== `projects/${projectID}`) {
       var check_path = { ...project.permissions };
       check_path.visibility = check_path.edit;
+
       var checkAgainst = pageLoc === "validate" ? "view" : pageLoc;
-      if (!check_path[checkAgainst]) navigate('/404');
+
+      if (!check_path[checkAgainst]) {
+        addAlert("Project permission denied for current user", "error");
+        navigate('/404');
+      }
     }
 
     setCurrentRoute(pageLoc);
@@ -68,7 +76,7 @@ export default function() {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       })
         .then(({ data }) => {
-          const preparedData = attributeAdapter(data);
+          var preparedData = attributeAdapter(data);
           setProject(preparedData);
 
           var { permissions } = data;
@@ -83,10 +91,11 @@ export default function() {
           setLoading(false);
         })
         .catch(({ message, response }) => {
-          const authFailed = response.status === 401 || response.status === 403;
-          alert(authFailed ? "authentication failed" : message);
-          if (authFailed) navigate("/login");
-          navigate('/404')
+          var authFailed = response.status === 401 || response.status === 403;
+
+          addAlert("Getting project data error: " + message, "error", authFailed);
+
+          navigate(authFailed ? "/login" : '/404');
         });
     }
   }, [project, location]);

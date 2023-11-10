@@ -9,13 +9,10 @@ const COLOR_MAP = {
 }
 
 export default function({ maxOnScreen }) {
-  const { alerts, removeAlert, addAlert } = useContext(AlertContext);
+  const { alerts, removeAlert } = useContext(AlertContext);
 
   return (
     <aside className="alertManager">
-      {/* <button onClick={() => addAlert("test error", "error")}>error</button>
-      <button onClick={() => addAlert("test success", "success")}>success</button>
-      <button onClick={() => addAlert("test common", )}>common</button> */}
       {
         Object.entries(alerts)
           .filter(([_, { active }]) => active)

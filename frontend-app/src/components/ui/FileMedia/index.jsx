@@ -4,19 +4,24 @@ import {
   useState,
   useImperativeHandle,
   forwardRef,
+  useRef,
+  useContext
 } from "react";
 import { useNavigate } from 'react-router-dom';
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils/";
+import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
 export default forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
+  const mediaRef = useRef(null);
 
-  const MediaItem = useCallback((props) => {
+  var MediaItem = useCallback((props) => {
     return typeVideo
       ? <video autoPlay muted controls playsInline {...props} />
       : <img alt="validate_item" loading='lazy' decoding="async" {...props} />;
@@ -40,8 +45,7 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   useImperativeHandle(ref, () => resetZoom);
 
   function setTransform() {
-    const media = document.getElementById("mediaItem");
-    media.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    mediaRef.current.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
   }
 
   function handleMouseDown(ev) {
@@ -72,7 +76,7 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   }
 
   useEffect(() => {
-    const media = document.getElementById("mediaItem");
+    var media = mediaRef.current;
     media.addEventListener('wheel', event => event.preventDefault());
     return () => {
       media.removeEventListener('wheel', event => event.preventDefault());
@@ -80,10 +84,10 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   }, []);
 
   useEffect(() => {
-    const setFile = (token) => {
+    var setFile = (token) => {
       resetZoom();
       if (!files[slide]) return;
-      const { id, file_type } = files[slide];
+      var { id, file_type } = files[slide];
       setTypeVideo(file_type === 'video');
       setFileUrl(
         `${getOriginDomain()}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
@@ -100,9 +104,8 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
           setFile(data);
         })
         .catch(({ message, response }) => {
-          if (!response) console.log(message);
-          const authFailed = response?.status === 401 || response?.status === 403;
-          alert(authFailed ? "authentication failed" : message);
+          var authFailed = response?.status === 401 || response?.status === 403;
+          addAlert("Getting temp token error" + message, "error", authFailed);
           if (authFailed) navigate("/login");
         });
     }
@@ -116,11 +119,12 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   return (
     <div className="zoomWrap">
       <div
-        id="mediaItem"
+        ref={mediaRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
+        className="mediaItem"
       >{fileUrl && <MediaItem src={fileUrl} className='mediaFile' />}</div>
     </div>
   );

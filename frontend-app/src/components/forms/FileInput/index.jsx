@@ -4,7 +4,7 @@ import './styles.css';
 export default function({ fileManager, attributes }) {
   const { files, handleUpload } = fileManager;
 
-  const handleDrop = (ev) => {
+  var handleDrop = (ev) => {
     ev.preventDefault();
     handleUpload([...ev.dataTransfer.files]);
   }

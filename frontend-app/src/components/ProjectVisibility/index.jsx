@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Fragment } from "react";
 import { useCollectors } from '../../hooks';
 import { api } from "../../config/api";
+import { AlertContext } from "../../context/Alert";
 import Load from "../ui/Load";
 import './styles.css';
 
@@ -19,29 +20,37 @@ const PERMISSIONS = [
 export default function({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
-  function sendForm(event) {
+  async function sendForm(event) {
     event.preventDefault();
+
     setLoading({ ...loading, submit: true });
-    const formData = { project: pathID, users: gatherData() };
-    api.request(`/api/users/collectors/${pathID}/`, {
-      method: 'patch',
-      data: formData,
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
-      }
-    })
-      .then(({ data }) => {
-        initData(data);
-        setLoading({ ...loading, submit: false });
-      })
-      .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
-        if (authFailed) navigate("/login");
+
+    try {
+      var formData = { project: pathID, users: gatherData() };
+
+      var { data }  = await api.request(`/api/users/collectors/${pathID}/`, {
+        method: 'patch',
+        data: formData,
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+        }
       });
+
+      initData(data);
+      addAlert("Visibility for project changed", "success");
+      setLoading({ ...loading, submit: false });
+    }
+    catch({ message, response }) {
+      var authFailed = response?.status === 401 || response?.status === 403;
+
+      addAlert("Updating collectors error" + message, "error", authFailed);
+
+      if (authFailed) navigate("/login");
+    };
   }
 
   useEffect(() => {
@@ -53,8 +62,10 @@ export default function({ pathID }) {
         setLoading({ ...loading, page: false });
       })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+
+        addAlert("Getting collectors error: " + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
       });
   }, []);

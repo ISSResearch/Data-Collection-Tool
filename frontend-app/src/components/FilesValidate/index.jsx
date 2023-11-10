@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSwiper, useFiles } from '../../hooks';
 import { api } from '../../config/api';
+import { AlertContext } from "../../context/Alert";
 import ValidationFilterGroup from '../forms/ValidationFilterGroup';
 import FileSelector from '../common/FileSelector';
 import FileSwiper from '../common/FileSwiper';
@@ -23,6 +24,7 @@ export default function({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState({});
+  const { addAlert } = useContext(AlertContext);
   const fileManager = useFiles();
   const sliderManager = useSwiper();
   const navigate = useNavigate();
@@ -36,7 +38,8 @@ export default function({ pathID, attributes, canValidate }) {
   }
 
   function handleChange(filterType, query) {
-    const { card, attr, type } = getPageQuery();
+    var { card, attr, type } = getPageQuery();
+
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
@@ -45,7 +48,7 @@ export default function({ pathID, attributes, canValidate }) {
   }
 
   useEffect(() => {
-    const { card, attr, type } = getPageQuery();
+    var { card, attr, type } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
 
@@ -80,8 +83,10 @@ export default function({ pathID, attributes, canValidate }) {
         setLoading(false);
       })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+
+        addAlert("Getting project files error: " + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
       });
   }, [pageQuery]);

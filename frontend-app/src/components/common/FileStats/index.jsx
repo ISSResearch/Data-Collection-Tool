@@ -1,27 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { statsAdapter } from '../../../adapters';
 import { api } from '../../../config/api';
+import { AlertContext } from "../../../context/Alert";
 import TableBodySet from '../TableBodySet';
 import Load from "../../ui/Load";
 import './styles.css';
 
 export default function({ pathID }) {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState([]);
   const navigate = useNavigate();
+  const { addAlert } = useContext(AlertContext);
 
   const countItem = (a, b, c) => {
-    const acc = (a?.image || 0) + (a?.video || 0);
-    const dec = (b?.image || 0) + (b?.video || 0);
-    const val = (c?.image || 0) + (c?.video || 0);
+    var acc = (a?.image || 0) + (a?.video || 0);
+    var dec = (b?.image || 0) + (b?.video || 0);
+    var val = (c?.image || 0) + (c?.video || 0);
+
     return acc + dec + val;
   };
 
-  const countStatus = (status) => {
+  var countStatus = (status) => {
     return Object.values(stats).reduce((sum, item) => sum + countItem(item[status]), 0);
   };
 
-  const countTotal = () => {
+  var countTotal = () => {
     return Object.values(stats).reduce((sum, { a, d, v }) => sum + countItem(a, d, v), 0);
   };
 
@@ -31,10 +34,9 @@ export default function({ pathID }) {
     })
       .then(({ data }) => setStats(statsAdapter(data)))
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+        addAlert("Getting stats error: " + message, "error", authFailed);
         if (authFailed) navigate("/login");
-        setStats([]);
       });
   }, []);
 

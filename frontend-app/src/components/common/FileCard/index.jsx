@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import './styles.css';
 
+const DEFAULT_STYLE = 'iss__fileCard'
+
 export default function({
   cardIndex,
   name,
@@ -10,13 +12,16 @@ export default function({
   status,
   handleCLick
 }) {
-  const defauleStyle = 'iss__fileCard'
-  const [styles, setStyles] = useState([defauleStyle]);
+  const [styles, setStyles] = useState([DEFAULT_STYLE]);
 
   useEffect(() => {
-    const newStyles = [defauleStyle];
+    var newStyles = [DEFAULT_STYLE];
+
     if (active) newStyles.push('card--active');
-    if (status && status !== 'v') newStyles.push(`card--${status === 'a' ? 'accepted' : 'rejected'}`)
+    if (status && status !== 'v') newStyles.push(
+      `card--${status === 'a' ? 'accepted' : 'rejected'}`
+    )
+
     setStyles(newStyles);
   }, [active, status]);
 

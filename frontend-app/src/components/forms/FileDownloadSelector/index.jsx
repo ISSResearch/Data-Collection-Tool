@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import {api} from "../../../config/api";
+import { AlertContext } from "../../../context/Alert";
 import Load from "../../ui/Load";
 import './styles.css';
 
@@ -12,19 +13,23 @@ export default function({
 }) {
   const { files, setFiles } = fileManager;
   const [loading, setLoading] = useState(false);
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
   function selectFile(index, { checked }) {
-    const newFiles = [...files];
+    var newFiles = [...files];
     newFiles[index].is_downloaded = !checked;
     setFiles(newFiles);
   }
 
   useEffect(() => {
     setLoading(true);
-    const params = {};
+
+    var params = {};
+
     if (newFiles) params.downloaded = false;
     if (option.value !== 'all') params.status = option.value;
+
     api.get(`/api/files/project/${pathID}/`, {
       params,
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
@@ -34,8 +39,8 @@ export default function({
         setLoading(false)
       })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+        addAlert("Getting files error: " + message, "error", authFailed);
         if (authFailed) navigate("/login");
       });
   }, [newFiles, option]);

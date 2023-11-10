@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../config/api';
+import { AlertContext } from "../../../context/Alert";
 import AttributeInput from '../../ui/AttributeInput';
 import './styles.css';
 
@@ -28,6 +29,7 @@ export default function({
     setRequired,
     setDeletedOriginLevels
   } = levelHook;
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
   async function proceedOriginalLevelDelete(index, id) {
@@ -46,8 +48,8 @@ export default function({
       handleLevelDelete(index, false, id);
     }
     catch ({ message, response }) {
-      const authFailed = response.status === 401 || response.status === 403;
-      alert(authFailed ? "authentication failed" : 'Current Level or child Levels Attributes are set for Files.');
+      var authFailed = response.status === 401 || response.status === 403;
+      addAlert('Current or child Levels Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
     };
@@ -64,18 +66,18 @@ export default function({
 
   function handleSetMultiple(index, target) {
     try { setMultiple(formId, index, target); }
-    catch ({ message }) { alert(message); }
+    catch ({ message }) { addAlert(message, "error"); }
   }
 
   function handleAddLevel() {
     try { addLevel(formId); }
-    catch ({ message }) { alert(message); }
+    catch ({ message }) { addAlert(message, "error"); }
   }
 
   useEffect(() => {
     if (!levels[formId].length) {
       try { addLevel(formId); }
-      catch ({ message }) { alert(message); }
+      catch ({ message }) { addAlert(message, "error"); }
     }
   }, []);
 

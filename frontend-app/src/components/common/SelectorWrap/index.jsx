@@ -8,6 +8,7 @@ export default function({ item, onChange, applyGroups }) {
 
   function handleSelect(selected, children, index) {
     selected = Number(selected);
+
     var clear = !Boolean(selected);
     var newOptions = [...options];
 

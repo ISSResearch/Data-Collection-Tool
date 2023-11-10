@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import './styles.css';
 
 export default function({ item }) {
-  const prepareDescription = () => {
-    let { description } = item;
+  var prepareDescription = () => {
+    var { description } = item;
     description = description.replaceAll('<br>', ' ');
-    if (description.length > 81) {
-      description = description.slice(0, 80) + '...';
-    }
+
+    if (description.length > 81) description = description.slice(0, 80) + '...';
+
     return description;
   }
 

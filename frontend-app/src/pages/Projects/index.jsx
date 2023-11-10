@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
+import { AlertContext } from "../../context/Alert";
 import { api } from '../../config/api';
 import Load from "../../components/ui/Load";
 import AllProjects from '../../components/AllProjects';
@@ -12,11 +13,13 @@ const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
 const PROTECTED_ROUTE_LINKS = [
   { name: 'create project', link: 'create', permission: 'hidden' }
 ];
+const VARIANTS = { create: ProjectCreate }
 
 export default function() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');
   const { user } = useContext(UserContext);
+  const { addAlert } = useContext(AlertContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,15 +27,12 @@ export default function() {
   if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
 
   const PageVariant = (props) => {
-    const variants = {
-      create: ProjectCreate
-    }
-    const Component = variants[currentRoute] || AllProjects;
+    var Component = VARIANTS[currentRoute] || AllProjects;
     return Component && <Component {...props} />;
   }
 
   useEffect(() => {
-    const getLocation = () => {
+    var getLocation = () => {
       const [, mainPath, childPath] = location.pathname.split('/');
       return childPath || mainPath;
     };
@@ -45,10 +45,12 @@ export default function() {
     api.get('/api/projects/', {
       headers: "Authorization: Bearer " + localStorage.getItem("dtcAccess")
     })
-      .then(({ data }) => { setProjects(data); })
+      .then(({ data }) => setProjects(data))
       .catch(({ message, response }) => {
         var authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+
+        addAlert("Project Page load failed: " + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
       });
   }, [location]);

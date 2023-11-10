@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
+import { AlertContext } from "../../context/Alert";
 import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
@@ -14,25 +15,33 @@ export default function() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { initUser } = useContext(UserContext);
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
   async function sendForm(event) {
     event.preventDefault();
     setLoading(true);
-    const [name, pass] = event.target;
+    var [name, pass] = event.target;
+
     try {
-      const { data, status } = await api.request('/api/users/login/', {
+      var { data, status } = await api.request('/api/users/login/', {
         method: 'post',
         data: { username: name.value, password: pass.value },
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
+
       if (!data.isAuth || status !== 200) throw new Error(data.message);
-      const { accessToken } = data;
+
+      var { accessToken } = data;
       localStorage.setItem("dtcAccess", accessToken);
+
       initUser(data.user);
+      addAlert("User logged", "success");
+
       if (window.location.pathname === '/login') navigate('/');
     }
     catch ({ message }) {
+      addAlert("User login failed: " + message, "error");
       setErrors(message);
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);

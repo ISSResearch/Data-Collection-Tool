@@ -17,7 +17,7 @@ export function extractFileMeta({ type: fileType, name: fileName }) {
 }
 
 export function getOriginDomain() {
-  const { origin } = window.location;
+  var { origin } = window.location;
   return origin.split(':', 2).join(':');
 }
 

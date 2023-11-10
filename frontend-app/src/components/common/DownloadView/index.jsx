@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext, useRef, useState } from "react";
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils";
+import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
 export default function({ taskID }) {
   const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");
   const [download, setDownload] = useState(false);
+  const { addAlert } = useContext(AlertContext);
+  const componentRef = useRef(null);
 
   // TODO: couldnt clear interval the normal way.
   const Helper = () => {
     useEffect(() => {
-      let interval = setInterval(checkTaskStatus, 5000);
+      var interval = setInterval(checkTaskStatus, 5000);
       return () => {
         clearInterval(interval);
       };
@@ -19,59 +22,83 @@ export default function({ taskID }) {
   };
 
   async function copyID({ clientX: X, clientY: Y }) {
-    const clipboardTip = document.createElement("div");
+    var clipboardTip = document.createElement("div");
+
     clipboardTip.className = "iss__downloadingView__clipboardTip";
     clipboardTip.style.left = X + "px";
     clipboardTip.style.top = Y + "px";
+
     try {
       await navigator.clipboard.writeText(taskID);
       clipboardTip.innerHTML = "copied to clipboard";
-    } catch ({ message }) {
+    }
+    catch ({ message }) {
       clipboardTip.innerHTML = "cant copy";
       clipboardTip.classList.add("clipboardTip--error");
-      console.log("clipboard error: " + message);
+
+      addAlert("Clipboard error: " + message, "error");
     }
-    document
-      .querySelector(".iss__downloadingView__title")
-      .appendChild(clipboardTip);
+
+    componentRef.current.appendChild(clipboardTip);
+
     setTimeout(() => clipboardTip.parentNode.removeChild(clipboardTip), 500);
   }
 
   const statusHandlers = {
     SUCCESS: (archiveID) => {
+      addAlert("Got dataset", "success");
       setMessage("DataSet is ready. Downloading...");
       getDataset(archiveID);
     },
-    FAILURE: () =>
+    FAILURE: () => {
+      addAlert("Getting dataset error", "error");
       setMessage(
         "Error occured while gathering the DataSet. Please request a new one.",
-      ),
+      );
+    }
   };
 
   async function getDataset(archiveId) {
     setDownload(true);
-    if (!archiveId) return alert("Error! No data found");
-    var { data: token } = await fileApi.get("/api/temp_token/", {
-      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
-    });
-    var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
-    var accessQuery = `/?access=${token}&archive=1`;
-    const link = document.createElement("a");
-    link.href = baseUrl + archiveId + accessQuery;
-    link.setAttribute("download", "dataset.zip");
-    link.click();
-    link.remove();
+
+    try {
+      if (!archiveId) throw new Error("Error! No data found");
+
+      var { data: token } = await fileApi.get("/api/temp_token/", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      });
+      var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
+      var accessQuery = `/?access=${token}&archive=1`;
+
+      var link = document.createElement("a");
+      link.href = baseUrl + archiveId + accessQuery;
+      link.setAttribute("download", "dataset.zip");
+      link.click();
+      link.remove();
+    }
+    catch({ message, response }) {
+      var authFailed = response.status === 401 || response.status === 403;
+
+      addAlert("Getting dataset error: " + message, "error", authFailed);
+    }
   }
 
   async function checkTaskStatus() {
-    var { data } = await fileApi.get(`/api/task/${taskID}/`, {
-      headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
-    });
-    var { status, archive_id } = data;
-    var handler = statusHandlers[status];
-    if (handler) {
-      setIntervalCheck(false);
-      handler(archive_id);
+    try {
+      var { data } = await fileApi.get(`/api/task/${taskID}/`, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
+      });
+      var { status, archive_id } = data;
+      var handler = statusHandlers[status];
+
+      if (handler) {
+        setIntervalCheck(false);
+        handler(archive_id);
+      }
+    }
+    catch({ message, response }) {
+      var authFailed = response.status === 401 || response.status === 403;
+      addAlert("Checking status error: " + message, "error", authFailed);
     }
   }
 
@@ -83,7 +110,7 @@ export default function({ taskID }) {
   return (
     <>
       {intervalCheck && <Helper />}
-      <div className="iss__downloadingView__title">
+      <div red={componentRef} className="iss__downloadingView__title">
         <h2>Task id: </h2>
         <span
           onClick={(ev) => copyID(ev)}

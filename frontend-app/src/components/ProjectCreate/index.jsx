@@ -1,23 +1,28 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../config/api';
 import { useAttributeManager } from '../../hooks';
+import { AlertContext } from "../../context/Alert";
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import Load from '../ui/Load';
 import './styles.css';
 
 export default function() {
   const [loading, setLoading] = useState(false);
-  const attributeManager = useAttributeManager();
   const [preview, setPreview] = useState('');
+  const { addAlert } = useContext(AlertContext);
+  const attributeManager = useAttributeManager();
   const navigate = useNavigate();
 
   function getFormData({ target }) {
-    const name = target.querySelector('.iss__projectCreate__form__input input');
-    let description = target.querySelector('.iss__projectCreate__form__input textarea');
-    description = description.value.replaceAll(/\n/g, '<br>');
-    const attributes = attributeManager.formHook.gatherAttributes();
-    return { name: name.value, description, attributes };
+    var name = target.project_name.value;
+    var description = target.project_description.value || "";
+
+    description = description.replaceAll(/\n/g, '<br>');
+
+    var attributes = attributeManager.formHook.gatherAttributes();
+
+    return { name, description, attributes };
   }
 
   function sendForm(event) {
@@ -26,7 +31,8 @@ export default function() {
     if (loading) return;
     else setLoading(true);
 
-    const formData = getFormData(event);
+    var formData = getFormData(event);
+
     api.request('/api/projects/',
       {
         method: 'post',
@@ -37,11 +43,17 @@ export default function() {
         }
       }
     )
-      .then(() => navigate("/projects/"))
+      .then(() => {
+        addAlert("Project created", "success");
+        navigate("/projects/");
+      })
       .catch(({ message, response }) => {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+
+        addAlert("Creating preoject error:" + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
+
         setLoading(false);
       });
   }
@@ -52,11 +64,12 @@ export default function() {
         <fieldset className='iss__projectCreate__form__set'>
           <label className='iss__projectCreate__form__input'>
             Name of project:
-            <input placeholder='Enter project name' required />
+            <input name="project_name" placeholder='Enter project name' required />
           </label>
           <label className='iss__projectCreate__form__input'>
             Project description (raw):
             <textarea
+              name="project_description"
               autoComplete='off'
               placeholder='Enter project description'
               onChange={({ target }) => setPreview(target.value)}

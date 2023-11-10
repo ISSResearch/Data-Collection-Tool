@@ -23,17 +23,20 @@ export default function useCollectors() {
 
   function gatherData() {
     return Object.values(collectors).reduce((acc, collector) => {
-      const originCollector = origin[collector.user_id];
+      var originCollector = origin[collector.user_id];
+
       if (originCollector) {
-        const { permissions: originPermissions } = originCollector;
-        const { permissions: newPermissions } = collector;
-        const changedPermissions = Object.keys(newPermissions)
+        var { permissions: originPermissions } = originCollector;
+        var { permissions: newPermissions } = collector;
+
+        var changedPermissions = Object.keys(newPermissions)
           .reduce((acc, permission) => {
             if (newPermissions[permission] !== originPermissions[permission]) {
               acc.push(permission);
             }
             return acc;
           }, []);
+
         if (changedPermissions.length) acc.push(collector);
       }
       return acc;

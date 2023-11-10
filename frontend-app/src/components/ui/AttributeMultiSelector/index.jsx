@@ -3,12 +3,7 @@ import { spreadChildren } from '../../../utils/';
 import SelectorWrap from '../../common/SelectorWrap';
 import "./styles.css";
 
-export default function({
-  selectorName,
-  data,
-  onChange,
-  defaultSelected,
-}) {
+export default function({ selectorName, data, onChange, defaultSelected, }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const [selectors, setSelectors] = useState({});

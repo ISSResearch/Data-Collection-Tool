@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../config/api';
+import { AlertContext } from "../../../context/Alert";
 import './styles.css';
 
 function AttributeInput({
@@ -15,6 +16,7 @@ function AttributeInput({
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
+  const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
   async function proceedOriginalAttributeDelete(path, id) {
@@ -33,8 +35,8 @@ function AttributeInput({
       handleDeleteAttribute(path, false, id);
     }
     catch ({ message, response }) {
-      const authFailed = response.status === 401 || response.status === 403;
-      alert(authFailed ? "authentication failed" : 'Current or child Attributes are set for Files.');
+      var authFailed = response.status === 401 || response.status === 403;
+      addAlert('Current or child Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
     };
@@ -46,7 +48,7 @@ function AttributeInput({
   }
 
   useEffect(() => {
-    const currentDepth = attributes[0]?.path.split('_').length;
+    var currentDepth = attributes[0]?.path.split('_').length;
     setLastLevel(!currentDepth || currentDepth >= depth);
   }, [depth]);
 

@@ -4,10 +4,14 @@ import { formUID } from "../utils";
 export default function useAlerts() {
   const [alerts, setAlerts] = useState({});
 
-  function addAlert(message, type) {
+  function addAlert(message, type, noSession=false) {
     var newID = formUID();
+    var newAlert = noSession
+      ? { message: "Session expired", type: "common", active: true }
+      : { message, type, active: true };
+
     setAlerts(prev => {
-      return { ...prev, [newID]: { message, type, active: true } }
+      return { ...prev, [newID]:  newAlert}
     });
   }
 

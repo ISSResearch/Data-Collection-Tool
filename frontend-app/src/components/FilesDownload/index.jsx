@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
 import { useFiles } from "../../hooks";
+import { AlertContext } from "../../context/Alert";
 import Load from "../ui/Load";
 import FileDownloadSelector from "../forms/FileDownloadSelector";
 import DownloadView from "../common/DownloadView";
@@ -21,6 +22,7 @@ export default function({ pathID }) {
   const [manual, setManual] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [task, setTask] = useState("");
+  const { addAlert } = useContext(AlertContext);
   const fileManager = useFiles();
   const navigate = useNavigate();
 
@@ -30,14 +32,18 @@ export default function({ pathID }) {
   };
 
   async function getFiles() {
-    let file_ids;
+    var file_ids;
+
     if (manual) file_ids = fileManager.files.map(({ id }) => id);
+
     else {
-      const params = {};
+      var params = {};
+
       if (isNew) params.downloaded = false;
       if (option.value !== "all") params.status = option.value;
+
       try {
-        const { data } = await api.get(`/api/files/project/${pathID}/`, {
+        var { data } = await api.get(`/api/files/project/${pathID}/`, {
           params,
           headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
         });
@@ -46,27 +52,35 @@ export default function({ pathID }) {
         ).map(({ id }) => id);
       }
       catch ({ message, response }) {
-        const authFailed = response.status === 401 || response.status === 403;
-        alert(authFailed ? "authentication failed" : message);
+        var authFailed = response.status === 401 || response.status === 403;
+
+        addAlert("Getting files data error:" + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
       }
     }
+
     if (!file_ids.length) throw new Error("no content");
     return file_ids;
   }
 
   function handleTaskInput({ value }) {
-    const className = "set--hidden";
-    const hideElement = document.querySelector(".iss__filesDownload__mainSet");
+    var className = "set--hidden";
+    var hideElement = document.querySelector(".iss__filesDownload__mainSet");
+
     if (!value) return hideElement.classList.remove(className);
     if (!hideElement.classList.contains(className)) hideElement.classList.add(className);
   }
 
   async function downloadSelected(event) {
     event.preventDefault();
-    const taskInput = event.target.taskID;
+
+    var taskInput = event.target.taskID;
+
     if (taskInput.value) return setTask(taskInput.value);
+
     setLoading(true);
+
     try {
       const { data } = await fileApi.post(`/api/task/archive/`,
         {
@@ -75,13 +89,21 @@ export default function({ pathID }) {
         },
         { headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") } },
       );
-      if (data.task_id) setTask(data.task_id);
+
+      if (data.task_id) {
+        addAlert(`Download task ${data.task_id} created`, "success");
+        setTask(data.task_id);
+      }
     }
     catch ({ message, response }) {
       const authFailed = response.status === 401 || response.status === 403;
-      alert(authFailed ? "authentication failed" : message);
+      addAlert(
+        authFailed ? "Session expired" : "Error creating download task" + message,
+        authFailed ? "common" : "error"
+      );
       if (authFailed) navigate("/login");
     }
+
     setLoading(false);
   }
 

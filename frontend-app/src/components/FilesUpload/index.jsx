@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useFileInput } from '../../hooks';
+import { AlertContext } from "../../context/Alert";
 import SelectorGroup from '../forms/SelectorGroup';
 import FileInput from '../forms/FileInput';
 import UploadView from '../common/UploadView';
@@ -7,12 +8,15 @@ import './styles.css';
 
 export default function({ attributes, pathID }) {
   const [uploading, setUploading] = useState(false);
+  const { addAlert } = useContext(AlertContext);
   const fileManager = useFileInput();
 
   function sendForm(event) {
     event.preventDefault();
-    const { isValid, message } = fileManager.validate(attributes);
-    if (!isValid) alert(message);
+
+    var { isValid, message } = fileManager.validate(attributes);
+
+    if (!isValid) addAlert("Uploading failed: " + message, "error");
     else setUploading(true);
   }
 
@@ -23,7 +27,8 @@ export default function({ attributes, pathID }) {
       <button
         onClick={sendForm}
         className={
-          `iss__filesUpload__sendButton${Object.values(fileManager.files).length ? '' : ' send--disabled'
+          `iss__filesUpload__sendButton${
+            Object.values(fileManager.files).length ? '' : ' send--disabled'
           }`
         }
       >SEND ALL</button>
