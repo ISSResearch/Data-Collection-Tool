@@ -16,7 +16,7 @@ export default function({ fileManager, sliderManager, attributes }) {
   const acceptRef = useRef(null);
   const declineRef = useRef(null);
 
-  function handleKey(key) {
+  function handleKey({ key }) {
     var buttonMap = { 'a': acceptRef, 'd': declineRef };
     buttonMap[key]?.current.click();
   }
@@ -68,11 +68,11 @@ export default function({ fileManager, sliderManager, attributes }) {
   useEffect(() => {
     initFile(files[slide] || {});
     if (!keyListener) {
-      window.addEventListener("keydown", ({ key }) => handleKey(key));
+      window.addEventListener("keydown", handleKey);
       setKeyListener(true);
     }
     return () => {
-      window.removeEventListener("keydown", ({ key }) => handleKey(key));
+      window.removeEventListener("keydown", handleKey);
     }
   }, [slide, files]);
 

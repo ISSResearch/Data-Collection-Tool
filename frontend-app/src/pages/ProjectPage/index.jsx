@@ -91,7 +91,7 @@ export default function() {
           setLoading(false);
         })
         .catch(({ message, response }) => {
-          var authFailed = response.status === 401 || response.status === 403;
+          var authFailed = response?.status === 401 || response?.status === 403;
 
           addAlert("Getting project data error: " + message, "error", authFailed);
 

@@ -9,7 +9,7 @@ export default function({ fileManager, sliderManager, pathID }) {
   const incRef = useRef(null);
   const decRef = useRef(null);
 
-  function handleKeyPressed(key) {
+  function handleKeyPressed({ key }) {
     if (key === 'x') handleReset();
     var buttonMap = {
       ArrowRight: incRef,
@@ -21,9 +21,9 @@ export default function({ fileManager, sliderManager, pathID }) {
   function handleReset() { childRef.current() }
 
   useEffect(() => {
-    window.addEventListener("keydown", ({ key }) => handleKeyPressed(key));
+    window.addEventListener("keydown", handleKeyPressed);
     return () => {
-      window.removeEventListener("keydown", ({ key }) => handleKeyPressed(key));
+      window.removeEventListener("keydown", handleKeyPressed);
     }
   }, []);
 
