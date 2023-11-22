@@ -6,8 +6,8 @@ import Blank from '../pages/Blank';
 import ProjectPage from '../pages/ProjectPage';
 
 export const routes = [
-  { path: '/', element: <Home />, exact: true },
-  { path: '/login', element: <Login />, exact: true },
+  { path: "/", element: <Home />, exact: true },
+  { path: '/login', element: <Login />, exact: true, },
   { path: '/registration', element: <Registration />, exact: true },
   {
     path: '/projects',

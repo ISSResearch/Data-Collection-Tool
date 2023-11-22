@@ -123,6 +123,8 @@ export default function useFileInput() {
     return error || resultMap.ok;
   }
 
+  function count() { return Object.keys(files).length; }
+
   return {
     files,
     handleUpload,
@@ -131,6 +133,7 @@ export default function useFileInput() {
     handleGroupChange,
     gatherFiles,
     validate,
-    handleApplyGroups
+    handleApplyGroups,
+    count
   };
 }

@@ -1,41 +1,22 @@
-import { Route, Routes } from "react-router-dom";
-import { useContext } from "react";
-import { routes } from '../../config/routes';
+import { Outlet, Navigate, useLocation } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/User";
-import Login from "../../pages/Login";
-import Registration from "../../pages/Registration";
+
+const SAFE_ROUTES = ["/login", "/registration"];
 
 export default function() {
+  const [redirect, setRedirect] = useState(false);
   const { user } = useContext(UserContext);
+  const location = useLocation();
+
+  useEffect(() => {
+    setRedirect(!user && !SAFE_ROUTES.includes(location.pathname));
+  }, [location]);
 
   return (
     <main>
       <div className="iss__pageContent">
-        {
-          user
-          ? <Routes>
-              {
-                routes.map(({ path, element, exact, children }) =>
-                  <Route
-                    key={path}
-                    path={path}
-                    element={element}
-                    exact={exact}
-                  >
-                    {
-                      children?.map(({ path, element, exact}) =>
-                        <Route key={path} path={path} element={element} exact={exact}/>
-                      )
-                    }
-                  </Route>
-                )
-              }
-            </Routes>
-            : <Routes>
-              <Route path='*' element={<Login />} />
-              <Route path='/registration' element={<Registration />} />
-            </Routes>
-        }
+        { redirect ? <Navigate to="/login" replace={true} /> : <Outlet /> }
       </div>
     </main>
   );

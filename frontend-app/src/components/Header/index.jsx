@@ -1,5 +1,5 @@
+import { useNavigate } from "react-router-dom";
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
 import NavLinks from '../common/NavLinks';
@@ -20,7 +20,7 @@ export default function() {
     localStorage.removeItem("dtcAccess");
     initUser(null);
     addAlert("User logged out", "success");
-    navigate('/login');
+    navigate("/login");
   }
 
   return (

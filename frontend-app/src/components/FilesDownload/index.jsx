@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate, useBlocker } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
 import { useFiles } from "../../hooks";
 import { AlertContext } from "../../context/Alert";
@@ -106,6 +106,20 @@ export default function({ pathID }) {
 
     setLoading(false);
   }
+
+  useBlocker(() => {
+    return task
+      ? !window.confirm(`Are you sure you wanna leave the page? Don't forget to write task id (${task}) down`)
+      : false;
+  });
+
+  useEffect(() => {
+    var nativeBlocker = e => task && e.preventDefault();
+    window.addEventListener("beforeunload", nativeBlocker);
+    return () => {
+      window.removeEventListener("beforeunload", nativeBlocker);
+    }
+  }, [task]);
 
   if (task) return <DownloadView taskID={task} />;
 

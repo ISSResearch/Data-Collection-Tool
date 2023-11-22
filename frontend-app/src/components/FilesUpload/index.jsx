@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react';
+import { useBlocker } from "react-router-dom";
+import { useState, useContext, useEffect } from 'react';
 import { useFileInput } from '../../hooks';
 import { AlertContext } from "../../context/Alert";
 import SelectorGroup from '../forms/SelectorGroup';
@@ -20,6 +21,21 @@ export default function({ attributes, pathID }) {
     else setUploading(true);
   }
 
+  useBlocker(() => {
+    var filesCount = fileManager.count();
+    return filesCount > 0
+      ? !window.confirm(`Are you sure you wanna leave the page? ${filesCount} file(s) you added wont be saved!`)
+      : false
+  });
+
+  useEffect(() => {
+    var nativeBlocker = e => (fileManager.count() > 0) && e.preventDefault();
+    window.addEventListener("beforeunload", nativeBlocker);
+    return () => {
+      window.removeEventListener("beforeunload", nativeBlocker);
+    }
+  }, [fileManager]);
+
   if (uploading) return <UploadView fileManager={fileManager} pathID={pathID} />;
 
   return (
@@ -28,7 +44,7 @@ export default function({ attributes, pathID }) {
         onClick={sendForm}
         className={
           `iss__filesUpload__sendButton${
-            Object.values(fileManager.files).length ? '' : ' send--disabled'
+            fileManager.count() ? '' : ' send--disabled'
           }`
         }
       >SEND ALL</button>

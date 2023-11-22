@@ -9,8 +9,8 @@ import './styles.css';
 
 export default function({ pathID }) {
   const [stats, setStats] = useState([]);
-  const navigate = useNavigate();
   const { addAlert } = useContext(AlertContext);
+  const navigate = useNavigate();
 
   const countItem = (a, b, c) => {
     var acc = (a?.image || 0) + (a?.video || 0);

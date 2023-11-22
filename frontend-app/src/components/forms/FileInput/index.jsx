@@ -2,7 +2,7 @@ import FileUploadCard from '../../common/FileUploadCard';
 import './styles.css';
 
 export default function({ fileManager, attributes }) {
-  const { files, handleUpload } = fileManager;
+  const { files, handleUpload, count } = fileManager;
 
   var handleDrop = (ev) => {
     ev.preventDefault();
@@ -24,7 +24,7 @@ export default function({ fileManager, attributes }) {
         />
       </label>
       <div className='iss__fileInput__note'>
-        Selected: {Object.keys(files).length} item{Boolean(Object.keys(files).length !== 1) && 's'}.
+        Selected: {count()} item{Boolean(count() !== 1) && 's'}.
       </div>
       <div className='iss__fileInput__filesUploaded'>
         {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
 import { api } from '../../config/api';
@@ -17,6 +17,7 @@ export default function() {
   const { initUser } = useContext(UserContext);
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function sendForm(event) {
     event.preventDefault();
@@ -38,7 +39,7 @@ export default function() {
       initUser(data.user);
       addAlert("User logged", "success");
 
-      if (window.location.pathname === '/login') navigate('/');
+      if (location.pathname === '/login') navigate('/');
     }
     catch ({ message }) {
       addAlert("User login failed: " + message, "error");
