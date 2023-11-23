@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formUID } from '../utils/';
+import { formUID, traverseWithReplace } from '../utils/';
 
 export default function useLevels() {
   const [levels, setLevels] = useState({});
@@ -61,6 +61,16 @@ export default function useLevels() {
     setLevels(newLevels);
   }
 
+  function findAndReplace(replaceTo="", replaceWith="") {
+    const newLevels = { ...levels };
+
+    Object.values(newLevels).forEach(items => {
+      traverseWithReplace(items, "name", replaceTo, replaceWith);
+    });
+
+    setLevels(newLevels);
+  }
+
   return {
     levels,
     addLevel,
@@ -71,6 +81,7 @@ export default function useLevels() {
     setMultiple,
     setRequired,
     deletedOriginLevels,
-    setDeletedOriginLevels
+    setDeletedOriginLevels,
+    findAndReplace
   };
 }

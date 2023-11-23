@@ -1,0 +1,60 @@
+.iss__findandreplace__form {
+    border: 1px solid var(--issBrand);
+    display: flex;
+    gap: 8px;
+    max-width: 110px;
+    widht: 100%;
+    overflow: hidden;
+    transition: max-width 0.2s ease;
+}
+
+.form--open {
+    max-width: 476px;
+}
+
+.iss__findandreplace__form > input {
+    flex-shrink: 0;
+    color: var(--issBlack);
+    width: 120px;
+    overflow: scroll;
+    padding: 4px 8px;
+    background-color: rgb(216, 234, 255, 0.3);
+    border: none;
+}
+
+.input--error {
+    background-color: rgb(255, 98, 98, 0.2) !important;
+}
+
+.iss__findandreplace__button {
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    width: 110px;
+    margin-right: 16px;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.button--cancel {
+    background-color: rgb(255, 98, 98, 0.2);
+}
+
+.button--proceed {
+    margin: 0 0 0 -8px;
+    width: 80px;
+    background-color: var(--issLightBrand);
+    color: var(--issBrand);
+}
+@media (hover: hover) {
+    .iss__findandreplace__button:hover {
+        background-color: var(--issBrand);
+        color: white;
+    }
+    .button--cancel:hover {
+        background-color: var(--issRed);
+    }
+}

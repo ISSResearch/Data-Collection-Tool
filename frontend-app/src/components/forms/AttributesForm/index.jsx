@@ -99,8 +99,8 @@ export default function({
                 <input
                   placeholder="Level name"
                   required
-                  onBlur={({ target }) => changeLevel(formId, target, index)}
-                  defaultValue={name}
+                  onChange={({ target }) => changeLevel(formId, target, index)}
+                  value={name}
                 />
                 <button
                   type="button"

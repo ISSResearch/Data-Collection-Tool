@@ -84,9 +84,22 @@ export function spreadChildren(data, refresh = true) {
     const current = stack.pop();
     result.push(...current);
     stack.push(
-      ...current.filter(({ children }) => children?.length)
+      ...current
+        .filter(({ children }) => children?.length)
         .map(({ children }) => children)
     );
   }
   return result;
+}
+
+export function traverseWithReplace(items, lookUpKey, lookUpVal, replaceWith, head=true) {
+  items.forEach(item => {
+    if (item[lookUpKey] === lookUpVal) item[lookUpKey] = replaceWith;
+    if (item.children && !head) traverseWithReplace(
+      item.children,
+      lookUpKey,
+      lookUpVal,
+      replaceWith
+    );
+  });
 }
