@@ -9,6 +9,7 @@ export default function({ attributeManager, withBoundAttributes }) {
 
   function handleReplace(replaceTo, replaceWith) {
     levelHook.findAndReplace(replaceTo, replaceWith);
+    attributeHook.findAndReplace(replaceTo, replaceWith);
   }
 
   useEffect(() => {

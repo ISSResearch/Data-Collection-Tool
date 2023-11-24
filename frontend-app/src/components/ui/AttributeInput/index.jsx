@@ -62,8 +62,8 @@ function AttributeInput({
               <input
                 placeholder="Attribute name"
                 required
-                onBlur={({ target }) => handleChange(formId, target, path, isChild)}
-                defaultValue={name}
+                onChange={({ target }) => handleChange(formId, target, path, isChild)}
+                value={name}
               />
               <div className="iss__attributeForm__inputButton">
                 <button

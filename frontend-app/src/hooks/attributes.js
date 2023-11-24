@@ -1,5 +1,11 @@
-import { useState, useCallback } from 'react';
-import { deepFind, refreshPath, formUID, spreadChildren } from '../utils/';
+import { useState } from 'react';
+import {
+  deepFind,
+  refreshPath,
+  formUID,
+  spreadChildren,
+  traverseWithReplace
+} from '../utils/';
 
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
@@ -56,7 +62,7 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  const handleChange = useCallback((formId, { value }, position, isChild) => {
+  function handleChange(formId, { value }, position, isChild) {
     setAttributes((prevAttributes) => {
       const newAttributes = { ...prevAttributes };
       const path = position.split('_');
@@ -66,7 +72,17 @@ export default function useAttributes() {
       target.name = value;
       return newAttributes;
     });
-  }, []);
+  }
+
+  function findAndReplace(replaceTo="", replaceWith="") {
+    const newAttributes = { ...attributes };
+
+    Object.values(newAttributes) .forEach(items => {
+      traverseWithReplace(items, "name", replaceTo, replaceWith, false);
+    })
+
+    setAttributes(newAttributes);
+  }
 
   return {
     attributes,
@@ -77,6 +93,7 @@ export default function useAttributes() {
     destroyAttribute,
     handleLevelRemove,
     deletedOriginAttributes,
-    setDeletedOriginAttributes
+    setDeletedOriginAttributes,
+    findAndReplace
   }
 }
