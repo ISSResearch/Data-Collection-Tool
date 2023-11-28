@@ -18,7 +18,7 @@
     gap: 4px;
 }
 
-.iss__filterSelector__selected>span {
+.iss__filterSelector__selected > span {
     padding: 2px 8px;
     color: black;
     font-size: 14px;
@@ -26,7 +26,7 @@
     border-radius: 4px;
 }
 
-.iss__filterSelector__selected>svg {
+.iss__filterSelector__selected > svg {
     position: absolute;
     fill: var(--issBrand);
     top: 50%;
@@ -40,15 +40,15 @@
     left: 0;
     z-index: 1;
     width: 100%;
-    overflow-y: hidden;
+    overflow-y: scroll;
     background-color: white;
     max-height: 0;
     outline: 1px solid transparent;
     transform: translateY(100%);
 }
 
-.iss__filterSelector__options>div,
-.iss__filterSelector__options>form {
+.iss__filterSelector__options > div,
+.iss__filterSelector__options > form {
     padding: 4px 8px;
     display: flex;
     flex-direction: column;
@@ -57,7 +57,9 @@
 .options--open {
     outline-color: var(--issBrand);
     max-height: 500px;
-    transition: max-height 0.3s ease, outline 0.5s ease;
+    transition:
+        max-height 0.3s ease,
+        outline 0.5s ease;
 }
 
 .iss__filterSelector__level {
@@ -78,7 +80,9 @@
     min-width: 60px;
     place-self: center;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 .iss__validationFilter__form .iss__selector,
@@ -94,7 +98,7 @@
     background-color: transparent !important;
 }
 
-@media (hover:hover) {
+@media (hover: hover) {
     .iss__filterSelector__option:hover {
         background-color: var(--issLightBrand);
         cursor: pointer;

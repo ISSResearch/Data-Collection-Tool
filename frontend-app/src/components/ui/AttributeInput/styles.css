@@ -1,108 +1,141 @@
 .iss__attributeForm {
-  background-color: var(--issBrand);
-  color: white;
-  user-select: none;
-  position: relative;
-  overflow-x: auto;
-  margin-bottom: 8px;
+    background-color: var(--issBrand);
+    color: white;
+    user-select: none;
+    position: relative;
+    overflow-x: auto;
+    margin-bottom: 8px;
 }
 .attribute--child {
-  padding: 10px 0 10px 40px;
-  border-left: 1px dashed white;
-  overflow: unset;
-  margin-bottom: 0px;
-  padding: 6px 40px;
+    padding: 10px 0 10px 40px;
+    border-left: 1px dashed white;
+    overflow: unset;
+    margin-bottom: 0px;
+    padding: 6px 40px;
 }
 .iss__attributeForm__tree {
-  position: absolute;
-  color: white;
-  left: 0;
+    position: absolute;
+    color: white;
+    left: 0;
 }
 .iss__attributeForm__inputWrap {
-  width: fit-content;
-  display: flex;
-  background-color: white;
-  position: relative;
+    width: fit-content;
+    display: flex;
+    background-color: white;
+    position: relative;
+    height: fit-content;
 }
 .iss__attributeForm__inputWrap input {
-  border: none;
-  padding: 4px 8px;
-  outline: none;
+    border: none;
+    padding: 6px 8px;
+    outline: none;
 }
 .iss__attributeForm__inputButton {
-  display: flex;
-  width: fit-content;
+    display: flex;
+    width: fit-content;
 }
 .iss__attributeForm__inputButton button {
-  border: none;
-  position: relative;
-  background: none;
-  width: 24px;
-  cursor: pointer;
-  padding: 2px;
+    border: none;
+    position: relative;
+    background: none;
+    width: 24px;
+    cursor: pointer;
+    padding: 2px;
 }
-.inputButton--del span{
-  display: block;
-  width: 20px;
-  height: 4px;
-  background-color: var(--issLightRed);
+.inputButton--del span {
+    display: block;
+    width: 20px;
+    height: 4px;
+    background-color: var(--issLightRed);
 }
-.inputButton--add span{
-  position: absolute;
-  top: 43%;
-  display: block;
-  width: 20px;
-  height: 4px;
-  background-color: var(--issLightGreen);
-
+.inputButton--add span {
+    position: absolute;
+    top: 43%;
+    display: block;
+    width: 20px;
+    height: 4px;
+    background-color: var(--issLightGreen);
 }
 .inputButton--add span:nth-child(1) {
-  rotate: 90deg;
+    rotate: 90deg;
 }
 .iss__attributeForm__acceptance__curtain {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: white;
-  display: flex;
-  place-items: center;
-  gap: 8px;
-  padding: 0 8px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: white;
+    display: flex;
+    place-items: center;
+    gap: 8px;
+    padding: 0 8px;
 }
 .iss__attributeForm__acceptance__curtain__button--no,
 .iss__attributeForm__acceptance__curtain__button--yes {
-  padding: 2px 8px;
-  font-size: 14px;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 2px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 .iss__attributeForm__acceptance__curtain__button--no {
-  background-color: rgb(255, 98, 98, 0.2);
-  border: 1px solid var(--issRed);
-  color: var(--issRed);
+    background-color: rgb(255, 98, 98, 0.2);
+    border: 1px solid var(--issRed);
+    color: var(--issRed);
 }
 .iss__attributeForm__acceptance__curtain__button--yes {
-  background-color: rgb(153, 255, 98, 0.2);
-  border: 1px solid var(--issGreen);
-  color: var(--issGreen);
+    background-color: rgb(153, 255, 98, 0.2);
+    border: 1px solid var(--issGreen);
+    color: var(--issGreen);
 }
-@media (hover:hover) {
-  .iss__attributeForm__acceptance__curtain__button--yes:hover {
-    background-color: var(--issGreen);
-    color: white;
-  }
-  .iss__attributeForm__acceptance__curtain__button--no:hover {
-    background-color: var(--issRed);
-    color: white;
-  }
-  .inputButton--add:hover span {
-    background-color: var(--issGreen);
-  }
-  .inputButton--del:hover span {
-    background-color: var(--issRed);
-  }
+
+.iss__attributeForm__inputAlign {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: -24px;
+}
+.iss__attributeForm__inputAlign > svg {
+    stroke: var(--issLightBrand);
+    opacity: 0.1;
+    cursor: pointer;
+    transition:
+        stroke 0.3s ease,
+        opacity 0.3s ease;
+    width: 20px;
+    height: 14px;
+    fill: none;
+    stroke-width: 4px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.iss__attributeForm__inputAlign > svg:last-of-type {
+    rotate: 180deg;
+}
+@media (hover: hover) {
+    .iss__attributeForm__inputWrap:hover .iss__attributeForm__inputAlign > svg {
+        opacity: 0.7;
+    }
+    .iss__attributeForm__inputAlign > svg:hover {
+        opacity: 1 !important;
+        stroke: white;
+    }
+    .iss__attributeForm__acceptance__curtain__button--yes:hover {
+        background-color: var(--issGreen);
+        color: white;
+    }
+    .iss__attributeForm__acceptance__curtain__button--no:hover {
+        background-color: var(--issRed);
+        color: white;
+    }
+    .inputButton--add:hover span {
+        background-color: var(--issGreen);
+    }
+    .inputButton--del:hover span {
+        background-color: var(--issRed);
+    }
 }

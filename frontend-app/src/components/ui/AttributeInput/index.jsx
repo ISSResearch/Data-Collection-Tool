@@ -12,7 +12,9 @@ function AttributeInput({
   delAttribute,
   addAttribute,
   handleChange,
-  setDeletedOriginAttributes
+  setDeletedOriginAttributes,
+  moveUp,
+  moveDown
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
@@ -98,6 +100,14 @@ function AttributeInput({
                   >no</button>
                 </div>
               }
+              <div className="iss__attributeForm__inputAlign">
+                <svg onClick={() => moveUp(formId, path, index)} viewBox="15 15 20 20">
+                  <path d="M13 30L25 18L37 30" />
+                </svg>
+                <svg onClick={() => moveDown(formId, path, index)} viewBox="15 15 20 20">
+                  <path d="M13 30L25 18L37 30" />
+                </svg>
+              </div>
             </div>
             {
               Boolean(children?.length) &&
@@ -110,6 +120,8 @@ function AttributeInput({
                 addAttribute={addAttribute}
                 handleChange={handleChange}
                 setDeletedOriginAttributes={setDeletedOriginAttributes}
+                moveUp={moveUp}
+                moveDown={moveDown}
               />
             }
           </div>

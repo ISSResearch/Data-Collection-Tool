@@ -18,7 +18,9 @@ export default function({
     delAttribute,
     handleChange,
     handleLevelRemove,
-    setDeletedOriginAttributes
+    setDeletedOriginAttributes,
+    moveUp,
+    moveDown
   } = attributeHook;
   const {
     levels,
@@ -27,7 +29,7 @@ export default function({
     delLevel,
     setMultiple,
     setRequired,
-    setDeletedOriginLevels
+    setDeletedOriginLevels,
   } = levelHook;
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
@@ -131,7 +133,7 @@ export default function({
                 <input
                   type="checkbox"
                   onChange={() => setRequired(formId, index)}
-                  defaultChecked={required}
+                  checked={required}
                 />
               </label>
               <label className='iss__attributesForm__checkbox'>
@@ -139,7 +141,7 @@ export default function({
                 <input
                   type="checkbox"
                   onChange={({ target }) => handleSetMultiple(index, target)}
-                  defaultChecked={multiple}
+                  checked={multiple}
                 />
               </label>
             </div>
@@ -164,6 +166,8 @@ export default function({
             delAttribute={delAttribute}
             addAttribute={addAttribute}
             handleChange={handleChange}
+            moveUp={moveUp}
+            moveDown={moveDown}
             setDeletedOriginAttributes={setDeletedOriginAttributes}
           />
         }

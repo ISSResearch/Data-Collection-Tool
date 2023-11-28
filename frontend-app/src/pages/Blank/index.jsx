@@ -1,3 +1,3 @@
-export default function() {
-  return ('404');
+export default function Blank() {
+  return <h1>Not Found</h1>;
 }

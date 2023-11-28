@@ -40,10 +40,14 @@ export function deepFind(arr, indexes, pointer = 0) {
 export function refreshPath(node, parentPath = null, changeIndex = null) {
   node.forEach((item, index) => {
     if (changeIndex && index < changeIndex) return;
-    const newPath = (parentPath || item.path).split('_');
+
+    var newPath = (parentPath || item.path).split('_');
+
     if (parentPath) newPath.push(String(index));
     else newPath[newPath.length - 1] = String(index);
+
     item.path = newPath.join('_');
+
     if (item.children?.length) refreshPath(item.children, item.path);
   });
 }
@@ -101,5 +105,15 @@ export function traverseWithReplace(items, lookUpKey, lookUpVal, replaceWith, he
       lookUpVal,
       replaceWith
     );
+  });
+}
+
+export function drawPaths(items, parentOrder=0) {
+  items.forEach((item, index) => {
+    var { children } = item;
+
+    item.order = (parentOrder * 10) + (index + 1);
+
+    if (children) drawPaths(item.children, item.order);
   });
 }

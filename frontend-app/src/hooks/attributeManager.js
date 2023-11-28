@@ -35,7 +35,7 @@ export default function useAttributeManager() {
       })
       return {
         levels: preparedLevels,
-        attributes: attributeHook.attributes[key],
+        attributes: attributeHook.gather(key),
       }
     });
   }

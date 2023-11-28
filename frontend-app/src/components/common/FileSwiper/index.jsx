@@ -42,7 +42,7 @@ export default function({ fileManager, sliderManager, pathID }) {
           </svg>
         </button>
         <button onClick={handleReset} className="slider-button slide-res">
-          ZoomReset<br />(X)
+          reset zoom (X)
         </button>
         <button
           ref={incRef}

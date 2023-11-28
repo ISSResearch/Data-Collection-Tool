@@ -59,8 +59,8 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   function handleMouseMove(ev) {
     ev.preventDefault();
     if (!panning) return;
-    pointX = (ev.clientX - start.x);
-    pointY = (ev.clientY - start.y);
+    pointX = ev.clientX - start.x;
+    pointY = ev.clientY - start.y;
     setTransform();
   }
 

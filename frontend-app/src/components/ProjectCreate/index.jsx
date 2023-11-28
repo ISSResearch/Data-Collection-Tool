@@ -27,9 +27,9 @@ export default function() {
 
   function sendForm(event) {
     event.preventDefault();
-
     if (loading) return;
-    else setLoading(true);
+
+   setLoading(true);
 
     var formData = getFormData(event);
 

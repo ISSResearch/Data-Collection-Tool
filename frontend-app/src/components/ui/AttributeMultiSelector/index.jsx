@@ -33,7 +33,7 @@ export default function({ selectorName, data, onChange, defaultSelected, }) {
       .reduce((acc, { attributes }) => [...acc, ...attributes], []);
 
     var defaultNames = defaultSelected.reduce((acc, id) => {
-      var attribute = attributes.find(({ id: attrId }) => attrId === Number(id) || id);
+      var attribute = attributes.find(({ id: attrId }) => attrId === (Number(id) || id));
       if (attribute) acc.push(attribute.name);
       return acc;
     }, []);

@@ -60,6 +60,7 @@ class Project(Model):
         parent_attribute: None | Attribute = None,
         parent_level: None | Level = None
     ) -> None:
+        # TODO refactor
         current_level, *rest = levels
         current_level_id: str = current_level.get("uid", current_level["id"])
 
@@ -95,20 +96,30 @@ class Project(Model):
 
         for attribute in attributes:
             name: str = attribute["name"]
+            atr_order: int = attribute.get("order", 0)
             children: list[dict[str, Any]] = attribute["children"]
 
             try:
-                PARENT: Attribute = self.attribute_set.get(id=attribute["id"])
-                if PARENT.name != name:
-                    PARENT.name = name
-                    PARENT.save()
+                ATTRIBUTE: Attribute = self.attribute_set.get(id=attribute["id"])
+                changed: bool = False
+
+                if ATTRIBUTE.name != name:
+                    ATTRIBUTE.name = name
+                    changed = True
+
+                if ATTRIBUTE.order != atr_order:
+                    ATTRIBUTE.order = atr_order
+                    changed = True
+
+                if changed: ATTRIBUTE.save()
 
             except Attribute.DoesNotExist:
-                PARENT: Attribute = self.attribute_set.create(
+                ATTRIBUTE: Attribute = self.attribute_set.create(
                     name=name,
                     parent=parent_attribute,
-                    level=LEVEL
+                    level=LEVEL,
+                    order=atr_order
                 )
 
-            if children: self._create_attributes(children, rest, PARENT, LEVEL)
+            if children: self._create_attributes(children, rest, ATTRIBUTE, LEVEL)
             elif rest: self._create_attributes([], rest, None, LEVEL)

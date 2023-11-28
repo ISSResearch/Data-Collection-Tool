@@ -18,7 +18,10 @@ class LevelSerializer(ModelSerializer):
         fields = "__all__"
 
     def get_attributes(self, instance: Level) -> dict[str, Any]:
-        attributes = AttributeSerializer(instance.attribute_set.all(), many=True)
+        attributes = AttributeSerializer(
+            instance.attribute_set.order_by("order", "id").all(),
+            many=True
+        )
 
         return attributes.data
 

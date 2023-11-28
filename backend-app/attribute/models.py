@@ -19,6 +19,8 @@ class Attribute(TreeNode):
     project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
     level: ForeignKey = ForeignKey("attribute.Level", on_delete=DO_NOTHING)
 
+    order: BigIntegerField = BigIntegerField(default=0)
+
     class Meta:
         db_table = "attribute"
 

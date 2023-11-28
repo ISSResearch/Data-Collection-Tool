@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
@@ -26,10 +26,10 @@ export default function() {
   const userOptions = [...ROUTE_LINKS];
   if (user?.is_superuser) userOptions.push(...PROTECTED_ROUTE_LINKS);
 
-  const PageVariant = (props) => {
+  const PageVariant = useCallback((props) => {
     var Component = VARIANTS[currentRoute] || AllProjects;
     return Component && <Component {...props} />;
-  }
+  }, [projects]);
 
   useEffect(() => {
     var getLocation = () => {
@@ -40,7 +40,7 @@ export default function() {
 
     setCurrentRoute(() => pageRoute);
 
-    if (pageRoute === "create") return;
+    if (pageRoute === "create") return setProjects([]);
 
     api.get('/api/projects/', {
       headers: "Authorization: Bearer " + localStorage.getItem("dtcAccess")

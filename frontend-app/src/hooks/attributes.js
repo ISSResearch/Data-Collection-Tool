@@ -4,7 +4,8 @@ import {
   refreshPath,
   formUID,
   spreadChildren,
-  traverseWithReplace
+  traverseWithReplace,
+  drawPaths
 } from '../utils/';
 
 export default function useAttributes() {
@@ -77,11 +78,57 @@ export default function useAttributes() {
   function findAndReplace(replaceTo="", replaceWith="") {
     const newAttributes = { ...attributes };
 
-    Object.values(newAttributes) .forEach(items => {
+    Object.values(newAttributes).forEach(items => {
       traverseWithReplace(items, "name", replaceTo, replaceWith, false);
-    })
+    });
 
     setAttributes(newAttributes);
+  }
+
+  function moveUp(formId, path, index)  {
+    if (index <= 0) return;
+
+    var newAttributes = { ...attributes };
+    var target = newAttributes[formId];
+    var path = path.split('_');
+
+    var targetNode = path.length > 1
+      ? deepFind(target, path.slice(0, path.length - 1)).children
+      : target;
+
+    var temp = targetNode[index - 1];
+    targetNode[index - 1] = targetNode[index];
+    targetNode[index] = temp;
+
+    refreshPath(targetNode, null, index - 1);
+
+    setAttributes(newAttributes);
+  }
+
+  function moveDown(formId, path, index)  {
+    var newAttributes = { ...attributes };
+    var target = newAttributes[formId];
+    var path = path.split('_');
+
+    var targetNode = path.length > 1
+      ? deepFind(target, path.slice(0, path.length - 1)).children
+      : target;
+
+    if (index >= targetNode.length - 1) return;
+
+    var temp = targetNode[index + 1];
+    targetNode[index + 1] = targetNode[index];
+    targetNode[index] = temp;
+
+    refreshPath(targetNode, null, index);
+
+    setAttributes(newAttributes);
+  }
+
+  function gather(formID) {
+    var target = attributes[formID];
+    drawPaths(target);
+    return target;
   }
 
   return {
@@ -94,6 +141,9 @@ export default function useAttributes() {
     handleLevelRemove,
     deletedOriginAttributes,
     setDeletedOriginAttributes,
-    findAndReplace
+    findAndReplace,
+    moveUp,
+    moveDown,
+    gather
   }
 }
