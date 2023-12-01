@@ -7,7 +7,6 @@ import SelectorGroup from '../../forms/SelectorGroup';
 import './styles.css';
 
 export default function({ fileManager, sliderManager, attributes }) {
-  const [keyListener, setKeyListener] = useState(false);
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
   const { file, initFile, handleGroupChange, validate } = useFile();
@@ -67,10 +66,8 @@ export default function({ fileManager, sliderManager, attributes }) {
 
   useEffect(() => {
     initFile(files[slide] || {});
-    if (!keyListener) {
-      window.addEventListener("keydown", handleKey);
-      setKeyListener(true);
-    }
+    window.addEventListener("keydown", handleKey);
+
     return () => {
       window.removeEventListener("keydown", handleKey);
     }
