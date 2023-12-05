@@ -205,8 +205,8 @@ class BucketObject:
         self.headers: Headers = Headers(request_headers)
         self.headers.validate()
 
-    def _create_file(self, chunk: UploadFile) -> ObjectId:
-        meta: dict[str, Any]  = self.meta.get()
+    def _create_file(self, chunk: UploadFile) -> None:
+        meta: dict[str, Any] = self.meta.get()
         new_item: dict[str, Any] = {
             "file_id": self.file_id,
             "filename": meta.get("file_name", ""),
@@ -216,7 +216,7 @@ class BucketObject:
 
         if self.headers.is_last_chunk: self._set_hash(new_item)
 
-        return self._fs.upload_from_stream_with_id(**new_item)
+        self._fs.upload_from_stream_with_id(**new_item)
 
     def _append_file(self, chunk: UploadFile) -> ObjectId | None:
         try:
@@ -253,7 +253,6 @@ class BucketObject:
         file_item["metadata"]["hash"] = new_hash
 
 
-
 class Bucket(BucketObject):
     __slots__ = ("_fs",)
 
@@ -273,8 +272,8 @@ class Bucket(BucketObject):
 
     def get_object(self, object_id: str) -> ObjectStreaming | None:
         try:
-            file: GridOut = self._fs.open_download_stream(get_object_id(object_id))
-            return ObjectStreaming(file)
+            with self._fs.open_download_stream(get_object_id(object_id)) as file:
+                return ObjectStreaming(file)
 
         except NoFile: return None
 

@@ -2,6 +2,8 @@ from multiprocessing import cpu_count
 from os import getenv
 from typing import Any
 
+DEBUG: bool = getenv("DEBUG") == "true"
+
 APP_BACKEND_URL: str = "http://" + getenv("APP_BACKEND_URL", "127.0.0.1")
 SECRET_KEY: str = getenv("SECRET_KEY", "")
 SECRET_ALGO: str = getenv("SECRET_ALGO", "HS256")
@@ -28,7 +30,8 @@ UVICORN_CONF: dict[str, Any] = {
     "workers": cpu_count() * 2 + 1,
     "host": '0.0.0.0',
     "port": 9000,
-    "reload": getenv("DEBUG") == "true",
+    "reload": DEBUG,
+    "log_level": "debug" if DEBUG else "critical"
 }
 
 CELERY_CONFIG: list[str] = ["worker", "--loglevel=INFO"]

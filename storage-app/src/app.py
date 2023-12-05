@@ -20,8 +20,6 @@ from shared.settings import (
     SECRET_ALGO
 )
 
-database: DataBase = DataBase(get_db_uri())
-
 APP: FastAPI = FastAPI(docs_url="/docs", redoc_url=None)
 
 APP.add_middleware(CORSMiddleware, allow_origins=SELF_ORIGIN)
@@ -36,12 +34,13 @@ def startup():
         print("healthcheck failed. Could'nt connect to main backend")
         exit(1)
 
+    global database
+    database = DataBase(get_db_uri())
     database.set_db(DB_STORAGE)
 
 
 @APP.on_event("shutdown")
-def shutdown():
-    if database.client: database.client.close()
+def shutdown(): database.close_connection()
 
 
 @APP.middleware("http")

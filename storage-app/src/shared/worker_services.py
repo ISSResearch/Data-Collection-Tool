@@ -2,7 +2,7 @@ from json import dumps, loads # noqa
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from datetime import datetime
-from gridfs import GridOutCursor, GridOut
+from gridfs import GridOutCursor
 from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
 from shared.db_manager import DataBase
 from shared.app_services import Bucket

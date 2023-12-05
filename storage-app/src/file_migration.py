@@ -1,5 +1,4 @@
 from sys import argv, exit
-from os.path import sep, join
 from urllib.parse import unquote
 from math import ceil
 from typing import Any
@@ -9,13 +8,12 @@ from shared.utils import (
     APP_BACKEND_URL,
     SECRET_KEY,
     SECRET_ALGO,
-    get_db_uri,
     emit_token
 )
 from requests import get, Response
 
-
 LOCK = Lock()
+
 
 class File:
     TYPE_MAP: dict[str, str] = {
@@ -55,7 +53,7 @@ class File:
         is_downloaded: Any = None
     ) -> None:
         self.file_id: str = str(id)
-        self.file_path: str | None  = self._prepare_str(path or "")
+        self.file_path: str | None = self._prepare_str(path or "")
         self.name: str = self._prepare_str(file_name or '.')
         self._fs: GridFSBucket = bucket
         self.form_meta()
@@ -120,13 +118,13 @@ class Project:
         for chunk in range(ceil(len(self.data) / self.chunk_ln)):
             print(f"Project {self.project_id}: spawning writing thread {chunk + 1}/{ceil(len(self.data) / self.chunk_ln)}")
 
-            start, end = chunk * self.chunk_ln, (chunk+1) * self.chunk_ln
+            start, end = chunk * self.chunk_ln, (chunk + 1) * self.chunk_ln
             chunk_data: list[dict[str, Any]] = self.data[start:end]
 
             pool: list[Thread] = [
                 Thread(
                     target=self._write_chunk,
-                    args=(chunk_data[i*250:(i+1)*250],)
+                    args=(chunk_data[i * 250:(i + 1) * 250], )
                 )
                 for i in range(ceil(len(chunk_data) / 250))
             ]
@@ -140,7 +138,6 @@ class Project:
         data, *_ = args
         files: list[File] = [File(self.bucket, **item) for item in data]
         for file in files: file.write()
-
 
     def _request_files(self) -> Any:
         print(f"Project {self.project_id}: getting data...")
@@ -173,10 +170,12 @@ def run_migration(project_ids: list[int]):
     with open("migration_results.txt", "w") as result_file:
         for result in results: result_file.write(f"{result}" + "\n")
 
+
 def prepared_args(args: str) -> list[int]:
     prepared: list[str] = args.split(',')
 
     return [int(p_id) for p_id in prepared]
+
 
 if __name__ == "__main__":
     try:
