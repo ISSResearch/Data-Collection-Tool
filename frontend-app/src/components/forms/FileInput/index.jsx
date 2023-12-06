@@ -1,8 +1,20 @@
+import { useContext} from 'react';
+import { AlertContext } from "../../../context/Alert";
 import FileUploadCard from '../../common/FileUploadCard';
 import './styles.css';
 
-export default function({ fileManager, attributes }) {
+export default function({ fileManager, attributes, emitUpload }) {
   const { files, handleUpload, count } = fileManager;
+  const { addAlert } = useContext(AlertContext);
+
+  function sendForm(event) {
+    event.preventDefault();
+
+    var { isValid, message } = fileManager.validate(attributes);
+
+    if (!isValid) addAlert("Uploading failed: " + message, "error");
+    else emitUpload();
+  }
 
   var handleDrop = (ev) => {
     ev.preventDefault();
@@ -10,11 +22,19 @@ export default function({ fileManager, attributes }) {
   }
 
   return (
-    <fieldset
+    <form
+      onSubmit={sendForm}
       onDrop={handleDrop}
       onDragOver={(ev) => ev.preventDefault()}
       className='iss__fileInput'
     >
+      <button
+        className={
+          `iss__filesUpload__sendButton${
+            fileManager.count() ? '' : ' send--disabled'
+          }`
+        }
+      >SEND ALL</button>
       <label className='iss__fileInput__upload'>
         UPLOAD
         <input
@@ -40,6 +60,6 @@ export default function({ fileManager, attributes }) {
           ))
         }
       </div>
-    </fieldset>
+    </form>
   );
 }

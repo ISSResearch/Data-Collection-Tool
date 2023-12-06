@@ -39,8 +39,12 @@ export default function({
         setLoading(false)
       })
       .catch(({ message, response }) => {
-        var authFailed = response.status === 401 || response.status === 403;
+        var authFailed = response && (
+          response.status === 401 || response.status === 403
+        );
+
         addAlert("Getting files error: " + message, "error", authFailed);
+
         if (authFailed) navigate("/login");
       });
   }, [newFiles, option]);

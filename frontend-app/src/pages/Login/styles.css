@@ -1,29 +1,26 @@
 .iss__loginPage {
-  display: flex;
-  flex-direction: column;
-  place-items: center;
-  background-color: white;
-  border-radius: 12px;
-  padding: 40px 20px;
-  width: fit-content;
-  place-self: center;
-  min-width: 600px;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px 20px;
+    width: fit-content;
+    place-self: center;
+    min-width: 600px;
 }
 @media (max-width: 768px) {
-  .iss__loginPage {
-    min-width: 480px;
-  }
+    .iss__loginPage {
+        min-width: 480px;
+    }
 }
 @media (max-width: 575px) {
-  .iss__loginPage {
-    min-width: 340px;
-  }
+    .iss__loginPage {
+        min-width: 100%;
+    }
 }
 @media (max-width: 375px) {
-  .iss__loginPage {
-    padding: 20px;
-  }
-  .iss__loginPage {
-    min-width: 280px;
-  }
+    .iss__loginPage {
+        padding: 20px;
+    }
 }

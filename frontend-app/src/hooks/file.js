@@ -63,11 +63,23 @@ export default function useFile() {
     return { isValid: true, message: 'ok' };
   }
 
+  function prepareAttributes() {
+    return Object.entries(file.attributeGroups || {})
+      .reduce((acc, [key, val]) => {
+        return {
+          ...acc,
+          [key]: (Array.isArray(val) ? val : Object.values(val))
+            .reduce((newacc, ids) => [...newacc, ...ids], [])
+        }
+      }, {});
+  }
+
   return {
     file,
     initFile,
     changeName,
     handleGroupChange,
-    validate
+    validate,
+    prepareAttributes
   };
 }

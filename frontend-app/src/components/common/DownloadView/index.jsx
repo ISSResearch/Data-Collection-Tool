@@ -1,4 +1,5 @@
 import { useEffect, useContext, useRef, useState } from "react";
+import { useBlocker } from "react-router-dom";
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils";
 import { AlertContext } from "../../../context/Alert";
@@ -8,6 +9,7 @@ export default function({ taskID }) {
   const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");
   const [download, setDownload] = useState(false);
+  const [pageBlock, setPageBlock] = useState(true);
   const { addAlert } = useContext(AlertContext);
   const componentRef = useRef(null);
 
@@ -51,7 +53,7 @@ export default function({ taskID }) {
       getDataset(archiveID);
     },
     FAILURE: () => {
-      addAlert("Getting dataset error", "error");
+      addAlert("Preparing dataset error", "error");
       setMessage(
         "Error occured while gathering the DataSet. Please request a new one.",
       );
@@ -73,13 +75,16 @@ export default function({ taskID }) {
       var link = document.createElement("a");
       link.href = baseUrl + archiveId + accessQuery;
       link.setAttribute("download", "dataset.zip");
+
       link.click();
       link.remove();
     }
     catch({ message, response }) {
-      var authFailed = response.status === 401 || response.status === 403;
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
 
-      addAlert("Getting dataset error: " + message, "error", authFailed);
+      addAlert("Process request error: " + message, "error", authFailed);
     }
   }
 
@@ -97,10 +102,27 @@ export default function({ taskID }) {
       }
     }
     catch({ message, response }) {
-      var authFailed = response.status === 401 || response.status === 403;
-      addAlert("Checking status error: " + message, "error", authFailed);
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
+
+      addAlert("Proccess status respons error: " + message, "error", authFailed);
     }
   }
+
+  useBlocker(() => {
+    return pageBlock
+      ? !window.confirm(`Are you sure you wanna leave the page? Don't forget to write task id (${taskID}) down`)
+      : false;
+  });
+
+  useEffect(() => {
+    var nativeBlocker = e => pageBlock && e.preventDefault();
+    window.addEventListener("beforeunload", nativeBlocker);
+    return () => {
+      window.removeEventListener("beforeunload", nativeBlocker);
+    }
+  }, [pageBlock]);
 
   useEffect(() => {
     setIntervalCheck(true);
@@ -110,7 +132,7 @@ export default function({ taskID }) {
   return (
     <>
       {intervalCheck && <Helper />}
-      <div red={componentRef} className="iss__downloadingView__title">
+      <div ref={componentRef} className="iss__downloadingView__title">
         <h2>Task id: </h2>
         <span
           onClick={(ev) => copyID(ev)}

@@ -19,8 +19,7 @@ class DataBase:
 
     @classmethod
     def set_db(cls, db_name: str = "") -> None:
-        if not cls.__client:
-            cls.__client = cls.set_client(get_db_uri())
+        if not cls.__client: cls.set_client(get_db_uri())
 
         assert cls.__client is not None
 

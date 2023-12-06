@@ -8,8 +8,8 @@ import './styles.css';
 
 export default function({ fileManager, sliderManager, attributes }) {
   const { files, setFiles } = fileManager;
-  const { slide, slideInc } = sliderManager;
-  const { file, initFile, handleGroupChange, validate } = useFile();
+  const { slide } = sliderManager;
+  const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
   const acceptRef = useRef(null);
@@ -36,29 +36,21 @@ export default function({ fileManager, sliderManager, attributes }) {
   async function updateFile(status) {
     try {
       var { isValid, message } = validate(attributes);
+
       if (!isValid) throw new Error(message);
 
-      var newFiles = [...files];
-      var preparedAtrs = Object.entries(file.attributeGroups || {})
-        .reduce((acc, [key, val]) => {
-          return {
-            ...acc,
-            [key]: (Array.isArray(val) ? val : Object.values(val))
-              .reduce((newacc, ids) => [...newacc, ...ids], [])
-          }
-        }, {});
+      await fetchUpdateFile(status, prepareAttributes());
 
-      var updatedFile = { ...file, status, attributes: preparedAtrs };
-
-      await fetchUpdateFile(status, preparedAtrs);
-
-      newFiles[slide] = { ...updatedFile };
-
-      setFiles(newFiles);
-      slideInc();
+      setFiles(prev => {
+        var newFiles =  [ ...prev ];
+        newFiles.splice(slide, 1);
+        return newFiles;
+      });
     }
     catch({ message, response }) {
-      var authFailed = response?.status === 401 || response?.status === 403;
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
       addAlert("Updating file failed: " + message, "error", authFailed);
       if (authFailed) navigate("/login");
     };

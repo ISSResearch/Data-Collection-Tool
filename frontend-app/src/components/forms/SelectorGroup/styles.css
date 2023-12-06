@@ -39,7 +39,9 @@
     place-self: center;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 .button--disabled {
@@ -72,7 +74,26 @@
     margin-bottom: 8px;
 }
 
-@media (hover:hover) {
+@media (max-width: 967px) {
+    .iss__selectGroup {
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .iss__selectGroup {
+        max-width: 320px;
+        place-self: center;
+    }
+}
+
+@media (max-width: 460px) {
+    .iss__selectGroup {
+        max-width: 100%;
+    }
+}
+
+@media (hover: hover) {
     .iss__selectGroup__button:hover {
         background-color: white;
         color: var(--issBrand);

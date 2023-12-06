@@ -125,6 +125,10 @@ export default function useFileInput() {
 
   function count() { return Object.keys(files).length; }
 
+  function uploadCount() {
+    return Object.values(files).filter(({ status }) => !status).length;
+  }
+
   return {
     files,
     handleUpload,
@@ -134,6 +138,7 @@ export default function useFileInput() {
     gatherFiles,
     validate,
     handleApplyGroups,
-    count
+    count,
+    uploadCount
   };
 }

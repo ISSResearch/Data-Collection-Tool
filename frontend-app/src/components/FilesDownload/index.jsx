@@ -1,5 +1,5 @@
-import { useState, useContext, useEffect } from "react";
-import { useNavigate, useBlocker } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
 import { useFiles } from "../../hooks";
 import { AlertContext } from "../../context/Alert";
@@ -52,7 +52,9 @@ export default function({ pathID }) {
         ).map(({ id }) => id);
       }
       catch ({ message, response }) {
-        var authFailed = response.status === 401 || response.status === 403;
+        var authFailed = response && (
+          response.status === 401 || response.status === 403
+        );
 
         addAlert("Getting files data error:" + message, "error", authFailed);
 
@@ -82,7 +84,7 @@ export default function({ pathID }) {
     setLoading(true);
 
     try {
-      const { data } = await fileApi.post(`/api/task/archive/`,
+      var { data } = await fileApi.post(`/api/task/archive/`,
         {
           bucket_name: `project_${pathID}`,
           file_ids: await getFiles()
@@ -90,13 +92,15 @@ export default function({ pathID }) {
         { headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") } },
       );
 
-      if (data.task_id) {
+      if (data?.task_id) {
         addAlert(`Download task ${data.task_id} created`, "success");
         setTask(data.task_id);
       }
     }
     catch ({ message, response }) {
-      const authFailed = response.status === 401 || response.status === 403;
+      const authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
       addAlert(
         authFailed ? "Session expired" : "Error creating download task" + message,
         authFailed ? "common" : "error"
@@ -106,20 +110,6 @@ export default function({ pathID }) {
 
     setLoading(false);
   }
-
-  useBlocker(() => {
-    return task
-      ? !window.confirm(`Are you sure you wanna leave the page? Don't forget to write task id (${task}) down`)
-      : false;
-  });
-
-  useEffect(() => {
-    var nativeBlocker = e => task && e.preventDefault();
-    window.addEventListener("beforeunload", nativeBlocker);
-    return () => {
-      window.removeEventListener("beforeunload", nativeBlocker);
-    }
-  }, [task]);
 
   if (task) return <DownloadView taskID={task} />;
 
