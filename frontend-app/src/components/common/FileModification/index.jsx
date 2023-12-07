@@ -8,7 +8,7 @@ import './styles.css';
 
 export default function({ fileManager, sliderManager, attributes }) {
   const { files, setFiles } = fileManager;
-  const { slide } = sliderManager;
+  const { slide, slideInc } = sliderManager;
   const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
@@ -44,13 +44,16 @@ export default function({ fileManager, sliderManager, attributes }) {
 
       if (!isValid) throw new Error(message);
 
-      await fetchUpdateFile(status, prepareAttributes());
+      var preparedAtrs = prepareAttributes();
+
+      await fetchUpdateFile(status, preparedAtrs);
 
       setFiles(prev => {
         var newFiles =  [ ...prev ];
-        newFiles.splice(slide, 1);
+        newFiles[slide] = { ...file, status, attributes: preparedAtrs };
         return newFiles;
       });
+       slideInc();
     }
     catch({ message, response }) {
       var authFailed = response && (

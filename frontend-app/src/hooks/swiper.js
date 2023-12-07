@@ -5,13 +5,11 @@ export default function useSwiper(slides=5) {
   const [maxSlides, setMax] = useState(slides);
 
   function slideDec() {
-    const newSlide = slide - 1;
-    setSlide(newSlide < 0 ? maxSlides-1 : newSlide);
+    slide > 0 &&  setSlide(prev => prev - 1);
   }
 
   function slideInc() {
-    const newSlide = slide + 1;
-    setSlide(newSlide >= maxSlides ? 0 : newSlide);
+    slide < (maxSlides - 1) &&  setSlide(prev => prev + 1);
   }
 
   return { slide, setSlide, slideDec, slideInc, setMax }
