@@ -21,11 +21,13 @@ export default function({ pathID }) {
   };
 
   var countStatus = (status) => {
-    return Object.values(stats).reduce((sum, item) => sum + countItem(item[status]), 0);
+    return Object.values(stats)
+      .reduce((sum, item) => sum + countItem(item[status]), 0);
   };
 
   var countTotal = () => {
-    return Object.values(stats).reduce((sum, { a, d, v }) => sum + countItem(a, d, v), 0);
+    return Object.values(stats)
+      .reduce((sum, { a, d, v }) => sum + countItem(a, d, v), 0);
   };
 
   useEffect(() => {
@@ -40,31 +42,33 @@ export default function({ pathID }) {
       });
   }, []);
 
-  if (!stats) return <div className='iss__stats__load'><Load /></div>
+  if (!stats.length) return <div className='iss__stats__load'><Load /></div>
 
   return (
-    <table className='iss__stats__table'>
-      <thead className='iss__stats__table-header'>
-        <tr className='iss__stats__table-row-outer'>
-          <th>Attribute</th>
-          <th className='row-v'>On validation</th>
-          <th className='row-a'>Accepted</th>
-          <th className='row-d'>Declined</th>
-          <th>total</th>
-        </tr>
-      </thead>
-      <tbody className='iss__stats__table-body'>
-        <TableBodySet bodySet={stats} countCallback={countItem} parent />
-      </tbody>
-      <tfoot className='iss__stats__table-footer'>
-        <tr className='iss__stats__table-row-outer'>
-          <td><b>total</b></td>
-          <td>{countStatus('v')}</td>
-          <td>{countStatus('a')}</td>
-          <td>{countStatus('d')}</td>
-          <td>{countTotal()}</td>
-        </tr>
-      </tfoot>
-    </table>
+    <section className="iss__stats__tableWrap">
+      <table className='iss__stats__table'>
+        <thead className='iss__stats__table-header'>
+          <tr className='iss__stats__table-row-outer'>
+            <th>Attribute</th>
+            <th className='row-v'>On validation</th>
+            <th className='row-a'>Accepted</th>
+            <th className='row-d'>Declined</th>
+            <th>total</th>
+          </tr>
+        </thead>
+        <tbody className='iss__stats__table-body'>
+          <TableBodySet bodySet={stats} countCallback={countItem} parent />
+        </tbody>
+        <tfoot className='iss__stats__table-footer'>
+          <tr className='iss__stats__table-row-outer'>
+            <td><b>total</b></td>
+            <td>{countStatus('v')}</td>
+            <td>{countStatus('a')}</td>
+            <td>{countStatus('d')}</td>
+            <td>{countTotal()}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
   )
 }

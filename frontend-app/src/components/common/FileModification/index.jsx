@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState, useRef } from 'react';
+import { useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFile } from '../../../hooks'
 import { api } from '../../../config/api';
@@ -16,7 +16,12 @@ export default function({ fileManager, sliderManager, attributes }) {
   const declineRef = useRef(null);
 
   function handleKey({ key }) {
-    var buttonMap = { 'a': acceptRef, 'd': declineRef };
+    var buttonMap = {
+      'a': acceptRef,
+      'd': declineRef,
+      'ф': acceptRef,
+      'в': declineRef,
+    };
     buttonMap[key]?.current.click();
   }
 
