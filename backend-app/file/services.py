@@ -249,10 +249,10 @@ class FileUploader:
         return file_groups
 
 
-def _form_project_stats(project_id: int) -> tuple[list[dict[str, Any]], int]:
-    stats_query_values: tuple = (
-        "name",
+class StatsServices:
+    _ATTRIUBE_QUERY_VALUES: tuple[str, ...] = (
         "order",
+        "name",
         "attribute__id",
         "attribute__name",
         "attribute__parent",
@@ -260,52 +260,73 @@ def _form_project_stats(project_id: int) -> tuple[list[dict[str, Any]], int]:
         "attribute__attributegroup__file__status"
     )
 
-    project_stats: list[dict[str, Any]] = list(
-        Level.objects
-        .filter(project_id=project_id)
-        .order_by("order", "id")
-        .values(*stats_query_values)
-        .annotate(count=Count("attribute__attributegroup__file__file_type"))
+    _USER_QUERY_VALUES: tuple[str, ...] = (
+        "author_id",
+        "author__username",
+        "status",
+        "file_type"
     )
 
-    empty_attributes_files: list[dict[str, Any]] = list(
-        File.objects
-        .filter(project_id=project_id, attributegroup__isnull=False)
-        .values("file_type", "status")
-        .annotate(
-            file_count=Count("file_type"),
-            attribute_count=Count("attributegroup__attribute")
+    @classmethod
+    def from_attribute(cls, project_id: int) -> tuple[list[dict[str, Any]], int]:
+        stats: list[dict[str, Any]] = list(
+            Level.objects
+            .filter(project_id=project_id)
+            .order_by("order", "id")
+            .values(*cls._ATTRIUBE_QUERY_VALUES)
+            .annotate(count=Count("attribute__attributegroup__file__file_type"))
         )
-        .filter(attribute_count=0)
-    )
 
-    no_attributegroup_files: list[dict[str, Any]] = list(
-        File.objects
-        .filter(project_id=project_id, attributegroup__isnull=True)
-        .annotate(
-            file_count=Count("file_type"),
-            attribute_count=Count("attributegroup")
+        empty_attributes_files: list[dict[str, Any]] = list(
+            File.objects
+            .filter(project_id=project_id, attributegroup__isnull=False)
+            .values("file_type", "status")
+            .annotate(
+                file_count=Count("file_type"),
+                attribute_count=Count("attributegroup__attribute")
+            )
+            .filter(attribute_count=0)
         )
-        .values("file_type", "status", "file_count")
-        .filter(attribute_count=0)
-    )
 
-    empty_stats: list[dict[str, Any]] = [
-        {
-            "name": "no level",
-            "attribute__name": "No attribute",
-            "attribute__parent": None,
-            "attribute__id": "no-id",
-            "attribute__attributegroup__file__file_type": entry["file_type"],
-            "attribute__attributegroup__file__status": entry["status"],
-            "count": entry["file_count"]
-        }
-        for entry in empty_attributes_files + no_attributegroup_files
-    ]
+        no_attributegroup_files: list[dict[str, Any]] = list(
+            File.objects
+            .filter(project_id=project_id, attributegroup__isnull=True)
+            .annotate(
+                file_count=Count("file_type"),
+                attribute_count=Count("attributegroup")
+            )
+            .values("file_type", "status", "file_count")
+            .filter(attribute_count=0)
+        )
 
-    if empty_stats: project_stats.extend(empty_stats)
+        empty_stats: list[dict[str, Any]] = [
+            {
+                "name": "no level",
+                "attribute__name": "No attribute",
+                "attribute__parent": None,
+                "attribute__id": "no-id",
+                "attribute__attributegroup__file__file_type": entry["file_type"],
+                "attribute__attributegroup__file__status": entry["status"],
+                "count": entry["file_count"]
+            }
+            for entry in empty_attributes_files + no_attributegroup_files
+        ]
 
-    return project_stats, HTTP_200_OK
+        if empty_stats: stats.extend(empty_stats)
+
+        return stats, HTTP_200_OK
+
+    @classmethod
+    def from_user(cls, project_id: int):
+        stats: list[dict[str, Any]] = list(
+            File.objects
+            .filter(project_id=project_id)
+            .order_by("author_id")
+            .values(*cls._USER_QUERY_VALUES)
+            .annotate(count=Count("file_type"))
+        )
+
+        return stats, HTTP_200_OK
 
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:

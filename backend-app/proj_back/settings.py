@@ -148,7 +148,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
 }
 
-__LOGGING = {
+LOGGING = {
     'version': 1,
     'filters': {
         'require_debug_true': {

@@ -38,9 +38,37 @@ export function attributeGroupsAdapter(data) {
   }, {});
 }
 
-export function statsAdapter(data) {
+export function userStatsAdapter(data) {
+  var preparedData = data.reduce((acc, item) => {
+    var {
+      author_id: id,
+      author__username: name,
+      file_type: type,
+      status,
+      count
+    } = item;
+
+    status = status || 'v';
+    type = type || "no data";
+
+    var target = acc[id];
+
+    if (!target) acc[id] = { id, name, [status]: { [type]: count } };
+    else if (target[status]) {
+      var prevCount = target[status][type];
+      target[status][type] = prevCount ? prevCount + count : count;
+    }
+    else target[status] = { [type]: count };
+
+    return acc;
+  }, {});
+
+  return Object.values(preparedData)
+}
+
+export function attributeStatsAdapter(data) {
   const preparedData = data.reduce((acc, item) => {
-    let {
+    var {
       name: levelName,
       order,
       attribute__id: id,
@@ -50,21 +78,27 @@ export function statsAdapter(data) {
       attribute__attributegroup__file__status: status,
       count
     } = item;
+
     status = status || 'v';
     name = name || 'no name';
     type = type || 'no data';
-    const target = acc[id];
-    if (!target) acc[id] = { id, levelName, name, parent, order, [status]: { [type]: count } };
+
+    var target = acc[id];
+
+    if (!target) {
+      acc[id] = { id, levelName, name, parent, order, [status]: { [type]: count } };
+    }
     else if (target[status]) {
-      const prevCount = target[status][type];
+      var prevCount = target[status][type];
       target[status][type] = prevCount ? prevCount + count : count;
     }
     else target[status] = { [type]: count };
+
     return acc;
   }, {});
 
   Object.values(preparedData).forEach(el => {
-    const parent = Object.values(preparedData).find(({ id }) => el.parent === id);
+    var parent = Object.values(preparedData).find(({ id }) => el.parent === id);
     if (parent) parent.children
       ? parent.children.push(el)
       : parent.children = [el];

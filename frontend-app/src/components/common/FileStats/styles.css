@@ -1,6 +1,5 @@
 .iss__stats__tableWrap {
     overflow-y: scroll;
-    box-shadow: inset -4px 0px 3px var(--issBrand);
 }
 .iss__stats__load {
     width: 100%;

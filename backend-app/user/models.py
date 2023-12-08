@@ -1,13 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
-from jose import jwt, JWTError
 from django.conf import settings
+from jose import jwt, JWTError
 from datetime import datetime
 from typing import Any
 
 
 class CustomUser(AbstractUser):
-
     token: CharField = CharField(max_length=225, null=True)
 
     class Meta:
@@ -17,7 +16,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self) -> None: return self.username
 
-    def validate_token(self, token: None | str) -> bool:
+    def validate_token(self, token: None | str = None) -> bool:
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
 
         try:
