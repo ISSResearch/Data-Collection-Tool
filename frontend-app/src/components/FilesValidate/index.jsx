@@ -14,11 +14,11 @@ const CARD_FILTERS = [
   { name: 'on validation', id: 'v' },
   { name: 'accepted', id: 'a' },
   { name: 'declined', id: 'd' },
-]
+];
 const TYPE_FILTER = [
   { name: 'images', id: 'image' },
   { name: 'videos', id: 'video' },
-]
+];
 
 export default function({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
@@ -34,32 +34,42 @@ export default function({ pathID, attributes, canValidate }) {
       card: pageQuery.getAll('card[]'),
       attr: pageQuery.getAll('attr[]'),
       type: pageQuery.getAll('type[]'),
+      author: pageQuery.getAll('author[]'),
     };
   }
 
   function handleChange(filterType, query) {
-    var { card, attr, type } = getPageQuery();
+    var { card, attr, type, author } = getPageQuery();
 
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
       'type[]': filterType === 'type' ? query : type,
+      'author[]': filterType === 'author' ? query : author,
     });
   }
 
   useEffect(() => {
-    var { card, attr, type } = getPageQuery();
+    var { card, attr, type, author } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
 
-    api.get(`/api/files/project/${pathID}/`, {
-      params: { card, attr, type },
-      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
-    })
-      .then(({ data }) => {
+    // TODO: query collectors depends on uploads to project
+    Promise.allSettled([
+      api.get(`/api/files/project/${pathID}/`, {
+        params: { card, attr, type, author },
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      }),
+     canValidate && api.get(`api/users/collectors/${pathID}/`, {
+       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+     })
+    ])
+      .then(([fileFetch, authorFetch]) => {
+        var { value: { data } } = fileFetch;
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
-        setFilterData([
+
+        var _filterData = [
           {
             prettyName: 'Card Filter:',
             name: 'card',
@@ -79,7 +89,17 @@ export default function({ pathID, attributes, canValidate }) {
             data: TYPE_FILTER,
             selected: type,
           },
-        ]);
+        ];
+
+        if (canValidate) _filterData.push({
+          prettyName: 'Author Filter:',
+          name: 'author',
+          data: authorFetch.value.data.map(({id, username}) => ({ name: username, id })),
+          selected: author,
+        });
+
+        setFilterData(_filterData);
+
         setLoading(false);
       })
       .catch(({ message, response }) => {

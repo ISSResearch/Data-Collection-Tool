@@ -12,6 +12,7 @@ const ADAPTER_MAP = {
   user: userStatsAdapter
 };
 
+// TODO make variant via page query
 export default function({ pathID }) {
   const [stats, setStats] = useState([]);
   const [choice, setChoice] = useState("");
@@ -61,10 +62,15 @@ export default function({ pathID }) {
       onChange={({ target }) => setChoice(target.value)}
       className="iss__stats__radio"
     >
-      stats by:
+      Stats by:
       {
         Object.keys(ADAPTER_MAP).map(key => (
-          <label key={key}>
+          <label
+            key={key}
+            className={
+              'iss__stats__radioItem' + (key === choice ? " item--active" : "")
+            }
+          >
             <input type="radio" name="choice" value={key} />
             {key}
           </label>

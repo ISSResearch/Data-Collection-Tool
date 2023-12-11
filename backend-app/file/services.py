@@ -26,7 +26,8 @@ class ViewSetServices:
         ("status__in", "card[]", True),
         ("file_type__in", "type[]", True),
         ("status", "status", False),
-        ("is_downloaded", "downloaded", False)
+        ("is_downloaded", "downloaded", False),
+        ("author__in", "author[]", True)
     )
 
     def _patch_file(

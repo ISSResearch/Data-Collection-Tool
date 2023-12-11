@@ -1,4 +1,22 @@
+.iss__stats__radio {
+    border: none;
+    display: flex;
+    gap: 12px;
+}
+.iss__stats__radioItem > input {
+    display: none;
+}
+.iss__stats__radioItem {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.item--active {
+    pointer-events: none;
+    text-decoration: underline;
+    color: var(--issBrand);
+}
 .iss__stats__tableWrap {
+    margin-top: 20px;
     overflow-y: scroll;
 }
 .iss__stats__load {
@@ -38,5 +56,10 @@
 @media (max-width: 600px) {
     .iss__stats__tableWrap {
         box-shadow: inset -4px 0px 3px var(--issBrand);
+    }
+}
+@media (hover: hover) {
+    .iss__stats__radioItem:hover {
+        color: var(--issBrand);
     }
 }
