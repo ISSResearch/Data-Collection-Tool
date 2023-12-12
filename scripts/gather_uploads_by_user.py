@@ -10,11 +10,27 @@ from os import path
 from sys import argv
 
 CLIENT_ONLY_FLAGS: set[str] = {"-c", "--clients", "--clients-only", "clients", "c"}
+APPEND_ONLY_FLAGS: set[str] = {"-a", "--append", "a", "append"}
 GOOGLE_TOKEN_FILE: str = "./assets/token.json"
 DB_HOST: str = "iss-amin-db"
 DB_NAME: str = "iss_app_db"
 TABLE_ID: str = "1LBSPz-ORIR6LwtGu9mevLBgGXThZY__OstgQpJwY1vo"
 STATS_SHEET: str = "test"
+ATTRIBUTE_SHEET: str = "attributes"
+
+ATTRIBUTE_QUERY: str = """
+    select
+        p.name,
+        a.id,
+        a.name
+    from project as p
+    left join attribute as a
+    on a.project_id = p.id
+    order by
+        p.id,
+        a.id,
+        a.order;
+"""
 
 STATS_QUERY: str = """
 with tf as (
@@ -34,6 +50,7 @@ with tf as (
 ta as (
     select
         ag.file_id as f_id,
+        a.id as a_id,
         a.name as a_name
     from attribute_group as ag
     join lateral (
@@ -52,6 +69,7 @@ select
         WHEN tf.f_status = 'd' then 'declined'
         ELSE 'validation'
     END AS status,
+    ta.a_id as attribute_id,
     ta.a_name as attribute,
     cast(tf.f_date as varchar) as date,
     count(*) as count
@@ -63,9 +81,38 @@ group by
     tf.p_name,
     tf.f_type,
     tf.f_status,
+    ta.a_id,
     ta.a_name,
+    tf.f_date
+order by
+    tf.p_name,
+    tf.u_id,
+    ta.a_id,
     tf.f_date;
 """
+
+
+def attribute_adapter(result: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
+    header_row: tuple[str, ...] = (
+        "project_name",
+        "attribute_id",
+        "attribute_name"
+    )
+    return [header_row, *result]
+
+def stats_adapter(stats: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
+    header_row: tuple[str, ...] = (
+        "user_id",
+        "user_name",
+        "project_id",
+        "file_type",
+        "status",
+        "attribute_id",
+        "attribute_name",
+        "date",
+        "count"
+    )
+    return [header_row, *stats]
 
 
 class PgConnector:
@@ -94,8 +141,7 @@ class PgConnector:
             port=self.port or self.default_port
         )
 
-
-    def query(self, query: str):
+    def query(self, query: str) -> list[tuple[Any, ...]]:
         with self.connection.cursor() as cursor:
             cursor.execute(query)
             return cursor.fetchall()
@@ -129,9 +175,15 @@ class GoogleConnector:
         self.creds = creds
 
     @staticmethod
-    def get_range(sheet: str, columns: int, rows: int) -> str:
+    def get_range(
+        sheet: str,
+        columns: int,
+        rows: int,
+        row_offest: int = 0
+    ) -> str:
         end: str = chr(ord("A") + columns)
-        return f"{sheet}!A1:{end}{rows}"
+        row_offest += 1
+        return f"{sheet}!A{row_offest}:{end}{rows + row_offest}"
 
     def get_sheet_dimension(self, sheet_id: str, table_name: str) -> tuple[int, int]:
         if not self.creds: self.auth()
@@ -191,7 +243,7 @@ class GoogleConnector:
             .execute()
 
 
-def run(only_clients: bool = False) -> None:
+def run(clients_only: bool = False, append_only: bool = False) -> None:
     global google, cvat
 
     print("SCRIPT STARTS")
@@ -200,20 +252,40 @@ def run(only_clients: bool = False) -> None:
     google = GoogleConnector(GOOGLE_TOKEN_FILE)
     pg = PgConnector(user="postgres", dbname=DB_NAME, host=DB_HOST)
 
-    if only_clients: return
+
+    if clients_only: return
 
     print("getting data...")
     query_date: str = datetime.now().strftime('%Y-%m-%d')
-    result: list[tuple[Any, ...]] = pg.query(STATS_QUERY.format(query_date))
+    stat_result: list[tuple[Any, ...]] = pg.query(STATS_QUERY.format(query_date))
+    atr_result: list[tuple[Any, ...]] = pg.query(ATTRIBUTE_QUERY)
 
-    if not result:
-        print("No result with given query")
-        return
 
-    print("writing project table...")
-    project_range: str = google.get_range(STATS_SHEET, len(result[0]), len(result))
-    google.clear_sheet_values(TABLE_ID, STATS_SHEET)
-    google.set_sheet_values(TABLE_ID, project_range, result)
+    print("writing stats table...")
+    if stat_result:
+        if not append_only:
+            stat_result = stats_adapter(stat_result)
+            google.clear_sheet_values(TABLE_ID, STATS_SHEET)
+            stat_range: str = google.get_range(STATS_SHEET, len(stat_result[0]), len(stat_result))
+        else:
+            _, rows = google.get_sheet_dimension(TABLE_ID, STATS_SHEET)
+            stat_range: str = google.get_range(
+                STATS_SHEET,
+                len(stat_result[0]),
+                len(stat_result),
+                rows
+            )
+
+        google.set_sheet_values(TABLE_ID, stat_range, stat_result)
+
+
+    print("writing attribute table...")
+    if not append_only:
+        atr_result = attribute_adapter(atr_result)
+        google.clear_sheet_values(TABLE_ID, ATTRIBUTE_SHEET)
+        attribute_range: str = google.get_range(ATTRIBUTE_SHEET, len(atr_result[0]), len(atr_result))
+        google.set_sheet_values(TABLE_ID, attribute_range, atr_result)
+
 
     print("SCRIPT ENDS")
 
@@ -222,5 +294,6 @@ if __name__ == "__main__":
     _, *args = argv
 
     clients_only: bool = bool(set(args).intersection(CLIENT_ONLY_FLAGS))
+    append_only: bool = bool(set(args).intersection(APPEND_ONLY_FLAGS))
 
-    run(clients_only)
+    run(clients_only, append_only)
