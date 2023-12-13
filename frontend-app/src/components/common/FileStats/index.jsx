@@ -15,7 +15,7 @@ const ADAPTER_MAP = {
 // TODO make variant via page query
 export default function({ pathID }) {
   const [stats, setStats] = useState([]);
-  const [choice, setChoice] = useState("");
+  const [choice, setChoice] = useState("attribute");
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
@@ -71,7 +71,12 @@ export default function({ pathID }) {
               'iss__stats__radioItem' + (key === choice ? " item--active" : "")
             }
           >
-            <input type="radio" name="choice" value={key} />
+            <input
+              type="radio"
+              name="choice"
+              value={key}
+              defaultChecked={key === "attribute"}
+            />
             {key}
           </label>
         ))
