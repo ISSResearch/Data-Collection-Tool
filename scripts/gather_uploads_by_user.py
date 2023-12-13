@@ -12,10 +12,10 @@ from sys import argv
 CLIENT_ONLY_FLAGS: set[str] = {"-c", "--clients", "--clients-only", "clients", "c"}
 APPEND_ONLY_FLAGS: set[str] = {"-a", "--append", "a", "append"}
 GOOGLE_TOKEN_FILE: str = "./assets/token.json"
-DB_HOST: str = "iss-amin-db"
+DB_HOST: str = "iss-main-db"
 DB_NAME: str = "iss_app_db"
 TABLE_ID: str = "1LBSPz-ORIR6LwtGu9mevLBgGXThZY__OstgQpJwY1vo"
-STATS_SHEET: str = "test"
+STATS_SHEET: str = "stats"
 ATTRIBUTE_SHEET: str = "attributes"
 
 ATTRIBUTE_QUERY: str = """
