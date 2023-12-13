@@ -60,10 +60,6 @@ class File(Model):
 
         if model:
             upd_group, *_ = model
-            # TODO: optimize: for each group im making new attribute request
-            # current_ids = set(upd_group.attribute.values_list('id', flat=True))
-            # if set(new_ids) != current_ids: upd_group.attribute.set(new_ids)
-            # TODO: optimized: test
             if set(new_ids) != set(attributes_by_group.get(upd_group.uid, [])):
                 upd_group.attribute.set(new_ids)
 

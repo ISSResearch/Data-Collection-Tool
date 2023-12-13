@@ -56,7 +56,6 @@ class CustomUser(AbstractUser):
 
         return self.token
 
-    # TODO: optimize
     def update_permissions(self, permissions: dict[str, bool], project_id: int) -> None:
         change_fields = (
             (self.project_visible, "visible"),

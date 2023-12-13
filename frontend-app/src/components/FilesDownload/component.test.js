@@ -41,9 +41,4 @@ test("files download component test", () => {
 
   expect(button.className).toBe('iss__filesDownload__button');
   fireEvent.click(button);
-
-  // TODO: do the rest tests
-  // expect(button.className).toBe('iss__filesDownload__button block--button');
-  // expect(screen.queryByText('request')).toBeNull();
-  // expect(screen.getByTestId('load-c').className).toBe('iss__loadingMin');
 });

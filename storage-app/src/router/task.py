@@ -18,7 +18,7 @@ def archive_bucket(request_task: ArchiveTask) -> JSONResponse:
     return JSONResponse(content={"task_id": task.id})
 
 
-# TODO: didint find the way to check if no such task
+# TODO: find the way to check if no such task
 @router.get("/api/task/{task_id}/")
 def check_task_status(task_id: str) -> JSONResponse:
     task: AsyncResult = WORKER.AsyncResult(task_id)

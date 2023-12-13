@@ -225,7 +225,6 @@ class BucketObject:
             new_item: dict[str, Any] = {
                 "file_id": previous_file._id,
                 "filename": previous_file.name,
-                # TODO: make generator
                 "source": previous_file.read() + chunk.file.read(),
                 "metadata": previous_file.metadata
             }

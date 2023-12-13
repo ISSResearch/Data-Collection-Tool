@@ -60,7 +60,6 @@ class Project(Model):
         parent_attribute: None | Attribute = None,
         parent_level: None | Level = None
     ) -> None:
-        # TODO refactor
         current_level, *rest = levels
         current_level_id: str = current_level.get("uid", current_level["id"])
 

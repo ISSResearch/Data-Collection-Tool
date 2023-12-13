@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # todo: set admin user
   iss-main-db:
     container_name: iss-main-db
     image: postgres:15.3-alpine

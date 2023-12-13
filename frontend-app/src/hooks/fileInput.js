@@ -60,7 +60,6 @@ export default function useFileInput() {
 
   function gatherFiles() {
     Object.values(files).forEach((file) => {
-      // TODO: move somewhere v
       URL.revokeObjectURL(file.blob);
 
       file.atrsGroups = Object.values(file.attributeGroups)

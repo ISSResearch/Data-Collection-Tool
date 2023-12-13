@@ -12,7 +12,6 @@ from file.models import File
 from .models import Level, Attribute
 
 
-# TODO: optimize queries
 class ViewMixIn(APIView):
     http_method_names: tuple = ("get", "delete")
     permission_classes: tuple

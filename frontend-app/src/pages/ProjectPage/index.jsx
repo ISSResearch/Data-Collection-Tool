@@ -48,7 +48,6 @@ export default function() {
     return Component && <Component {...props} />;
   }, [location]);
 
-  // TODO: refactor routes validation and permission
   useEffect(() => {
     var getLocation = () => {
       var [, mainPath, id, childPath] = location.pathname.split('/');

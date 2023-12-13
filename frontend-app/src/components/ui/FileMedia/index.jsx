@@ -65,7 +65,6 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
   }
 
   function handleWheel(ev) {
-    // TODO: precise translate
     let xs = (ev.clientX - pointX) / scale,
       ys = (ev.clientY - pointY) / scale,
       delta = (ev.wheelDelta ? ev.wheelDelta : -ev.deltaY);
@@ -93,7 +92,7 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
         `${getOriginDomain()}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
       );
     }
-    // TODO: spread token and file
+
     if (!tempFileToken) {
       fileApi.get("/api/temp_token/", {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
