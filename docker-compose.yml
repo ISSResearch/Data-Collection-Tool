@@ -38,6 +38,7 @@ services:
       DEBUG: ${DEBUG}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
+      MAX_WORKER: ${MAX_WORKER}
     depends_on:
       - iss-main-db
     volumes:
@@ -67,6 +68,7 @@ services:
       CELERY_BROKER_URL: ${BROKER_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
+      MAX_WORKER: ${MAX_WORKER}
     depends_on:
       - iss-storage-db
       - iss-back

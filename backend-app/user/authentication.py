@@ -19,7 +19,7 @@ class CustomAuthentication(BaseAuthentication):
             request_token, is_internal = token
 
             user: CustomUser = (
-                CustomUser.objects.get(id=1, is_superuser=True)
+                CustomUser(is_superuser=True)
                 if is_internal else
                 CustomUser.objects.get(token=request_token)
             )

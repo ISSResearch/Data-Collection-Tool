@@ -2,6 +2,16 @@ from multiprocessing import cpu_count
 from os import getenv
 from typing import Any
 
+max_workers: int = int(getenv("MAX_WORKER", 0))
+available_workers: int = cpu_count() * 2 + 1
+
+WORKERS: int = (
+    max_workers
+    if max_workers
+    and (available_workers > max_workers)
+    else available_workers
+)
+
 DEBUG: bool = getenv("DEBUG") == "true"
 
 APP_BACKEND_URL: str = "http://" + getenv("APP_BACKEND_URL", "127.0.0.1")
@@ -27,10 +37,10 @@ if RAW_ORIGIN:
 
 UVICORN_CONF: dict[str, Any] = {
     "app": "app:APP",
-    "workers": cpu_count() * 2 + 1,
+    "workers": WORKERS,
     "host": '0.0.0.0',
     "port": 9000,
-    "reload": DEBUG,
+    "reload": False,
     "log_level": "debug" if DEBUG else "critical"
 }
 
