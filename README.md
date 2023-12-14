@@ -23,7 +23,7 @@
 ### 1. Install Docker
 
 ### 2. Create and fill **.env** file
-For local development copiyng sample is enough:
+For local development copying sample is enough:
 `cp .env.sample .env`
 
 ### 2. Run Containers:
