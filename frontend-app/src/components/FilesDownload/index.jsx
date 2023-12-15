@@ -34,7 +34,9 @@ export default function({ pathID }) {
   async function getFiles() {
     var file_ids;
 
-    if (manual) file_ids = fileManager.files.map(({ id }) => id);
+    if (manual) file_ids = fileManager.files
+      .filter(({ is_downloaded }) => !is_downloaded)
+      .map(({ id }) => id);
 
     else {
       var params = {};
@@ -42,27 +44,17 @@ export default function({ pathID }) {
       if (isNew) params.downloaded = false;
       if (option.value !== "all") params.status = option.value;
 
-      try {
-        var { data } = await api.get(`/api/files/project/${pathID}/`, {
-          params,
-          headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
-        });
-        file_ids = (
-          isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
-        ).map(({ id }) => id);
-      }
-      catch ({ message, response }) {
-        var authFailed = response && (
-          response.status === 401 || response.status === 403
-        );
-
-        addAlert("Getting files data error:" + message, "error", authFailed);
-
-        if (authFailed) navigate("/login");
-      }
+      var { data } = await api.get(`/api/files/project/${pathID}/`, {
+        params,
+        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
+      });
+      file_ids = (
+        isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
+      ).map(({ id }) => id);
     }
 
-    if (!file_ids.length) throw new Error("no content");
+    if (!file_ids.length) throw new Error("No content");
+
     return file_ids;
   }
 
@@ -84,11 +76,10 @@ export default function({ pathID }) {
     setLoading(true);
 
     try {
+      var file_ids = await getFiles();
+
       var { data } = await fileApi.post(`/api/task/archive/`,
-        {
-          bucket_name: `project_${pathID}`,
-          file_ids: await getFiles()
-        },
+        { bucket_name: `project_${pathID}`, file_ids },
         { headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") } },
       );
 
@@ -98,13 +89,12 @@ export default function({ pathID }) {
       }
     }
     catch ({ message, response }) {
-      const authFailed = response && (
+      var authFailed = response && (
         response.status === 401 || response.status === 403
       );
-      addAlert(
-        authFailed ? "Session expired" : "Error creating download task" + message,
-        authFailed ? "common" : "error"
-      );
+
+      addAlert("Getting files data error:" + message, "error", authFailed);
+
       if (authFailed) navigate("/login");
     }
 
