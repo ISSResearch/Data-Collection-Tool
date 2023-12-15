@@ -10,6 +10,7 @@ from rest_framework.views import Request
 from django.db import connection
 from django.db.models import Count, Subquery, QuerySet
 from attribute.models import Level, AttributeGroup as AGroup
+from user.models import CustomUser
 from json import loads
 from typing import Any
 from uuid import UUID
@@ -67,9 +68,17 @@ class ViewSetServices:
     def _form_query(
         self,
         project_id: int,
+        request_user: CustomUser,
         request_query: QueryDict[str, Any]
     ) -> dict[str, Any]:
+        only_self_files: bool = not any([
+            request_user.is_superuser,
+            bool(request_user.project_validate.filter(id=project_id)),
+        ])
+
         query = {"project_id": project_id}
+
+        if only_self_files: query["author_id"] = request_user.id
 
         for filter_name, param, is_list in self.FILES_QUERIES:
             query_param = (
@@ -87,9 +96,10 @@ class ViewSetServices:
     def _get_files(
         self,
         project_id: int,
+        request_user: CustomUser,
         request_query: QueryDict[str, Any]
     ) -> tuple[list[dict[str, Any]], int]:
-        filter_query = self._form_query(project_id, request_query)
+        filter_query = self._form_query(project_id, request_user, request_query)
 
         files = File.objects \
             .select_related("author") \

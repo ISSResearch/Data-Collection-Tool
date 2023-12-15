@@ -24,7 +24,7 @@ class FilesViewSet(APIView, ViewSetServices):
     permission_classes = (IsAuthenticated, FilePermission)
 
     def get(self, request: Request, projectID: int) -> Response:
-        response, status = self._get_files(projectID, request.query_params)
+        response, status = self._get_files(projectID, request.user, request.query_params)
         return Response(response, status=status)
 
     def post(self, request: Request, projectID: int) -> Response:

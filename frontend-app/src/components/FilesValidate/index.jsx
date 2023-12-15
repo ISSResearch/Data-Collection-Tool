@@ -103,7 +103,7 @@ export default function({ pathID, attributes, canValidate }) {
         setLoading(false);
       })
       .catch(({ message, response }) => {
-        var authFailed = response.status === 401 || response.status === 403;
+        var authFailed = response && (response.status === 401 || response.status === 403);
 
         addAlert("Getting project files error: " + message, "error", authFailed);
 
