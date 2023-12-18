@@ -1,9 +1,9 @@
 from django.test import TestCase
+from django.conf import settings
 from user.models import CustomUser
 from .mock_user import MOCK_ADMIN_DATA, MOCK_COLLECTOR_DATA
 from project.models import Project
 from jose import jwt, JWTError
-from django.conf import settings
 
 
 class CustomUserModelTest(TestCase):
@@ -38,15 +38,9 @@ class CustomUserModelTest(TestCase):
 
     def test_emit_token(self):
         new_collector = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)
-        new_token = new_collector.emit_token()
+        new_collector.emit_token()
 
         token_settings = settings.SIMPLE_JWT
-
-        jwt.decode(
-            new_token,
-            token_settings.get("SIGNING_KEY", ""),
-            algorithms=token_settings.get("ALGORITHM", "HS256")
-        )
 
         jwt.decode(
             new_collector.token,
@@ -57,6 +51,10 @@ class CustomUserModelTest(TestCase):
 
     def test_validate_token(self):
         new_collector = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)
+
+        try: new_collector.validate_token()
+        except JWTError: self.assertTrue(True)
+
         new_collector.emit_token()
 
         new_collector.validate_token()
@@ -64,10 +62,8 @@ class CustomUserModelTest(TestCase):
         new_collector.token = "123"
         new_collector.save()
 
-        try:
-            new_collector.validate_token()
-        except JWTError:
-            self.assertTrue(True)
+        try: new_collector.validate_token()
+        except JWTError: self.assertTrue(True)
 
     def _check_keys(self, model, mock_data):
         result = all([

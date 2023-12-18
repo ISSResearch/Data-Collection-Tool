@@ -19,18 +19,17 @@ class CustomAuthentication(BaseAuthentication):
             request_token, is_internal = token
 
             user: CustomUser = (
-                CustomUser(is_superuser=True)
+                CustomUser(is_superuser=True, token=request_token)
                 if is_internal else
                 CustomUser.objects.get(token=request_token)
             )
 
-            user.validate_token(token=(request_token if is_internal else None))
+            user.validate_token()
 
         except CustomUser.DoesNotExist:
             raise AuthenticationFailed('failed uthentication')
 
-        except JWTError:
-            raise AuthenticationFailed('token expired')
+        except JWTError: raise AuthenticationFailed('token expired')
 
         return (user, None)
 
