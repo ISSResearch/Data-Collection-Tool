@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .mock_user import MOCK_COLLECTOR_DATA
-from user.forms import CreateUserForm
+from user.forms import CreateUserForm, CustomUser
 
 
 class CustomUserFormTest(TestCase):
@@ -17,11 +17,19 @@ class CustomUserFormTest(TestCase):
         })
 
         is_valid = new_form.is_valid()
+
+        self.assertIsNone(new_form.instance.id)
+
         if is_valid: new_form.save()
 
+        self.assertIsNotNone(new_form.instance.id)
         self.assertEqual(new_form.instance.username, mock_morf['username'])
+        self.assertFalse(new_form.instance.is_superuser)
+        self.assertIsNone(new_form.instance.token)
 
     def test_create_invalid_user_with_form(self):
+        init_user_count = CustomUser.objects.count()
+
         invalid_1 = CreateUserForm({
             'username': 'invalid-from-1',
             'password1': 'qweasd',
@@ -47,3 +55,4 @@ class CustomUserFormTest(TestCase):
         self.assertIs(invalid_2.is_valid(), False)
         self.assertIs(invalid_3.is_valid(), False)
         self.assertIs(invalid_4.is_valid(), False)
+        self.assertEqual(init_user_count, CustomUser.objects.count())

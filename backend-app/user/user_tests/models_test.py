@@ -62,8 +62,10 @@ class CustomUserModelTest(TestCase):
         new_collector.token = "123"
         new_collector.save()
 
+        self.assertEqual(new_collector.token, "123")
+
         try: new_collector.validate_token()
-        except JWTError: self.assertTrue(True)
+        except JWTError: self.assertIsNone(new_collector.token)
 
     def _check_keys(self, model, mock_data):
         result = all([

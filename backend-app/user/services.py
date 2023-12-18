@@ -26,7 +26,6 @@ def _proceed_create(request_data: dict[str, Any]) -> dict[str, Any]:
     if is_valid:
         response["accessToken"] = form.instance.emit_token()
         response["user"] = UserSerializer(form.instance).data
-
     else: response["errors"] = form.errors
 
     return response

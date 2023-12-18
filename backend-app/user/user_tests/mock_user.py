@@ -12,6 +12,16 @@ MOCK_COLLECTOR_DATA = {
 }
 
 
+DEFAULT_PERMISSIONS = {
+    'visible': False,
+    'view': False,
+    'upload': False,
+    'validate': False,
+    'stats': False,
+    'download': False,
+    'edit': False
+}
+
 class MOCK_CLASS:
     base_api = '/api/users/'
     login_endpoint = base_api + 'login/'
