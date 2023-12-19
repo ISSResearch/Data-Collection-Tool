@@ -4,8 +4,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from psycopg2 import connect
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timedelta
+from typing import Any, Callable
 from os import path
 from sys import argv
 
@@ -17,6 +17,32 @@ DB_NAME: str = "iss_app_db"
 TABLE_ID: str = "1LBSPz-ORIR6LwtGu9mevLBgGXThZY__OstgQpJwY1vo"
 STATS_SHEET: str = "stats"
 ATTRIBUTE_SHEET: str = "attributes"
+FILE_SHEET: str = "files"
+
+FILE_QUERY = """
+select
+    u.id as u_id,
+    u.username as u_name,
+    p.name as p_name,
+    f.file_name as f_name,
+    f.file_type as f_type,
+    case
+        when f.status = 'a' then 'accepted'
+        WHEN f.status = 'd' then 'declined'
+        ELSE 'validation'
+    END AS f_status,
+    cast(date(f.upload_date) as varchar) as date
+from file as f
+join "user" as u on u.id = f.author_id
+join project as p on p.id = f.project_id
+where CAST(f.upload_date AS DATE) = '{}'
+order by
+    date,
+    u.id,
+    p.name,
+    f_type,
+    f_status;
+"""
 
 ATTRIBUTE_QUERY: str = """
     select
@@ -45,7 +71,7 @@ with tf as (
     from file as f
     join "user" as u on u.id = f.author_id
     join project as p on p.id = f.project_id
-    where f.upload_date >= '{}'
+    where CAST(f.upload_date AS DATE) = '{}'
 ),
 ta as (
     select
@@ -72,7 +98,8 @@ select
     ta.a_id as attribute_id,
     ta.a_name as attribute,
     cast(tf.f_date as varchar) as date,
-    count(*) as count
+    count(*) as count,
+    count(tf.f_type) as type_count
 from tf
 left join ta on ta.f_id = tf.f_id
 group by
@@ -99,6 +126,19 @@ def attribute_adapter(result: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
         "attribute_name"
     )
     return [header_row, *result]
+
+
+def file_adapter(stats: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
+    header_row: tuple[str, ...] = (
+        "user_id",
+        "user_name",
+        "project_name",
+        "file_name",
+        "file_type",
+        "status",
+        "date",
+    )
+    return [header_row, *stats]
 
 def stats_adapter(stats: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
     header_row: tuple[str, ...] = (
@@ -243,6 +283,29 @@ class GoogleConnector:
             .execute()
 
 
+def write_result(
+    result: list[tuple[str, ...]],
+    adapter: Callable,
+    table: str,
+    sheet: str,
+):
+    if result:
+        if not append_only:
+            stat_result = adapter(result)
+            google.clear_sheet_values(table, sheet)
+            stat_range: str = google.get_range(sheet, len(stat_result[0]), len(stat_result))
+        else:
+            _, rows = google.get_sheet_dimension(table, sheet)
+            stat_range: str = google.get_range(
+                sheet,
+                len(result[0]),
+                len(result),
+                rows
+            )
+
+        google.set_sheet_values(TABLE_ID, stat_range, result)
+
+
 def run(clients_only: bool = False, append_only: bool = False) -> None:
     global google, cvat
 
@@ -256,28 +319,17 @@ def run(clients_only: bool = False, append_only: bool = False) -> None:
     if clients_only: return
 
     print("getting data...")
-    query_date: str = datetime.now().strftime('%Y-%m-%d')
+    query_date: str = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
     stat_result: list[tuple[Any, ...]] = pg.query(STATS_QUERY.format(query_date))
+    file_result: list[tuple[Any, ...]] = pg.query(FILE_QUERY.format(query_date))
     atr_result: list[tuple[Any, ...]] = pg.query(ATTRIBUTE_QUERY)
 
 
     print("writing stats table...")
-    if stat_result:
-        if not append_only:
-            stat_result = stats_adapter(stat_result)
-            google.clear_sheet_values(TABLE_ID, STATS_SHEET)
-            stat_range: str = google.get_range(STATS_SHEET, len(stat_result[0]), len(stat_result))
-        else:
-            _, rows = google.get_sheet_dimension(TABLE_ID, STATS_SHEET)
-            stat_range: str = google.get_range(
-                STATS_SHEET,
-                len(stat_result[0]),
-                len(stat_result),
-                rows
-            )
+    write_result(stat_result, stats_adapter, TABLE_ID, STATS_SHEET)
 
-        google.set_sheet_values(TABLE_ID, stat_range, stat_result)
-
+    print("writing files table...")
+    write_result(file_result, file_adapter, TABLE_ID, FILE_SHEET)
 
     print("writing attribute table...")
     if not append_only:
