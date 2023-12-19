@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.db.models import QuerySet
 from project.services import Project
 from user.services import (
     _set_user_permissions,
@@ -69,34 +70,147 @@ class ProceedCreateTest(TestCase):
         self.assertFalse(invalid_create_2["isAuth"])
         self.assertFalse(invalid_create_3["isAuth"])
 
-        self.assertEqual(invalid_create_1["error"], 1)
-        self.assertEqual(invalid_create_2["error"], 1)
-        self.assertEqual(invalid_create_3["error"], 2)
+        self.assertEqual(len(invalid_create_1["errors"]), 1)
+        self.assertEqual(len(invalid_create_2["errors"]), 1)
+        self.assertEqual(len(invalid_create_3["errors"]), 2)
 
         self.assertEqual(
             invalid_create_1["errors"].get("password2"),
-            "The two password fields didn’t match."
+            ["The two password fields didn’t match."]
         )
         self.assertTrue(
             invalid_create_2["errors"].get("password2"),
-            "This field is required."
+            ["This field is required."]
         )
         self.assertTrue(
             invalid_create_3["errors"].get("password1"),
-            "This field is required."
+            ["This field is required."]
         )
         self.assertTrue(
             invalid_create_3["errors"].get("password2"),
-            "This field is required."
+            ["This field is required."]
         )
 
 
     def test_valid_create(self):
+        init_user_count = CustomUser.objects.count()
+
         valid_create = _proceed_create({
-            **MOCK_COLLECTOR_DATA,
+            "username": MOCK_COLLECTOR_DATA["username"],
+            "password1": MOCK_COLLECTOR_DATA["password"],
             "password2": MOCK_COLLECTOR_DATA["password"]
         })
 
         self.assertTrue(valid_create["isAuth"])
         self.assertIsNotNone(valid_create["user"])
-        self.assertIsNone(valid_create["errors"])
+        self.assertIsNone(valid_create.get("errors"))
+
+        self.assertEqual(init_user_count + 1, CustomUser.objects.count())
+
+
+class ProceedLoginTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = CustomUser.objects.create(username='test_user')
+        cls.user.set_password("test_password")
+        cls.user.save()
+
+    def test_invalid_login(self):
+        self.assertIsNone(CustomUser.objects.get(id=self.user.id).token)
+
+        invalid_login = _proceed_login({
+            "username": "invalid",
+            "password": "invalid"
+        })
+
+        self.assertFalse(invalid_login["isAuth"])
+        self.assertIsNone(invalid_login.get("accessToken"))
+        self.assertIsNone(invalid_login.get("user"))
+        self.assertEqual(
+            invalid_login["message"],
+            "No user found or wrong credentials"
+        )
+
+        self.assertIsNone(CustomUser.objects.get(id=self.user.id).token)
+
+    def test_valid_login(self):
+        self.assertIsNone(CustomUser.objects.get(id=self.user.id).token)
+
+        valid_login = _proceed_login({
+            "username": "test_user",
+            "password": "test_password"
+        })
+
+        self.assertTrue(valid_login["isAuth"])
+        self.assertIsNotNone(valid_login.get("accessToken"))
+        self.assertIsNotNone(valid_login.get("user"))
+        self.assertIsNone(valid_login.get("message"))
+
+        self.assertIsNotNone(CustomUser.objects.get(id=self.user.id).token)
+
+
+class GetCollectiorsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        creds = (
+            {**MOCK_COLLECTOR_DATA, "username": f"name_{i}"}
+            for i in range(5)
+        )
+        cls.users = [CustomUser.objects.create(**user) for user in creds]
+        cls.admin = CustomUser.objects.create(
+            **MOCK_COLLECTOR_DATA,
+            is_superuser=True
+        )
+        cls.project = Project.objects.create(name="project", description="description")
+        cls.project.user_upload.set([u.id for u in cls.users])
+        cls.project.user_stats.set([u.id for u in cls.users if u.id % 2])
+        cls.project.user_download.set([u.id for u in cls.users if not u.id % 2])
+
+    def test_get_queryset(self):
+       result = _get_collectors(self.project.id)
+
+       self.assertTrue(isinstance(result, QuerySet))
+       self.assertEqual(result.count(), len(self.users))
+
+       result = list(result)
+
+       self.assertTrue(all([
+           self.project.id in u.project_upload.values_list("id", flat=True)
+           for u in result
+       ]))
+       self.assertTrue(all([
+           self.project.id in u.project_stats.values_list("id", flat=True)
+           for u in result
+           if u.id % 2
+       ]))
+       self.assertTrue(all([
+           self.project.id in u.project_download.values_list("id", flat=True)
+           for u in result
+           if not u.id % 2
+       ]))
+       self.assertFalse(all([
+           self.project.id in u.project_stats.values_list("id", flat=True)
+           for u in result
+           if not u.id % 2
+       ]))
+       self.assertFalse(all([
+           self.project.id in u.project_download.values_list("id", flat=True)
+           for u in result
+           if u.id % 2
+       ]))
+
+    def test_get_serialized(self):
+        result = _get_collectors(self.project.id, True)
+
+        self.assertTrue(isinstance(result.data, list))
+
+        result = result.data
+
+        self.assertEqual(len(result), len(self.users))
+        self.assertTrue(all([u["permissions"]["upload"] for u in result]))
+        self.assertTrue(all([u["permissions"]["stats"] for u in result if u["id"] % 2]))
+        self.assertTrue(all([u["permissions"]["download"] for u in result if not u["id"] % 2]))
+        self.assertFalse(all([u["permissions"]["stats"] for u in result if not u["id"] % 2]))
+        self.assertFalse(all([u["permissions"]["download"] for u in result if u["id"] % 2]))
