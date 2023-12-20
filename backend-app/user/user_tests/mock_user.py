@@ -1,4 +1,5 @@
 from user.models import CustomUser
+
 MOCK_ADMIN_DATA = {
     'username': 'TestAdmin',
     'password': 'Q!werty123ZasdAqwe',
@@ -11,7 +12,6 @@ MOCK_COLLECTOR_DATA = {
     'password': 'Q!werty123ZasdAqwe',
 }
 
-
 DEFAULT_PERMISSIONS = {
     'visible': False,
     'view': False,
@@ -21,27 +21,3 @@ DEFAULT_PERMISSIONS = {
     'download': False,
     'edit': False
 }
-
-class MOCK_CLASS:
-    base_api = '/api/users/'
-    login_endpoint = base_api + 'login/'
-    logout_endpoint = base_api + 'logout/'
-    check_endpoint = base_api + 'check/'
-    create_endpoint = base_api + 'create/'
-    collector_endpoint = base_api + 'collectors/'
-
-    def check_login(self):
-        response = self.client.get(self.check_endpoint)
-        status, isAuth = response.status_code, response.data.get('isAuth')
-
-        return status, isAuth
-
-    @classmethod
-    def create_admin_user(cls, login_client=None):
-        user = CustomUser.objects.create(
-            username=MOCK_ADMIN_DATA['username'],
-            password=MOCK_ADMIN_DATA['password'],
-            is_superuser=MOCK_ADMIN_DATA['is_superuser']
-        )
-
-        return user if not login_client else login_client.force_login(user)

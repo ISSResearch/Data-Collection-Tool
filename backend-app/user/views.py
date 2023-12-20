@@ -38,7 +38,8 @@ def login_user(request: Request) -> Response:
 @permission_classes(())
 @authentication_classes(())
 def create_user(request: Request) -> Response:
-    return Response(_proceed_create(request.data), status=201)
+    response, status = _proceed_create(request.data)
+    return Response(response, status=status)
 
 
 class CollectorsViewSet(APIView):

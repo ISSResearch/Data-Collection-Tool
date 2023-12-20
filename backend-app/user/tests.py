@@ -7,10 +7,10 @@
 #     ProceedLoginTest,
 #     GetCollectiorsTest
 # )
-from .user_tests.permissions_test import UserPermissionTest
-# from .user_tests.views_test import (
-#     UserLoginViewTest,
-#     UserLogoutViewsTest,
-#     UserCheckViewTest,
-#     UserCreateViewTest,
-# )
+# from .user_tests.permissions_test import UserPermissionTest
+# from .user_tests.authentication_test import AuthenticationTest
+from .user_tests.views_test import (
+    UserCheckViewTest,
+    UserLoginViewTest,
+    UserCreateViewTest,
+)

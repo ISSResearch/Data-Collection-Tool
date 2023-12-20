@@ -1,110 +1,153 @@
 from django.test import TestCase
-from .mock_user import MOCK_CLASS, MOCK_COLLECTOR_DATA
+from .mock_user import MOCK_COLLECTOR_DATA
+from user.models import CustomUser
 
 
-class UserLoginViewTest(TestCase, MOCK_CLASS):
-    def test_invalid_login_endpoint(self):
-        response = self.client.post(self.login_endpoint, {
+class UserCheckViewTest(TestCase):
+    ENDPOINT = "/api/users/check/"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)
+        cls.user.emit_token()
+
+    def test_invalid_token_checkout(self):
+        result = self.client.get(
+            self.ENDPOINT,
+            HTTP_AUTHORIZATION="Bearer asdasdas"
+        )
+        result_2 = self.client.get(self.ENDPOINT)
+
+        self.assertEqual(result.status_code, 403)
+        self.assertIsNone(result.data.get("user"))
+        self.assertFalse(result.data.get("isAuth"))
+
+        self.assertEqual(result_2.status_code, 403)
+        self.assertIsNone(result_2.data.get("user"))
+        self.assertFalse(result_2.data.get("isAuth"))
+
+    def test_valid_token_checkout(self):
+        result = self.client.get(
+            self.ENDPOINT,
+            HTTP_AUTHORIZATION="Bearer " + self.user.token
+        )
+
+        self.assertEqual(result.status_code, 200)
+        self.assertIsNotNone(result.data.get("user"))
+        self.assertTrue(result.data.get("isAuth"))
+
+
+class UserLoginViewTest(TestCase):
+    ENDPOINT = "/api/users/login/"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)
+        cls.user.set_password(MOCK_COLLECTOR_DATA["password"])
+        cls.user.save()
+        cls.user.emit_token()
+
+    def test_invalid_login(self):
+        wrong_credetials = self.client.post(self.ENDPOINT, {
             'username': 'invalid_name',
             'password': 'mock_user.password_123zxcASD'
         })
-        status, valid = self.check_login()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['message'], 'No user found or wrong credentials')
-        self.assertFalse(response.data['isAuth'])
-        self.assertIs(response.data.get('user', None), None)
-        self.assertFalse(status == 200 and valid)
-
-    def test_valid_login_endpoint(self):
-        self.client.post(self.create_endpoint, {
-            'username': MOCK_COLLECTOR_DATA['username'],
-            'password1': MOCK_COLLECTOR_DATA['password'],
-            'password2': MOCK_COLLECTOR_DATA['password'],
+        missed_credentials = self.client.post(self.ENDPOINT, {
+            'username': '',
+            'password': ''
         })
-        self.client.logout()
 
-        response = self.client.post(self.login_endpoint, {
+        self._test_invalid_result(wrong_credetials)
+        self._test_invalid_result(missed_credentials)
+
+    def test_valid_result(self):
+        result = self.client.post(self.ENDPOINT, {
             'username': MOCK_COLLECTOR_DATA['username'],
             'password': MOCK_COLLECTOR_DATA['password'],
         })
-        status, valid = self.check_login()
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['isAuth'], response.data)
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue(result.data['isAuth'])
+        self.assertIsNotNone(result.data["user"])
         self.assertEqual(
-            set(response.data['user'].keys()),
-            {'id', 'username', 'is_superuser'}
-        )
-        self.assertTrue(status == 200 and valid)
-
-
-class UserLogoutViewsTest(TestCase, MOCK_CLASS):
-    def test_logout_endpoint(self):
-        self.create_admin_user(self.client)
-
-        status, valid = self.check_login()
-        self.assertTrue(status == 200 and valid)
-
-        response = self.client.get(self.logout_endpoint)
-        status, valid = self.check_login()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(status == 200 and valid)
-
-
-class UserCheckViewTest(TestCase, MOCK_CLASS):
-    def test_unlogged_check_endpoint(self):
-        self.client.logout()
-
-        response = self.client.get(self.check_endpoint)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.data.get('isAuth', None))
-
-    def test_logged_check_endpoint(self):
-        self.create_admin_user(self.client)
-
-        response = self.client.get(self.check_endpoint)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data.get('isAuth', None))
-        self.assertEqual(
-            set(response.data['user'].keys()),
-            {'id', 'username', 'is_superuser'}
+            result.data["accessToken"],
+            CustomUser.objects.first().token
         )
 
+    def _test_invalid_result(self, result):
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.data['message'], 'No user found or wrong credentials')
+        self.assertFalse(result.data['isAuth'])
+        self.assertIsNone(result.data.get("accessToken"))
+        self.assertIsNone(result.data.get('user'))
 
-class UserCreateViewTest(TestCase, MOCK_CLASS):
-    def test_invalid_create_endpoint(self):
-        invalid_request_1 = self.client.post(self.create_endpoint, {
-            'username': 'invalid-name-1',
-            'password1': 'QwE1@asdZ45',
-            'password2': 'qweasd',
-        })
-        invalid_request_2 = self.client.post(self.create_endpoint, {
-            'username': 'invalid-name-2',
-            'password1': 'QwE1@asdZ45',
-            'password2': '',
+
+class UserCreateViewTest(TestCase):
+    ENDPOINT = "/api/users/create/"
+
+    def test_invalid_create(self):
+        initial_user_count = CustomUser.objects.count()
+
+        self._test_invalid_result((
+            ('username', 'invalid-name-1'),
+            ('password1', 'QwE1@asdZ45'),
+            ('password2', 'qweasd'),
+        ))
+        self._test_invalid_result((
+            ('username', 'invalid-name-1'),
+            ('password1', 'QwE1@asdZ45'),
+            ('password2', ''),
+        ))
+        self._test_invalid_result((
+            ('username', 'invalid-name-1'),
+            ('password1', ''),
+            ('password2', ''),
+        ))
+        self._test_invalid_result((
+            ('username', ''),
+            ('password1', ''),
+            ('password2', ''),
+        ))
+
+        self.assertEqual(initial_user_count, CustomUser.objects.count())
+
+    def _test_invalid_result(self, credentials):
+        error_count = len(list(filter(lambda x: not x[1], credentials)))
+
+        result = self.client.post(self.ENDPOINT, {
+            key: value
+            for key, value
+            in credentials
         })
 
-        self.assertEqual(invalid_request_1.status_code, 200)
-        self.assertEqual(invalid_request_2.status_code, 200)
-        self.assertFalse(invalid_request_1.json().get('isAuth', None))
-        self.assertFalse(invalid_request_2.json().get('isAuth', None))
-        self.assertTrue(bool(invalid_request_1.json().get('errors', None)))
-        self.assertTrue(bool(invalid_request_2.json().get('errors', None)))
+        self.assertEqual(result.status_code, 200)
+        self.assertFalse(result.data['isAuth'])
+        self.assertIsNone(result.data.get("user"))
+        self.assertIsNone(result.data.get("accessToken"))
+
+        if error_count:
+            self.assertEqual(len(result.data["errors"]), error_count)
+        else: self.assertIsNotNone(result.data.get("errors"))
 
     def test_valid_create_endpoint(self):
-        valid_request = self.client.post(self.create_endpoint, {
+        initial_user_count = CustomUser.objects.count()
+        self.assertEqual(initial_user_count, 0)
+
+        result = self.client.post(self.ENDPOINT, {
             'username': MOCK_COLLECTOR_DATA['username'],
             'password1': MOCK_COLLECTOR_DATA['password'],
             'password2': MOCK_COLLECTOR_DATA['password'],
         })
 
-        self.assertEqual(valid_request.status_code, 200)
-        self.assertTrue(valid_request.data.get('isAuth', None))
-        self.assertEqual(
-            set(valid_request.data['user'].keys()),
-            {'id', 'username', 'is_superuser'}
-        )
+        new_user = CustomUser.objects.first()
+
+        self.assertEqual(result.status_code, 201)
+        self.assertTrue(result.data["isAuth"])
+        self.assertIsNotNone(result.data.get("user"))
+        self.assertIsNone(result.data.get("errors"))
+        self.assertEqual(result.data["accessToken"], new_user.token)
+        self.assertEqual(initial_user_count + 1, CustomUser.objects.count())
+        self.assertFalse(new_user.is_superuser)
+        self.assertEqual(new_user.username, MOCK_COLLECTOR_DATA["username"])

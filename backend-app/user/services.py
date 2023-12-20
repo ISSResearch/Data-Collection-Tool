@@ -16,7 +16,7 @@ def _set_user_permissions(data, projectID: int) -> None:
         except CustomUser.DoesNotExist: pass
 
 
-def _proceed_create(request_data: dict[str, Any]) -> dict[str, Any]:
+def _proceed_create(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
     form: CreateUserForm = CreateUserForm(request_data)
 
     if is_valid := form.is_valid(): form.save()
@@ -28,7 +28,7 @@ def _proceed_create(request_data: dict[str, Any]) -> dict[str, Any]:
         response["user"] = UserSerializer(form.instance).data
     else: response["errors"] = form.errors
 
-    return response
+    return response, 201 if is_valid else 200
 
 
 def _proceed_login(request_data: dict[str, Any]) -> dict[str, Any]:

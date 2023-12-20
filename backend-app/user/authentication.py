@@ -10,10 +10,10 @@ class CustomAuthentication(BaseAuthentication):
 
     def authenticate(self, request: Request) -> tuple[CustomUser, None]:
         token: tuple[str, bool] | None = self._parse_token(
-            request.META.get('HTTP_AUTHORIZATION', "")
+            request.META.get("HTTP_AUTHORIZATION", "")
         )
 
-        if not token: raise AuthenticationFailed('corrupted token')
+        if not token: raise AuthenticationFailed("corrupted token")
 
         try:
             request_token, is_internal = token
@@ -27,16 +27,16 @@ class CustomAuthentication(BaseAuthentication):
             user.validate_token()
 
         except CustomUser.DoesNotExist:
-            raise AuthenticationFailed('failed uthentication')
+            raise AuthenticationFailed("failed uthentication")
 
-        except JWTError: raise AuthenticationFailed('token expired')
+        except JWTError: raise AuthenticationFailed("token expired")
 
         return (user, None)
 
     def _parse_token(self, token: str) -> tuple[str, bool] | None:
         if not token: return
 
-        token_type, token_data = token.split(" ")
+        token_type, token_data = token.split(' ')
 
         if token_type in self.ALLOWED_TYPES and token_data != "null":
             return token_data, token_type == "Internal"
