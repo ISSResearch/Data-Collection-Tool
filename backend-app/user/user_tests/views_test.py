@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .mock_user import MOCK_COLLECTOR_DATA
 from user.models import CustomUser
+from project.models import Project
 
 
 class UserCheckViewTest(TestCase):
@@ -151,3 +152,49 @@ class UserCreateViewTest(TestCase):
         self.assertEqual(initial_user_count + 1, CustomUser.objects.count())
         self.assertFalse(new_user.is_superuser)
         self.assertEqual(new_user.username, MOCK_COLLECTOR_DATA["username"])
+
+
+class CollectorViewSetTest(TestCase):
+    ENDPOINT = "/api/users/collectors/"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.project = Project.objects.create(name="name", description="description")
+        cls.users = [
+            CustomUser(
+                username=MOCK_COLLECTOR_DATA["username"] + str(i),
+                password=MOCK_COLLECTOR_DATA["password"]
+            )
+            for i in range(5)
+        ]
+        CustomUser.objects.bulk_create(cls.users)
+
+    def test_get_collectors_no_permission(self):
+        user, *_ = self.users
+        user.emit_token()
+
+        result_1 = self.client.get(self._url)
+        result_2 = self.client.get(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+
+        self.assertTrue(result_1.status_code == result_2.status_code == 403)
+
+    def test_get_collectors(self):
+        user, *_ = self.users
+        user.emit_token()
+        user.project_view.add(self.project.id)
+
+        result = self.client.get(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+
+
+
+
+
+    @property
+    def _url(self): return f"{self.ENDPOINT}{self.project.id}/"
