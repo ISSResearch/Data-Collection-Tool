@@ -33,7 +33,6 @@ class CustomUser(AbstractUser):
 
             raise JWTError
 
-
     def emit_token(self) -> str:
         time_now: datetime = datetime.utcnow()
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
