@@ -5,17 +5,6 @@ from .serializers import CollectorSerializer, UserSerializer
 from .forms import CustomUser, CreateUserForm
 
 
-def _set_user_permissions(data, projectID: int) -> None:
-    change_users: tuple[dict[str, Any]] = data.get("users", ())
-
-    for _user in change_users:
-        try:
-            user: CustomUser = CustomUser.objects.get(id=_user["user_id"])
-            user.update_permissions(_user["permissions"], projectID)
-
-        except CustomUser.DoesNotExist: pass
-
-
 def _proceed_create(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
     form: CreateUserForm = CreateUserForm(request_data)
 
@@ -60,7 +49,8 @@ def _get_collectors(
             "project_download",
             "project_edit"
         ) \
-        .filter(is_superuser=False)
+        .filter(is_superuser=False) \
+        .order_by("id")
 
     return (
         collectors if not serialized
@@ -70,3 +60,14 @@ def _get_collectors(
             context={"project_id": project_id}
         )
     )
+
+
+def _set_user_permissions(data, projectID: int) -> None:
+    change_users: tuple[dict[str, Any]] = data.get("users", ())
+
+    for _user in change_users:
+        try:
+            user: CustomUser = CustomUser.objects.get(id=_user["user_id"])
+            user.update_permissions(_user["permissions"], projectID)
+
+        except CustomUser.DoesNotExist: pass

@@ -26,4 +26,8 @@ class UserPermissionTest(TestCase):
 
         permission_map[permission].add(case.user.id)
 
-        self.assertTrue(UserPermission().has_permission(request, view))
+        (
+            self.assertFalse
+            if method == "PATCH" and permission == "view"
+            else self.assertTrue
+        )(UserPermission().has_permission(request, view))

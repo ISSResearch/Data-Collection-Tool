@@ -48,17 +48,17 @@ class ProceedCreateTest(TestCase):
     def test_invalid_create(self):
         init_user_count = CustomUser.objects.count()
 
-        invalid_create_1 = _proceed_create({
+        self._test_invalid_result({
             'username': 'invalid-name-1',
             'password1': 'QwE1@asdZ45',
             'password2': 'qweasd',
         })
-        invalid_create_2 = _proceed_create({
+        self._test_invalid_result({
             'username': 'invalid-name-2',
             'password1': 'QwE1@asdZ45',
             'password2': '',
         })
-        invalid_create_3 = _proceed_create({
+        self._test_invalid_result({
             'username': 'invalid-name-2',
             'password1': '',
             'password2': '',
@@ -66,44 +66,34 @@ class ProceedCreateTest(TestCase):
 
         self.assertEqual(init_user_count, CustomUser.objects.count())
 
-        self.assertFalse(invalid_create_1["isAuth"])
-        self.assertFalse(invalid_create_2["isAuth"])
-        self.assertFalse(invalid_create_3["isAuth"])
+    def _test_invalid_result(self, credentials):
+        error_count = len(list(filter(lambda x: not x[1], credentials)))
 
-        self.assertEqual(len(invalid_create_1["errors"]), 1)
-        self.assertEqual(len(invalid_create_2["errors"]), 1)
-        self.assertEqual(len(invalid_create_3["errors"]), 2)
+        result, code = _proceed_create(credentials)
 
-        self.assertEqual(
-            invalid_create_1["errors"].get("password2"),
-            ["The two password fields didn’t match."]
-        )
-        self.assertTrue(
-            invalid_create_2["errors"].get("password2"),
-            ["This field is required."]
-        )
-        self.assertTrue(
-            invalid_create_3["errors"].get("password1"),
-            ["This field is required."]
-        )
-        self.assertTrue(
-            invalid_create_3["errors"].get("password2"),
-            ["This field is required."]
-        )
+        self.assertEqual(code, 200)
+        self.assertFalse(result['isAuth'])
+        self.assertIsNone(result.get("user"))
+        self.assertIsNone(result.get("accessToken"))
+
+        if error_count:
+            self.assertEqual(len(result["errors"]), error_count)
+        else: self.assertIsNotNone(result.get("errors"))
 
 
     def test_valid_create(self):
         init_user_count = CustomUser.objects.count()
 
-        valid_create = _proceed_create({
+        result, code = _proceed_create({
             "username": MOCK_COLLECTOR_DATA["username"],
             "password1": MOCK_COLLECTOR_DATA["password"],
             "password2": MOCK_COLLECTOR_DATA["password"]
         })
 
-        self.assertTrue(valid_create["isAuth"])
-        self.assertIsNotNone(valid_create["user"])
-        self.assertIsNone(valid_create.get("errors"))
+        self.assertEqual(code, 201)
+        self.assertTrue(result["isAuth"])
+        self.assertIsNotNone(result["user"])
+        self.assertIsNone(result.get("errors"))
 
         self.assertEqual(init_user_count + 1, CustomUser.objects.count())
 

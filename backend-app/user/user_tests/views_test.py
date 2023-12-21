@@ -2,6 +2,7 @@ from django.test import TestCase
 from .mock_user import MOCK_COLLECTOR_DATA
 from user.models import CustomUser
 from project.models import Project
+from json import dumps
 
 
 class UserCheckViewTest(TestCase):
@@ -187,14 +188,118 @@ class CollectorViewSetTest(TestCase):
         user.emit_token()
         user.project_view.add(self.project.id)
 
-        result = self.client.get(
+        result_1 = self.client.get(
             self._url,
             HTTP_AUTHORIZATION="Bearer " + user.token
         )
 
+        user.project_view.remove(self.project.id)
+        user.project_edit.add(self.project.id)
 
+        result_2 = self.client.get(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
 
+        self._check_result(result_1)
+        self._check_result(result_2)
 
+    def test_post_collectors_no_permission(self):
+        user, *_ = self.users
+        user.emit_token()
+
+        result_1 = self.client.patch(self._url)
+        result_2 = self.client.patch(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+
+        user.project_view.add(self.project.id)
+
+        result_3 = self.client.patch(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+
+        self.assertTrue(
+            result_1.status_code
+            == result_2.status_code
+            == result_3.status_code
+            == 403
+        )
+
+    def test_post_collectors(self):
+        user, user_2, *_ = self.users
+        user.emit_token()
+        user.project_edit.add(self.project.id)
+
+        initial_state = self.client.get(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+        self.assertTrue(initial_state.status_code, 200)
+        self.assertEqual(len(initial_state.data), len(self.users))
+
+        result_1 = self.client.post(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+        self.assertEqual(result_1.status_code, 403)
+
+        result_2 = self.client.patch(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token
+        )
+        self.assertEqual(result_2.status_code, 200)
+        self.assertEqual(initial_state.data, result_2.data)
+
+        result_3 = self.client.patch(
+            self._url,
+            HTTP_AUTHORIZATION="Bearer " + user.token,
+            CONTENT_TYPE="application/json",
+            data=dumps({
+                "users": [{
+                    "user_id": user_2.id,
+                    "permissions": {
+                        **initial_state.data[1]["permissions"],
+                        "edit": True,
+                        "stats": True
+                    }
+                }]
+            })
+        )
+        self.assertEqual(result_3.status_code, 200)
+        self.assertNotEqual(initial_state.data, result_3.data)
+        self.assertTrue(all([
+            self.project.id in user_2.project_edit.values_list("id", flat=True),
+            self.project.id in user_2.project_stats.values_list("id", flat=True),
+            result_3.data[1]["permissions"]["edit"],
+            result_3.data[1]["permissions"]["stats"],
+            not all([
+                value
+                for key, value
+                in result_3.data[2]["permissions"].items()
+                if key not in {"edit", "stats"}
+            ])
+        ]))
+        self.assertFalse(all([
+            value
+            for user in result_3.data[3:]
+            for value in user["permissions"].values()
+        ]))
+
+    def _check_result(self, result):
+        changed_user, *users = result.data
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.data), len(self.users))
+
+        self.assertTrue(any(changed_user["permissions"].values()))
+        self.assertFalse(all([
+            value
+            for user in users
+            for value in user["permissions"].values()
+        ]))
 
     @property
     def _url(self): return f"{self.ENDPOINT}{self.project.id}/"
