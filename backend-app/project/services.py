@@ -63,7 +63,7 @@ class ViewSetServices:
             response = ProjectSerializer(project, context={"request": request}).data
 
         except Project.DoesNotExist:
-            response["message"] = 'query project does not exist'
+            response["message"] = "query project does not exist"
             status = HTTP_404_NOT_FOUND
 
         return response, status

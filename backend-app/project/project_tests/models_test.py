@@ -9,15 +9,21 @@ class ProjectModelTest(TestCase, MOCK_PROJECT):
             name=self.data['name'],
             description=self.data['description']
         )
-        for form in self.data['attributes']: new_project.add_attributes(form)
 
-        self.assertTrue(
-            all([
-                key in set(new_project.__dict__) for key
-                in {'id', 'name', 'description', 'created_at', 'visible'}
-            ])
-        )
         self.assertEqual(new_project.name, self.data['name'])
         self.assertEqual(new_project.description, self.data['description'])
+
+        self.assertEqual(new_project.user_visible.count(), 0)
+        self.assertEqual(new_project.user_upload.count(), 0)
+        self.assertEqual(new_project.user_download.count(), 0)
+        self.assertEqual(new_project.user_stats.count(), 0)
+        self.assertEqual(new_project.user_view.count(), 0)
+        self.assertEqual(new_project.user_validate.count(), 0)
+        self.assertEqual(new_project.user_edit.count(), 0)
+        self.assertEqual(new_project.level_set.count(), 0)
+        self.assertEqual(new_project.attribute_set.count(), 0)
+
+        for form in self.data['attributes']: new_project.add_attributes(form)
+
         self.assertEqual(new_project.level_set.count(), self.count_levels())
         self.assertEqual(new_project.attribute_set.count(), self.count_attributes())

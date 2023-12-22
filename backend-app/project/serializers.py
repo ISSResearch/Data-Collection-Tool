@@ -6,11 +6,11 @@ from .models import Project
 
 
 class ProjectsSerializer(ModelSerializer):
-
     class Meta:
         model = Project
         fields = ("id", "name", "description", "created_at")
 
+    # TODO: revise for reason putting the mothod inside this serializer instead of second
     def add_attributes(self) -> None:
         attributeForm: list[list[dict[str, Any]]] = self.initial_data.get("attributes", ())
         for form in attributeForm: self.instance.add_attributes(form)
