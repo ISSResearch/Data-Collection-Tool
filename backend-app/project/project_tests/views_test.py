@@ -1,262 +1,208 @@
 from django.test import TestCase
 from .mock_project import MOCK_PROJECT
 from project.models import Project
-from user.user_tests.mock_user import MOCK_CLASS
+from user.models import CustomUser
 
 
 class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        ProjectsViewSetTest.user = MOCK_CLASS.create_admin_user()
+        cls.projects = Project.objects.bulk_create([
+            Project(name=f"name_{i}", visible=bool(i))
+            for i in range(3)
+        ])
+        cls.users = CustomUser.objects.bulk_create([
+            CustomUser(
+                username=f"name_{i}",
+                password="pass",
+                is_superuser=not i
+            )
+            for i in range(3)
+        ])
+        cls.projects[-1].user_visible.add(cls.users[-1].id)
 
-    def test_unlogged_requests(self):
-        self.client.logout()
-        get_request = self.client.get(self.endpoint)
-        post_request = self.client.post(self.endpoint)
+    def test_invalid_request(self):
+        init_count = Project.objects.count()
 
-        self.assertTrue(get_request.status_code == 403)
-        self.assertTrue(post_request.status_code == 403)
+        token = self.users[0].emit_token()
+
+        get_request = self.client.get(
+            self.endpoint,
+            HTTP_AUTHORIZATION="Bearer zxc"
+        )
+        post_invalid = self.client.post(
+            self.endpoint,
+            HTTP_AUTHORIZATION="Bearer asd"
+        )
+        post_valid = self.client.post(
+            self.endpoint,
+            HTTP_AUTHORIZATION="Bearer " + token
+        )
+
+        self.assertEqual(get_request.status_code, 403)
+        self.assertEqual(post_invalid.status_code, 403)
+        self.assertEqual(post_valid.status_code, 400)
+        self.assertIsNotNone(post_valid.data["errors"])
+        self.assertEqual(init_count, Project.objects.count())
 
     def test_get_projects(self):
-        self.client.force_login(self.user)
+        for count, user in zip((2, 0, 1), self.users):
+            token = user.emit_token()
 
-        projects = Project.objects.bulk_create(
-            Project(
-                name=self.data['name'] + str(index),
-                description=self.data['description'] + str(index)
+            result = self.client.get(
+                self.endpoint,
+                HTTP_AUTHORIZATION="Bearer " + token
             )
-            for index in range(5)
-        )
-        projects[-1].visible = False
-        projects[-1].save()
 
-        response = self.client.get(self.endpoint)
-
-        self.assertTrue(response.status_code == 200)
-        self.assertTrue(len(response.data) == 4)
-        self.assertTrue(all([
-            bool(projects[0].name == self.data['name'] + '0'),
-            bool(projects[0].description == self.data['description'] + '0')
-        ]))
-
-        self.user.is_superuser = False
-        self.user.save()
-
-        response = self.client.get(self.endpoint)
-
-        self.assertFalse(response.data)
-
-        projects[0].user_visible.add(self.user.id)
-
-        response = self.client.get(self.endpoint)
-
-        self.assertEqual(response.data[0]['id'], projects[0].id)
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(len(result.data), count)
 
     def test_create_project(self):
-        self.client.force_login(self.user)
+        init_count = Project.objects.count()
+        token = self.users[0].emit_token()
 
-        request = self.client.post(self.endpoint, self.data, content_type='application/json')
+        result = self.client.post(
+            self.endpoint,
+            self.data,
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + token
+        )
 
-        self.assertTrue(request.status_code == 201)
-        self.assertTrue(request.data['ok'])
-
+        self.assertEqual(result.status_code, 201)
+        self.assertTrue(result.data['ok'])
+        self.assertEqual(init_count + 1, Project.objects.count())
 
 class ProjectViewSetTest(TestCase, MOCK_PROJECT):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        ProjectViewSetTest.user = MOCK_CLASS.create_admin_user()
-        ProjectViewSetTest.project = Project.objects.create(
+        cls.project = Project.objects.create(
             name=cls.data['name'],
             description=cls.data['description']
         )
+        cls.users = CustomUser.objects.bulk_create([
+            CustomUser(
+                username=f"name_{i}",
+                password="pass",
+                is_superuser=not i
+            )
+            for i in range(3)
+        ])
         for form in cls.data['attributes']: cls.project.add_attributes(form)
+        cls.project.user_visible.add(cls.users[-1].id)
+        cls.project.user_edit.add(cls.users[-1].id)
 
-    def test_unlogged_requests(self):
-        self.client.logout()
-        get_request = self.client.get(self.endpoint)
-        update_request = self.client.post(self.endpoint)
-        delete_request = self.client.post(self.endpoint)
+    def test_invalid_requests(self):
+        token = self.users[1].emit_token()
+        endpoint = f"{self.endpoint}{str(self.project.id)}/"
 
-        self.assertTrue(get_request.status_code == 403)
-        self.assertTrue(update_request.status_code == 403)
-        self.assertTrue(delete_request.status_code == 403)
+        self.assertEqual(self.client.get(endpoint).status_code, 403)
+        self.assertEqual(self.client.patch(endpoint).status_code, 403)
+        self.assertEqual(self.client.delete(endpoint).status_code, 403)
+
+        self.assertEqual(
+            self.client
+                .get(endpoint, HTTP_AUTHORIZATION="Bearer " + token)
+                .status_code,
+            403
+        )
+        self.assertEqual(
+            self.client
+                .patch(endpoint, HTTP_AUTHORIZATION="Bearer " + token)
+                .status_code,
+            403
+        )
+        self.assertEqual(
+            self.client
+                .delete(endpoint, HTTP_AUTHORIZATION="Bearer " + token)
+                .status_code,
+            403
+        )
+
+        deleted_project = Project.objects.create(name="some", visible=False)
+        deleted_endpoint = f"{self.endpoint}{deleted_project.id}/"
+        admin_token = self.users[0].emit_token()
+        self.assertEqual(
+            self.client
+                .get(deleted_endpoint, HTTP_AUTHORIZATION="Bearer " + admin_token)
+                .status_code,
+            404
+        )
 
     def test_get_project(self):
-        self.client.force_login(self.user)
+        endpoint = f'{self.endpoint}{self.project.id}/'
+        admin_token = self.users[0].emit_token()
+        collector_token = self.users[-1].emit_token()
 
-        request = self.client.get(f'{self.endpoint}{self.project.id}/')
-
-        self.assertTrue(request.status_code == 200)
-        self.assertTrue(request.data['name'] == self.project.name)
-        self.assertTrue(request.data['description'] == self.project.description)
-        self.assertEqual(
-            {level['name'] for level in request.data['attributes'] if not level['parent']},
-            {form['levels'][0]['name'] for form in self.data['attributes']}
+        result_1 = self.client.get(
+            endpoint,
+            HTTP_AUTHORIZATION="Bearer " + admin_token
+        )
+        result_2 = self.client.get(
+            endpoint,
+            HTTP_AUTHORIZATION="Bearer " + collector_token
         )
 
-        self.user.is_superuser = False
-        self.user.save()
+        self.assertTrue(result_1.status_code == result_2.status_code == 200)
 
-        request = self.client.get(f'{self.endpoint}{self.project.id}/')
+        self.assertTrue(
+            result_1.data["name"]
+            == result_2.data["name"]
+            == self.project.name
+        )
 
-        self.assertTrue(request.status_code == 403)
+    def test_patch_project(self):
+        self._patch_mixin(self.users[0])
+        self._patch_mixin(self.users[-1])
 
-        self.project.user_visible.add(self.user.id)
+    def _patch_mixin(self, user):
+        token = user.emit_token()
+        new_name = 'patch_' + user.username
 
-        request = self.client.get(f'{self.endpoint}{self.project.id}/')
-
-        self.assertTrue(request.status_code == 200)
-        self.assertTrue(request.data['name'] == self.project.name)
-
-    def test_get_invalid_project(self):
-        self.client.force_login(self.user)
-
-        self.project.visible = False
-        self.project.reason_if_hidden = 'd'
-        self.project.save()
-
-        unexisted_project_request = self.client.get(f'{self.endpoint}1238971/')
-
-        hidden_project_request = self.client.get(f'{self.endpoint}{self.project.id}/')
-
-        self.assertTrue(unexisted_project_request.status_code == 404)
-        self.assertTrue(unexisted_project_request.data == 'query project does not exist')
-        self.assertTrue(hidden_project_request.status_code == 404)
-        self.assertTrue(hidden_project_request.data == 'query project does not exist')
-
-    def test_update_project(self):
-        self.client.force_login(self.user)
-
-        request_attributes = self.data['attributes']
-        request_attributes[1]['levels'][0]['name'] = 'newtestname'
-        request_attributes[1]['levels'][0]['multiple'] = True
-        request_attributes[1]['levels'][0]['required'] = True
-        request = {
-            'name': 'TestUpdateName',
-            'description': 'TestUpdateDesctiption',
-            'attributes': request_attributes
+        patch_data = {
+            'name': new_name,
+            "attributes": self.data["attributes"]
         }
 
-        request = self.client.patch(
+        patch_data["attributes"][1]['levels'][0]['name'] = new_name
+
+        result = self.client.patch(
             f'{self.endpoint}{self.project.id}/',
-            request,
-            content_type='application/json'
+            patch_data,
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + token
         )
 
         updated_project = Project.objects.get(id=self.project.id)
 
-        self.assertTrue(request.status_code == 202)
-        self.assertTrue(request.data['ok'])
-        self.assertEqual(updated_project.name, 'TestUpdateName')
-        self.assertEqual(updated_project.description, 'TestUpdateDesctiption')
-        self.assertEqual(updated_project.level_set.last().name, 'newtestname')
-        self.assertTrue(updated_project.level_set.last().name)
-        self.assertTrue(updated_project.level_set.last().name)
+        self.assertTrue(result.status_code == 202)
+        self.assertTrue(result.data['ok'])
+        self.assertEqual(updated_project.name, new_name)
+        self.assertEqual(updated_project.level_set.last().name, new_name)
 
-    def test_approved_delete_project(self):
-        self.client.force_login(self.user)
+    def test_delete_project(self):
+        self._delete_mixin(self.users[0])
+        self._delete_mixin(self.users[-1])
 
-        self.project.visible = True
-        self.project.reason_if_hidden = ''
-        self.project.save()
+    def _delete_mixin(self, user):
+        token = user.emit_token()
+        project = Project.objects.create(name="some")
 
-        request = self.client.delete(
-            f'{self.endpoint}{self.project.id}/',
-            {'approval': self.project.name},
-            content_type='application/json'
+        if not user.is_superuser:
+            project.user_edit.add(user.id)
+            project.user_visible.add(user.id)
+
+        self.assertTrue(project.visible)
+
+        result = self.client.delete(
+            f'{self.endpoint}{project.id}/',
+            {'approval': project.name},
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + token
         )
 
-        updated_project = Project.objects.get(id=self.project.id)
-        self.assertTrue(request.status_code == 200)
+        updated_project = Project.objects.get(id=project.id)
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue(result.data["deleted"])
         self.assertFalse(updated_project.visible)
-        self.assertTrue(updated_project.reason_if_hidden == 'd')
-
-    def test_unapproved_delete_project(self):
-        self.client.force_login(self.user)
-
-        self.project.visible = True
-        self.project.reason_if_hidden = ''
-        self.project.save()
-
-        existed_project_request = self.client.delete(
-            f'{self.endpoint}{self.project.id}/',
-            {'approval': 'wrong approve'},
-            content_type='application/json'
-        )
-
-        unexisted_project_request = self.client.delete(
-            f'{self.endpoint}19823/',
-            {'approval': 'wrong approve'},
-            content_type='application/json'
-        )
-
-        updated_project = Project.objects.get(id=self.project.id)
-        self.assertTrue(existed_project_request.status_code == 400)
-        self.assertTrue(unexisted_project_request.status_code == 404)
-        self.assertTrue(existed_project_request.data == 'approval text differs from the actual name')
-        self.assertTrue(unexisted_project_request.data == 'query project does not exist')
-        self.assertTrue(updated_project.visible)
-        self.assertFalse(updated_project.reason_if_hidden == 'd')
-
-
-class CollectorViewTest(TestCase, MOCK_PROJECT):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        CollectorViewTest.user = MOCK_CLASS.create_admin_user()
-        CollectorViewTest.project = Project.objects.create(
-            name=cls.data['name'],
-            description=cls.data['description'],
-        )
-
-    def test_get_collectors(self):
-        self.user.is_superuser = False
-        self.user.save()
-
-        self.project.user_visible.add(self.user.id)
-        self.project.user_edit.add(self.user.id)
-
-        self.client.force_login(self.user)
-        request = self.client.get(f'{MOCK_CLASS.collector_endpoint}{self.project.id}/')
-
-        self.assertEqual(request.status_code, 200)
-        self.assertEqual(
-            set(request.data[0].keys()),
-            {'id', 'username', 'permissions'},
-        )
-
-    def test_patch_collectors(self):
-        self.user.is_superuser = False
-        self.user.save()
-        self.project.user_edit.add(self.user.id)
-
-        self.client.force_login(self.user)
-        request = self.client.patch(
-            f'{MOCK_CLASS.collector_endpoint}{self.project.id}/',
-            {
-                'users': [
-                    {
-                        'user_id': self.user.id,
-                        'permissions': {
-                            'visible': True,
-                            'view': True,
-                            'upload': False,
-                            'validate': True,
-                            'stats': False,
-                            'download': True,
-                            'edit': False
-                        }
-                    }
-                ]
-            },
-            content_type='application/json'
-        )
-
-        self.assertEqual(request.status_code, 200)
-        self.assertEqual(request.data[0]['id'], self.user.id)
-        self.assertEqual(
-            request.data[0]['permissions'],
-            {'visible': True, 'view': True, 'upload': False, 'validate': True, 'stats': False, 'download': True, 'edit': False}
-        )

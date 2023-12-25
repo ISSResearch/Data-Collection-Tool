@@ -12,16 +12,22 @@ class ProjectsPermissionTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        [case, _] = case_set_up()
-        ProjectsPermissionTest.case = case
+        cls.case, _ = case_set_up()
 
     def test_get_permission(self):
-        request = type('request', (object, ), {'method': 'GET', 'user': self.case.user})
-
+        request = type(
+            'request',
+            (object, ),
+            {'method': 'GET', 'user': self.case.user}
+        )
         self.assertTrue(ProjectsPermission().has_permission(request, None))
 
     def test_post_permission(self):
-        request = type('request', (object, ), {'method': 'POST', 'user': self.case.user})
+        request = type(
+            'request',
+            (object, ),
+            {'method': 'POST', 'user': self.case.user}
+        )
 
         self.assertFalse(ProjectsPermission().has_permission(request, None))
 
@@ -35,12 +41,25 @@ class ProjectPermissionTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        [case, _] = case_set_up()
-        ProjectPermissionTest.case = case
+        cls.case, _ = case_set_up()
+
+    def test_get_permission(self): self._test_mixin('GET')
+
+    def test_patch_permission(self): self._test_mixin('PATCH')
+
+    def test_delete_permission(self): self._test_mixin('DELETE')
 
     def _test_mixin(self, method):
-        request = type('request', (object, ), {'method': method, 'user': self.case.user})
-        view = type('view', (object, ), {'kwargs': {'pk': self.case.project.id}})
+        request = type(
+            'request',
+            (object, ),
+            {'method': method, 'user': self.case.user}
+        )
+        view = type(
+            'view',
+            (object, ),
+            {'kwargs': {'pk': self.case.project.id}}
+        )
 
         if method == 'GET':
             self.assertTrue(ProjectPermission().has_permission(request, view))
@@ -52,16 +71,10 @@ class ProjectPermissionTest(TestCase):
 
         self.assertTrue(ProjectPermission().has_permission(request, view))
 
-    def test_get_permission(self): self._test_mixin('GET')
-
-    def test_patch_permission(self): self._test_mixin('PATCH')
-
-    def test_delete_permission(self): self._test_mixin('DELETE')
-
 
 class ProjectViewPermissionTest(TestCase):
     def test_perission(self):
-        [case, _] = case_set_up()
+        case, _ = case_set_up()
 
         request = type('request', (object, ), {'user': case.user})
         view = type('view', (object, ), {'kwargs': {'pk': case.project.id}})
@@ -75,7 +88,7 @@ class ProjectViewPermissionTest(TestCase):
 
 class ProjectStatsPermissionTest(TestCase):
     def test_perission(self):
-        [case, _] = case_set_up()
+        case, _ = case_set_up()
 
         request = type('request', (object, ), {'user': case.user})
         view = type('view', (object, ), {'kwargs': {'projectID': case.project.id}})

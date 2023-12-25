@@ -59,7 +59,8 @@ class ViewSetServices:
         try:
             project = Project.objects \
                 .prefetch_related(*self.project_prefetch) \
-                .filter(visible=True).get(id=pk)
+                .filter(visible=True) \
+                .get(id=pk)
             response = ProjectSerializer(project, context={"request": request}).data
 
         except Project.DoesNotExist:

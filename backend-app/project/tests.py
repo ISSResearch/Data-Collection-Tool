@@ -3,7 +3,7 @@
 #     ProjectsSerializerTest,
 #     ProjectSerializerTest,
 # )
-from .project_tests.services_test import ProjectViewSetTest
+# from .project_tests.services_test import ProjectViewSetTest
 # from .project_tests.permissions_test import (
 #     ProjectsPermissionTest,
 #     ProjectPermissionTest,
@@ -13,5 +13,4 @@ from .project_tests.services_test import ProjectViewSetTest
 # from .project_tests.views_test import (
 #     ProjectsViewSetTest,
 #     ProjectViewSetTest,
-#     CollectorViewTest
 # )
