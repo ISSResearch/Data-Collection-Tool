@@ -7,6 +7,7 @@ import useFileUploader from './fileUploader';
 import useCollectors from './collectorsHook';
 import useUser from './user';
 import useAlerts from './alertManager';
+import useAuthModal from './authModal';
 
 export {
   useFileInput,
@@ -17,5 +18,6 @@ export {
   useFileUploader,
   useCollectors,
   useUser,
-  useAlerts
+  useAlerts,
+  useAuthModal
 }

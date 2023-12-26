@@ -13,6 +13,16 @@ import { getOriginDomain } from "../../../utils/";
 import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
+var handleMediaFallback = ({ target }) => {
+  var fallbackSrc = "/images/fallback-media.svg";
+
+  if (target.tagName === "VIDEO") {
+    target.controls = false;
+    target.poster = fallbackSrc;
+  }
+  else target.src = fallbackSrc;
+}
+
 export default forwardRef(({ files, slide, pathID }, ref) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
@@ -23,8 +33,16 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
 
   var MediaItem = useCallback((props) => {
     return typeVideo
-      ? <video autoPlay muted controls playsInline {...props} />
-      : <img alt="validate_item" loading='lazy' decoding="async" {...props} />;
+      ? <video
+        autoPlay
+        muted
+        controls
+        playsInline
+        { ...props }
+        onError={e => handleMediaFallback(e)}
+      />
+      : <img alt="validation_item" {...props} onError={e => handleMediaFallback(e)} />
+
   }, [typeVideo]);
 
   let scale = 1,
