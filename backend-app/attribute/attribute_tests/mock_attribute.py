@@ -12,7 +12,7 @@ class MockCase:
             username='u_name' + random_add,
             password='123'
         )
-        self.project = Project.objects.create(name='p_name' + random_add)
+        self.project = Project.objects.create(name='p_name')
         self.file_ = File.objects.create(
             file_name='f_name',
             project=self.project,

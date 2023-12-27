@@ -29,7 +29,7 @@ class ViewMixIn(APIView):
         try:
             delete_item: Level | Attribute = self.model.objects.get(id=id)
 
-            if not self.__check_intersection(delete_item):
+            if not self._check_intersection(delete_item):
                 return {"is_safe": True}, HTTP_200_OK
 
             else: return {
@@ -50,7 +50,7 @@ class ViewMixIn(APIView):
 
         for delete_id in delete_id_set:
             try:
-                result = self.__perform_delete(delete_id)
+                result = self._perform_delete(delete_id)
                 response[delete_id] = result or "attribute violation"
                 if not result: status = HTTP_206_PARTIAL_CONTENT
 
@@ -61,10 +61,10 @@ class ViewMixIn(APIView):
         return response, status
 
     @transaction.atomic
-    def __perform_delete(self, id: int) -> bool:
+    def _perform_delete(self, id: int) -> bool:
         delete_item: Level | Attribute = self.model.objects.get(id=id)
 
-        if self.__check_intersection(delete_item): return False
+        if self._check_intersection(delete_item): return False
 
         try:
             with transaction.atomic():
@@ -83,7 +83,7 @@ class ViewMixIn(APIView):
 
         return True
 
-    def __check_intersection(self, item: Level | Attribute) -> bool:
+    def _check_intersection(self, item: Level | Attribute) -> bool:
         file_attributes: set[int] = set(
             File.objects
             .filter(project_id=item.project_id)
