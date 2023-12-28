@@ -17,17 +17,17 @@ class ViewMixIn(APIView):
     permission_classes: tuple
     model: Level | Attribute
 
-    def get(self, request: Request, itemID: int) -> Response:
-        response, status = self._can_delete_response(itemID)
+    def get(self, request: Request, item_id: int) -> Response:
+        response, status = self._can_delete_response(item_id)
         return Response(response, status=status)
 
     def delete(self, request: Request) -> Response:
         response, status = self._delete_items(request.data)
         return Response(response, status=status)
 
-    def _can_delete_response(self, id: int) -> tuple[dict[str, Any], int]:
+    def _can_delete_response(self, item_id: int) -> tuple[dict[str, Any], int]:
         try:
-            delete_item: Level | Attribute = self.model.objects.get(id=id)
+            delete_item: Level | Attribute = self.model.objects.get(id=item_id)
 
             if not self._check_intersection(delete_item):
                 return {"is_safe": True}, HTTP_200_OK
