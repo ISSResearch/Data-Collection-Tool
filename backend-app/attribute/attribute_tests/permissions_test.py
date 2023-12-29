@@ -1,79 +1,97 @@
 from django.test import TestCase
-from attribute.permissions import LevelPermission, AttributePermission
-from .mock_attribute import case_set_up
+from attribute.permissions import (
+    LevelPermission,
+    AttributePermission,
+    PermissionMixIn,
+    Attribute,
+    Level
+)
+from user.models import CustomUser
+from .mock_attribute import case_set_up, MockCase
 
 
-class LevelPermissionTest(TestCase):
+class PermissionMixinTest(TestCase, PermissionMixIn):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        [case, _] = case_set_up()
-        LevelPermissionTest.case = case
+        cls.case = MockCase()
+        cls.new_collector = CustomUser.objects.create(
+            username="npuname",
+            password="pass"
+        )
+        cls.case.collector = CustomUser.objects.create(
+            username="name",
+            password="password"
+        )
+        cls.case.project.user_edit.add(cls.case.collector.id)
 
-    def test_get_request_permission(self):
-        request = type('request', (object, ), {'method': 'GET', 'user': self.case.user})
-        view = type('view', (object, ), {'kwargs': {'levelID': self.case.level.uid}})
+    def test_lookup(self):
+        self._lookup_mixin(self.case.level.uid, Level)
+        self._lookup_mixin(self.case.attribute.id, Attribute)
 
-        self.assertFalse(LevelPermission().has_permission(request, view))
+    def test_has_permission(self):
+        self.case.user.is_superuser = True
+        self.case.user.save()
 
-        self.case.project.user_edit.add(self.case.user.id)
+        self._permission_mixin(self.case.level.uid, Level)
+        self._permission_mixin(self.case.attribute.id, Attribute)
 
-        self.assertTrue(LevelPermission().has_permission(request, view))
+    def _permission_mixin(self, item_id, model):
+        self.model = model
 
-    def test_delete_request_permission(self):
-        request = type(
+        self.assertTrue(self.has_permission(
+            *self._form_args("GET", item_id, self.case.user)
+        ))
+        self.assertTrue(self.has_permission(
+            *self._form_args("DELETE", item_id, self.case.user)
+        ))
+
+        self.assertTrue(self.has_permission(
+            *self._form_args("GET", item_id, self.case.collector)
+        ))
+        self.assertTrue(self.has_permission(
+            *self._form_args("DELETE", item_id, self.case.collector)
+        ))
+
+        self.assertFalse(self.has_permission(
+            *self._form_args("GET", item_id, self.new_collector)
+        ))
+        self.assertFalse(self.has_permission(
+            *self._form_args("DELETE", item_id, self.new_collector)
+        ))
+
+    def _lookup_mixin(self, item_id, model):
+        self.model = model
+
+        get_result = self._get_lookup(
+            *self._form_args("GET", item_id, self.case.user)
+        )
+        delete_result = self._get_lookup(
+            *self._form_args("DELETE", item_id, self.case.user)
+        )
+
+        field = "id" if model == Attribute else "uid"
+
+        self.assertEqual(list(get_result.keys())[0], field)
+        self.assertEqual(list(delete_result.keys())[0], field + "__in")
+
+        self.assertEqual(list(get_result.values())[0], item_id)
+        self.assertEqual(list(delete_result.values())[0], (item_id, ))
+
+
+    def _form_args(self, method, item_id, user):
+        if method not in {"GET", "DELETE"}: raise AttributeError
+
+        _request = type(
             'request',
             (object, ),
-            {
-                'method': 'DELETE',
-                'user': self.case.user,
-                'data': {'id_set': (self.case.level.uid,)}
-            }
+            {'user': user, 'method': method}
         )
-        view = type('view', (object, ), {'kwargs': {'levelID': self.case.level.uid}})
+        _view = type('view', (object, ), {})
 
-        self.assertFalse(LevelPermission().has_permission(request, view), self.case.user.project_edit.all())
+        request, view = _request(), _view()
 
-        self.case.project.user_edit.add(self.case.user.id)
+        if method == "GET": view.kwargs = {"itemID" : item_id}
+        else: request.data = {"id_set": (item_id,)}
 
-        self.assertTrue(LevelPermission().has_permission(request, view))
-
-
-class AttributePermissionTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        [case, _] = case_set_up()
-        AttributePermissionTest.case = case
-
-    def test_get_request_permission(self):
-        request = type(
-            'request',
-            (object, ),
-            {'method': 'GET', 'user': self.case.user}
-        )
-        view = type('view', (object, ), {'kwargs': {'attributeID': self.case.attribute.id}})
-
-        self.assertFalse(AttributePermission().has_permission(request, view))
-
-        self.case.project.user_edit.add(self.case.user.id)
-
-        self.assertTrue(AttributePermission().has_permission(request, view))
-
-    def test_delete_request_permission(self):
-        request = type(
-            'request',
-            (object, ),
-            {
-                'method': 'DELETE',
-                'user': self.case.user,
-                'data': {'id_set': (self.case.attribute.id,)}
-            }
-        )
-        view = type('view', (object, ), {'kwargs': {'levelID': self.case.attribute.id}})
-
-        self.assertFalse(AttributePermission().has_permission(request, view), self.case.user.project_edit.all())
-
-        self.case.project.user_edit.add(self.case.user.id)
-
-        self.assertTrue(AttributePermission().has_permission(request, view))
+        return request, view
