@@ -15,6 +15,10 @@
     text-decoration: underline;
     color: var(--issBrand);
 }
+.item--block {
+    pointer-events: none;
+    opacity: 0.5;
+}
 .iss__stats__tableWrap {
     margin-top: 20px;
     overflow-y: scroll;

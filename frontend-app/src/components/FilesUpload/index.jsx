@@ -29,7 +29,9 @@ export default function({ attributes, pathID }) {
     }
   }, [fileManager]);
 
-  if (uploading) return <UploadView fileManager={fileManager} pathID={pathID} />;
+  if (uploading) return (
+    <UploadView fileManager={fileManager} pathID={pathID} setUploading={setUploading} />
+  );
 
   return (
     <div className='iss__filesUpload'>

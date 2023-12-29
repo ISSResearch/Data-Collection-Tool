@@ -16,6 +16,7 @@ const ADAPTER_MAP = {
 export default function({ pathID }) {
   const [stats, setStats] = useState([]);
   const [choice, setChoice] = useState("attribute");
+  const [loading, setLoading] = useState(true);
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();
 
@@ -40,10 +41,14 @@ export default function({ pathID }) {
   useEffect(() => {
     if (!choice) return;
 
+    setLoading(true);
     api.get(`/api/files/stats/${choice}/${pathID}/`, {
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
-      .then(({ data }) => setStats(ADAPTER_MAP[choice](data)))
+      .then(({ data }) => {
+        setStats(ADAPTER_MAP[choice](data));
+        setLoading(false);
+      })
       .catch(({ message, response }) => {
         var authFailed = response && (
           response.status === 401 || response.status === 403
@@ -68,7 +73,11 @@ export default function({ pathID }) {
           <label
             key={key}
             className={
-              'iss__stats__radioItem' + (key === choice ? " item--active" : "")
+              [
+                'iss__stats__radioItem',
+                key === choice ? " item--active" : "",
+                (key !== choice) && loading ? " item--block"  : ""
+              ].join("")
             }
           >
             <input
@@ -85,8 +94,9 @@ export default function({ pathID }) {
     {
       choice && <>
       {
-        stats.length
-        ? <section className="iss__stats__tableWrap">
+        loading
+        ? <div className='iss__stats__load'><Load /></div>
+        : <section className="iss__stats__tableWrap">
           <table className='iss__stats__table'>
             <thead className='iss__stats__table-header'>
               <tr className='iss__stats__table-row-outer'>
@@ -111,7 +121,6 @@ export default function({ pathID }) {
             </tfoot>
           </table>
         </section>
-        : <div className='iss__stats__load'><Load /></div>
       }
       </>
     }

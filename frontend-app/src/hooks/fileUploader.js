@@ -6,10 +6,14 @@ export default function useFileUploader(projectID) {
   const [project] = useState(projectID);
 
   async function sendChunk(file, id) {
-    const chunkSize = 1024 * 1024 * 4;
-    const numOfChunks = Math.ceil(file.file.size / chunkSize);
-    for (let i = 0; i < numOfChunks; i++) {
-      const data = {
+    var chunkSize = 1024 * 1024 * 4;
+    var numOfChunks = Math.ceil(file.file.size / chunkSize);
+
+    var start = file.chunkN || 0;
+    for (let i = start; i < numOfChunks; i++) {
+      file.chunkN = i;
+
+      var data = {
         file: file.file.slice(i * chunkSize, chunkSize * (i + 1)),
         file_meta: JSON.stringify({
           file_name: file.name,
@@ -18,7 +22,7 @@ export default function useFileUploader(projectID) {
         })
       }
 
-      const config = {
+      var config = {
         method: 'post',
         data,
         headers: {
@@ -28,7 +32,7 @@ export default function useFileUploader(projectID) {
           'Total-Chunks': numOfChunks
         }
       }
-      const response = await fileApi.request(
+      var response = await fileApi.request(
         `/api/storage/project_${project}/${id}/`,
         config
       );
@@ -56,8 +60,11 @@ export default function useFileUploader(projectID) {
     );
   }
 
+  // TODO: rework: 1) create all at once; 2) async pool
   async function proceedUpload() {
-    for (var file of files) {
+    var proceedFiles = files.filter(({ status }) => status !== "a");
+
+    for (var file of proceedFiles) {
       var file_id;
 
       var formData = new FormData();
@@ -72,6 +79,12 @@ export default function useFileUploader(projectID) {
         await sendChunk(file, file_id.id);
       }
       catch ({ message, response }) {
+        var authFailed = response && (response.status == 401 || response.status == 403);
+        if (authFailed) {
+          var error = new Error(message);
+          error.authFailed = authFailed;
+          throw error;
+        }
         if (file_id && file_id.id) deleteFile(file_id.id);
         file.status = 'f';
         file.error = response.data?.ok || message;

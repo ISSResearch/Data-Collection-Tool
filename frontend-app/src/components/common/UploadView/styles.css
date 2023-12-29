@@ -1,3 +1,16 @@
+.iss__uploadProgress__modal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: none;
+    padding: 20px;
+}
+.iss__uploadProgress__modal > div {
+    border: none;
+}
+.iss__uploadProgress__modal::backdrop {
+    background: #d8eaffb5;
+}
 .iss__uploadProgress__item {
     display: flex;
     gap: 20px;
