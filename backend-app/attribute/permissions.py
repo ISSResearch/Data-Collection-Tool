@@ -26,15 +26,15 @@ class PermissionMixIn(BasePermission):
                     request.user.project_edit.values_list("id", flat=True)
                 )
 
-                return not bool(request_project_ids - user_project_ids)
+                return bool(user_project_ids) and not bool(request_project_ids - user_project_ids)
 
-        except self.model.DoesNotExist: return True
+        except self.model.DoesNotExist: return False
 
     def _get_lookup(self, request: Request, view: APIView,) -> dict[str, Any]:
         field: str = "id" if self.model == Attribute else "uid"
 
         return (
-            {field: view.kwargs["itemID"]}
+            {field: view.kwargs["item_id"]}
             if request.method == "GET" else
             {field + "__in": request.data.get("id_set", ())}
         )

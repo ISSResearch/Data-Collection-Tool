@@ -27,12 +27,13 @@ class ViewMixIn(APIView):
 
     def _can_delete_response(self, item_id: int) -> tuple[dict[str, Any], int]:
         try:
-            delete_item: Level | Attribute = self.model.objects.get(id=item_id)
+            query: dict[str, int] = {"uid" if self.model is Level else "id": item_id}
+            delete_item: Level | Attribute = self.model.objects.get(**query)
 
             if not self._check_intersection(delete_item):
                 return {"is_safe": True}, HTTP_200_OK
 
-            else: return {
+            return {
                 "is_safe": False,
                 "message": "attribute violation"
             }, HTTP_403_FORBIDDEN
@@ -62,7 +63,8 @@ class ViewMixIn(APIView):
 
     @transaction.atomic
     def _perform_delete(self, id: int) -> bool:
-        delete_item: Level | Attribute = self.model.objects.get(id=id)
+        query: dict[str, int] = {"uid" if self.model is Level else "id": id}
+        delete_item: Level | Attribute = self.model.objects.get(**query)
 
         if self._check_intersection(delete_item): return False
 

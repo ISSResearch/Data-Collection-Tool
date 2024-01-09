@@ -1,127 +1,137 @@
 from django.test import TestCase
 from .mock_attribute import case_set_up
-from user.user_tests.mock_user import MOCK_CLASS
+from user.models import CustomUser
+from attribute.models import Attribute, Level
+from time import time
 
 
-class LevelViewsetTest(TestCase, MOCK_CLASS):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        case_legit, case_unassigned = case_set_up()
-        LevelViewsetTest.case_legit = case_legit
-        LevelViewsetTest.case_unassigned = case_unassigned
-        LevelViewsetTest.user = MOCK_CLASS.create_admin_user()
+class TestMixin(TestCase):
+    model: Level | Attribute
 
-    def test_get_level(self):
-        unassigned_check_request = self.client.get(
-            f'/api/attributes/levels/{self.case_unassigned.level.id}/'
+    def setUp(self):
+        self.case_legit, self.case_unassigned = case_set_up()
+
+        self.collector = CustomUser.objects.create(
+            username="name" + str(time()),
+            password="password"
         )
-        self.assertTrue(unassigned_check_request.status_code == 403)
-
-        self.client.force_login(self.user)
-
-        legit_check_request = self.client.get(
-            f'/api/attributes/levels/{self.case_legit.level.id}/'
+        self.new_collector = CustomUser.objects.create(
+            username="npuname" + str(time()),
+            password="pass"
         )
-        unexisted_check_request = self.client.get(
-            '/api/attributes/levels/123987/'
+        self.admin = CustomUser.objects.create(
+            username="adminUser123" + str(time()),
+            password="pass",
+            is_superuser=True
         )
 
-        self.assertTrue(legit_check_request.status_code == 403)
-        self.assertTrue(unexisted_check_request.status_code == 404)
-        self.assertTrue(legit_check_request.data == 'attribute violation')
-        self.assertTrue(unexisted_check_request.data == 'query level does not exist')
+        self.case_legit.project.user_edit.add(self.collector.id)
+        self.case_unassigned.project.user_edit.add(self.collector.id)
 
-    def test_delete_level(self):
-        self.client.force_login(self.user)
+    def test_get(self):
+        self._get_test_mixin(self.collector)
+        self._get_test_mixin(self.new_collector, False)
+        self._get_test_mixin(self.admin)
 
-        unassigned_request = self.client.delete(
-            '/api/attributes/levels/',
-            data={'id_set': [self.case_unassigned.level.id]},
-            content_type='application/json'
+    def test_delete_collector(self):
+        self._delete_test_mixin(self.collector)
+        self._delete_test_mixin(self.new_collector, False)
+
+    def test_delte_admin(self):
+        self._delete_test_mixin(self.admin)
+
+    @property
+    def _url(self): return f"/api/attributes/{self.model._meta.db_table}s/"
+
+    def _get_test_mixin(self, user, user_legit=True):
+        user.emit_token()
+
+        delete_id = lambda case: \
+            case \
+            .__dict__[self.model._meta.db_table] \
+            .__dict__["uid" if self.model is Level else "id"]
+
+        ok = self.client.get(
+            f"{self._url}{delete_id(self.case_unassigned)}/",
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
-        legit_request = self.client.delete(
-            '/api/attributes/levels/',
-            data={'id_set': [self.case_legit.level.id]},
-            content_type='application/json'
+        err = self.client.get(
+            f"{self._url}{delete_id(self.case_legit)}/",
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
-        unexisted_request = self.client.delete(
-            '/api/attributes/levels/',
-            data={'id_set': [29854]},
-            content_type='application/json'
-        )
-
-        self.assertTrue(unassigned_request.status_code == 200)
-        self.assertTrue(legit_request.status_code == 206)
-        self.assertTrue(unexisted_request.status_code == 206)
-        self.assertTrue(unassigned_request.data[self.case_unassigned.level.id])
-        self.assertTrue(
-            legit_request.data[self.case_legit.level.id],
-            'attribute violation'
-        )
-        self.assertTrue(
-            unexisted_request.data[29854],
-            'query level does not exist'
-        )
-
-
-class AttributeViewsetTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        case_legit, case_unassigned = case_set_up()
-        AttributeViewsetTest.case_legit = case_legit
-        AttributeViewsetTest.case_unassigned = case_unassigned
-        AttributeViewsetTest.user = MOCK_CLASS.create_admin_user()
-
-    def test_get_attribute(self):
-        unassigned_check_request = self.client.get(
-            f'/api/attributes/attributes/{self.case_unassigned.attribute.id}/'
-        )
-        self.assertTrue(unassigned_check_request.status_code == 403)
-
-        self.client.force_login(self.user)
-
-        legit_check_request = self.client.get(
-            f'/api/attributes/attributes/{self.case_legit.attribute.id}/'
-        )
-        unexisted_check_request = self.client.get(
-            '/api/attributes/attributes/123987/'
+        err_u = self.client.get(
+            f"{self._url}900009/",
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
 
-        self.assertTrue(legit_check_request.status_code == 403)
-        self.assertTrue(unexisted_check_request.status_code == 404)
-        self.assertTrue(legit_check_request.data == 'attribute violation', legit_check_request.data)
-        self.assertTrue(unexisted_check_request.data == 'query attribute does not exist')
+        if not user_legit: self.assertTrue(
+            ok.status_code
+            == err.status_code
+            == err_u.status_code
+            == 403
+        )
+        else:
+            self.assertEqual(ok.status_code, 200)
+            self.assertEqual(err.status_code, 403)
+            self.assertEqual(err_u.status_code, 404 if user.is_superuser else 403)
 
-    def test_delete_attribute(self):
-        self.client.force_login(self.user)
+            self.assertTrue(ok.data["is_safe"])
+            self.assertFalse(err.data["is_safe"])
 
-        unassigned_request = self.client.delete(
-            '/api/attributes/attributes/',
-            data={'id_set': [self.case_unassigned.attribute.id]},
-            content_type='application/json'
+            self.assertEqual(err.data["message"], "attribute violation")
+
+
+    def _delete_test_mixin(self, user, user_legit=True):
+        user.emit_token()
+
+        delete_id = lambda case: \
+            case \
+            .__dict__[self.model._meta.db_table] \
+            .__dict__["uid" if self.model is Level else "id"]
+
+        ok = self.client.delete(
+            self._url,
+            data={'id_set': [delete_id(self.case_unassigned)]},
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
-        legit_request = self.client.delete(
-            '/api/attributes/attributes/',
-            data={'id_set': [self.case_legit.attribute.id]},
-            content_type='application/json'
+        err = self.client.delete(
+            self._url,
+            data={'id_set': [delete_id(self.case_legit)]},
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
-        unexisted_request = self.client.delete(
-            '/api/attributes/attributes/',
-            data={'id_set': [29854]},
-            content_type='application/json'
+        err_u = self.client.delete(
+            self._url,
+            data={'id_set': [298541231312312]},
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Bearer " + user.token
         )
 
-        self.assertTrue(unassigned_request.status_code == 200)
-        self.assertTrue(legit_request.status_code == 206)
-        self.assertTrue(unexisted_request.status_code == 206)
-        self.assertTrue(unassigned_request.data[self.case_unassigned.attribute.id])
-        self.assertTrue(
-            legit_request.data[self.case_legit.attribute.id],
-            'attribute violation'
+        if not user_legit: self.assertTrue(
+            ok.status_code
+            == err.status_code
+            == err_u.status_code
+            == 403
         )
-        self.assertTrue(
-            unexisted_request.data[29854],
-            'query attribute does not exist'
-        )
+        else:
+            self.assertEqual(ok.status_code, 202)
+            self.assertTrue(err.status_code == err_u.status_code == 206)
+            self.assertTrue(ok.data[delete_id(self.case_unassigned)])
+            self.assertTrue(
+                err.data[delete_id(self.case_legit)],
+                'attribute violation'
+            )
+            self.assertEqual(0, (
+                self.case_unassigned.project.level_set.count()
+                if self.model is Level else
+                self.case_unassigned.project.attribute_set.count()
+            ))
+
+
+class AttributeViewSetTest(TestMixin):
+    model = Attribute
+
+
+class LevelViewSetTest(TestMixin):
+    model = Level

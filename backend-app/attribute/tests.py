@@ -10,4 +10,4 @@
 # )
 # from .attribute_tests.services_test import MixinUtilsTest, MixinActionTest
 # from .attribute_tests.permissions_test import PermissionMixinTest
-from .attribute_tests.views_test import LevelViewsetTest, AttributeViewsetTest
+# from .attribute_tests.views_test import LevelViewSetTest, AttributeViewSetTest

@@ -50,7 +50,7 @@ export default function({
       handleLevelDelete(index, false, id);
     }
     catch ({ message, response }) {
-      var authFailed = response.status === 401 || response.status === 403;
+      var authFailed = response.status === 401;
       addAlert('Current or child Levels Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
@@ -95,7 +95,7 @@ export default function({
           ><span /><span /></button>
         </div>
         {
-          levels[formId].map(({ id, name, orig, multiple, required }, index) => (
+          levels[formId].map(({ id, uid, name, orig, multiple, required }, index) => (
             <div key={id} className='iss__attributesForm__levelWrap'>
               <div className='iss__attributesForm__levelInput'>
                 <input
@@ -116,7 +116,7 @@ export default function({
                   >
                     <span>confirm</span>
                     <button
-                      onClick={() => proceedOriginalLevelDelete(index, id)}
+                      onClick={() => proceedOriginalLevelDelete(index, uid)}
                       type='button'
                       className='iss__attributesForm__acceptance__curtain__button--yes'
                     >yes</button>

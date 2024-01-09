@@ -91,7 +91,7 @@ class PermissionMixinTest(TestCase, PermissionMixIn):
 
         request, view = _request(), _view()
 
-        if method == "GET": view.kwargs = {"itemID" : item_id}
+        if method == "GET": view.kwargs = {"item_id" : item_id}
         else: request.data = {"id_set": (item_id,)}
 
         return request, view

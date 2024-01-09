@@ -37,7 +37,7 @@ function AttributeInput({
       handleDeleteAttribute(path, false, id);
     }
     catch ({ message, response }) {
-      var authFailed = response.status === 401 || response.status === 403;
+      var authFailed = response.status === 401;
       addAlert('Current or child Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);

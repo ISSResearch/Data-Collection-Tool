@@ -38,8 +38,8 @@ class MixinUtilsTest(TestCase, ViewMixIn):
         legit_count = self.case_legit.project.level_set.count()
         legit_count_attribute = self.case_legit.project.attribute_set.count()
 
-        self.assertFalse(self._perform_delete(self.case_legit.level.id))
-        self.assertTrue(self._perform_delete(self.case_unassigned.level.id))
+        self.assertFalse(self._perform_delete(self.case_legit.level.uid))
+        self.assertTrue(self._perform_delete(self.case_unassigned.level.uid))
 
         self.assertEqual(legit_count, self.case_legit.project.level_set.count())
         self.assertEqual(
@@ -76,16 +76,13 @@ class MixinUtilsTest(TestCase, ViewMixIn):
         legit_attribute_count = self.case_legit.project.level_set.count()
         unasgn_level_count = self.case_unassigned.project.level_set.count()
 
-        id_unassigned = (
-            self.case_unassigned.level
-            if model == Level
-            else self.case_unassigned.attribute
-        ).id
-        id_legit = (
-            self.case_legit.level
-            if model == Level
-            else self.case_legit.attribute
-        ).id
+        get_id = lambda case: \
+            case \
+            .__dict__[model._meta.db_table] \
+            .__dict__["uid" if model is Level else "id"]
+
+        id_unassigned = get_id(self.case_unassigned)
+        id_legit = get_id(self.case_legit)
         id_unexisted = 55555555
 
         id_set = {"id_set": [id_unassigned]}
@@ -119,9 +116,12 @@ class MixinUtilsTest(TestCase, ViewMixIn):
 
     def _can_delete_mixin(self, model, item_err, item_ok):
         self.model = model
+
+        get_id = lambda item: item.__dict__["uid" if model is Level else "id"]
+
         result_f, code_f = self._can_delete_response(8888)
-        result_err, code_err = self._can_delete_response(item_err.id)
-        result_ok, code_ok = self._can_delete_response(item_ok.id)
+        result_err, code_err = self._can_delete_response(get_id(item_err))
+        result_ok, code_ok = self._can_delete_response(get_id(item_ok))
 
         self.assertEqual(code_f, 404)
         self.assertFalse(result_f["is_safe"])
@@ -148,9 +148,9 @@ class MixinActionTest(TestCase, ViewMixIn):
         self.case_legit, self.case_unassigned = case_set_up()
 
     def test_get(self):
-        result_err = self.get({}, self.case_legit.level.id)
+        result_err = self.get({}, self.case_legit.level.uid)
         result_une = self.get({}, 5555555555)
-        result_ok = self.get({}, self.case_unassigned.level.id)
+        result_ok = self.get({}, self.case_unassigned.level.uid)
 
         self.assertEqual(result_err.status_code, 403)
         self.assertEqual(result_une.status_code, 404)
