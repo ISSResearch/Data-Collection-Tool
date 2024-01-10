@@ -1,12 +1,11 @@
 from django.test import TestCase
-from attribute.attribute_tests.mock_attribute import MockCase
+from attribute.attribute_tests.mock_attribute import case_set_up
 from file.serializers import FileSerializer, FilesSerializer
 
 
 class FilesSerializerTest(TestCase):
     def test_files_serializer(self):
-        case_data = MockCase()
-        case_data2 = MockCase()
+        case_data, case_data2 = case_set_up()
 
         data = FilesSerializer([case_data.file_, case_data2.file_], many=True).data
 
@@ -19,26 +18,28 @@ class FileSerializerTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        FileSerializerTest.case = MockCase()
+        cls.case, _ = case_set_up()
 
     def test_file_serializer(self):
         data = FileSerializer(self.case.file_).data
+        data_keys = {
+            'id',
+            'file_name',
+            'file_type',
+            'status',
+            'is_downloaded',
+        }
 
         self.assertEqual(
             set(data.keys()),
-            {'id', 'attributes', 'author_name', 'file_name', 'file_type', 'path', 'status', 'upload_date', 'file_extension', 'is_downloaded'}
+            data_keys.union({'upload_date', 'attributes', 'author_name',})
         )
         self.assertEqual(
-            {
-                val for key, val in data.items()
-                if key in {'id', 'file_name', 'file_type', 'status'}
-            },
-            {
-                val for key, val
-                in self.case.file_.__dict__.items()
-                if key in {'id', 'file_name', 'file_type', 'status'}
-            },
+            {val for key, val in data.items() if key in data_keys},
+            {val for key, val in self.case.file_.__dict__.items() if key in data_keys},
         )
+        self.assertEqual(data["author_name"], self.case.user.username)
+        self.assertEqual(data["attributes"][0].keys(), {"uid", "attributes"})
 
     def test_update_file_serializer(self):
         data = FileSerializer(self.case.file_, {'status': 'a'}, partial=True)
@@ -47,8 +48,8 @@ class FileSerializerTest(TestCase):
 
         updated_data = FileSerializer(self.case.file_).data
 
-        self.assertTrue(updated_data['status'] == 'a')
-        self.assertFalse(len(updated_data['attributes']))
+        self.assertEqual(updated_data['status'], 'a')
+        self.assertFalse(bool(updated_data['attributes']))
 
     def test_update_attribute_file_serializer(self):
         self.case.attribute2 = self.case.attributegroup.attribute.create(
@@ -66,7 +67,7 @@ class FileSerializerTest(TestCase):
 
         updated_data = FileSerializer(self.case.file_).data
 
-        self.assertTrue(len(updated_data['attributes']) == 1)
+        self.assertEqual(len(updated_data['attributes']), 1)
         self.assertEqual(
             updated_data['attributes'][0]['attributes'][0][0],
             self.case.attribute2.id,

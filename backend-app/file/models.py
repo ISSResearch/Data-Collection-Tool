@@ -6,15 +6,13 @@ from django.db.models import (
     ForeignKey,
     DO_NOTHING,
     QuerySet,
-    FileField
 )
 from uuid import UUID
+from attribute.models import AttributeGroup
 
 
 class File(Model):
     STATUSES: tuple = (('d', "declined"), ('a', "accepted"), ('v', "validation"))
-
-    path = FileField(max_length=350, upload_to="", null=True)
 
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)
@@ -34,16 +32,24 @@ class File(Model):
         current_attributes: QuerySet = self.attributegroup_set \
             .prefetch_related("attribute") \
             .all()
+
         attributes_by_group: dict[UUID, list[int]] = self._get_attribute_ids(
             current_attributes.values_list("uid", "attribute")
         )
 
-        new_groups = {
-            self._handle_group_change(group, current_attributes, attributes_by_group)
+        new_groups: set[str] = {
+            self._handle_group_change(
+                group,
+                current_attributes,
+                attributes_by_group
+            )
             for group in new_attributes.items()
         }
 
-        delete_groups = set(str(group.uid) for group in current_attributes) - new_groups
+        delete_groups: set[str] = {
+            str(group.uid)
+            for group in current_attributes
+        } - new_groups
 
         current_attributes.filter(uid__in=delete_groups).delete()
 
@@ -56,7 +62,9 @@ class File(Model):
         key, new_ids = group
         newKey: str = ""
 
-        model: set = set(filter(lambda obj: str(obj.uid) == key, current_groups))
+        model: set[AttributeGroup] = set(
+            filter(lambda obj: str(obj.uid) == key, current_groups)
+        )
 
         if model:
             upd_group, *_ = model

@@ -142,7 +142,7 @@ class ViewSetServices:
 
 
 class FileUploader:
-    ASSIGN_GROUP_QUERY = """
+    ASSIGN_GROUP_QUERY: str = """
         insert into attribute_group_attribute
         (attributegroup_id, attribute_id)
         values (%s, %s)
@@ -158,7 +158,7 @@ class FileUploader:
         ]
 
         self.free_attributegroups: list[AGroup] = list()
-        self.new_instances: list[tuple[File, list[AGroup], list]] = []
+        self.new_instances: list[tuple[File, list[AGroup], list]] = list()
         self.created_files: list[File] = list()
         self.groups_taken: int = 0
 
@@ -249,9 +249,9 @@ class FileUploader:
 
     def _assign_groups(self, file: File, groups_count: int) -> list[AGroup]:
         file_groups: list[AGroup] = list()
-        end_edge: int = self.groups_taken + groups_count
+        end: int = self.groups_taken + groups_count
 
-        for group in self.free_attributegroups[self.groups_taken:end_edge]:
+        for group in self.free_attributegroups[self.groups_taken:end]:
             group.file = file
             file_groups.append(group)
 
