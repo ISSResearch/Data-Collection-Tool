@@ -225,10 +225,11 @@ class FileUploader:
             for attribute_id in attributes
         ]
 
-        with connection.cursor() as cur: cur.executemany(
-            self.ASSIGN_GROUP_QUERY,
-            query_values
-        )
+        if query_values:
+            with connection.cursor() as cur: cur.executemany(
+                self.ASSIGN_GROUP_QUERY,
+                query_values
+            )
 
     def set_created(self) -> None:
         self.created_files.extend([file for file, _, _ in self.new_instances])
@@ -331,17 +332,18 @@ class StatsServices:
     def from_user(cls, project_id: int):
         stats: list[dict[str, Any]] = list(
             File.objects
-            .filter(project_id=project_id)
-            .order_by("author_id")
-            .values(*cls._USER_QUERY_VALUES)
-            .annotate(count=Count("file_type"))
+                .filter(project_id=project_id)
+                .order_by("author_id")
+                .values(*cls._USER_QUERY_VALUES)
+                .annotate(count=Count("file_type"))
         )
 
         return stats, HTTP_200_OK
 
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    annotation_files: QuerySet = File.objects \
+    print(request_data)
+    annotation: QuerySet = File.objects \
         .select_related("author", "project") \
         .prefetch_related(
             "attributegroup_set",
@@ -353,9 +355,9 @@ def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
             id__in=request_data.get("file_ids")
         )
 
-    annotated: int = annotation_files.update(is_downloaded=True)
+    annotated: int = annotation.update(is_downloaded=True)
 
     return {
         "annotated": annotated,
-        "annotation": FileSerializer(annotation_files, many=True).data
+        "annotation": FileSerializer(annotation, many=True).data
     }, HTTP_202_ACCEPTED
