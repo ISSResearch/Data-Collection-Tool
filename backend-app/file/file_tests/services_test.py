@@ -7,17 +7,196 @@ from file.services import (
     _annotate_files
 )
 from json import dumps
-from attribute.models import AttributeGroup
+from attribute.models import AttributeGroup, Attribute
 from file.models import File
 from project.models import Project
+from user.models import CustomUser
 
 
-class ViewServicesTest(TestCase):
+class ViewServicesTest(TestCase, ViewSetServices):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.case = MockCase()
+        cls.admin = CustomUser.objects.create(
+            username="some123",
+            password="pass",
+            is_superuser=True
+        )
 
-    def test_prevent(self): self.assertFalse(1)
+    def test_get_files(self):
+        file = File.objects.create(
+            file_name="file",
+            file_type="ext",
+            project=self.case.project,
+            author=self.case.user
+        )
+        new_attr = Attribute.objects.create(
+            name="asd",
+            project=self.case.project,
+            level=self.case.level
+        )
+        file.update_attributes({"asd": [new_attr.id]})
+        file.status = "a"
+        file.save()
+
+        query, _ = self._get_query()
+        query_2, _ = self._get_query(card=["a", "d"])
+
+        res, code = self._get_files(
+            self.case.project.id,
+            self.case.user,
+            query
+        )
+        res_2, code_2 = self._get_files(
+            self.case.project.id,
+            self.admin,
+            query
+        )
+
+        self.assertEqual(res_2, [])
+
+
+    def test_delete_file(self):
+        file = File.objects.create(
+            file_name="file",
+            file_type="ext",
+            project=self.case.project,
+            author=self.case.user
+        )
+
+        init_count = self.case.project.file_set.count()
+
+        res, code = self._delete_file(file.id)
+        res_invalid, code_invalid = self._delete_file(123123123)
+
+        self.assertEqual(code_invalid, 400)
+        self.assertFalse(res_invalid["deleted"])
+
+        self.assertEqual(code, 202)
+        self.assertTrue(res["deleted"])
+
+        self.assertEqual(init_count - 1, self.case.project.file_set.count())
+
+    def test_patch(self):
+        init_ag_count = self.case.file_.attributegroup_set.count()
+        new_attr = Attribute.objects.create(
+            name='asd',
+            project=self.case.project,
+            level=self.case.level
+        )
+        request_data = {
+            "status": "a",
+            'attribute': {
+                "asd": [new_attr.id],
+                str(self.case.attributegroup.uid): [new_attr.id],
+            }
+        }
+
+        res, code = self._patch_file(self.case.file_.id, request_data)
+        invalid_res, invalid_code = self._patch_file(self.case.file_.id, {"status": 123})
+
+        self.assertEqual(invalid_code, 400)
+        self.assertFalse(invalid_res["ok"])
+        self.assertIsNotNone(invalid_res.get("errors"))
+
+        self.assertEqual(code, 202)
+        self.assertTrue(res["ok"])
+        self.assertEqual(
+            init_ag_count + 1,
+            self.case.file_.attributegroup_set.count()
+        )
+        self.assertTrue(
+            set(
+                self.case.file_.attributegroup_set
+                    .first()
+                    .attribute
+                    .values_list("id", flat=True)
+            )
+            == set(
+                    self.case.file_.attributegroup_set
+                        .last()
+                        .attribute
+                        .values_list("id", flat=True)
+                )
+            == {new_attr.id}
+        )
+        self.assertEqual(
+            File.objects.get(id=self.case.file_.id).status,
+            "a"
+        )
+
+    def test_form_query(self):
+        query = {}
+        self._form_query_mixin(query)
+
+        query["card"] = [self.case.file_.status]
+        self._form_query_mixin(query)
+
+        query["type_"] = ["image"]
+        self._form_query_mixin(query)
+
+        query["status"] = "v"
+        self._form_query_mixin(query)
+
+        query["downloaded"] = True
+        self._form_query_mixin(query)
+
+        query["author"] = self.admin
+        self._form_query_mixin(query)
+
+
+    def _form_query_mixin(self, data={}):
+        query, filter = self._get_query(**data)
+        res = self._form_query(
+            self.case.project.id,
+            self.case.user,
+            query
+        )
+        self.assertEqual(res, filter)
+
+    def _get_query(
+        self,
+        card=[],
+        type_=[],
+        status="",
+        downloaded=False,
+        author=[],
+        user=None
+    ):
+        request_query = type(
+            "query",
+            (object,),
+            {
+                "get": lambda this, item: getattr(this, item, None),
+                "getlist": lambda this, item: getattr(this, item, None),
+                "set": lambda this, item, value: setattr(this, item, value)
+            }
+        )
+
+        query = request_query()
+        filter = {"project_id": self.case.project.id}
+
+        if not user: user = self.case.user
+        if not user.is_superuser: filter["author_id"] = user.id
+
+        if card:
+            query.set("card[]", card)
+            filter["status__in"] = card
+        if type_:
+            query.set("type[]", type_)
+            filter["file_type__in"] = type_
+        if status:
+            query.set("status", status)
+            filter["status"] = status
+        if downloaded:
+            query.set("downloaded", downloaded)
+            filter["is_downloaded"] = False
+        if author:
+            query.set("author[]", author)
+            filter["author__in"] = author
+
+        return query, filter
 
 
 class AnnotationTest(TestCase):

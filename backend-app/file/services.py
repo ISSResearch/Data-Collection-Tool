@@ -36,6 +36,7 @@ class ViewSetServices:
         file_id: int,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
+        # TODO: no handler for nofile case. imp tests after
         file = File.objects \
             .select_related("author") \
             .prefetch_related("attributegroup_set") \

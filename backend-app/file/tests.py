@@ -2,8 +2,8 @@
 # from file.file_tests.permissions_test import FilePermissionTest
 # from file.file_tests.serializers_test import FileSerializerTest, FilesSerializerTest
 from file.file_tests.services_test import (
-    # ViewServicesTest,
-    AnnotationTest,
+    ViewServicesTest,
+    # AnnotationTest,
     # StatsServiceTest,
     # FileUploaderTest,
 )
