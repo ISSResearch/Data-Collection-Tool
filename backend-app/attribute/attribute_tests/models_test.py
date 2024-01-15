@@ -1,8 +1,6 @@
 from django.test import TestCase
 from attribute.models import Attribute, Level, AttributeGroup
 from project.models import Project
-from file.models import File
-from user.models import CustomUser
 from .mock_attribute import MockCase
 
 

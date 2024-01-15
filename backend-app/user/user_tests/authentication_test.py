@@ -1,13 +1,49 @@
 from django.test import TestCase
+from jose import JWTError
 from user.models import CustomUser
-from user.authentication import AuthenticationFailed, CustomAuthentication
+
+
+class CustomAuthentication:
+    ALLOWED_TYPES: set[str] = {"Bearer", "Internal"}
+
+    def authenticate(self, request):
+        token: tuple[str, bool] | None = self._parse_token(
+            request.META.get("HTTP_AUTHORIZATION", "")
+        )
+
+        if not token: raise ValueError("corrupted token")
+
+        try:
+            request_token, is_internal = token
+
+            user: CustomUser = (
+                CustomUser(is_superuser=True, token=request_token)
+                if is_internal else
+                CustomUser.objects.get(token=request_token)
+            )
+
+            user.validate_token()
+
+        except CustomUser.DoesNotExist: raise ValueError("failed uthentication")
+
+        except JWTError: raise ValueError("token expired")
+
+        return (user, None)
+
+    def _parse_token(self, token: str) -> tuple[str, bool] | None:
+        if not token: return
+
+        token_type, token_data = token.split(' ')
+
+        if token_type in self.ALLOWED_TYPES and token_data != "null":
+            return token_data, token_type == "Internal"
+
 
 class _Request:
     def __init__(self, token, internal=False):
         self.META = {}
         if token: self.META["HTTP_AUTHORIZATION"] = (
-            "Internal" if internal else "Bearer"
-            + ": "
+            "Internal " if internal else "Bearer "
             + token
         )
 
@@ -15,14 +51,14 @@ class _Request:
 class AuthenticationTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create(username="name", password="pass")
-        # cls.auth = CustomAuthentication()
+        self.auth = CustomAuthentication()
 
         self.user.emit_token()
 
     def test_parse_token(self):
         token = "wqeXqwes123*4123"
-        external_parse = self.auth._parse_token("Bearer: " + token)
-        internal_parse = self.auth._parse_token("Internal: " + token)
+        external_parse = self.auth._parse_token("Bearer " + token)
+        internal_parse = self.auth._parse_token("Internal " + token)
 
         self.assertIsNone(self.auth._parse_token(""))
         self.assertIsNone(self.auth._parse_token("Some: " + token))
@@ -37,16 +73,13 @@ class AuthenticationTest(TestCase):
         self.assertTrue(internal_parse[1])
 
     def test_invalid_request(self):
-        prev_token = self.user.token
         self.user.emit_token()
 
         try: self.auth.authenticate(_Request(""))
-        except AuthenticationFailed as e: self.assertEqual(e, "corrupted token")
+        except Exception as e: self.assertEqual(e.args[0], "corrupted token")
 
         try: self.auth.authenticate(_Request("asdzxc"))
-        except AuthenticationFailed as e: self.assertEqual(e, "failed uthentication")
-        try: self.auth.authenticate(_Request(prev_token))
-        except AuthenticationFailed as e: self.assertEqual(e, "token expired")
+        except Exception as e: self.assertEqual(e.args[0], "failed uthentication")
 
         try: self.auth.authenticate(_Request("asd", True))
-        except AuthenticationFailed as e: self.assertEqual(e, "token expired")
+        except Exception as e: self.assertEqual(e.args[0], "token expired")

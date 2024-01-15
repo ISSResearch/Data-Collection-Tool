@@ -117,7 +117,7 @@ class ProjectViewSetTest(TestCase, MOCK_PROJECT, ViewSetServices):
         })
 
         new_data["attributes"][1]['attributes'][2]['name'] = 'patch_name'
-        new_data["attributes"][1]['attributes'][2]['order']= 1
+        new_data["attributes"][1]['attributes'][2]['order'] = 1
 
         result, code = self._patch_project(self.projects[0].id, new_data)
         patched_level = self.projects[0] \

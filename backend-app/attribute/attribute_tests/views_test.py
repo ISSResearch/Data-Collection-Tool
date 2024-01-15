@@ -80,7 +80,6 @@ class TestMixin(TestCase):
 
             self.assertEqual(err.data["message"], "attribute violation")
 
-
     def _delete_test_mixin(self, user, user_legit=True):
         user.emit_token()
 

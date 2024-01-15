@@ -1,5 +1,3 @@
-from user.models import CustomUser
-
 MOCK_ADMIN_DATA = {
     'username': 'TestAdmin',
     'password': 'Q!werty123ZasdAqwe',

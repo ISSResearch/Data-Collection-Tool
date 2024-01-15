@@ -24,38 +24,88 @@ class ViewServicesTest(TestCase, ViewSetServices):
             is_superuser=True
         )
 
+    def test_create_files(self):
+        post = type(
+            'POST',
+            (object,),
+            {'getlist': lambda x: [dumps({
+                "name": "blog3",
+                "extension": "png",
+                "type": "image",
+                "atrsGroups": [[self.case.attribute.id]]
+            })]}
+        )
+        invalid_post = type(
+            'POST',
+            (object,),
+            {'getlist': lambda x: [dumps({
+                "type": "image",
+                "atrsGroups": [[self.case.attribute.id]]
+            })]}
+        )
+        request = type(
+            'request',
+            (object,),
+            {'user': self.case.user, 'POST': post}
+        )
+        invalid_request = type(
+            'request',
+            (object,),
+            {'user': self.case.user, 'POST': invalid_post}
+        )
+        init_count = self.case.project.file_set.count()
+
+        res, code = self._create_file(self.case.project.id, request)
+        res_invalid, code_invalid = self._create_file(111, invalid_request)
+
+        self.assertEqual(code_invalid, 406)
+        self.assertFalse(res_invalid["ok"])
+
+        self.assertEqual(code, 201)
+        self.assertTrue(res["ok"])
+        self.assertIsNotNone(res["created_files"])
+
+        self.assertEqual(self.case.project.file_set.count(), init_count + 1)
+
     def test_get_files(self):
-        file = File.objects.create(
+        file1 = File.objects.create(
             file_name="file",
-            file_type="ext",
+            file_type="video",
             project=self.case.project,
             author=self.case.user
+        )
+        file2 = File.objects.create(
+            file_name="file",
+            file_type="image",
+            project=self.case.project,
+            author=self.admin
         )
         new_attr = Attribute.objects.create(
             name="asd",
             project=self.case.project,
             level=self.case.level
         )
-        file.update_attributes({"asd": [new_attr.id]})
-        file.status = "a"
-        file.save()
+        file1.update_attributes({"asd": [new_attr.id]})
+        file1.status = "a"
+        file1.save()
+        file2.status = "d"
+        file2.save()
 
-        query, _ = self._get_query()
-        query_2, _ = self._get_query(card=["a", "d"])
+        self.assertEqual(self.case.project.file_set.count(), 3)
 
-        res, code = self._get_files(
-            self.case.project.id,
-            self.case.user,
-            query
-        )
-        res_2, code_2 = self._get_files(
-            self.case.project.id,
-            self.admin,
-            query
-        )
+        self._get_mixin(2)
+        self._get_mixin(1, query={"card": ["a", "d"]})
+        self._get_mixin(1, query={"card": ["a"]})
+        self._get_mixin(0, query={"type_": ["image"]})
+        self._get_mixin(1, query={"type_": ["video"]})
+        self._get_mixin(1, attrs=[new_attr.id])
 
-        self.assertEqual(res_2, [])
-
+        self._get_mixin(3, True)
+        self._get_mixin(2, True, query={"card": ["a", "d"]})
+        self._get_mixin(1, True, query={"card": ["a"]})
+        self._get_mixin(1, True, query={"type_": ["image"]})
+        self._get_mixin(1, True, query={"type_": ["video"]})
+        self._get_mixin(1, True, attrs=[new_attr.id])
 
     def test_delete_file(self):
         file = File.objects.create(
@@ -114,11 +164,11 @@ class ViewServicesTest(TestCase, ViewSetServices):
                     .values_list("id", flat=True)
             )
             == set(
-                    self.case.file_.attributegroup_set
-                        .last()
-                        .attribute
-                        .values_list("id", flat=True)
-                )
+                self.case.file_.attributegroup_set
+                    .last()
+                    .attribute
+                    .values_list("id", flat=True)
+            )
             == {new_attr.id}
         )
         self.assertEqual(
@@ -144,7 +194,6 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
         query["author"] = self.admin
         self._form_query_mixin(query)
-
 
     def _form_query_mixin(self, data={}):
         query, filter = self._get_query(**data)
@@ -198,20 +247,30 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
         return query, filter
 
+    def _get_mixin(self, expected, is_admin=False, query={}, attrs=[]):
+        query, _ = self._get_query(**query)
+
+        if attrs: query.set("attr[]", attrs)
+
+        user = self.admin if is_admin else self.case.user
+
+        res, code = self._get_files(self.case.project.id, user, query)
+        self.assertEqual(code, 200)
+        self.assertEqual(len(res), expected)
+
 
 class AnnotationTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.case = MockCase()
-        cls.case_empty = MockCase()
-        cls.case_empty.project.file_set.set([])
+        cls.empty_project = Project.objects.create(name="asd")
         cls.request = lambda _, pid, fset: {"project_id": pid, "file_ids": fset}
 
     def test_annotate_files(self):
         res_no_proj, code_no_proj = _annotate_files(self.request(9999, []))
         res_empty, code_empty = _annotate_files(
-            self.request(self.case_empty.project.id, [1,2])
+            self.request(self.empty_project.id, [1, 2])
         )
         res, code = _annotate_files(
             self.request(self.case.project.id, [self.case.file_.id])
@@ -220,6 +279,8 @@ class AnnotationTest(TestCase):
         self.assertTrue(code == code_empty == code_no_proj == 202)
         self.assertTrue(res_no_proj["annotated"] == res_empty["annotated"] == 0)
         self.assertTrue(res_no_proj["annotation"] == res_empty["annotation"] == [])
+        self.assertEqual(res["annotated"], 1)
+
 
 class StatsServiceTest(TestCase):
     @classmethod
@@ -330,7 +391,7 @@ class FileUploaderTest(TestCase):
         del meta["atrsGroups"]
         self._form_instances_mixin(meta)
         self._form_instances_mixin({**meta, "atrsGroups": []})
-        self._form_instances_mixin({**meta, "atrsGroups": [1,2]})
+        self._form_instances_mixin({**meta, "atrsGroups": [1, 2]})
 
     def test_set_created(self):
         self.assertTrue(
@@ -339,7 +400,7 @@ class FileUploaderTest(TestCase):
             == []
         )
 
-        self.uploader.new_instances = [(1,2,3)] * 3
+        self.uploader.new_instances = [(1, 2, 3)] * 3
         self.uploader.set_created()
 
         self.assertEqual(self.uploader.created_files, [1] * 3)

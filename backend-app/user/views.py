@@ -1,5 +1,9 @@
 from rest_framework.views import Response, APIView, Request
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes
+)
 from rest_framework.permissions import IsAuthenticated
 from typing import Any
 from .permissions import UserPermission

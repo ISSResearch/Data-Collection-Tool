@@ -8,7 +8,7 @@ class FilePermissionTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.case= MockCase()
+        cls.case = MockCase()
         cls.admin = CustomUser.objects.create(
             username="namexxxxx",
             password="password",
@@ -35,7 +35,7 @@ class FilePermissionTest(TestCase):
         )
         view = type('view', (object, ), {'kwargs': view_kwargs})
 
-        self.assertTrue(FilePermission().has_permission(req(self.admin),view))
+        self.assertTrue(FilePermission().has_permission(req(self.admin), view))
 
         self.assertFalse(FilePermission().has_permission(req(self.case.user), view))
 

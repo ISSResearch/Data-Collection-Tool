@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.conf import settings
 from user.models import CustomUser
-from .mock_user import MOCK_ADMIN_DATA, MOCK_COLLECTOR_DATA
+from .mock_user import MOCK_COLLECTOR_DATA
 from project.models import Project
 from jose import jwt, JWTError
 
@@ -47,7 +47,6 @@ class CustomUserModelTest(TestCase):
             token_settings.get("SIGNING_KEY", ""),
             algorithms=token_settings.get("ALGORITHM", "HS256")
         )
-
 
     def test_validate_token(self):
         new_collector = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)

@@ -46,6 +46,7 @@ def get_user_stats(_, projectID: int) -> Response:
     return Response(response, status=status)
 
 
+# TODO: only internal?
 @api_view(("POST",))
 @permission_classes((IsAuthenticated, ProjectStatsPermission))
 def get_annotation(request: Request) -> Response:

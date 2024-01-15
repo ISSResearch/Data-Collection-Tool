@@ -137,7 +137,7 @@ class ViewSetServices:
         ).data
 
         return response, (
-            HTTP_201_CREATED if uploader
+            HTTP_201_CREATED if succeed
             else HTTP_406_NOT_ACCEPTABLE
         )
 
@@ -343,7 +343,6 @@ class StatsServices:
 
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    print(request_data)
     annotation: QuerySet = File.objects \
         .select_related("author", "project") \
         .prefetch_related(

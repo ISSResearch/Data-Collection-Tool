@@ -80,7 +80,10 @@ class UserLoginViewTest(TestCase):
 
     def _test_invalid_result(self, result):
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.data['message'], 'No user found or wrong credentials')
+        self.assertEqual(
+            result.data['message'],
+            'No user found or wrong credentials'
+        )
         self.assertFalse(result.data['isAuth'])
         self.assertIsNone(result.data.get("accessToken"))
         self.assertIsNone(result.data.get('user'))

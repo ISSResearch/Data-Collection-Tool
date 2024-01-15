@@ -32,7 +32,7 @@ class FileSerializerTest(TestCase):
 
         self.assertEqual(
             set(data.keys()),
-            data_keys.union({'upload_date', 'attributes', 'author_name',})
+            data_keys.union({'upload_date', 'attributes', 'author_name'})
         )
         self.assertEqual(
             {val for key, val in data.items() if key in data_keys},

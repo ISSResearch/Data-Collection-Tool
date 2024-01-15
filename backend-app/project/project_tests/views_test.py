@@ -73,6 +73,7 @@ class ProjectsViewSetTest(TestCase, MOCK_PROJECT):
         self.assertTrue(result.data['ok'])
         self.assertEqual(init_count + 1, Project.objects.count())
 
+
 class ProjectViewSetTest(TestCase, MOCK_PROJECT):
     @classmethod
     def setUpClass(cls):

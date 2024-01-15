@@ -19,6 +19,7 @@ class UserSerializerTest(TestCase):
 
 class CollectorSerializerTest(TestCase):
     FIELDS = ("id", "username")
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

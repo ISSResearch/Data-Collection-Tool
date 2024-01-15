@@ -1,13 +1,11 @@
 from django.test import TestCase
 from attribute.permissions import (
-    LevelPermission,
-    AttributePermission,
     PermissionMixIn,
     Attribute,
     Level
 )
 from user.models import CustomUser
-from .mock_attribute import case_set_up, MockCase
+from .mock_attribute import MockCase
 
 
 class PermissionMixinTest(TestCase, PermissionMixIn):
@@ -78,7 +76,6 @@ class PermissionMixinTest(TestCase, PermissionMixIn):
         self.assertEqual(list(get_result.values())[0], item_id)
         self.assertEqual(list(delete_result.values())[0], (item_id, ))
 
-
     def _form_args(self, method, item_id, user):
         if method not in {"GET", "DELETE"}: raise AttributeError
 
@@ -91,7 +88,7 @@ class PermissionMixinTest(TestCase, PermissionMixIn):
 
         request, view = _request(), _view()
 
-        if method == "GET": view.kwargs = {"item_id" : item_id}
+        if method == "GET": view.kwargs = {"item_id": item_id}
         else: request.data = {"id_set": (item_id,)}
 
         return request, view

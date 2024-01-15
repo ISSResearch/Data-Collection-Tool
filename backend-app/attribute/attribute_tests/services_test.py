@@ -100,7 +100,7 @@ class MixinUtilsTest(TestCase, ViewMixIn):
                 else {
                     id_unassigned: True,
                     id_legit: "attribute violation",
-                   id_unexisted: "queried id does not exist"
+                    id_unexisted: "queried id does not exist"
                 }
             ),
             result
@@ -136,10 +136,10 @@ class MixinUtilsTest(TestCase, ViewMixIn):
         self.assertIsNone(result_ok.get("message"))
 
     def _check_intersection_mixin(self, model, item_err, item_ok):
-       self.model = model
+        self.model = model
 
-       self.assertTrue(self._check_intersection(item_err))
-       self.assertFalse(self._check_intersection(item_ok))
+        self.assertTrue(self._check_intersection(item_err))
+        self.assertFalse(self._check_intersection(item_ok))
 
 
 class MixinActionTest(TestCase, ViewMixIn):

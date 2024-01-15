@@ -80,7 +80,6 @@ class ProceedCreateTest(TestCase):
             self.assertEqual(len(result["errors"]), error_count)
         else: self.assertIsNotNone(result.get("errors"))
 
-
     def test_valid_create(self):
         init_user_count = CustomUser.objects.count()
 
@@ -159,37 +158,37 @@ class GetCollectiorsTest(TestCase):
         cls.project.user_download.set([u.id for u in cls.users if not u.id % 2])
 
     def test_get_queryset(self):
-       result = _get_collectors(self.project.id)
+        result = _get_collectors(self.project.id)
 
-       self.assertTrue(isinstance(result, QuerySet))
-       self.assertEqual(result.count(), len(self.users))
+        self.assertTrue(isinstance(result, QuerySet))
+        self.assertEqual(result.count(), len(self.users))
 
-       result = list(result)
+        result = list(result)
 
-       self.assertTrue(all([
-           self.project.id in u.project_upload.values_list("id", flat=True)
-           for u in result
-       ]))
-       self.assertTrue(all([
-           self.project.id in u.project_stats.values_list("id", flat=True)
-           for u in result
-           if u.id % 2
-       ]))
-       self.assertTrue(all([
-           self.project.id in u.project_download.values_list("id", flat=True)
-           for u in result
-           if not u.id % 2
-       ]))
-       self.assertFalse(all([
-           self.project.id in u.project_stats.values_list("id", flat=True)
-           for u in result
-           if not u.id % 2
-       ]))
-       self.assertFalse(all([
-           self.project.id in u.project_download.values_list("id", flat=True)
-           for u in result
-           if u.id % 2
-       ]))
+        self.assertTrue(all([
+            self.project.id in u.project_upload.values_list("id", flat=True)
+            for u in result
+        ]))
+        self.assertTrue(all([
+            self.project.id in u.project_stats.values_list("id", flat=True)
+            for u in result
+            if u.id % 2
+        ]))
+        self.assertTrue(all([
+            self.project.id in u.project_download.values_list("id", flat=True)
+            for u in result
+            if not u.id % 2
+        ]))
+        self.assertFalse(all([
+            self.project.id in u.project_stats.values_list("id", flat=True)
+            for u in result
+            if not u.id % 2
+        ]))
+        self.assertFalse(all([
+            self.project.id in u.project_download.values_list("id", flat=True)
+            for u in result
+            if u.id % 2
+        ]))
 
     def test_get_serialized(self):
         result = _get_collectors(self.project.id, True)

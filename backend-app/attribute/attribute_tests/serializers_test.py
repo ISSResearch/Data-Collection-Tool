@@ -1,5 +1,5 @@
 from django.test import TestCase
-from attribute.models import Attribute, Level, AttributeGroup
+from attribute.models import Attribute, Level
 from .mock_attribute import MockCase
 from attribute.serializers import (
     AttributeSerializer,

@@ -1,7 +1,6 @@
 from django.test import TestCase
 from attribute.attribute_tests.mock_attribute import MockCase
 from file.models import File
-from user.models import CustomUser
 from attribute.models import Attribute
 
 
@@ -28,17 +27,17 @@ class FileModelTest(TestCase):
         self.assertEqual(
             set(
                 File.objects
-                    .values_list(
-                        "file_name",
-                        "file_type",
-                        "project",
-                        "author",
-                        "status",
-                        "is_downloaded"
-                    )
-                    .get(id=new_file.id)
+                .values_list(
+                    "file_name",
+                    "file_type",
+                    "project",
+                    "author",
+                    "status",
+                    "is_downloaded"
+                )
+                .get(id=new_file.id)
             ),
-           set(credentials.values()).union({'v', False})
+            set(credentials.values()).union({'v', False})
         )
         self.assertEqual(init_count + 1, self.case.project.file_set.count())
 
