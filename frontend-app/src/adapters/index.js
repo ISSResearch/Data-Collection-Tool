@@ -13,9 +13,9 @@ export function inputFilesAdapter(files, groups) {
 }
 
 export function attributeAdapter(data) {
-  const attributes = deepCopy(data.attributes);
+  var attributes = deepCopy(data.attributes);
   attributes.forEach(el => {
-    const parent = attributes.find(({ id }) => el.parent === id);
+    var parent = attributes.find(({ id }) => el.parent === id);
     if (parent) {
       parent.children
         ? parent.children[0].attributes.push(...el.attributes)
