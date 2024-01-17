@@ -1,7 +1,7 @@
 import { TYPES_MAP } from "../config/settings";
 
 export function extractFileMeta({ type: fileType, name: fileName }) {
-  var [type, typeExt] = fileType.split('/');
+  var [typeName, typeExt] = fileType.split('/');
   var nameSplit = fileName.split('.');
 
   var extension;
@@ -12,8 +12,9 @@ export function extractFileMeta({ type: fileType, name: fileName }) {
   else extension = typeExt || '';
 
   var name = nameSplit.join('');
+  var type = typeName || TYPES_MAP[extension] || "";
 
-  return { name, extension, type: type || TYPES_MAP[extension] }
+  return { name, extension, type };
 }
 
 export function getOriginDomain() {
@@ -52,18 +53,13 @@ export function refreshPath(node, parentPath = null, changeIndex = null) {
   });
 }
 
-export function compareArrays(arr1, arr2) {
-  return arr1.length === arr2.length
-    && arr1.every((value, index) => value === arr2[index]);
-}
-
-export function formUID() { return Math.floor(Math.random() * 10 ** 16) }
+export function formUID() { return Number(Math.random().toFixed(16).slice(2)); }
 
 export function findRequired(items) {
-  const requiredItems = [];
-  const stack = [...items];
+  var requiredItems = [];
+  var stack = [...items];
   while (stack.length) {
-    const checkItem = stack.pop();
+    var checkItem = stack.pop();
     if (checkItem.required) requiredItems.push(
       { ...checkItem, attributes: checkItem.attributes.map(({ id }) => id) }
     );
@@ -73,7 +69,9 @@ export function findRequired(items) {
 }
 
 export function formError(fileName, missedItems) {
-  const missedNames = missedItems.map(({ name }) => name).join(', ');
+  if (!missedItems.length) return { isValid: true };
+
+  var missedNames = missedItems.map(({ name }) => name).join(', ');
   return {
     isValid: false,
     message: `File "${fileName}" is missing required attributes: ${missedNames}.`
@@ -96,7 +94,13 @@ export function spreadChildren(data, refresh = true) {
   return result;
 }
 
-export function traverseWithReplace(items, lookUpKey, lookUpVal, replaceWith, head=true) {
+export function traverseWithReplace(
+  items,
+  lookUpKey,
+  lookUpVal,
+  replaceWith,
+  head=true
+) {
   items.forEach(item => {
     if (item[lookUpKey] === lookUpVal) item[lookUpKey] = replaceWith;
     if (item.children && !head) traverseWithReplace(
@@ -111,9 +115,7 @@ export function traverseWithReplace(items, lookUpKey, lookUpVal, replaceWith, he
 export function drawPaths(items, parentOrder=0) {
   items.forEach((item, index) => {
     var { children } = item;
-
     item.order = (parentOrder * 10) + (index + 1);
-
     if (children) drawPaths(item.children, item.order);
   });
 }

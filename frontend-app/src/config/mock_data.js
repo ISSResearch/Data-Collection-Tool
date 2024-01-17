@@ -1,4 +1,4 @@
-export const mock_object_with_inner_list = {
+export const object_with_inner_list = {
   id: 122,
   attributes: [
     { id: 259, name: "civ", parent: 249 },
@@ -15,7 +15,7 @@ export const mock_object_with_inner_list = {
   project: 23,
 };
 
-export const mock_list_with_objects = [
+export const list_with_objects = [
   { id: 260, name: "genc1", parent: 259 },
   { id: 261, name: "genc2", parent: 259 },
   { id: 263, name: "gena1", parent: 262 },
@@ -24,7 +24,7 @@ export const mock_list_with_objects = [
   { id: 270, name: "genf2", parent: 268 },
 ];
 
-export const mock_deep_find = [
+export const deep_find = [
   {
     id: 246,
     name: "ford",
@@ -155,7 +155,7 @@ export const prepared_attributes = [
         uid: 270544594389903,
         name: "model",
         multiple: null,
-        required: false,
+        required: true,
         order: 0,
         parent: 117,
         project: 23,
@@ -174,7 +174,7 @@ export const prepared_attributes = [
             uid: 9650426937781034,
             name: "gen",
             multiple: false,
-            required: false,
+            required: true,
             order: 0,
             parent: 122,
             project: 23,
