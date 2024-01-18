@@ -19,19 +19,21 @@ export default function useAttributes() {
   }
 
   function destroyAttribute(formId) {
-    const newAttributes = { ...attributes };
+    var newAttributes = { ...attributes };
     delete newAttributes[formId];
     setAttributes(newAttributes);
   }
 
   function addAttribute(formId, position = null) {
     let path;
-    const id = formUID();
-    const newAttributes = { ...attributes };
-    const target = newAttributes[formId];
+    var id = formUID();
+    var newAttributes = { ...attributes };
+    var target = newAttributes[formId];
+
     if (position) {
-      const atrPath = position.split('_');
-      const targetChild = deepFind(target, atrPath);
+      var atrPath = position.split('_');
+      var targetChild = deepFind(target, atrPath);
+
       path = `${position}_${targetChild.children.length}`;
       targetChild.children.push({ id, path, name: '', children: [] });
     }
@@ -39,44 +41,50 @@ export default function useAttributes() {
       path = String(target.length);
       target.push({ id, path, name: '', children: [] });
     }
+
     setAttributes(newAttributes);
   }
 
-  function delAttribute(formId, position, isChild) {
-    const newAttributes = { ...attributes };
-    const target = newAttributes[formId];
-    const path = position.split('_');
-    const targetNode = isChild
+  function delAttribute(formId, position, isChild=false) {
+    var newAttributes = { ...attributes };
+    var target = newAttributes[formId];
+    var path = position.split('_');
+
+    var targetNode = isChild
       ? deepFind(target, path.slice(0, path.length - 1)).children
       : target;
+
     targetNode.splice(path[path.length - 1], 1);
+
     refreshPath(targetNode, null, path[path.length - 1]);
     setAttributes(newAttributes);
   }
 
   function handleLevelRemove(formId, levelIndex) {
-    const newAttributes = { ...attributes };
-    const target = newAttributes[formId];
+    var newAttributes = { ...attributes };
+    var target = newAttributes[formId];
+
     spreadChildren(target).forEach(el => {
       if (el.path.split('_').length === levelIndex) el.children.splice(0);
     });
     setAttributes(newAttributes);
   }
 
-  function handleChange(formId, { value }, position, isChild) {
+  function handleChange(formId, { value }, position, isChild=false) {
     setAttributes((prevAttributes) => {
-      const newAttributes = { ...prevAttributes };
-      const path = position.split('_');
-      const target = isChild
+      var newAttributes = { ...prevAttributes };
+      var path = position.split('_');
+      var target = isChild
         ? deepFind(newAttributes[formId], path)
         : newAttributes[formId][path[0]];
+
       target.name = value;
       return newAttributes;
     });
   }
 
   function findAndReplace(replaceTo="", replaceWith="") {
-    const newAttributes = { ...attributes };
+    var newAttributes = { ...attributes };
 
     Object.values(newAttributes).forEach(items => {
       traverseWithReplace(items, "name", replaceTo, replaceWith, false);

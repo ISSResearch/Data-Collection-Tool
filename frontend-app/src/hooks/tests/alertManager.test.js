@@ -7,7 +7,7 @@ test("alert manager test", () => {
     expect(hook.current.alerts).toEqual({});
     act(() => hook.current.addAlert(message, type, session));
 
-    expect(Object.keys(hook.current.alerts).length).toBe(1);
+    expect(Object.keys(hook.current.alerts)).toHaveLength(1);
 
     var [item] = Object.entries(hook.current.alerts);
     var [key, value] = item;
