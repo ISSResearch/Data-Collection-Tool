@@ -761,7 +761,7 @@ export const mock_prepared_files = [
   },
 ];
 
-export const mock_raw_file = {
+export const raw_file = {
   id: 748,
   attributes: [
     {
@@ -775,14 +775,14 @@ export const mock_raw_file = {
   path: "/app/file_store/23/blog2_copy.png",
   status: "",
   upload_date: "2023-06-08T19:39:54.304997Z",
-  attributeGroups: { "99610f4b-724a-4175-a580-740b5f8559a5": [[246]] },
+  attributeGroups: { "99610f4b-724a-4175-a580-740b5f8559a5": {0: [246]} },
 };
 
 export const mock_apply_groups = {
   7607322651726802: { 0: [246, 265, 267], 1: [271] },
 };
 
-export const mock_raw_collectors = [
+export const raw_collectors = [
   {
     id: 13,
     username: "some",

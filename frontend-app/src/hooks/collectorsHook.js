@@ -6,18 +6,20 @@ export default function useCollectors() {
   const [origin, setOrigin] = useState({});
 
   function initData(originCollectors) {
-    const preparedCollectors = originCollectors.reduce((acc, collector) => {
-      const { id, username, permissions } = collector;
+    var preparedCollectors = originCollectors.reduce((acc, collector) => {
+      var { id, username, permissions } = collector;
       acc[id] = { user_id: id, username, permissions };
       return acc;
     }, {});
+
     setOrigin(preparedCollectors);
     setCollectors(deepCopy(preparedCollectors));
   }
 
   function changeCollector(id, name, { checked }) {
-    const newCollectors = { ...collectors };
+    var newCollectors = { ...collectors };
     newCollectors[id].permissions[name] = checked;
+
     setCollectors(newCollectors);
   }
 

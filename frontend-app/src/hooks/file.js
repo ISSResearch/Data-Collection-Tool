@@ -5,7 +5,7 @@ export default function useFile() {
   const [file, setFile] = useState({});
 
   function initFile(entry) {
-    const newFile = deepCopy(entry);
+    var newFile = deepCopy(entry);
     setFile(newFile);
   }
 

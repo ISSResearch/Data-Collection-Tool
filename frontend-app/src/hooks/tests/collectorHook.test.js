@@ -1,33 +1,33 @@
 import { renderHook, act } from '@testing-library/react';
-import useCollectors from '../../hooks/collectorsHook';
-import { mock_raw_collectors } from '../_mock';
+import useCollectors from '../collectorsHook';
+import { raw_collectors } from '../../config/mock_data';
 
 test("colletors hook test", () => {
-  const { result: hookItem } = renderHook(() => useCollectors());
+  const { result: hook } = renderHook(() => useCollectors());
 
-  expect(hookItem.current.collectors).toEqual({});
+  expect(hook.current.collectors).toEqual({});
 
-  act(() => hookItem.current.initData(mock_raw_collectors));
+  act(() => hook.current.initData(raw_collectors));
 
-  expect((hookItem.current.collectors)).toEqual(
-    mock_raw_collectors.reduce((acc, collector) => {
-      const { id, username, permissions } = collector;
+  expect((hook.current.collectors)).toEqual(
+    raw_collectors.reduce((acc, collector) => {
+      var { id, username, permissions } = collector;
       acc[id] = { user_id: id, username, permissions };
       return acc;
     }, {})
   );
 
   act(() => {
-    hookItem.current.changeCollector(mock_raw_collectors[0].id, 'view', {checked: false});
-    hookItem.current.changeCollector(mock_raw_collectors[0].id, 'upload', {checked: true});
-    hookItem.current.changeCollector(mock_raw_collectors[1].id, 'upload', {checked: true});
+    hook.current.changeCollector(raw_collectors[0].id, 'view', {checked: false});
+    hook.current.changeCollector(raw_collectors[0].id, 'upload', {checked: true});
+    hook.current.changeCollector(raw_collectors[1].id, 'upload', {checked: true});
   });
 
-  expect(hookItem.current.collectors[mock_raw_collectors[0].id].permissions.view).toBeFalsy();
-  expect(hookItem.current.collectors[mock_raw_collectors[0].id].permissions.upload).toBeTruthy();
-  expect(hookItem.current.collectors[mock_raw_collectors[1].id].permissions.upload).toBeTruthy();
+  expect(hook.current.collectors[raw_collectors[0].id].permissions.view).toBeFalsy();
+  expect(hook.current.collectors[raw_collectors[0].id].permissions.upload).toBeTruthy();
+  expect(hook.current.collectors[raw_collectors[1].id].permissions.upload).toBeTruthy();
 
-  const gatherData = hookItem.current.gatherData();
+  var gatherData = hook.current.gatherData();
 
   expect(gatherData).toEqual([
     {

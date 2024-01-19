@@ -1,55 +1,89 @@
 import { renderHook, act } from '@testing-library/react';
-import useFile from '../../hooks/file';
-import { mock_raw_file, mock_prepared_attributes } from '../_mock';
+import useFile from '../file';
+import { raw_file, prepared_attributes } from '../../config/mock_data';
 
 test("file hook test", () => {
-  const { result: hookItem } = renderHook(() => useFile());
+  const { result: hook } = renderHook(() => useFile());
 
-  expect(hookItem.current.file).toEqual({});
-  act(() => hookItem.current.initFile(mock_raw_file));
-  expect(hookItem.current.file).toEqual(mock_raw_file);
-  act(() => hookItem.current.changeName({value: 'new_name'}));
-  expect(hookItem.current.file.file_name).toEqual('new_name');
-  act(() => {
-    hookItem.current.setAttributeGroups({
-      ids: [1,2,3],
-      selectorKey: 'group',
-      selInd: 0,
-    })
+  expect(hook.current.file).toEqual({});
+
+  act(() => hook.current.initFile(raw_file));
+  expect(hook.current.file).toEqual(raw_file);
+
+  act(() => hook.current.changeName({value: 'new_name'}));
+  expect(hook.current.file.file_name).toEqual('new_name');
+
+  expect(hook.current.validate(prepared_attributes)).toEqual({
+    "isValid": false,
+    "message": "File \"new_name\" is missing required attributes: model, gen."
   });
-  expect(hookItem.current.file.attributeGroups.group).toEqual({'0': [1,2,3]});
+  expect(hook.current.validate([])).toEqual({ "isValid": true, "message": "ok" });
+
+  var prepared;
   act(() => {
-    hookItem.current.setAttributeGroups({
-      selectorKey: 'group',
-      selInd: 0,
-      del: true
-    })
+    prepared = hook.current.prepareAttributes();
   });
-  expect(hookItem.current.file.attributeGroups.group).toBeUndefined();
+  expect(prepared).toEqual({ '99610f4b-724a-4175-a580-740b5f8559a5': [ 246 ] });
+
   act(() => {
-    hookItem.current.setAttributeGroups({
-      ids: {group: [3,4,5]},
-      selInd: 0,
-      set: true
-    })
+    hook.current.file.attributeGroups = null;
+    prepared = hook.current.prepareAttributes();
   });
-  expect(hookItem.current.file.attributeGroups).toEqual({group: [3,4,5]});
+  expect(prepared).toEqual({});
 });
 
-test("test file validate", () => {
-  const { result: hookItem } = renderHook(() => useFile());
-  act(() => hookItem.current.initFile(mock_raw_file));
-  expect(hookItem.current.validate(mock_prepared_attributes)).toEqual({
-    "isValid": false,
-    "message": "File \"blog2_copy.png\" is missing required attributes: model, gen."
+test("file groupchange test", () => {
+  const { result: hook } = renderHook(() => useFile());
+  const groups = () => hook.current.file.attributeGroups;
+
+  act(() => hook.current.initFile(raw_file));
+  expect(Object.keys(groups())).toHaveLength(1);
+
+  act(() => hook.current.handleGroupChange({type: "add"}));
+  expect(Object.keys(groups())).toHaveLength(2);
+
+  act(() => {
+    var [_, key] = Object.keys(groups());
+    hook.current.handleGroupChange({ type: "delete", key });
   });
-  act(() => hookItem.current.setAttributeGroups({
-    ids: [262, 264],
-    selectorKey: Object.keys(hookItem.current.file.attributeGroups)[0],
-    selInd: 0,
-  }));
-  expect(hookItem.current.validate(mock_prepared_attributes)).toEqual({
-    "isValid": true,
-    "message": "ok"
+  expect(Object.keys(groups())).toHaveLength(1);
+
+  act(() => {
+    var [key] = Object.keys(groups());
+    hook.current.handleGroupChange({key, type: "copy"})
+  });
+  expect(Object.keys(groups())).toHaveLength(2);
+  var [origin, copied] = Object.keys(groups());
+  expect(origin).not.toEqual(copied);
+  expect(groups()[origin]).toEqual(groups()[copied]);
+
+  act(() => {
+    groups()[copied][0] = [200];
+  });
+  expect(groups()[origin]).not.toEqual(groups()[copied]);
+
+  act(() => {
+    hook.current.handleGroupChange({
+      type: "set",
+      key: copied,
+      payload: {
+        selected: [201],
+        index: 1,
+        selInd: 1
+      }
+    });
+    hook.current.handleGroupChange({
+      type: "set",
+      key: origin,
+      payload: {
+        selected: [20],
+        index: 0,
+        selInd: 0
+      }
+    })
+  });
+  expect(groups()).toEqual({
+    [origin]: { '0': [ 20 ] },
+    [copied]: { '0': [ 200 ], '1': [ 201 ] }
   });
 });
