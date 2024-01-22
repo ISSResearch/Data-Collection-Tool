@@ -671,7 +671,7 @@ export const prepared_attribute_stats = [
   },
 ];
 
-export const mock_raw_files = [
+export const raw_files = [
   {
     id: 748,
     attributes: [
@@ -685,7 +685,7 @@ export const mock_raw_files = [
     ],
     author_name: "admin",
     file_name: "file1.png",
-    file_type: "image",
+    file_type: "video",
     path: "/app/file_store/23/file1.png",
     status: "",
     upload_date: "2023-06-08T19:39:54.304997Z",
@@ -710,7 +710,7 @@ export const mock_raw_files = [
   },
 ];
 
-export const mock_prepared_files = [
+export const prepared_files = [
   {
     id: 748,
     attributes: [
@@ -724,7 +724,7 @@ export const mock_prepared_files = [
     ],
     author_name: "admin",
     file_name: "file1.png",
-    file_type: "image",
+    file_type: "video",
     path: "/app/file_store/23/file1.png",
     status: "",
     upload_date: "2023-06-08T19:39:54.304997Z",
@@ -775,7 +775,7 @@ export const raw_file = {
   path: "/app/file_store/23/blog2_copy.png",
   status: "",
   upload_date: "2023-06-08T19:39:54.304997Z",
-  attributeGroups: { "99610f4b-724a-4175-a580-740b5f8559a5": {0: [246]} },
+  attributeGroups: { "99610f4b-724a-4175-a580-740b5f8559a5": { 0: [246] } },
 };
 
 export const mock_apply_groups = {
@@ -839,6 +839,7 @@ export const raw_user_stats = [
   },
   {
     author_id: 14,
+
     author__username: "some2",
     status: "a",
     file_type: "image",
@@ -855,4 +856,51 @@ export const prepared_user_stats = [
     v: { image: 25, video: 2 },
   },
   { id: 14, name: "some2", a: { image: 1 } },
+];
+
+export const upload_files = [
+  {
+    file: {size: 1024*1024*4, slice: () => [1]},
+    blob: "blob:http://localhost:3000/330b8b6c-a932-451d-b92d-19d08cfbaa8f",
+    attributeGroups: {
+      7298125106168143: { 0: [246, 265, 267], 1: [271, 272, 273], 2: [286] },
+    },
+    name: "blog1",
+    extension: "png",
+    type: "image",
+    atrsGroups: [[246, 265, 267, 271, 272, 273, 286]],
+  },
+  {
+    file: {size: 1024*1024*4*4, slice: () => [2]},
+    blob: "blob:http://localhost:3000/d2e2c9a1-39af-4d4f-9d24-9ee9e5c64b36",
+    attributeGroups: {
+      7298125106168143: { 0: [246, 268, 270], 1: [272], 2: [288] },
+    },
+    name: "blog2",
+    extension: "png",
+    type: "image",
+    atrsGroups: [[246, 268, 270, 272, 288]],
+  },
+  {
+    file: {size: 1024*1024*4*4, slice: () => [3]},
+    blob: "blob:http://localhost:3000/376768c8-a039-4e61-a331-3f24123c27d2",
+    attributeGroups: {
+      7298125106168143: { 0: [249, 259, 261], 1: [271, 273], 2: [287] },
+    },
+    name: "blog3",
+    extension: "png",
+    type: "image",
+    atrsGroups: [[249, 259, 261, 271, 273, 287]],
+  },
+  {
+    file: {size: 1024*1024*4*4, slice: () => [4]},
+    blob: "blob:http://localhost:3000/d2e2c9a1-39af-4d4f-9d24-9ee9e5c64b36",
+    attributeGroups: {
+      7298125106168143: { 0: [246, 268, 270], 1: [272], 2: [288] },
+    },
+    name: "blog4",
+    extension: "png",
+    type: "image",
+    atrsGroups: [[246, 268, 270, 272, 288]],
+  },
 ];

@@ -6,15 +6,11 @@ export default function useFiles() {
 
   function initFiles(filesData) {
     filesData.forEach(file => {
-      const { attributes } = file;
+      var { attributes } = file;
       file.attributeGroups = attributeGroupsAdapter(attributes);
     });
     setFiles(filesData);
   }
 
-  function filterBy(field, value) {
-    return files.filter(file => file[field] === value);
-  }
-
-  return { files, setFiles, initFiles, filterBy };
+  return { files, setFiles, initFiles };
 }

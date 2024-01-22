@@ -32,10 +32,12 @@ export default function useFileUploader(projectID) {
           'Total-Chunks': numOfChunks
         }
       }
+
       var response = await fileApi.request(
         `/api/storage/project_${project}/${id}/`,
         config
       );
+
       file.progress = (i + 1) * 100 / numOfChunks;
       if (response.data.transfer_complete) file.status = 'a';
       setFiles([...files]);
@@ -50,7 +52,7 @@ export default function useFileUploader(projectID) {
         'Content-Type': 'multipart/form-data',
         "Authorization": "Bearer " + localStorage.getItem("dtcAccess"),
       }
-    })
+    });
   }
 
   async function deleteFile(fileId) {
