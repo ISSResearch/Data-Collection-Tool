@@ -58,8 +58,11 @@ function AttributeInput({
     <div className='iss__form__attributes'>
       {
         attributes.map(({ id, name, path, children, orig }, index) => (
-          <div key={id} className={`iss__attributeForm${isChild ? ' attribute--child' : ''}`}>
-            {isChild ? <div className='iss__attributeForm__tree'>------|</div> : ''}
+          <div
+            key={id}
+            className={`iss__attributeForm${isChild ? ' attribute--child' : ''}`}
+          >
+            {isChild && <div className='iss__attributeForm__tree'>------|</div>}
             <div className='iss__attributeForm__inputWrap'>
               <input
                 placeholder="Attribute name"
