@@ -1,10 +1,10 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import MultiSelector from '.';
-import { mock_prepared_attributes } from '../../../_mock';
+import { prepared_attributes } from '../../../config/mock_data';
 
 
 test("selectoritem component test, case initial", () => {
-  const attribute = mock_prepared_attributes.find(({ multiple }) => multiple);
+  const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
 
   render(
@@ -54,7 +54,7 @@ test("selectoritem component test, case initial", () => {
 });
 
 test("selectoritem component test, case woth defaults", () => {
-  const attribute = mock_prepared_attributes.find(({ multiple }) => multiple);
+  const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
 
   render(

@@ -49,7 +49,7 @@ export default function FindAndReplace({ onCommit }) {
       close: () => toggle()
     }
 
-    var validattionCallback =  validateMap[validate(toValue, withValue)];
+    var validattionCallback = validateMap[validate(toValue, withValue)];
     if (validattionCallback) validattionCallback();
   }
 

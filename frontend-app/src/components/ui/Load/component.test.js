@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Load from '../../../components/common/Load';
+import Load from '.';
 
 test("load component test", () => {
   render(<Load/>);
