@@ -12,7 +12,6 @@ test("find and replace ui component test", () => {
       var className = parentClass.slice(1);
       fireEvent.click(screen.getByRole("button", { name: opened ? "cancel" : "replace word" }));
       opened = !opened;
-      rerender(component());
       if (opened) className += " form--open";
       expect(container.querySelector(parentClass).className).toBe(className);
       return opened;

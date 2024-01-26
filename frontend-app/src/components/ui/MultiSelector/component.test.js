@@ -6,19 +6,39 @@ import { prepared_attributes } from '../../../config/mock_data';
 test("selectoritem component test, case initial", () => {
   const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
-
-  render(
+  const containerClass = ".iss__manualSelector__options";
+  const parentClass = ".iss__manualSelector__selected";
+  var change = [];
+  const component = () => (
     <MultiSelector
-      selectorId={1}
-      selectorName={'sel_name'}
+      selectorLabel={"test_selector"}
       selectorOptions={attributes}
-      handleSelect={() => { }}
+      onChange={e => change = e}
+      defaultSelected={[]}
     />
   );
-  const selector = screen.queryByRole('listbox');
 
-  expect(selector).not.toBeNull();
-  expect(selector.id).toBe('selector--sel_name_1');
+  const toggler = () => {
+    var opened = false;
+    return (set) => {
+      if (set) return opened = !opened;
+      var className = containerClass.slice(1);
+      fireEvent.click(container.querySelector(parentClass));
+      opened = !opened;
+      if (opened) className += " options--open";
+      expect(container.querySelector(containerClass).className).toBe(className);
+      return opened;
+    }
+  };
+
+  const { rerender, container } = render(component());
+  var toggle = toggler();
+
+  screen.getByText("clear test_selector")
+  expect(toggle()).toBeTruthy();
+  expect(toggle()).toBeFalsy();
+  expect(toggle()).toBeTruthy();
+  expect(container.querySelector(".off--title")).not.toBeNull();
   expect(
     Array.from(screen.getAllByRole('option')).map(({ text, value }) => {
       return { [value]: text };
@@ -28,61 +48,42 @@ test("selectoritem component test, case initial", () => {
       return { [id]: name };
     })
   );
-  expect(selector.parentNode.parentNode.className).toBe('iss__customSelector__options');
 
-  fireEvent.click(screen.getByText('-not set-').parentNode);
-  expect(selector.parentNode.parentNode.className).toBe('iss__customSelector__options options--open');
+  fireEvent.change(screen.getByRole("listbox"), { target: { value: [attributes[0].id] } });
+  fireEvent.click(screen.getByRole("button"))
+  toggle(true)
 
-  fireEvent.click(screen.getByText('-not set-').parentNode);
-  expect(selector.parentNode.parentNode.className).toBe('iss__customSelector__options');
+  expect(container.querySelector(containerClass).className).toBe(containerClass.slice(1));
+  expect(change).toEqual([attributes[0].id]);
 
-  attributes.forEach(({ name, id }) => {
-    fireEvent.change(selector, { target: { value: id } });
-    expect(screen.queryByText(name, { ignore: 'option' })).not.toBeNull();
-  });
-
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).toBeNull();
-  fireEvent.change(selector, { target: { value: [] } });
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).not.toBeNull();
-
-  fireEvent.change(selector, { target: { value: attributes[0].id } });
-  expect(screen.queryByText(attributes[0].name, { ignore: 'option' })).not.toBeNull();
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).toBeNull();
-
+  toggle();
+  expect(container.querySelector(".off--title")).toBeNull();
   fireEvent.click(screen.getByText(/clear*/));
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).not.toBeNull();
+
+  expect(change).toEqual([]);
+  expect(container.querySelector(containerClass).className)
+    .toBe(containerClass.slice(1) + " options--open");
 });
 
-test("selectoritem component test, case woth defaults", () => {
+test("selectoritem component test, case with defaults", () => {
   const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
-
-  render(
+  const containerClass = ".iss__manualSelector__options";
+  const parentClass = ".iss__manualSelector__selected";
+  var change = [];
+  const component = () => (
     <MultiSelector
-      selectorId={1}
-      selectorName={'sel_name'}
+      selectorLabel={"test_selector"}
       selectorOptions={attributes}
-      handleSelect={() => { }}
-      defaultSelected={attributes.slice(1).map(({ id }) => id)}
+      onChange={e => change = e}
+      defaultSelected={attributes.map(e => e.id)}
     />
   );
-  const selector = screen.queryByRole('listbox');
 
-  expect(selector).not.toBeNull();
+  const { rerender, container } = render(component());
+
   expect(screen.queryByText('-not set-', { ignore: 'option' })).toBeNull();
   attributes.slice(1).forEach(({ name }) => {
     expect(screen.queryByText(name, { ignore: 'option' })).not.toBeNull();
   });
-
-  fireEvent.click(screen.getByText(/clear*/));
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).not.toBeNull();
-
-  attributes.forEach(({ name, id }) => {
-    fireEvent.change(selector, { target: { value: id } });
-    expect(screen.queryByText(name, { ignore: 'option' })).not.toBeNull();
-  });
-
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).toBeNull();
-  fireEvent.change(selector, { target: { value: [] } });
-  expect(screen.queryByText('-not set-', { ignore: 'option' })).not.toBeNull();
 });

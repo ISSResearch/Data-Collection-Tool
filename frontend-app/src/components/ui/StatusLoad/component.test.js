@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import StatusLoad from '../../../components/common/StatusLoad';
+import StatusLoad from '.';
 
 test("status load component test", () => {
   const { rerender } = render(<StatusLoad />);

@@ -41,7 +41,7 @@ export default function({
   }
 
   useEffect(() => {
-    if (defaultSelected) handleManualSelect(defaultSelected);
+    if (defaultSelected?.length) handleManualSelect(defaultSelected);
   }, [defaultSelected]);
 
   return (
