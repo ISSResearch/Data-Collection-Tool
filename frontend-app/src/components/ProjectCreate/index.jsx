@@ -15,9 +15,10 @@ export default function() {
   const navigate = useNavigate();
 
   function getFormData({ target }) {
-    var name = target.project_name.value;
+    var name = target.project_name?.value;
     var description = target.project_description.value || "";
 
+    if (!name) throw new Error("Name supposed to be set.");
     description = description.replaceAll(/\n/g, '<br>');
 
     var attributes = attributeManager.formHook.gatherAttributes();
@@ -25,37 +26,36 @@ export default function() {
     return { name, description, attributes };
   }
 
-  function sendForm(event) {
+  async function sendForm(event) {
     event.preventDefault();
     if (loading) return;
 
-   setLoading(true);
+    setLoading(true);
 
-    var formData = getFormData(event);
-
-    api.request('/api/projects/',
-      {
-        method: 'post',
-        data: formData,
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+    try {
+      var formData = getFormData(event);
+      await api.request('/api/projects/',
+        {
+          method: 'post',
+          data: formData,
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+          }
         }
-      }
-    )
-      .then(() => {
-        addAlert("Project created", "success");
-        navigate("/projects/");
-      })
-      .catch(({ message, response }) => {
-        var authFailed = response.status === 401 || response.status === 403;
+      )
+      addAlert("Project created", "success");
+      navigate("/projects/");
+    }
+    catch({ message, response }) {
+      var authFailed = response && (response.status === 401 || response.status === 403);
 
-        addAlert("Creating preoject error:" + message, "error", authFailed);
+      addAlert("Creating preoject error:" + message, "error", authFailed);
 
-        if (authFailed) navigate("/login");
+      if (authFailed) navigate("/login");
 
-        setLoading(false);
-      });
+      setLoading(false);
+    };
   }
 
   return (

@@ -31,7 +31,8 @@ export default function({ attributeManager, withBoundAttributes }) {
           </button>
         }
         {
-          Object.keys(forms).length > 0 && <FindAndReplace onCommit={handleReplace} />
+          Object.keys(forms).length > 0 &&
+          <FindAndReplace onCommit={handleReplace} />
         }
       </div>
       <div className='iss__attributecreator__attributesForm'>

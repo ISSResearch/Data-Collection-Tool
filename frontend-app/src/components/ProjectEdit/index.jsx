@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../../hooks';
 import { api } from '../../config/api';
@@ -15,12 +15,12 @@ export default function({
 }) {
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
-  const [deleteNameForm, setDeleteNameForm] = useState('');
   const [preview, setPreview] = useState(projectDescription);
   const { addAlert } = useContext(AlertContext);
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
   const navigate = useNavigate();
+  const deleteInput = useRef(null);
 
   function validateNewAttributes() {
     var newAttirbutes = Object.values(attributeManagerNew.attributeHook.attributes);
@@ -100,36 +100,36 @@ export default function({
     }
   }
 
-  function deleteProject() {
-    if (deleteNameForm !== projectName) {
+  async function deleteProject() {
+      if (deleteInput.current.value !== projectName) {
       addAlert("Entered name differs from the actual Project name.", "error");
       setDeleteAccept(false);
       return;
     }
 
-    api.request(`/api/projects/${pathID}/`,
-      {
-        method: 'delete',
-        data: { approval: deleteNameForm },
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+    try {
+      await api.request(`/api/projects/${pathID}/`,
+        {
+          method: 'delete',
+          data: { approval: deleteInput.current.value },
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+          }
         }
-      }
-    )
-      .then(() => {
-        addAlert(`Project ${projectName} deleted`, "success");
-        navigate('/');
-      })
-      .catch(({ message, response }) => {
-        var authFailed = response.status === 401 || response.status === 403;
+      );
+      addAlert(`Project ${projectName} deleted`, "success");
+      navigate('/');
+    }
+    catch({ message, response }) {
+      var authFailed = response.status === 401 || response.status === 403;
 
-        addAlert("Deleting project error: " + message, "error", authFailed);
+      addAlert("Deleting project error: " + message, "error", authFailed);
 
-        if (authFailed) navigate("/login");
+      if (authFailed) navigate("/login");
 
-        setLoading(false);
-      });
+      setLoading(false);
+    };
   }
 
   return (
@@ -144,7 +144,7 @@ export default function({
               <span>Are you sure you want to delete this project? Type Project name in the box below to confirm.</span>
               <input
                 placeholder='Exact Project name'
-                onChange={({ target }) => setDeleteNameForm(target.value)}
+                ref={deleteInput}
                 className='iss__projectEdit__delete__input'
               />
               <button
