@@ -9,7 +9,7 @@ export default function useAttributeManager() {
   const attributeHook = useAttributes();
 
   function addForm(data) {
-    const formId = formUID();
+    var formId = formUID();
     setForms((prev) => {
       return { ...prev, [formId]: { levels: null, attributes: null } }
     });

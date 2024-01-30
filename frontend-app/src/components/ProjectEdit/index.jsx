@@ -63,9 +63,10 @@ export default function({
     event.preventDefault();
     if (loading) return;
 
+    if (!validateNewAttributes()) return addAlert('Some attribute forms are missed.', "error")
+
     setLoading(true);
 
-    if (!validateNewAttributes()) return alert('Some attribute forms are missed.')
     var formData = getFormData(event);
     var deleteLevels = attributeManager.levelHook.deletedOriginLevels;
     var deleteAttributes = attributeManager.attributeHook.deletedOriginAttributes;

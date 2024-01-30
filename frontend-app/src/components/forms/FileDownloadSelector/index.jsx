@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
-import {api} from "../../../config/api";
+import { api } from "../../../config/api";
 import { AlertContext } from "../../../context/Alert";
 import Load from "../../ui/Load";
 import './styles.css';
@@ -17,9 +17,11 @@ export default function({
   const navigate = useNavigate();
 
   function selectFile(index, { checked }) {
-    var newFiles = [...files];
-    newFiles[index].is_downloaded = !checked;
-    setFiles(newFiles);
+    setFiles(prev => {
+      var files = [...prev];
+      files[index].is_downloaded = !checked;
+      return files;
+    });
   }
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function({
     })
       .then(({ data }) => {
         setFiles(data);
-        setLoading(false)
+        setLoading(false);
       })
       .catch(({ message, response }) => {
         var authFailed = response && (

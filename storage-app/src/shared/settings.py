@@ -7,8 +7,7 @@ available_workers: int = cpu_count() * 2 + 1
 
 WORKERS: int = (
     max_workers
-    if max_workers
-    and (available_workers > max_workers)
+    if max_workers and (available_workers > max_workers)
     else available_workers
 )
 
@@ -40,7 +39,7 @@ UVICORN_CONF: dict[str, Any] = {
     "workers": WORKERS,
     "host": '0.0.0.0',
     "port": 9000,
-    "reload": False,
+    "reload": DEBUG,
     "log_level": "debug" if DEBUG else "critical"
 }
 

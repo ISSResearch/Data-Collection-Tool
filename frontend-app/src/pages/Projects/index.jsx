@@ -47,7 +47,7 @@ export default function() {
     })
       .then(({ data }) => setProjects(data))
       .catch(({ message, response }) => {
-        var authFailed = response.status === 401 || response.status === 403;
+        var authFailed = response && (response.status === 401 || response.status === 403);
 
         addAlert("Project Page load failed: " + message, "error", authFailed);
 
