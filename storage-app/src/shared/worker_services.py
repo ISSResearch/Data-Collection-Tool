@@ -10,7 +10,6 @@ from shared.utils import emit_token
 from bson import ObjectId
 from typing import Any
 from requests import post, Response
-from time import time
 from os import mkdir, path, remove
 
 
@@ -33,7 +32,7 @@ class Zipper:
     def archive_objects(self) -> None:
         if not self.annotated or self.written: return
 
-        self.archive = f"{self.temp_prefix}/{int(time())}.{self.archive_extension}"
+        self.archive = f"{self.temp_prefix}/{ObjectId()}.{self.archive_extension}"
         json_data: Any = dumps(self.annotation, indent=4).encode('utf-8')
 
         # TODO: check other compress types
