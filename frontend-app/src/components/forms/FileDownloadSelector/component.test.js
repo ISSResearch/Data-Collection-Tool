@@ -42,8 +42,19 @@ test("download selcetor form component test", async () => {
     }
   }
 
-  const { contaier, rerender } = await init();
+  const { container, rerender } = await init();
   await rerender();
 
-  screen.debug();
+  expect(screen.getAllByRole("checkbox")).toHaveLength(raw_files.length);
+
+  raw_files.forEach(({status, is_downloaded}, index) => {
+    expect(!is_downloaded).toBe(screen.getAllByRole("checkbox")[index].checked);
+    expect(container.querySelector(".file--" + status)).not.toBeNull();
+  });
+
+  expect(screen.getAllByRole("checkbox")[0].checked).toBeFalsy();
+  expect(files.current.files[0].is_downloaded).toBeTruthy();
+  fireEvent.click(screen.getAllByRole("checkbox")[0]);
+  expect(screen.getAllByRole("checkbox")[0].checked).toBeTruthy();
+  expect(files.current.files[0].is_downloaded).toBeFalsy();
 });

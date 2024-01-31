@@ -61,7 +61,7 @@ export default function({
             key={id}
             className={`iss__filesDownload__fileSelector__item file--${status}`}
           >
-            <span>{index + 1 < 10 && 0}{index + 1}.</span>
+            <span>{ (index + 1).toString().padStart(2, "0") }.</span>
             <input
               onChange={({ target }) => selectFile(index, target)}
               type='checkbox'

@@ -34,14 +34,16 @@ class DCTClient:
         project_id: int,
         status: str = "a",
         not_downloaded: bool = True,
-        batch_size: int = 500
-    ):
-        res_files: list[dict] = await self.get_project_files(
-            project_id,
-            status=status,
-            not_downloaded=not_downloaded
-        )
-        file_ids: list[int] = list(map(lambda file: file["id"], res_files))
+        batch_size: int = 500,
+        file_ids: list[int] = []
+    ) -> None:
+        if not file_ids:
+            res_files: list[dict] = await self.get_project_files(
+                project_id,
+                status=status,
+                not_downloaded=not_downloaded
+            )
+            file_ids = list(map(lambda file: file["id"], res_files))
 
         chunks = ceil(len(file_ids) / batch_size)
         tasks_for_task_id: list[Coroutine] = [
@@ -61,9 +63,11 @@ class DCTClient:
             for task in created_tasks
         ])
 
-    async def wait_to_download(self, task_id: str, project_id: int):
+    async def wait_to_download(self, task_id: str, project_id: int) -> None:
         archive_id: str | None = None
         while True:
+            await sleep(1)
+
             print("task({task_id}): check")
             _res: dict[str, Any] = await self.check_archive_status(task_id)
             status: str = _res.get("status", "")
@@ -82,7 +86,7 @@ class DCTClient:
             await self._download_file(url, archive_id)
             print(f"task({task_id}): downloaded")
 
-    async def request_archive(self, file_ids: list[int], project_id: int):
+    async def request_archive(self, file_ids: list[int], project_id: int) -> dict[str, Any]:
         url: str = self._url("api/task/archive/", "storage")
         data: dict[str, Any] = {
             "bucket_name": f"project_{project_id}",
@@ -91,7 +95,7 @@ class DCTClient:
         headers: dict[str, Any] = {"Content-Type": "application/json"}
         return await self._post(url, headers=headers, secure=True, data=data)
 
-    async def check_archive_status(self, task_id: str):
+    async def check_archive_status(self, task_id: str) -> dict[str, Any]:
         url: str = self._url(f"api/task/{task_id}/", "storage")
         return await self._get(url, secure=True)
 
@@ -100,7 +104,7 @@ class DCTClient:
         project_id: int,
         status: str = "",
         not_downloaded: bool = True,
-    ) -> Any:
+    ) -> list[dict[str, Any]]:
         url: str = self._url(f"api/files/project/{project_id}/", "main")
         filter: list[str] = []
 
@@ -111,7 +115,7 @@ class DCTClient:
 
         return await self._get(url, secure=True)
 
-    async def get_projects(self) -> Any:
+    async def get_projects(self) -> list[dict[str, Any]]:
         url = self._url("api/projects/", "main")
         return await self._get(url, secure=True)
 
@@ -197,9 +201,17 @@ class DCTClient:
 
 
 async def main():
-    async with DCTClient("localhost", 8000, 9000) as client:
-        await client.login("admin", "admin")
-        await client.run_archiver_for_project(26, status="v", not_downloaded=False, batch_size=1)
+    async with DCTClient(host, 8000, 9000) as client:
+        """Will be asked anyway dont login uder these credentials while app's working"""
+        # await client.login("name", "password")
+
+        """Runs whole process of download for specified project and file filters.
+        Parameters:
+        status: str, by default "a"(accepted). possible "a", "d", "v" for accepted, declined, validated correspondingly
+        not_downloaded: bool, by default True. means only new files will be downloaded. False for all files under status
+        batch_size: int, by default 500. amount of files per package
+        file_ids: list[int], pass to downloaded manually selected files [777, 888, 999]"""
+        # await client.run_archiver_for_project(project_id)
 
 
 if __name__ == "__main__": run(main())

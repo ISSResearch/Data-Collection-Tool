@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Form from '../../../components/common/Form';
+import Form from '.';
 
 const fieldSet = [
   {label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true},
@@ -11,10 +11,7 @@ const bottomLink = { to: '/registration', text: 'Or Registry' };
 test("form component test", () => {
   render(
     <MemoryRouter>
-      <Form
-        fields={fieldSet}
-        link={bottomLink}
-      />
+      <Form fields={fieldSet} link={bottomLink} />
     </MemoryRouter>
   );
 
@@ -23,7 +20,7 @@ test("form component test", () => {
   screen.getByText('submit');
 
   fieldSet.forEach(({ label, placeholder, type, required }) => {
-    const input = screen.getByPlaceholderText(placeholder);
+    var input = screen.getByPlaceholderText(placeholder);
     screen.getByLabelText(label);
     expect(input.value).toBe('');
     expect(input.required).toBe(required);
@@ -34,12 +31,7 @@ test("form component test", () => {
 test("form component test fail test", () => {
   render(
     <MemoryRouter>
-      <Form
-        loading
-        errors={'error message'}
-        fields={fieldSet}
-        link={bottomLink}
-      />
+      <Form loading errors={'error message'} fields={fieldSet} link={bottomLink}/>
     </MemoryRouter>
   );
 
