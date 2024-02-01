@@ -54,7 +54,7 @@ export default function({ pathID, attributes, canValidate }) {
 
     if (!card.length) handleChange("card", ['v']);
 
-    // TODO: query collectors depends on uploads to project
+    // TODO: query collectors depend on uploads to project by users
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
         params: { card, attr, type, author },

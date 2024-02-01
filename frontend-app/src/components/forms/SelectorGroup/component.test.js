@@ -1,11 +1,7 @@
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
-import { useFileInput, useFile } from "../../../hooks";
+import { useFileInput } from "../../../hooks";
 import SelectGroup from '.';
-import {
-  prepared_attributes,
-  apply_groups,
-  prepared_files
-} from '../../../config/mock_data';
+import { prepared_attributes, apply_groups, } from '../../../config/mock_data';
 
 afterEach(() => {
   jest.restoreAllMocks();

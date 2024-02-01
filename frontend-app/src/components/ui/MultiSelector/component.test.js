@@ -2,7 +2,6 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import MultiSelector from '.';
 import { prepared_attributes } from '../../../config/mock_data';
 
-
 test("selectoritem component test, case initial", () => {
   const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
