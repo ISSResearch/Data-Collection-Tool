@@ -71,7 +71,7 @@ export default function({ pathID }) {
 
     var taskInput = event.target.taskID;
 
-    if (taskInput.value) return setTask(taskInput.value);
+    if (taskInput?.value) return setTask(taskInput.value);
 
     setLoading(true);
 

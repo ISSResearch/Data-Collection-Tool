@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import AllProjects from '../../components/AllProjects';
-import { mock_raw_project } from '../_mock';
+import AllProjects from '.';
+import { raw_project } from '../../config/mock_data';
 
 test('all project component test', () => {
   const { rerender } = render(
@@ -14,13 +14,13 @@ test('all project component test', () => {
 
   rerender(
     <MemoryRouter>
-      <AllProjects items={[mock_raw_project]}/>
+      <AllProjects items={[raw_project]}/>
     </MemoryRouter>
   );
 
   expect(screen.queryByTestId('load-c')).toBeNull();
-  expect(screen.getByRole('link').href).toBe('http://localhost/projects/' + mock_raw_project.id);
-  expect(screen.getByRole('heading').innerHTML).toBe(mock_raw_project.name);
+  expect(screen.getByRole('link').href).toBe('http://localhost/projects/' + raw_project.id);
+  expect(screen.getByRole('heading').innerHTML).toBe(raw_project.name);
 
   rerender(
     <MemoryRouter>

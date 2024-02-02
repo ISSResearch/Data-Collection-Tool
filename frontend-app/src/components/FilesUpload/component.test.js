@@ -4,10 +4,18 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { AlertContext } from '../../context/Alert';
 import { prepared_attributes } from "../../config/mock_data";
 
-jest.mock("../../hooks/fileInput", () =>({
-  ..."../../hooks/fileInput",
-  validate: () => ({isValid: true})
-}));
+jest.mock("../../hooks/fileInput", () => {
+  return () => ({
+    files: {},
+    handleUpload: {},
+    count: () => 1,
+    validate: () => ({ isValid: true }),
+    gatherFiles: () => []
+  })
+});
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 test("files upload component test", () => {
   const router = createBrowserRouter([
@@ -18,10 +26,11 @@ test("files upload component test", () => {
       </AlertContext.Provider>
     }
   ]);
-  const { rerender, contaier } = render(<RouterProvider router={router}/>);
+  const { rerender, container } = render(<RouterProvider router={router}/>);
 
   expect(screen.queryByTestId('load-c')).toBeNull();
 
-  screen.getByRole()
-  // fireEvent.submit(contaier "")
+  expect(container.querySelector(".iss__uploadProgress__modal")).toBeNull();
+  fireEvent.submit(container.querySelector(".iss__fileInput"));
+  expect(container.querySelector(".iss__uploadProgress__modal")).not.toBeNull();
 });

@@ -54,7 +54,7 @@ export default function({ fileManager, pathID, setUploading }) {
 
   return (
     <>
-      {/* TODO: made modal consider move to apps native */}
+      {/* TODO: made modal, consider move to apps native */}
       <dialog id="authModal" className='iss__uploadProgress__modal'>
         <h2>Session expired, please login.</h2>
         <Form
