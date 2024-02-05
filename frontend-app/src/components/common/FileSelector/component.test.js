@@ -1,15 +1,15 @@
 import { render, renderHook, screen, act } from '@testing-library/react';
-import FileSelector from '../../../components/common/FileSelector';
+import FileSelector from '.';
 import { useFiles, useSwiper } from '../../../hooks';
-import { mock_raw_files } from '../../_mock';
+import { raw_files } from '../../../config/mock_data';
 
 test("file selector component test", () => {
   const { result: filesHook } = renderHook(() => useFiles());
   const { result: swiperHook } = renderHook(() => useSwiper());
 
   act(() => {
-    filesHook.current.initFiles(mock_raw_files);
-    swiperHook.current.setMax(mock_raw_files.length);
+    filesHook.current.initFiles(raw_files);
+    swiperHook.current.setMax(raw_files.length);
   });
 
   render(
@@ -19,5 +19,5 @@ test("file selector component test", () => {
     />
   );
 
-  expect(screen.getAllByRole('heading')).toHaveLength(mock_raw_files.length);
+  expect(screen.getAllByRole('heading')).toHaveLength(raw_files.length);
 });

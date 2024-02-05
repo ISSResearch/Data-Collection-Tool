@@ -69,6 +69,9 @@ export default function({ taskID }) {
       var { data: token } = await fileApi.get("/api/temp_token/", {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
+
+      if (!token) throw new Error("No token returned");
+
       var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
       var accessQuery = `/?access=${token}&archive=1`;
 

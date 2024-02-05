@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import FileCard from '../../../components/common/FileCard';
+import { render, screen, fireEvent } from '@testing-library/react';
+import FileCard from '.';
 
 test("file card component test, active status 0", () => {
   const { rerender } = render(
@@ -64,6 +64,7 @@ test("file card component test, active status 0", () => {
   );
   expect(parent.className).toBe('iss__fileCard card--active');
 
+  var clicked = false;
   rerender(
     <FileCard
       key={0}
@@ -73,8 +74,10 @@ test("file card component test, active status 0", () => {
       date={'11-11-200'}
       status={'a'}
       active={true}
-      handleCLick={() => {}}
+      handleCLick={() => clicked = true}
     />
   );
   expect(parent.className).toBe('iss__fileCard card--active card--accepted');
+  fireEvent.click(parent);
+  expect(clicked).toBeTruthy();
 });
