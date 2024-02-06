@@ -1,33 +1,39 @@
 import { screen, render, renderHook, act } from '@testing-library/react';
-import UploadingView from '../../components/UploadingView';
-import { useFileInput, useFileUploader } from '../../hooks';
+import UploadingView from '.';
+import { AlertContext } from '../../../context/Alert';
+import { useFileInput, useFileUploader } from '../../../hooks';
 
+jest.mock('../../../hooks/fileUploader');
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
-jest.mock('../../hooks/fileUploader');
-
 test("uploading view component test", () => {
   const { result: hookItem } = renderHook(() => useFileInput());
+  const component = () => <AlertContext.Provider value={{addAlert: () => {}}}>
+    <UploadingView fileManager={hookItem.current} />
+  </AlertContext.Provider>
+
+  global.URL.createObjectURL = () => {};
   act(() => {
     hookItem.current.handleUpload([
       { file: '', name: `file1.png`, type: 'image/png' }
     ]);
   });
 
-  const file = { file: '', name: `file1`, type: 'image/png' };
+  var file = { file: '', name: `file1`, type: 'image/png' };
   useFileUploader.mockReturnValue({
     files: [file],
     setFiles: jest.fn(),
     proceedUpload: jest.fn(),
   });
 
-  const { rerender } = render(<UploadingView fileManager={hookItem.current} />);
+  const { rerender, container } = render(component());
 
-  let [result, name, progressWrap] = screen.getByText('file1').parentNode.childNodes;
-  let [progress] = progressWrap.childNodes;
+  var [result, name, progressWrap] = screen.getByText('file1').parentNode.childNodes;
+  var [progress] = progressWrap.childNodes;
 
+  expect(container.querySelector("#authModal").open).toBeFalsy();
   expect(result.className).toBe('iss__uploadProgress__completion ');
   expect(name.className).toBe('iss__uploadProgress__fileName ');
   expect(progress.style.width).toBe('0%');
@@ -35,10 +41,10 @@ test("uploading view component test", () => {
   file.progress = 50;
   file.status = 'a';
 
-  rerender(<UploadingView fileManager={hookItem.current} />)
+  rerender(component())
 
-  let [newresult, newname] = screen.getByText('file1').parentNode.childNodes;
-  let [newprogress] = progressWrap.childNodes;
+  var [newresult, newname] = screen.getByText('file1').parentNode.childNodes;
+  var [newprogress] = progressWrap.childNodes;
 
   expect(newresult.className).toBe('iss__uploadProgress__completion complete-status-a');
   expect(newname.className).toBe('iss__uploadProgress__fileName name-status-a');

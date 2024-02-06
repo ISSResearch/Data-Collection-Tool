@@ -1,9 +1,10 @@
 import { act, render, screen } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { MemoryRouter } from 'react-router-dom';
-import { mock_raw_project } from '../_mock';
+import { AlertContext } from '../../context/Alert';
+import { raw_project } from '../../config/mock_data';
 import { api } from '../../config/api';
-import ProjectPage from '../../pages/ProjectPage';
+import ProjectPage from '.';
 
 jest.mock('../../config/api');
 
@@ -23,38 +24,30 @@ test("project page test", async () => {
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
   ];
+  const component = (admin) =>
+    <UserContext.Provider value={{ user: { is_superuser: admin } }}>
+    <AlertContext.Provider value={{addAlert: () => {}}}>
+      <MemoryRouter initialEntries={['/projects/1']}>
+        <ProjectPage />
+      </MemoryRouter>
+    </AlertContext.Provider>
+    </UserContext.Provider>;
 
-  api.get.mockResolvedValue({ data: mock_raw_project });
+  api.get.mockResolvedValue({ data: raw_project });
 
-  let unmount = null;
+  var unmount = null;
 
-  await act(async () => {
-    unmount = render(
-      <UserContext.Provider value={{ user: { is_superuser: false } }}>
-        <MemoryRouter initialEntries={['/projects/1']}>
-          <ProjectPage />
-        </MemoryRouter>
-      </UserContext.Provider>
-    ).unmount;
-  });
+  await act(async () => unmount = render(component()).unmount);
 
   expect(screen.queryByTestId('load-c')).toBeNull();
-  expect(screen.getByText(/Description/).innerHTML.split('<br>')[1])
-    .toBe(mock_raw_project.description);
+  expect(screen.getByText(/Description/).innerHTML.split('<br>').slice(1).join("<br>"))
+    .toBe(raw_project.description);
 
-  expect(screen.getByRole('navigation').children[0].children).toHaveLength(2);
+  expect(screen.getByRole('navigation').children[0].children).toHaveLength(0);
 
   unmount();
 
-  await act(async () => {
-    render(
-      <UserContext.Provider value={{ user: { is_superuser: true } }}>
-        <MemoryRouter initialEntries={['/projects/1']}>
-          <ProjectPage />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-  });
+  await act(async () => render(component(true)));
 
   expect(screen.getByRole('navigation').children[0].children).toHaveLength(options.length + 1);
 });

@@ -9,7 +9,7 @@ import {
   spreadChildren,
   formUID,
   traverseWithReplace,
-  drawPaths
+  drawPaths,
 } from ".";
 import {
   object_with_inner_list,
@@ -91,21 +91,14 @@ test("form uid test", () => {
 });
 
 test("find required  test", () => {
-  var required = findRequired(prepared_attributes);
+  const attrs = deepCopy(prepared_attributes);
+  attrs[0].children[0].required = true;
+  var required = findRequired(attrs);
   expect(required).toEqual([
     {
-      id: 122,
       attributes: [265, 268, 259, 262],
-      uid: 270544594389903,
-      name: "model",
-      multiple: null,
-      required: true,
-      order: 0,
-      parent: 117,
-      project: 23,
       children: [
         {
-          id: 124,
           attributes: [
             { id: 267, name: "gene2", parent: 265 },
             { id: 299, name: "gene3", parent: 265 },
@@ -115,38 +108,38 @@ test("find required  test", () => {
             { id: 263, name: "gena1", parent: 262 },
             { id: 264, name: "gena2", parent: 262 },
           ],
-          uid: 9650426937781034,
-          name: "gen",
+          id: 124,
           multiple: false,
-          required: true,
+          name: "gen",
           order: 0,
           parent: 122,
           project: 23,
+          required: false,
+          uid: 9650426937781034,
         },
       ],
-    },
-    {
-      id: 124,
-      attributes: [267, 299, 270, 260, 261, 263, 264],
-      uid: 9650426937781034,
-      name: "gen",
-      multiple: false,
-      required: true,
+      id: 122,
+      multiple: null,
+      name: "model",
       order: 0,
-      parent: 122,
+      parent: 117,
       project: 23,
+      required: true,
+      uid: 270544594389903,
     },
   ]);
 });
 
 test("form error test", () => {
-  var required = findRequired(prepared_attributes);
+  const attrs = deepCopy(prepared_attributes);
+  attrs[0].children[0].required = true;
+  var required = findRequired(attrs);
   var error = formError("filename", required);
   expect(error).toEqual({
     isValid: false,
-    message: 'File "filename" is missing required attributes: model, gen.'
+    message: 'File "filename" is missing required attributes: model.',
   });
-  expect(formError("filename", [])).toEqual({isValid: true});
+  expect(formError("filename", [])).toEqual({ isValid: true });
 });
 
 test("spread children test", () => {
@@ -394,62 +387,62 @@ test("traverse with replace test", () => {
   var items = [
     {
       name: "make",
-      children: [ { name: "model", children: [ { name: "gen" } ] } ]
-    }
+      children: [{ name: "model", children: [{ name: "gen" }] }],
+    },
   ];
 
   traverseWithReplace(items, "name", "model", "model_replaced");
   expect(items).toEqual([
     {
       name: "make",
-      children: [ { name: "model", children: [ { name: "gen" } ] } ]
-    }
+      children: [{ name: "model", children: [{ name: "gen" }] }],
+    },
   ]);
 
   traverseWithReplace(items, "name", "model", "model_replaced", false);
   expect(items).toEqual([
     {
       name: "make",
-      children: [ { name: "model_replaced", children: [ { name: "gen" } ] } ]
-    }
-  ])
+      children: [{ name: "model_replaced", children: [{ name: "gen" }] }],
+    },
+  ]);
 });
 
 test("draw path test", () => {
   var items = [
     {
       name: "make",
-      children: [ { name: "model", children: [ { name: "gen" } ] } ]
-    }
+      children: [{ name: "model", children: [{ name: "gen" }] }],
+    },
   ];
   drawPaths(items);
 
   expect(items).toEqual([
     {
-      "children": [
+      children: [
         {
-          "children": [{"name": "gen", "order": 111}],
-          "name": "model",
-          "order": 11
-        }
+          children: [{ name: "gen", order: 111 }],
+          name: "model",
+          order: 11,
+        },
       ],
-      "name": "make",
-      "order": 1
-    }
+      name: "make",
+      order: 1,
+    },
   ]);
 
   drawPaths(items, 2);
   expect(items).toEqual([
     {
-      "children": [
+      children: [
         {
-          "children": [{"name": "gen", "order": 2111}],
-          "name": "model",
-          "order": 211
-        }
+          children: [{ name: "gen", order: 2111 }],
+          name: "model",
+          order: 211,
+        },
       ],
-      "name": "make",
-      "order": 21
-    }
+      name: "make",
+      order: 21,
+    },
   ]);
 });

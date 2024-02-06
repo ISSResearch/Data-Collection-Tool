@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom'
-import ProjectCard from '../../../components/common/ProjectCard';
+import ProjectCard from '.';
 
 test("project card component test", () => {
   const mockItem = {

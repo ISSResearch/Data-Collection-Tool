@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
+import { deepCopy } from '../../utils';
 import useFileInput from '../fileInput';
 import { prepared_attributes } from '../../config/mock_data';
 
@@ -132,6 +133,8 @@ test("file input attribute groups change test", () => {
 
 test("file input prepare test", () => {
   const { result: hook } = renderHook(() => useFileInput());
+  const attrs = deepCopy(prepared_attributes);
+  attrs[0].children[0].required = true;
 
   expect(hook.current.validate()).toEqual({ isValid: false, message: "No files attached!" });
 
@@ -140,13 +143,13 @@ test("file input prepare test", () => {
 
   expect(hook.current.validate([])).toEqual({ "isValid": true, "message": "ok" });
 
-  expect(hook.current.validate(prepared_attributes)).toEqual({
+  expect(hook.current.validate(attrs)).toEqual({
     "isValid": false,
-    "message": "File \"file\" is missing required attributes: model, gen."
+    "message": "File \"file\" is missing required attributes: model."
   });
 
   act(() => hook.current.handleApplyGroups({ "123456789": { 0: [265,  299] } }));
-  expect(hook.current.validate(prepared_attributes)).toEqual({
+  expect(hook.current.validate(attrs)).toEqual({
     "isValid": true,
     "message": "ok"
   });

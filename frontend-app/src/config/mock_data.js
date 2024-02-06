@@ -155,7 +155,7 @@ export const prepared_attributes = [
         uid: 270544594389903,
         name: "model",
         multiple: null,
-        required: true,
+        required: false,
         order: 0,
         parent: 117,
         project: 23,
@@ -174,7 +174,7 @@ export const prepared_attributes = [
             uid: 9650426937781034,
             name: "gen",
             multiple: false,
-            required: true,
+            required: false,
             order: 0,
             parent: 122,
             project: 23,
@@ -728,8 +728,9 @@ export const prepared_files = [
     file_name: "file1.png",
     file_type: "video",
     path: "/app/file_store/23/file1.png",
-    status: "",
+    status: "a",
     upload_date: "2023-06-08T19:39:54.304997Z",
+    is_downloaded: true,
     attributeGroups: {
       "99610f4b-724a-4175-a580-740b5f8559a5": {
         0: [246],
@@ -753,6 +754,7 @@ export const prepared_files = [
     file_type: "image",
     path: "/app/file_store/23/file2.png",
     status: "",
+    is_downloaded: false,
     upload_date: "2023-06-08T19:39:53.905602Z",
     attributeGroups: {
       "6c541438-762e-4e7b-b89c-b6f58eae740b": {

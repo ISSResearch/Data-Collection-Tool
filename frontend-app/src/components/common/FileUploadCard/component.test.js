@@ -1,8 +1,9 @@
 import { render, renderHook, screen } from '@testing-library/react';
-import { FileUploadCard } from '../../../components/common/FileUploadCard';
+import FileUploadCard from '.';
 import useFileInput from '../../../hooks/fileInput';
-import { mock_prepared_attributes } from '../../_mock';
+import { prepared_attributes } from '../../../config/mock_data';
 
+jest.mock("../../forms/SelectorGroup", () => () => "selectgroup");
 afterEach(() => {
   jest.restoreAllMocks();
 });
@@ -19,7 +20,7 @@ test("file upload card test", () => {
     <FileUploadCard
       file={file}
       fileID={1}
-      attributes={mock_prepared_attributes}
+      attributes={prepared_attributes}
       fileManager={hookItem.current}
     />
   );
@@ -31,7 +32,7 @@ test("file upload card test", () => {
     <FileUploadCard
       file={file2}
       fileID={1}
-      attributes={mock_prepared_attributes}
+      attributes={prepared_attributes}
       fileManager={hookItem.current}
     />
   );

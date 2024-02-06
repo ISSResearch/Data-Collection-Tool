@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { NavLinks } from '.';
+import NavLinks from '.';
 
 test("nav links component test", () => {
   const mockLinks = [
@@ -20,5 +20,5 @@ test("nav links component test", () => {
 
     expect(item.href).toBe('http://localhost' + link);
     expect(item.innerHTML).toBe(text);
-  })
+  });
 });

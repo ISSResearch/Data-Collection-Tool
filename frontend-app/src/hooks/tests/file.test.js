@@ -1,9 +1,12 @@
 import { renderHook, act } from '@testing-library/react';
+import { deepCopy } from '../../utils';
 import useFile from '../file';
 import { raw_file, prepared_attributes } from '../../config/mock_data';
 
 test("file hook test", () => {
   const { result: hook } = renderHook(() => useFile());
+  const attrs = deepCopy(prepared_attributes);
+  attrs[0].children[0].required = true;
 
   expect(hook.current.file).toEqual({});
 
@@ -13,9 +16,9 @@ test("file hook test", () => {
   act(() => hook.current.changeName({value: 'new_name'}));
   expect(hook.current.file.file_name).toEqual('new_name');
 
-  expect(hook.current.validate(prepared_attributes)).toEqual({
+  expect(hook.current.validate(attrs)).toEqual({
     "isValid": false,
-    "message": "File \"new_name\" is missing required attributes: model, gen."
+    "message": "File \"new_name\" is missing required attributes: model."
   });
   expect(hook.current.validate([])).toEqual({ "isValid": true, "message": "ok" });
 
