@@ -19,7 +19,7 @@ test("find and replace ui component test", () => {
   };
   const component = () => <FindAndReplace onCommit={(t,w) => {replaceTo=t;replaceWith=w}}/>;
 
-  const { rerender, container } = render(component());
+  const { container } = render(component());
   expect(container.querySelector(parentClass).className).toBe(parentClass.slice(1));
 
   var toggle = toggler();

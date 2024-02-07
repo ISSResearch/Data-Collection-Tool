@@ -2,10 +2,9 @@ FROM node:20.4-slim
 
 WORKDIR /app
 
-COPY ./frontend-app/package*.json ./
+COPY ./frontend-app/*.json/ ./
 
 RUN npm install
 
 COPY ./frontend-app/src ./src
-
 COPY ./frontend-app/public ./public

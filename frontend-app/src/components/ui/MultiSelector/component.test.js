@@ -30,7 +30,7 @@ test("selectoritem component test, case initial", () => {
     }
   };
 
-  const { rerender, container } = render(component());
+  const { container } = render(component());
   var toggle = toggler();
 
   screen.getByText("clear test_selector")
@@ -67,9 +67,6 @@ test("selectoritem component test, case initial", () => {
 test("selectoritem component test, case with defaults", () => {
   const attribute = prepared_attributes.find(({ multiple }) => multiple);
   const { attributes } = attribute;
-  const containerClass = ".iss__manualSelector__options";
-  const parentClass = ".iss__manualSelector__selected";
-  var change = [];
   const component = () => (
     <MultiSelector
       selectorLabel={"test_selector"}
@@ -79,7 +76,7 @@ test("selectoritem component test, case with defaults", () => {
     />
   );
 
-  const { rerender, container } = render(component());
+  render(component());
 
   expect(screen.queryByText('-not set-', { ignore: 'option' })).toBeNull();
   attributes.slice(1).forEach(({ name }) => {

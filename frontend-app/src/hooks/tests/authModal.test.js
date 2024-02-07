@@ -35,10 +35,8 @@ test("auth modal hook test", async () => {
   api.get.mockRejectedValue(err)
 
   await act(async () => {
-    try {
-      await hook.current.checkAuth();
-    }
-    catch {}
+    try { await hook.current.checkAuth(); }
+    catch({message}) { expect(message).toBe("some");}
   });
   expect(window.state).toBeTruthy();
 

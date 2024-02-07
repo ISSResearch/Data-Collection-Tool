@@ -21,7 +21,7 @@ test("file input component test", () => {
   const upload_files = {};
   for (let i = 0; i < 25; i++) {
     upload_files[i] = { file: '', name: `file${i}.png`, type: 'image/png' };
-  };
+  }
 
   expect(Object.entries(fileManager.current.files)).toHaveLength(0);
   fireEvent.change(

@@ -1,4 +1,4 @@
-import { fireEvent, render, renderHook, screen, act } from '@testing-library/react';
+import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import AttributeCreatorForm from '.';
 import useAttributeManager from '../../../hooks/attributeManager';
 import { AlertContext } from '../../../context/Alert';

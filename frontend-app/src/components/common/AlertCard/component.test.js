@@ -6,7 +6,7 @@ test("alert card component test", () => {
   expect(screen.getByText("red card").className).toBe("alertCard alert--red");
   unmount();
 
-  var { unmount } = render(<AlertCard message={"green card"} color={"green"} />);
+  unmount = render(<AlertCard message={"green card"} color={"green"} />).unmount;
   expect(screen.getByText("green card").className).toBe("alertCard alert--green");
   unmount();
 

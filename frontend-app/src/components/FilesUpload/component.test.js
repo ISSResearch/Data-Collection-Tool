@@ -26,7 +26,7 @@ test("files upload component test", () => {
       </AlertContext.Provider>
     }
   ]);
-  const { rerender, container } = render(<RouterProvider router={router}/>);
+  const { container } = render(<RouterProvider router={router}/>);
 
   expect(screen.queryByTestId('load-c')).toBeNull();
 

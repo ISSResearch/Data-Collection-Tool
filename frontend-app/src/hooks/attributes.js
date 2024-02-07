@@ -98,7 +98,7 @@ export default function useAttributes() {
 
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
-    var path = path.split('_');
+    path = path.split('_');
 
     var targetNode = path.length > 1
       ? deepFind(target, path.slice(0, path.length - 1)).children
@@ -116,7 +116,7 @@ export default function useAttributes() {
   function moveDown(formId, path, index)  {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
-    var path = path.split('_');
+    path = path.split('_');
 
     var targetNode = path.length > 1
       ? deepFind(target, path.slice(0, path.length - 1)).children

@@ -5,7 +5,7 @@ import ProjectEdit from '.';
 import { prepared_attributes } from '../../config/mock_data';
 
 jest.mock("../../config/api", () => ({
-  api: { request: _ => {}, },
+  api: { request: () => {}, },
 }));
 
 afterEach(() => {
@@ -33,7 +33,7 @@ test("project edit component test", async () => {
     </MemoryRouter>
   );
 
-  const { rerender, container } = render(component());
+  const { container } = render(component());
 
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
   screen.getByRole('button', { name: 'DELETE PROJECT' });

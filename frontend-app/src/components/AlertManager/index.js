@@ -8,14 +8,14 @@ const COLOR_MAP = {
   "success": "green",
 }
 
-export default function({ maxOnScreen }) {
+export default function AlertManager({ maxOnScreen }) {
   const { alerts, removeAlert } = useContext(AlertContext);
 
   return (
     <aside className="alertManager">
       {
         Object.entries(alerts)
-          .filter(([_, { active }]) => active)
+          .filter(([, { active }]) => active)
           .slice(0, maxOnScreen)
           .map(([id, { message, type }]) => (
             <AlertCard

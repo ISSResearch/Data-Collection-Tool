@@ -40,7 +40,7 @@ test("project visibility test", async () => {
   }
   api.get.mockResolvedValue({ data: [{ id: 1, username: 'name_test', permissions }] });
 
-  const { rerender, container } = await init();
+  await init();
 
   screen.getByRole('table');
 

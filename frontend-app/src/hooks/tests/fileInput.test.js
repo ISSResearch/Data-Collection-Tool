@@ -11,7 +11,7 @@ const makeFiles = (num=25) => {
   var files = [];
   for (let i = 0; i < num; i++) {
     files.push({ file: '', name: `file${i}.png`, type: 'image/png' });
-  };
+  }
   return files
 }
 
@@ -139,7 +139,7 @@ test("file input prepare test", () => {
   expect(hook.current.validate()).toEqual({ isValid: false, message: "No files attached!" });
 
   act(() => hook.current.handleUpload([{ file: '', name: `file.png`, type: 'image/png' }]));
-  const [fileID] = Object.keys(hook.current.files);
+  Object.keys(hook.current.files);
 
   expect(hook.current.validate([])).toEqual({ "isValid": true, "message": "ok" });
 

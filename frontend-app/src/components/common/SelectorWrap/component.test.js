@@ -1,4 +1,4 @@
-import { render, act, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import SelectorWrap from '.';
 import { prepared_attributes } from '../../../config/mock_data';
 
@@ -50,7 +50,7 @@ test("selector component test, solo applied", () => {
   var attribute = prepared_attributes.find(({ multiple }) => !multiple);
   var attributesStack = [attribute];
 
-  while (true) {
+  while (attributesStack.length) {
     var { children } = attributesStack[attributesStack.length - 1];
     if (children) attributesStack.push({
       ...children[0],

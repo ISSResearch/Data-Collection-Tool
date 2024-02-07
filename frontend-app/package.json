@@ -15,7 +15,8 @@
     "start": "export REACT_APP_CASE=$CASE && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src/*"
   },
   "eslintConfig": {
     "extends": ["react-app", "react-app/jest"]
@@ -31,6 +32,9 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.0-placeholder-for-preset-env.2",
     "@testing-library/react": "^14.0.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "http-proxy-middleware": "^2.0.6"
   },
   "jest": {

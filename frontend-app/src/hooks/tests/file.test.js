@@ -46,7 +46,7 @@ test("file groupchange test", () => {
   expect(Object.keys(groups())).toHaveLength(2);
 
   act(() => {
-    var [_, key] = Object.keys(groups());
+    var [, key] = Object.keys(groups());
     hook.current.handleGroupChange({ type: "delete", key });
   });
   expect(Object.keys(groups())).toHaveLength(1);

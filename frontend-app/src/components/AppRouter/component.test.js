@@ -1,4 +1,4 @@
-import { render, screen, renderHook } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { UserContext } from "../../context/User";
 import { MemoryRouter } from 'react-router-dom';
 import AppRouter from '../../components/AppRouter';

@@ -8,7 +8,7 @@ test("alert manager component test", () => {
   const max = 6;
   const component = () => (
     <AlertContext.Provider value={alerts.current}>
-      <AlertManager maxOnScreen={6}/>
+      <AlertManager maxOnScreen={max}/>
     </AlertContext.Provider>
   );
 
@@ -20,5 +20,5 @@ test("alert manager component test", () => {
   });
 
   rerender(component());
-  expect(container.querySelectorAll(".alertCard")).toHaveLength(6);
+  expect(container.querySelectorAll(".alertCard")).toHaveLength(max);
 });

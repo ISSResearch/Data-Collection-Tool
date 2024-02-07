@@ -7,7 +7,7 @@ const COLORS_MAP = {
   green: " alert--green"
 }
 
-export default function({ message, color, closeAction }) {
+export default function AlertCard({ message, color, closeAction }) {
   const alertRef = useRef(null);
 
   useEffect(() => {

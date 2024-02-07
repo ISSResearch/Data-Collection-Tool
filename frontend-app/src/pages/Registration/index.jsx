@@ -12,7 +12,7 @@ const FIELD_SET = [
   { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
 ]
 
-export default function() {
+export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { initUser } = useContext(UserContext);
