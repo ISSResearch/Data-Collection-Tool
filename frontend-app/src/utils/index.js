@@ -101,13 +101,13 @@ export function traverseWithReplace(
   replaceWith,
   head=true
 ) {
-  items.forEach(item => {
+  items.forEach((item) => {
     if (item[lookUpKey] === lookUpVal) item[lookUpKey] = replaceWith;
     if (item.children && !head) traverseWithReplace(
       item.children,
       lookUpKey,
       lookUpVal,
-      replaceWith
+      replaceWith,
     );
   });
 }

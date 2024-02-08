@@ -6,8 +6,10 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 14,
     "sourceType": "module",
@@ -20,7 +22,7 @@
       "version": "^18.2.0"
     }
   },
-  "plugins": ["react", "react-hooks", "jsdoc"],
+  "plugins": ["react", "react-hooks", "jsdoc", "@typescript-eslint"],
   "ignorePatterns": ["*.css"],
   "rules": {
     "no-undef": "off",
@@ -47,6 +49,12 @@
     "jsdoc/require-returns-check": "error",
     "jsdoc/require-returns-type": "error",
     "jsdoc/require-throws": "error",
-    "jsdoc/valid-types": "error"
+    "jsdoc/valid-types": "error",
+    "semi": "error",
+    "arrow-parens": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "no-empty-function": "error",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }
