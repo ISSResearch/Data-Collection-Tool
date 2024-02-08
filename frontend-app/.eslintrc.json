@@ -15,11 +15,38 @@
       "jsx": true
     }
   },
-  "plugins": ["react", "react-hooks"],
+  "settings": {
+    "react": {
+      "version": "^18.2.0"
+    }
+  },
+  "plugins": ["react", "react-hooks", "jsdoc"],
   "ignorePatterns": ["*.css"],
   "rules": {
     "no-undef": "off",
     "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "jsdoc/require-asterisk-prefix": "error",
+    "jsdoc/check-indentation": "error",
+    "jsdoc/check-param-names": "error",
+    "jsdoc/check-property-names": "error",
+    "jsdoc/check-syntax": "error",
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/check-types": "error",
+    "jsdoc/check-values": "error",
+    "jsdoc/multiline-blocks": "error",
+    "jsdoc/no-bad-blocks": "error",
+    "jsdoc/no-blank-block-descriptions": "error",
+    "jsdoc/no-multi-asterisks": "error",
+    "jsdoc/no-undefined-types": "error",
+    "jsdoc/require-jsdoc": "error",
+    "jsdoc/require-param": "error",
+    "jsdoc/require-param-name": "error",
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-returns": "error",
+    "jsdoc/require-returns-check": "error",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/require-throws": "error",
+    "jsdoc/valid-types": "error"
   }
 }

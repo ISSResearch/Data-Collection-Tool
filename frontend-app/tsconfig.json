@@ -1,0 +1,13 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "noEmit": true,
+        "allowJs": true,
+        "checkJs": true,
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+	"jsx": "react-jsx"
+    },
+    "exclude": ["**/*.test.js"],
+    "include": ["./src"]
+}
