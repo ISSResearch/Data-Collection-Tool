@@ -5,7 +5,7 @@ import "./styles.css";
 const COLORS_MAP = {
   red: " alert--red",
   green: " alert--green"
-}
+};
 
 export default function AlertCard({ message, color, closeAction }) {
   const alertRef = useRef(null);

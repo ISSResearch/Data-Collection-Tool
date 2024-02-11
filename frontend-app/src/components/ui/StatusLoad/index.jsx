@@ -1,6 +1,6 @@
 import './styles.css';
 
-export default function({ progress, info, error }) {
+export default function StatusLoad({ progress, info, error }) {
   return (
     <div className='iss__statusLoad__wrap'>
       <div className={'iss__statusLoad' + (error ? ' progress--fail' : '')}>
@@ -12,5 +12,5 @@ export default function({ progress, info, error }) {
       </div>
       {info && <span>{info}</span>}
     </div>
-  )
+  );
 }

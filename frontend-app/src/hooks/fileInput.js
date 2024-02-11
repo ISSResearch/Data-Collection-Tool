@@ -7,8 +7,8 @@ export default function useFileInput() {
   const [applyGroups, setApplyGroups] = useState({});
 
   function handleUpload(uploaded) {
-    setFiles(prev => {
-      return { ...prev, ...inputFilesAdapter(uploaded, applyGroups) }
+    setFiles((prev) => {
+      return { ...prev, ...inputFilesAdapter(uploaded, applyGroups) };
     });
   }
 
@@ -16,11 +16,11 @@ export default function useFileInput() {
     var newApplyGroups = deepCopy(groups);
     setApplyGroups(() => newApplyGroups);
     Object.values(files)
-      .forEach(file => file.attributeGroups = deepCopy(newApplyGroups || {}));
+      .forEach((file) => file.attributeGroups = deepCopy(newApplyGroups || {}));
   }
 
   function handleNameChange({ value }, chandeID) {
-    setFiles(prev => {
+    setFiles((prev) => {
       var newFiles = { ...prev };
       newFiles[chandeID].name = value;
       return newFiles;
@@ -28,7 +28,7 @@ export default function useFileInput() {
   }
 
   function handleDelete(deleteId) {
-    setFiles(prev => {
+    setFiles((prev) => {
       var newFiles = { ...prev };
       URL.revokeObjectURL(newFiles[deleteId].blob);
       delete newFiles[deleteId];
@@ -49,9 +49,9 @@ export default function useFileInput() {
           target[selInd].push(...selected);
         }
       }
-    }
+    };
 
-    setFiles(prev => {
+    setFiles((prev) => {
       var newFiles = { ...prev };
       changeMap[type](newFiles[fileID], key, payload);
       return newFiles;
@@ -93,7 +93,7 @@ export default function useFileInput() {
         requiredIds.forEach((ids, index) => {
           var found;
           for (var idx in groupData) {
-            if (groupData[idx].filter(id => ids.includes(id)).length) {
+            if (groupData[idx].filter((id) => ids.includes(id)).length) {
               found = true;
               break;
             }
@@ -110,7 +110,7 @@ export default function useFileInput() {
     var resultMap = {
       "ok": { isValid: true, message: 'ok' },
       "noFiles": { isValid: false, message: 'No files attached!' }
-    }
+    };
 
     if (!Object.values(files).length) return resultMap.noFiles;
 

@@ -3,7 +3,7 @@ import { AlertContext } from "../../../context/Alert";
 import FileUploadCard from '../../common/FileUploadCard';
 import './styles.css';
 
-export default function({ fileManager, attributes, emitUpload }) {
+export default function FileInput({ fileManager, attributes, emitUpload }) {
   const { files, handleUpload, count } = fileManager;
   const { addAlert } = useContext(AlertContext);
 
@@ -19,7 +19,7 @@ export default function({ fileManager, attributes, emitUpload }) {
   var handleDrop = (ev) => {
     ev.preventDefault();
     handleUpload([...ev.dataTransfer.files]);
-  }
+  };
 
   return (
     <form

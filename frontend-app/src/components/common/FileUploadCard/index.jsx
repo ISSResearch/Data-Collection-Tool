@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState } from "react";
 import SelectorGroup from "../../forms/SelectorGroup";
 import CloseCross from "../../ui/CloseCross";
 import './styles.css';
 
-export default function({
+export default function FileUploadCard({
   fileID,
   file,
   fileManager,
@@ -48,5 +48,5 @@ export default function({
         />
       </div>
     </div>
-  )
+  );
 }

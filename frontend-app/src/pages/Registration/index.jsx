@@ -10,7 +10,7 @@ const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
   { label: 'Enter password:', type: 'password', name: 'password1', placeholder: 'password', required: true },
   { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
-]
+];
 
 export default function Registration() {
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ export default function Registration() {
 
       if (!data.isAuth || status !== 201) {
         var errorMessage = Object.entries(data.errors)
-          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], [])
+          .reduce((acc, [key, val]) => [...acc, `${key}: `, ...val], []);
         throw new Error(errorMessage);
       }
 

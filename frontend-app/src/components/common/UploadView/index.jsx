@@ -5,7 +5,7 @@ import Load from '../../ui/Load';
 import Form from '../../forms/Form';
 import './styles.css';
 
-export default function({ fileManager, pathID, setUploading }) {
+export default function UploadView({ fileManager, pathID, setUploading }) {
   const [loading, setLoading] = useState(true);
   const [uploadProcess, setUploadProcess] = useState(false);
   const { files, setFiles, proceedUpload } = useFileUploader(pathID);

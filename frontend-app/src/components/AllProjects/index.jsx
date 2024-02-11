@@ -2,9 +2,9 @@ import ProjectCard from "../common/ProjectCard";
 import Load from "../ui/Load";
 import './styles.css';
 
-export default function({ items }) {
+export default function AllProjects({ items }) {
 
-  if (!items) return <div className='iss__projects__loading'><Load/></div>
+  if (!items) return <div className='iss__projects__loading'><Load/></div>;
 
   return (
     <>
@@ -12,7 +12,7 @@ export default function({ items }) {
       items.length
         ? <div className='iss__allProjects'>
           {
-            items.map(item => (
+            items.map((item) => (
               <div key={item.id} className='iss__projects__card'>
                 <ProjectCard item={item} />
               </div>
@@ -22,5 +22,5 @@ export default function({ items }) {
         : <span>No projects.</span>
     }
     </>
-  )
+  );
 }

@@ -11,7 +11,7 @@ export default function Form({ errors, callback, fields, loading, link }) {
             <b>Request failure:</b><br/>{errors}
           </p>
       }
-      <form onSubmit={callback} methods="post" className="iss__form">
+      <form onSubmit={callback} method="post" className="iss__form">
         {
           fields.map(({ label, name, placeholder, type, required }) => (
             <label key={name} className='iss__input'>

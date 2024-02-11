@@ -1,4 +1,4 @@
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useContext, useCallback } from "react";
 import { attributeAdapter } from '../../adapters';
 import { UserContext } from '../../context/User';
@@ -29,9 +29,9 @@ const VARIANTS = {
   download: FilesDownload,
   edit: ProjectEdit,
   visibility: ProjectVisibility
-}
+};
 
-export default function() {
+export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);
   const [userOptions, setUserOptions] = useState([]);
@@ -43,7 +43,7 @@ export default function() {
   const location = useLocation();
 
   const PageVariant = useCallback((props) => {
-    var [, , , variant] = location.pathname.split('/')
+    var [, , , variant] = location.pathname.split('/');
     var Component = VARIANTS[variant];
     return Component && <Component {...props} />;
   }, [location]);

@@ -10,4 +10,4 @@ export const TYPES_MAP = {
   'jpeg': "image",
   "png": "image",
   "webp": "video"
-}
+};

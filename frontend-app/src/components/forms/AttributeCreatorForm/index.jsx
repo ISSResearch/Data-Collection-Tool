@@ -3,7 +3,7 @@ import AttributesForm from '../AttributesForm';
 import FindAndReplace from "../../ui/FindAndReplace";
 import './styles.css';
 
-export default function({ attributeManager, withBoundAttributes }) {
+export default function AttributeCreatorForm({ attributeManager, withBoundAttributes }) {
   const { formHook, levelHook, attributeHook } = attributeManager;
   const { forms, addForm, deleteForm, boundAttributes } = formHook;
 
@@ -37,7 +37,7 @@ export default function({ attributeManager, withBoundAttributes }) {
       </div>
       <div className='iss__attributecreator__attributesForm'>
         {
-          Object.keys(forms).map(formId => (
+          Object.keys(forms).map((formId) => (
             <AttributesForm
               key={formId}
               formId={formId}

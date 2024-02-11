@@ -21,9 +21,9 @@ var handleMediaFallback = ({ target }) => {
     target.poster = fallbackSrc;
   }
   else target.src = fallbackSrc;
-}
+};
 
-export default forwardRef(({ files, slide, pathID }, ref) => {
+export default forwardRef(function FileMedia({ files, slide, pathID }, ref) {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
@@ -39,10 +39,9 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
         controls
         playsInline
         { ...props }
-        onError={e => handleMediaFallback(e)}
+        onError={(e) => handleMediaFallback(e)}
       />
-      : <img alt="validation_item" {...props} onError={e => handleMediaFallback(e)} />
-
+      : <img alt="validation_item" {...props} onError={(e) => handleMediaFallback(e)} />;
   }, [typeVideo]);
 
   let scale = 1,
@@ -94,10 +93,10 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
 
   useEffect(() => {
     var media = mediaRef.current;
-    media.addEventListener('wheel', event => event.preventDefault());
+    media.addEventListener('wheel', (event) => event.preventDefault());
     return () => {
-      media.removeEventListener('wheel', event => event.preventDefault());
-    }
+      media.removeEventListener('wheel', (event) => event.preventDefault());
+    };
   }, []);
 
   useEffect(() => {
@@ -109,7 +108,7 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
       setFileUrl(
         `${getOriginDomain()}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
       );
-    }
+    };
 
     if (!tempFileToken) {
       fileApi.get("/api/temp_token/", {
@@ -130,7 +129,7 @@ export default forwardRef(({ files, slide, pathID }, ref) => {
 
     return () => {
       URL.revokeObjectURL(fileUrl);
-    }
+    };
   }, [files, slide]);
 
   return (

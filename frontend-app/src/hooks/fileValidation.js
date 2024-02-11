@@ -5,7 +5,7 @@ export default function useFiles() {
   const [files, setFiles] = useState([]);
 
   function initFiles(filesData) {
-    filesData.forEach(file => {
+    filesData.forEach((file) => {
       var { attributes } = file;
       file.attributeGroups = attributeGroupsAdapter(attributes);
     });

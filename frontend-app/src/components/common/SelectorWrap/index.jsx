@@ -2,23 +2,23 @@ import { useEffect, useState } from 'react';
 import MultiSelector from '../../ui/MultiSelector';
 import "./styles.css";
 
-export default function({ item, onChange, applyGroups }) {
+export default function SelectorWrap({ item, onChange, applyGroups }) {
   const [options, setOptions] = useState([]);
   const [valueIds, setValuesIds] = useState([]);
 
   function handleSelect(selected, children, index) {
     selected = Number(selected);
 
-    var clear = !Boolean(selected);
+    var clear = !selected;
     var newOptions = [...options];
 
     newOptions.splice(index + 1);
 
-    setValuesIds(prev => {
+    setValuesIds((prev) => {
       var newValues = [...prev];
       newValues.splice(index);
       if (!clear) newValues.push(selected);
-      return newValues
+      return newValues;
     });
 
     if (!clear && children) {
@@ -63,7 +63,7 @@ export default function({ item, onChange, applyGroups }) {
                 ? <MultiSelector
                   selectorLabel={name}
                   selectorOptions={attributes}
-                  onChange={selected => onChange({ selected, index })}
+                  onChange={(selected) => onChange({ selected, index })}
                   defaultSelected={applyGroups?.slice(index)}
                 />
                 : <select

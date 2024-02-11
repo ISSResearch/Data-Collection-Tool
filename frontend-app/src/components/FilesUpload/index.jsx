@@ -6,7 +6,7 @@ import FileInput from '../forms/FileInput';
 import UploadView from '../common/UploadView';
 import './styles.css';
 
-export default function({ attributes, pathID }) {
+export default function FilesUpload({ attributes, pathID }) {
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();
 
@@ -14,19 +14,19 @@ export default function({ attributes, pathID }) {
     var filesCount = fileManager.count();
     return (filesCount > 0 && fileManager.uploadCount() > 0)
       ? !window.confirm(`Are you sure you wanna leave the page? ${filesCount} file(s) you added wont be saved!`)
-      : false
+      : false;
   });
 
   useEffect(() => {
-    var nativeBlocker = e => {
+    var nativeBlocker = (e) => {
       if (fileManager.count() > 0 && fileManager.uploadCount() > 0) {
-        e.preventDefault()
+        e.preventDefault();
       }
     };
     window.addEventListener("beforeunload", nativeBlocker);
     return () => {
       window.removeEventListener("beforeunload", nativeBlocker);
-    }
+    };
   }, [fileManager]);
 
   if (uploading) return (

@@ -7,7 +7,7 @@ export default function useLevels() {
 
   function initLevel(formId, initData = []) {
     setLevels((prev) => {
-      return { ...prev, [formId]: initData }
+      return { ...prev, [formId]: initData };
     });
   }
 
@@ -30,7 +30,7 @@ export default function useLevels() {
 
   function delLevel(formId, index) {
     var newLevels = { ...levels };
-    var prevValues = newLevels[formId]
+    var prevValues = newLevels[formId];
 
     prevValues.splice(index, 1);
     newLevels[formId] = prevValues;
@@ -40,7 +40,7 @@ export default function useLevels() {
 
   function changeLevel(formId, { value }, index) {
     var newLevels = { ...levels };
-    var prevValues = newLevels[formId]
+    var prevValues = newLevels[formId];
 
     prevValues[index].name = value;
     newLevels[formId] = prevValues;
@@ -55,7 +55,7 @@ export default function useLevels() {
     }
 
     var newLevels = { ...levels };
-    var prevValues = newLevels[formId]
+    var prevValues = newLevels[formId];
 
     prevValues[index].multiple = !prevValues[index].multiple;
     newLevels[formId] = prevValues;
@@ -76,7 +76,7 @@ export default function useLevels() {
   function findAndReplace(replaceTo="", replaceWith="") {
     const newLevels = { ...levels };
 
-    Object.values(newLevels).forEach(items => {
+    Object.values(newLevels).forEach((items) => {
       traverseWithReplace(items, "name", replaceTo, replaceWith);
     });
 

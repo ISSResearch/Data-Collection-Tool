@@ -7,7 +7,13 @@
     "checkJs": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "axios": ["./node_modules/axios"],
+      "react": ["./node_modules/react"],
+      "react-dom": ["./node_modules/react-dom"],
+      "react-router-dom": ["./node_modules/react-router-dom"]
+    }
   },
   "exclude": ["**/*.test.js"],
   "include": ["./src"]

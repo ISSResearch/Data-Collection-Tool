@@ -7,7 +7,7 @@ import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import Load from '../ui/Load';
 import './styles.css';
 
-export default function() {
+export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
   const { addAlert } = useContext(AlertContext);
@@ -43,7 +43,7 @@ export default function() {
             "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
           }
         }
-      )
+      );
       addAlert("Project created", "success");
       navigate("/projects/");
     }
@@ -55,7 +55,7 @@ export default function() {
       if (authFailed) navigate("/login");
 
       setLoading(false);
-    };
+    }
   }
 
   return (

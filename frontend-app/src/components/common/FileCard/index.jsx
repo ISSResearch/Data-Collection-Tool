@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import './styles.css';
 
-const DEFAULT_STYLE = 'iss__fileCard'
+const DEFAULT_STYLE = 'iss__fileCard';
 
-export default function({
+export default function FileCard({
   cardIndex,
   name,
   author_name,
@@ -20,7 +20,7 @@ export default function({
     if (active) newStyles.push('card--active');
     if (status && status !== 'v') newStyles.push(
       `card--${status === 'a' ? 'accepted' : 'rejected'}`
-    )
+    );
 
     setStyles(newStyles);
   }, [active, status]);
@@ -31,5 +31,5 @@ export default function({
       <p>uploaded by <i>{author_name}</i></p>
       <time>{date}</time>
     </div>
-  )
+  );
 }

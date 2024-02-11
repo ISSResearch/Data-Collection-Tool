@@ -15,9 +15,9 @@ const PERMISSIONS = [
   { name: 'Can view stats', value: 'stats' },
   { name: 'Can download', value: 'download' },
   { name: 'Can edit', value: 'edit' },
-]
+];
 
-export default function({ pathID }) {
+export default function ProjectVisibility({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();
   const { addAlert } = useContext(AlertContext);
@@ -50,7 +50,7 @@ export default function({ pathID }) {
       addAlert("Updating collectors error" + message, "error", authFailed);
 
       if (authFailed) navigate("/login");
-    };
+    }
   }
 
   useEffect(() => {
@@ -70,10 +70,10 @@ export default function({ pathID }) {
       });
   }, []);
 
-  if (loading.page) return <div className='iss__visibility__load'><Load /></div>
+  if (loading.page) return <div className='iss__visibility__load'><Load /></div>;
 
   return (
-    <form onSubmit={event => sendForm(event)} className="iss__visibility__form">
+    <form onSubmit={(event) => sendForm(event)} className="iss__visibility__form">
       <table className="iss__visibility__table">
         <thead className='iss__visibility__table-header'>
           <tr className='iss__visibility__table-row'>

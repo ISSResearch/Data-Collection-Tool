@@ -20,7 +20,7 @@ export default function useFileUploader(projectID) {
           file_extension: file.extension,
           file_type: file.type
         })
-      }
+      };
 
       var config = {
         method: 'post',
@@ -31,7 +31,7 @@ export default function useFileUploader(projectID) {
           'Chunk': i + 1,
           'Total-Chunks': numOfChunks
         }
-      }
+      };
 
       var response = await fileApi.request(
         `/api/storage/project_${project}/${id}/`,

@@ -4,7 +4,7 @@ import { UserContext } from "../../context/User";
 
 const SAFE_ROUTES = ["/login", "/registration"];
 
-export default function() {
+export default function AppRouter() {
   const [redirect, setRedirect] = useState(false);
   const { user } = useContext(UserContext);
   const location = useLocation();

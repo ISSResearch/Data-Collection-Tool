@@ -11,7 +11,7 @@ export default function useAttributeManager() {
   function addForm(data) {
     var formId = formUID();
     setForms((prev) => {
-      return { ...prev, [formId]: { levels: null, attributes: null } }
+      return { ...prev, [formId]: { levels: null, attributes: null } };
     });
     levelHook.initLevel(formId, data?.levels || []);
     attributeHook.initAttribute(formId, data?.attributes || []);
@@ -29,14 +29,14 @@ export default function useAttributeManager() {
 
   function gatherAttributes(initLen = 0) {
     return Object.keys(forms).map((key, index) => {
-      const preparedLevels = levelHook.levels[key].map(el => {
+      const preparedLevels = levelHook.levels[key].map((el) => {
         el.order = index + initLen;
         return el;
-      })
+      });
       return {
         levels: preparedLevels,
         attributes: attributeHook.gather(key),
-      }
+      };
     });
   }
 
@@ -54,10 +54,10 @@ export default function useAttributeManager() {
         if (level.attributes) attributes.push(...level.attributes);
       }
 
-      attributes.forEach(el => {
+      attributes.forEach((el) => {
         el.orig = true;
         if (!el.children) el.children = [];
-        const parent = attributes.find(({ id }) => el.parent === id);
+        var parent = attributes.find(({ id }) => el.parent === id);
         if (parent) parent.children ? parent.children.push(el) : parent.children = [el];
       });
 
@@ -68,7 +68,7 @@ export default function useAttributeManager() {
       return [...acc, boundForm];
     }, []);
 
-    preparedData.forEach(item => addForm(item));
+    preparedData.forEach((item) => addForm(item));
   }
 
   return {

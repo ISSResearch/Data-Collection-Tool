@@ -1,14 +1,14 @@
 import { Fragment, useState } from 'react';
 import './styles.css';
 
-function TableBodySet({ bodySet, countCallback, parent, depth }) {
+export default function TableBodySet({ bodySet, countCallback, parent, depth }) {
   const [childWrap, setWrap] = useState([]);
 
   function handleWrap(index) {
     var newWraps = [...childWrap];
 
     if (newWraps.includes(index)) {
-      var pos = newWraps.findIndex(i => i === index);
+      var pos = newWraps.findIndex((i) => i === index);
       newWraps.splice(pos, 1);
     }
     else newWraps.push(index);
@@ -18,7 +18,7 @@ function TableBodySet({ bodySet, countCallback, parent, depth }) {
 
   function getColor() {
     var modifier = 10 * (depth || 0);
-    return `rgb(${216 - modifier}, ${234 - modifier}, ${255 - modifier}, 0.${2 + depth || 0})`
+    return `rgb(${216 - modifier}, ${234 - modifier}, ${255 - modifier}, 0.${2 + depth || 0})`;
   }
 
   return (
@@ -78,5 +78,3 @@ function TableBodySet({ bodySet, countCallback, parent, depth }) {
     </>
   );
 }
-
-export default TableBodySet;

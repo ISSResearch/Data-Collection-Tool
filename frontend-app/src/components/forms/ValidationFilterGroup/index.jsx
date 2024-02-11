@@ -2,7 +2,7 @@ import MultiSelector from "../../ui/MultiSelector";
 import AttributeMultiSelector from "../../ui/AttributeMultiSelector";
 import './styles.css';
 
-export default function({ filterData, onChange }) {
+export default function ValidationFilterGroup({ filterData, onChange }) {
   return (
     <fieldset className='iss__validation__filters'>
       {
@@ -34,5 +34,5 @@ export default function({ filterData, onChange }) {
         ))
       }
     </fieldset>
-  )
+  );
 }

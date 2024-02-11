@@ -6,7 +6,7 @@ import "./styles.css";
 const COLOR_MAP = {
   "error": "red",
   "success": "green",
-}
+};
 
 export default function AlertManager({ maxOnScreen }) {
   const { alerts, removeAlert } = useContext(AlertContext);

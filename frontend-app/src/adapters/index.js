@@ -14,14 +14,16 @@ export function inputFilesAdapter(files, groups) {
 
 export function attributeAdapter(data) {
   var attributes = deepCopy(data.attributes);
-  attributes.forEach(el => {
+
+  attributes.forEach((el) => {
     var parent = attributes.find(({ id }) => el.parent === id);
     if (parent) {
       parent.children
         ? parent.children[0].attributes.push(...el.attributes)
         : parent.children = [el];
     }
-  })
+  });
+
   return { ...data, preparedAttributes: attributes.filter(({ parent }) => !parent) };
 }
 
@@ -63,7 +65,7 @@ export function userStatsAdapter(data) {
     return acc;
   }, {});
 
-  return Object.values(preparedData)
+  return Object.values(preparedData);
 }
 
 export function attributeStatsAdapter(data) {
@@ -97,7 +99,7 @@ export function attributeStatsAdapter(data) {
     return acc;
   }, {});
 
-  Object.values(preparedData).forEach(el => {
+  Object.values(preparedData).forEach((el) => {
     var parent = Object.values(preparedData).find(({ id }) => el.parent === id);
     if (parent) parent.children
       ? parent.children.push(el)

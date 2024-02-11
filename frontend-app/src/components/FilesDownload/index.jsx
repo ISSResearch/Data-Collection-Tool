@@ -15,7 +15,7 @@ const OPTIONS = [
   { name: "declined", value: "d", color: "red" },
 ];
 
-export default function({ pathID }) {
+export default function FilesDownload({ pathID }) {
   const [isOpen, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [option, setOption] = useState(OPTIONS[0]);

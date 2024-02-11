@@ -3,7 +3,7 @@ import { spreadChildren } from '../../../utils/';
 import SelectorWrap from '../../common/SelectorWrap';
 import "./styles.css";
 
-export default function({ selectorName, data, onChange, defaultSelected, }) {
+export default function AttributeMultiSelector({ selectorName, data, onChange, defaultSelected, }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const [selectors, setSelectors] = useState({});
@@ -18,7 +18,7 @@ export default function({ selectorName, data, onChange, defaultSelected, }) {
     target.splice(index);
     target.push(...selected);
     setSelectors({ ...selectors, [selInd]: target });
-  };
+  }
 
   function handleManualSelect(event) {
     event.preventDefault();
@@ -64,7 +64,7 @@ export default function({ selectorName, data, onChange, defaultSelected, }) {
           `iss__filterSelector__options${isOpen ? ' options--open' : ''}`
         }
       >
-        <form onSubmit={event => handleManualSelect(event)} className='iss__validationFilter__form'>
+        <form onSubmit={(event) => handleManualSelect(event)} className='iss__validationFilter__form'>
           <label
             onClick={({ target }) => resetSelector(target)}
             className='iss__filterSelector__level'
@@ -74,7 +74,7 @@ export default function({ selectorName, data, onChange, defaultSelected, }) {
               <SelectorWrap
                 key={attribute.id}
                 item={attribute}
-                onChange={data => setOption(data, index)}
+                onChange={(data) => setOption(data, index)}
               />
             ))
           }

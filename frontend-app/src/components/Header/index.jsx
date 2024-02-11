@@ -4,14 +4,14 @@ import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
 import NavLinks from '../common/NavLinks';
 import Logo from '../ui/Logo';
-import './styles.css'
+import './styles.css';
 
 const LINK_SET = [
   { text: 'Login', link: '/login' },
   { text: 'Registration', link: '/registration' },
-]
+];
 
-export default function() {
+export default function Header() {
   const { user, initUser } = useContext(UserContext);
   const { addAlert } = useContext(AlertContext);
   const navigate = useNavigate();

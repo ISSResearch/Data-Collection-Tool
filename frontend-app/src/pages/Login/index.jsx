@@ -11,7 +11,7 @@ const FIELD_SET = [
   { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
 ];
 
-export default function() {
+export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const { initUser } = useContext(UserContext);

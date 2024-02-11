@@ -4,7 +4,7 @@ import { api } from '../../../config/api';
 import { AlertContext } from "../../../context/Alert";
 import './styles.css';
 
-function AttributeInput({
+export default function AttributeInput({
   formId,
   attributes,
   depth,
@@ -33,7 +33,7 @@ function AttributeInput({
         }
       );
       setAcceptDelete(null);
-      setDeletedOriginAttributes(prev => [...prev, id]);
+      setDeletedOriginAttributes((prev) => [...prev, id]);
       handleDeleteAttribute(path, false, id);
     }
     catch ({ message, response }) {
@@ -41,7 +41,7 @@ function AttributeInput({
       addAlert('Current or child Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
-    };
+    }
   }
 
   function handleDeleteAttribute(path, orig, index) {
@@ -131,7 +131,5 @@ function AttributeInput({
         ))
       }
     </div>
-  )
+  );
 }
-
-export default AttributeInput;

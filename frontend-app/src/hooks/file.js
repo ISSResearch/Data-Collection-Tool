@@ -10,7 +10,7 @@ export default function useFile() {
   }
 
   function changeName({ value }) {
-    setFile(prev => {
+    setFile((prev) => {
       return { ...prev, file_name: value };
     });
   }
@@ -28,9 +28,9 @@ export default function useFile() {
           target[selInd].push(...selected);
         }
       }
-    }
+    };
 
-    setFile(prev => {
+    setFile((prev) => {
       changeMap[type](prev, key, payload);
       return { ...prev };
     });
@@ -50,7 +50,7 @@ export default function useFile() {
       requiredIds.forEach((ids, index) => {
         let found;
         for (var idx in groupData) {
-          if (groupData[idx].filter(id => ids.includes(id)).length) {
+          if (groupData[idx].filter((id) => ids.includes(id)).length) {
             found = true;
             break;
           }
@@ -70,7 +70,7 @@ export default function useFile() {
           ...acc,
           [key]: (Array.isArray(val) ? val : Object.values(val))
             .reduce((newacc, ids) => [...newacc, ...ids], [])
-        }
+        };
       }, {});
   }
 

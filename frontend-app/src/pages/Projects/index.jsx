@@ -13,9 +13,9 @@ const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
 const PROTECTED_ROUTE_LINKS = [
   { name: 'create project', link: 'create', permission: 'hidden' }
 ];
-const VARIANTS = { create: ProjectCreate }
+const VARIANTS = { create: ProjectCreate };
 
-export default function() {
+export default function Projects() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');
   const { user } = useContext(UserContext);

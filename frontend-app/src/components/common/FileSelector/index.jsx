@@ -1,7 +1,7 @@
 import FileCard from '../FileCard';
 import './styles.css';
 
-export default function({ fileManager, sliderManager }) {
+export default function FileSelector({ fileManager, sliderManager }) {
   const { files } = fileManager;
   const { slide, setSlide } = sliderManager;
 
@@ -17,7 +17,7 @@ export default function({ fileManager, sliderManager }) {
             date={upload_date}
             status={status}
             active={slide === index}
-            handleCLick={index => setSlide(index)}
+            handleCLick={(index) => setSlide(index)}
           />
         ))
       }

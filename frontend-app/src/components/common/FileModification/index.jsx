@@ -1,12 +1,12 @@
 import { useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFile } from '../../../hooks'
+import { useFile } from '../../../hooks';
 import { api } from '../../../config/api';
 import { AlertContext } from "../../../context/Alert";
 import SelectorGroup from '../../forms/SelectorGroup';
 import './styles.css';
 
-export default function({ fileManager, sliderManager, attributes }) {
+export default function FileModification({ fileManager, sliderManager, attributes }) {
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
   const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
@@ -35,7 +35,7 @@ export default function({ fileManager, sliderManager, attributes }) {
           "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
         },
       }
-    )
+    );
   }
 
   async function updateFile(status) {
@@ -48,7 +48,7 @@ export default function({ fileManager, sliderManager, attributes }) {
 
       await fetchUpdateFile(status, preparedAtrs);
 
-      setFiles(prev => {
+      setFiles((prev) => {
         var newFiles =  [ ...prev ];
         newFiles[slide] = { ...file, status, attributes: preparedAtrs };
         return newFiles;
@@ -61,7 +61,7 @@ export default function({ fileManager, sliderManager, attributes }) {
       );
       addAlert("Updating file failed: " + message, "error", authFailed);
       if (authFailed) navigate("/login");
-    };
+    }
   }
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function({ fileManager, sliderManager, attributes }) {
 
     return () => {
       window.removeEventListener("keydown", handleKey);
-    }
+    };
   }, [slide, files]);
 
   return (

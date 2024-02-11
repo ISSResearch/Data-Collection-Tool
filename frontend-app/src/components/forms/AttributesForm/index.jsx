@@ -5,7 +5,7 @@ import { AlertContext } from "../../../context/Alert";
 import AttributeInput from '../../ui/AttributeInput';
 import './styles.css';
 
-export default function({
+export default function AttributesForm({
   formId,
   deleteForm,
   levelHook,
@@ -46,7 +46,7 @@ export default function({
         }
       );
       setAcceptDelete(null);
-      setDeletedOriginLevels(prev => [...prev, id]);
+      setDeletedOriginLevels((prev) => [...prev, id]);
       handleLevelDelete(index, false, id);
     }
     catch ({ message, response }) {
@@ -54,7 +54,7 @@ export default function({
       addAlert('Current or child Levels Attributes are set for Files.', "error", authFailed);
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
-    };
+    }
   }
 
   function handleLevelDelete(index, orig) {

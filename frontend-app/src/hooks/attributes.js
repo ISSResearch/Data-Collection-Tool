@@ -14,7 +14,7 @@ export default function useAttributes() {
 
   function initAttribute(formId, initData = []) {
     setAttributes((prev) => {
-      return { ...prev, [formId]: initData }
+      return { ...prev, [formId]: initData };
     });
   }
 
@@ -64,7 +64,7 @@ export default function useAttributes() {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
 
-    spreadChildren(target).forEach(el => {
+    spreadChildren(target).forEach((el) => {
       if (el.path.split('_').length === levelIndex) el.children.splice(0);
     });
     setAttributes(newAttributes);
@@ -86,7 +86,7 @@ export default function useAttributes() {
   function findAndReplace(replaceTo="", replaceWith="") {
     var newAttributes = { ...attributes };
 
-    Object.values(newAttributes).forEach(items => {
+    Object.values(newAttributes).forEach((items) => {
       traverseWithReplace(items, "name", replaceTo, replaceWith, false);
     });
 
@@ -153,5 +153,5 @@ export default function useAttributes() {
     moveUp,
     moveDown,
     gather
-  }
+  };
 }

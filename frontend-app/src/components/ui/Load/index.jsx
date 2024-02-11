@@ -1,6 +1,6 @@
 import './styles.css';
 
-export default function({ isInline }) {
+export default function Load({ isInline }) {
   return (
     <div
       data-testid={'load-c'}

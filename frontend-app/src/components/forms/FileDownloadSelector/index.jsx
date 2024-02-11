@@ -5,7 +5,7 @@ import { AlertContext } from "../../../context/Alert";
 import Load from "../../ui/Load";
 import './styles.css';
 
-export default function({
+export default function FileDownloadSelector({
   pathID,
   newFiles,
   option,
@@ -17,7 +17,7 @@ export default function({
   const navigate = useNavigate();
 
   function selectFile(index, { checked }) {
-    setFiles(prev => {
+    setFiles((prev) => {
       var files = [...prev];
       files[index].is_downloaded = !checked;
       return files;
@@ -72,5 +72,5 @@ export default function({
         ))
       }
     </fieldset>
-  )
+  );
 }

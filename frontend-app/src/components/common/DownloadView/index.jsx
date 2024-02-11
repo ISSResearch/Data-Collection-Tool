@@ -5,11 +5,11 @@ import { getOriginDomain } from "../../../utils";
 import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
-export default function({ taskID }) {
+export default function DownloadView({ taskID }) {
   const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");
   const [download, setDownload] = useState(false);
-  const [pageBlock, setPageBlock] = useState(true);
+  const [pageBlock] = useState(true);
   const { addAlert } = useContext(AlertContext);
   const componentRef = useRef(null);
 
@@ -120,11 +120,11 @@ export default function({ taskID }) {
   });
 
   useEffect(() => {
-    var nativeBlocker = e => pageBlock && e.preventDefault();
+    var nativeBlocker = (e) => pageBlock && e.preventDefault();
     window.addEventListener("beforeunload", nativeBlocker);
     return () => {
       window.removeEventListener("beforeunload", nativeBlocker);
-    }
+    };
   }, [pageBlock]);
 
   useEffect(() => {

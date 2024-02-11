@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import './styles.css';
 
-export default function({
+export default function MultiSelector({
   selectorLabel,
   selectorOptions,
   onChange,
@@ -13,7 +13,7 @@ export default function({
 
   function resetSelector() {
     Array.from(selector.current.selectedOptions)
-      .forEach(opt => opt.selected = false);
+      .forEach((opt) => opt.selected = false);
 
     setSelected([]);
     onChange([]);

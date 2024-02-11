@@ -10,17 +10,17 @@ export default function useAlerts() {
       ? { message: "Session expired", type: "common", active: true }
       : { message, type, active: true };
 
-    setAlerts(prev => {
-      return { ...prev, [newID]:  newAlert}
+    setAlerts((prev) => {
+      return { ...prev, [newID]:  newAlert};
     });
   }
 
   function removeAlert(id) {
-    setAlerts(prev => {
+    setAlerts((prev) => {
       var newAlerts = { ...prev };
       newAlerts[id].active = false;
       return newAlerts;
-    })
+    });
   }
 
   return { alerts, addAlert, removeAlert };

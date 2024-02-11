@@ -9,7 +9,7 @@ export default function FindAndReplace({ onCommit }) {
   const replaceWith = useRef(null);
 
   function toggle() {
-    setIsActive(prev => {
+    setIsActive((prev) => {
       if (prev) {
         replaceTo.current.value = "";
         replaceWith.current.value = "";
@@ -47,7 +47,7 @@ export default function FindAndReplace({ onCommit }) {
         toggle();
       },
       close: () => toggle()
-    }
+    };
 
     var validattionCallback = validateMap[validate(toValue, withValue)];
     if (validattionCallback) validattionCallback();

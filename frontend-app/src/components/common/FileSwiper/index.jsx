@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import FileMedia from '../../ui/FileMedia';
 import './styles.css';
 
-export default function({ fileManager, sliderManager, pathID }) {
+export default function FileSwiper({ fileManager, sliderManager, pathID }) {
   const { files } = fileManager;
   const { slide, slideDec, slideInc } = sliderManager;
   const childRef = useRef(null);
@@ -14,17 +14,17 @@ export default function({ fileManager, sliderManager, pathID }) {
     var buttonMap = {
       ArrowRight: incRef,
       ArrowLeft: decRef
-    }
+    };
     buttonMap[key]?.current.click();
   }
 
-  function handleReset() { childRef.current() }
+  function handleReset() { childRef.current(); }
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPressed);
     return () => {
       window.removeEventListener("keydown", handleKeyPressed);
-    }
+    };
   }, []);
 
   return (

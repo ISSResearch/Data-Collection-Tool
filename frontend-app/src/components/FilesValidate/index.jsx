@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwiper, useFiles } from '../../hooks';
 import { api } from '../../config/api';
 import { AlertContext } from "../../context/Alert";
@@ -20,7 +20,7 @@ const TYPE_FILTER = [
   { name: 'videos', id: 'video' },
 ];
 
-export default function({ pathID, attributes, canValidate }) {
+export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState({});
@@ -111,7 +111,7 @@ export default function({ pathID, attributes, canValidate }) {
       });
   }, [pageQuery]);
 
-  if (loading) return <div className='iss__validation__load'><Load /></div>
+  if (loading) return <div className='iss__validation__load'><Load /></div>;
 
   return (
     <>

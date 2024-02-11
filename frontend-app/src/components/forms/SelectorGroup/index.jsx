@@ -3,7 +3,7 @@ import { deepCopy, formUID } from "../../../utils/";
 import SelectorWrap from "../../common/SelectorWrap";
 import './styles.css';
 
-export default function({
+export default function SelectorGroup({
   attributes,
   fileID,
   isFiles,
@@ -15,14 +15,14 @@ export default function({
 
   function addGroup() {
     if (handleGroupChange) handleGroupChange({ fileID, type: "add" });
-    else setGroups(prev => {
-      return { ...prev, [formUID()]: {} }
+    else setGroups((prev) => {
+      return { ...prev, [formUID()]: {} };
     });
   }
 
   function deleteGroup(key) {
     if (handleGroupChange) handleGroupChange({ fileID, key, type: "delete" });
-    else setGroups(prev => {
+    else setGroups((prev) => {
       delete prev[key];
       return { ...prev };
     });
@@ -30,8 +30,8 @@ export default function({
 
   function copyGroup(key) {
     if (handleGroupChange) handleGroupChange({ fileID, key, type: "copy" });
-    else setGroups(prev => {
-      return { ...prev, [formUID()]: deepCopy(prev[key]) }
+    else setGroups((prev) => {
+      return { ...prev, [formUID()]: deepCopy(prev[key]) };
     });
   }
 
@@ -42,7 +42,7 @@ export default function({
       payload: { ...payload, selInd },
       type: "set"
     });
-    else setGroups(prev => {
+    else setGroups((prev) => {
       var { selected, index } = payload;
 
       var newGroups = { ...prev };
@@ -54,9 +54,9 @@ export default function({
         target[selInd].push(...selected);
       }
 
-      return newGroups
+      return newGroups;
     });
-  };
+  }
 
   return (
     <fieldset className={`iss__selectGroup${fileID ? ' style--min' : ''}`}>
@@ -73,7 +73,7 @@ export default function({
                 <SelectorWrap
                   key={attribute.id}
                   item={attribute}
-                  onChange={data => setOption(key, data, index)}
+                  onChange={(data) => setOption(key, data, index)}
                   applyGroups={fileID && data[index]}
                 />
               ))

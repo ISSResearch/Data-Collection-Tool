@@ -13,7 +13,7 @@ const ADAPTER_MAP = {
 };
 
 // TODO make variant via page query
-export default function({ pathID }) {
+export default function FileStats({ pathID }) {
   const [stats, setStats] = useState([]);
   const [choice, setChoice] = useState("attribute");
   const [loading, setLoading] = useState(true);
@@ -69,7 +69,7 @@ export default function({ pathID }) {
     >
       Stats by:
       {
-        Object.keys(ADAPTER_MAP).map(key => (
+        Object.keys(ADAPTER_MAP).map((key) => (
           <label
             key={key}
             className={
@@ -125,5 +125,5 @@ export default function({ pathID }) {
       </>
     }
     </>
-  )
+  );
 }

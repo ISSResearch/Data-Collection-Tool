@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './styles.css';
 
-export default function({ title, titleLink, links, currentRoute, parent }) {
+export default function TitleSwitch({ title, titleLink, links, currentRoute, parent }) {
   var createLink = (link) => '/' + [parent, link].join('/');
 
   return (
@@ -30,5 +30,5 @@ export default function({ title, titleLink, links, currentRoute, parent }) {
         </ul>
       </nav>
     </div>
-  )
+  );
 }

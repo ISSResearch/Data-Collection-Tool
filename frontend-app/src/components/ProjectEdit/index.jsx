@@ -7,7 +7,7 @@ import Load from '../ui/Load';
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import './styles.css';
 
-export default function({
+export default function ProjectEdit({
   attributes,
   projectName,
   projectDescription,
@@ -63,7 +63,7 @@ export default function({
     event.preventDefault();
     if (loading) return;
 
-    if (!validateNewAttributes()) return addAlert('Some attribute forms are missed.', "error")
+    if (!validateNewAttributes()) return addAlert('Some attribute forms are missed.', "error");
 
     setLoading(true);
 
@@ -130,7 +130,7 @@ export default function({
       if (authFailed) navigate("/login");
 
       setLoading(false);
-    };
+    }
   }
 
   return (

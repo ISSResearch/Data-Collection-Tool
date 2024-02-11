@@ -20,4 +20,4 @@ export {
   useUser,
   useAlerts,
   useAuthModal
-}
+};

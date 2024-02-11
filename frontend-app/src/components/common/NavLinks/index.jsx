@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import './styles.css';
 
-export default function({links}) {
+export default function NavLinks({links}) {
   return (
     <nav>
       <ul className='iss__navLinks'>

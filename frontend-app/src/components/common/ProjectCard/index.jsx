@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './styles.css';
 
-export default function({ item }) {
+export default function ProjectCard({ item }) {
   var prepareDescription = () => {
     var { description } = item;
     description = description.replaceAll('<br>', ' ');
@@ -9,7 +9,7 @@ export default function({ item }) {
     if (description.length > 81) description = description.slice(0, 80) + '...';
 
     return description;
-  }
+  };
 
   return (
     <Link to={`/projects/${item.id}`} className='iss__projectCard'>
@@ -17,5 +17,5 @@ export default function({ item }) {
       <p className='iss__projectCard__text'>{prepareDescription()}</p>
       <time className='iss__projectCard__date'>{item.created_at}</time>
     </Link>
-  )
+  );
 }
