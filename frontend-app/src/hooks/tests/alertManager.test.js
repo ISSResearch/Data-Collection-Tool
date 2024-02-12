@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import useAlerts from '../alertManager';
+import { useAlerts, Alert } from '../alertManager';
 
 test("alert manager test", () => {
   const check = (message, type, session=false) => {
@@ -11,8 +11,10 @@ test("alert manager test", () => {
 
     var [item] = Object.entries(hook.current.alerts);
     var [key, value] = item;
+    var _alert = new Alert(message, type);
+    _alert.id = key
 
-    if (!session) expect(value).toEqual({ active: true, message, type });
+    if (!session) expect(value).toEqual(_alert);
     else expect(value).toEqual({
       active: true,
       message: "Session expired",

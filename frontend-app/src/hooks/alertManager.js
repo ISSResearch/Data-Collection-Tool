@@ -1,24 +1,62 @@
 import { useState } from "react";
 import { formUID } from "../utils";
 
-export default function useAlerts() {
-  const [alerts, setAlerts] = useState({});
-
-  function addAlert(message, type, noSession=false) {
-    var newID = formUID();
-    var newAlert = noSession
-      ? { message: "Session expired", type: "common", active: true }
-      : { message, type, active: true };
-
-    setAlerts((prev) => {
-      return { ...prev, [newID]:  newAlert};
-    });
+/**
+* @class
+* @property {number} id
+* @property {string} message
+* @property {string} type
+* @property {boolean} active
+*/
+export class Alert {
+  /**
+   * @class
+   * @param {string} message
+   * @param {string} type
+   * @param {boolean} noSession
+   */
+  constructor(message, type, noSession) {
+    /** @type {number} */
+    this.id = formUID();
+    /** @type {string} */
+    this.message = noSession ? "Session expired" : message;
+    /** @type {string} */
+    this.type = noSession ? "common" : type;
+    /** @type {boolean} */
+    this.active = true;
   }
 
+  /**
+  * @returns {undefined}
+  */
+  disable() { this.active = false; }
+}
+
+/**
+* @returns {{ alerts: object, addAlert: Function, removeAlert: Function }}
+*/
+export function useAlerts() {
+  const [alerts, setAlerts] = useState({});
+
+  /**
+  * @param {string} message
+  * @param {string} type
+  * @param {boolean} noSession
+  * @returns {undefined}
+  */
+  function addAlert(message, type, noSession=false) {
+    var alert = new Alert(message, type, noSession);
+    setAlerts((prev) => ({ ...prev, [alert.id]:  alert}));
+  }
+
+  /**
+  * @param {number} id
+  * @returns {undefined}
+  */
   function removeAlert(id) {
     setAlerts((prev) => {
       var newAlerts = { ...prev };
-      newAlerts[id].active = false;
+      newAlerts[id].disable();
       return newAlerts;
     });
   }

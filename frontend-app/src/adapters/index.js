@@ -1,5 +1,10 @@
 import { deepCopy, extractFileMeta, formUID } from "../utils";
 
+/**
+* @param {File[]} files
+* @param {object} groups
+* @returns {object}
+*/
 export function inputFilesAdapter(files, groups) {
   return files.reduce((acc, file) => {
     acc[formUID()] = {
@@ -12,6 +17,10 @@ export function inputFilesAdapter(files, groups) {
   }, {});
 }
 
+/**
+* @param {object} data
+* @returns {object}
+*/
 export function attributeAdapter(data) {
   var attributes = deepCopy(data.attributes);
 
@@ -24,9 +33,16 @@ export function attributeAdapter(data) {
     }
   });
 
-  return { ...data, preparedAttributes: attributes.filter(({ parent }) => !parent) };
+  return {
+    ...data,
+    preparedAttributes: attributes.filter(({ parent }) => !parent)
+  };
 }
 
+/**
+* @param {{uid: string, attributes: object[] }[]} data
+* @returns {object}
+*/
 export function attributeGroupsAdapter(data) {
   return data.reduce((acc, { uid, attributes }) => {
     return {
@@ -40,6 +56,16 @@ export function attributeGroupsAdapter(data) {
   }, {});
 }
 
+/**
+* @param {{
+* author_id: number,
+* author__username: string,
+* file_type: string,
+* status: string,
+* count: number
+* }[]} data
+* @returns {{id: number, name: string, type: object}[]}
+*/
 export function userStatsAdapter(data) {
   var preparedData = data.reduce((acc, item) => {
     var {
@@ -68,6 +94,26 @@ export function userStatsAdapter(data) {
   return Object.values(preparedData);
 }
 
+/**
+* @param {{
+* name: string,
+* order: number,
+* attribute__id: number,
+* attribute__name: string,
+* attribute__parent: number,
+* attribute__attributegroup__file__file_type: string
+* attribute__attributegroup__file__status: string
+* count: number
+* }[]} data
+* @returns {{
+* id: number,
+* levelName: string,
+* name: string,
+* parent: number,
+* order: number,
+* status: object
+* }[]}
+*/
 export function attributeStatsAdapter(data) {
   const preparedData = data.reduce((acc, item) => {
     var {

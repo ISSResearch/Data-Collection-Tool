@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { attributeGroupsAdapter } from "../adapters";
 
+/**
+* @returns {{ files: object[], setFiles: Function, initFiles: Function }}
+*/
 export default function useFiles() {
   const [files, setFiles] = useState([]);
 
+  /**
+  * @param {object[]} filesData
+  * @returns {undefined}
+  */
   function initFiles(filesData) {
     filesData.forEach((file) => {
       var { attributes } = file;

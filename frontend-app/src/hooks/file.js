@@ -1,20 +1,46 @@
 import { useState } from 'react';
 import { deepCopy, findRequired, formError, formUID } from '../utils/';
 
+/**
+* @returns {{
+* file: object,
+* initFile: Function,
+* changeName: Function,
+* handleGroupChange: Function,
+* validate: Function,
+* prepareAttributes: Function
+* }}
+*/
 export default function useFile() {
   const [file, setFile] = useState({});
 
+  /**
+  * @param {object} entry
+  * @returns {undefined}
+  */
   function initFile(entry) {
     var newFile = deepCopy(entry);
     setFile(newFile);
   }
 
+  /**
+  * @param {object} target
+  * @param {string} target.value
+  * @returns {undefined}
+  */
   function changeName({ value }) {
     setFile((prev) => {
       return { ...prev, file_name: value };
     });
   }
 
+  /**
+  * @param {object} changeItem
+  * @param {number} changeItem.key
+  * @param {string} changeItem.type
+  * @param {object} changeItem.payload
+  * @returns {undefined}
+  */
   function handleGroupChange({ key, type, payload }) {
     var changeMap = {
       "add": ({ attributeGroups }) => attributeGroups[formUID()] = {},
@@ -36,6 +62,10 @@ export default function useFile() {
     });
   }
 
+  /**
+  * @param {object[]} attributes
+  * @returns {undefined|{isValid: boolean, message?: string}}
+  */
   function validate(attributes) {
     var requiredLevels = findRequired(attributes);
     var requiredIds = requiredLevels.map(({ attributes }) => attributes);
@@ -63,6 +93,9 @@ export default function useFile() {
     return { isValid: true, message: 'ok' };
   }
 
+  /**
+  * @returns {object}
+  */
   function prepareAttributes() {
     return Object.entries(file.attributeGroups || {})
       .reduce((acc, [key, val]) => {

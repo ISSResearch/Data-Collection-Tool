@@ -1,10 +1,22 @@
 import { useState } from "react";
 import { deepCopy } from "../utils/";
 
+/**
+* @returns {{
+* collectors: object,
+* changeCollector: Function,
+* initData: Function,
+* gatherData: Function
+* }}
+*/
 export default function useCollectors() {
   const [collectors, setCollectors] = useState({});
   const [origin, setOrigin] = useState({});
 
+  /**
+  * @param {object[]} originCollectors
+  * @returns {undefined}
+  */
   function initData(originCollectors) {
     var preparedCollectors = originCollectors.reduce((acc, collector) => {
       var { id, username, permissions } = collector;
@@ -16,13 +28,22 @@ export default function useCollectors() {
     setCollectors(deepCopy(preparedCollectors));
   }
 
+  /**
+  * @param {number} id
+  * @param {string} name
+  * @param {object} target
+  * @param {boolean} target.checked
+  * @returns {undefined}
+  */
   function changeCollector(id, name, { checked }) {
     var newCollectors = { ...collectors };
     newCollectors[id].permissions[name] = checked;
-
     setCollectors(newCollectors);
   }
 
+  /**
+  * @returns {object[]}
+  */
   function gatherData() {
     return Object.values(collectors).reduce((acc, collector) => {
       var originCollector = origin[collector.user_id];
@@ -44,5 +65,6 @@ export default function useCollectors() {
       return acc;
     }, []);
   }
+
   return { collectors, changeCollector, initData, gatherData };
 }

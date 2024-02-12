@@ -1,15 +1,39 @@
 import { useState } from "react";
 import { api } from "../config/api";
 
+/**
+* @param {string} modalId
+* @param {Function} successCallback
+* @returns {{
+* checkAuth: Function,
+* modalErrors: string,
+* modalLoading: boolean,
+* handleAuth: Function,
+* modalFields: object[]
+* }}
+*/
 export default function useAuthModal(modalId, successCallback) {
   const [modalLoading, setLoading] = useState(false);
   const [modalErrors, setErrors] = useState(null);
 
+  /**
+  * @type {{
+  * label: string,
+  * type: string,
+  * placeholder: string,
+  * name: string,
+  * required: boolean
+  * }[]}
+  */
   const FIELD_SET = [
     { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
     { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
   ];
 
+  /**
+  * @throws {{message: string, authFailed: boolean}} Error
+  * @returns {Promise<object>}
+  */
   async function checkAuth() {
     try {
       var token = localStorage.getItem("dtcAccess");
@@ -24,10 +48,13 @@ export default function useAuthModal(modalId, successCallback) {
     }
   }
 
-  function closeModal() {
-    window[modalId].close();
-  }
+  /** @returns {undefined} */
+  function closeModal() { window[modalId].close(); }
 
+  /**
+  * @param {object} event
+  * @returns {Promise<undefined>}
+  */
   async function handleAuth(event) {
     event.preventDefault();
     setLoading(true);

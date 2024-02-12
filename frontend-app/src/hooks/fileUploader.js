@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { api, fileApi } from '../config/api';
 
+/**
+* @param {number} projectID
+* @returns {{files: object[], setFiles: Function, proceedUpload: Function}}
+*/
 export default function useFileUploader(projectID) {
   const [files, setFiles] = useState([]);
   const [project] = useState(projectID);
 
+  /**
+  * @param {object} file
+  * @param {number} id
+  * @returns {Promise<undefined>}
+  */
   async function sendChunk(file, id) {
     var chunkSize = 1024 * 1024 * 4;
     var numOfChunks = Math.ceil(file.file.size / chunkSize);
@@ -44,6 +53,10 @@ export default function useFileUploader(projectID) {
     }
   }
 
+  /**
+  * @param {FormData} formData
+  * @returns {Promise<{data: object}>}
+  */
   async function createFiles(formData) {
     return await api.request(`/api/files/project/${project}/`, {
       method: 'post',
@@ -55,6 +68,10 @@ export default function useFileUploader(projectID) {
     });
   }
 
+  /**
+  * @param {number} fileId
+  * @returns {Promise<object>}
+  */
   async function deleteFile(fileId) {
     await api.delete(
       `/api/files/${fileId}/`,
@@ -63,6 +80,9 @@ export default function useFileUploader(projectID) {
   }
 
   // TODO: rework: 1) create all at once; 2) async pool
+  /**
+  * @returns {Promise<undefined>}
+  */
   async function proceedUpload() {
     var proceedFiles = files.filter(({ status }) => status !== "a");
 

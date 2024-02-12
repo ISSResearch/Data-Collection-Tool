@@ -14,10 +14,10 @@ export default function AlertManager({ maxOnScreen }) {
   return (
     <aside className="alertManager">
       {
-        Object.entries(alerts)
-          .filter(([, { active }]) => active)
+        Object.values(alerts)
+          .filter((active) => active)
           .slice(0, maxOnScreen)
-          .map(([id, { message, type }]) => (
+          .map(({ id, message, type }) => (
             <AlertCard
               key={id}
               message={message}

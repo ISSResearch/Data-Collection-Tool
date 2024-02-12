@@ -4,7 +4,7 @@ import { TYPES_MAP } from "../config/settings";
 * @param {object} File
 * @param {string} File.type
 * @param {string} File.name
-* @returns {{ name: string, extension: string, type: string }}
+* @returns {{name: string, extension: string, type: string}}
 */
 export function extractFileMeta({ type: fileType, name: fileName }) {
   var [typeName, typeExt] = fileType.split('/');
@@ -23,9 +23,7 @@ export function extractFileMeta({ type: fileType, name: fileName }) {
   return { name, extension, type };
 }
 
-/**
-* @returns {string}
-*/
+/** @returns {string} */
 export function getOriginDomain() {
   var { origin } = window.location;
   return origin.split(':', 2).join(':');
@@ -49,7 +47,7 @@ export function deepCopy(obj) {
 * @param {object[]} arr
 * @param {(string | number)[]} indexes
 * @param {number} pointer
-* @returns {object[]}
+* @returns {object}
 */
 export function deepFind(arr, indexes, pointer = 0) {
   return pointer < indexes.length - 1
@@ -78,9 +76,7 @@ export function refreshPath(node, parentPath = null, changeIndex = null) {
   });
 }
 
-/**
-* @returns {number}
-*/
+/** @returns {number} */
 export function formUID() { return Number(Math.random().toFixed(16).slice(2)); }
 
 /**

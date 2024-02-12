@@ -43,12 +43,12 @@ test("download view component test", async () => {
   screen.getByText(/The DataSet is preparing. The download will start soon.../);
   unmount();
 
-  unmount = await init("FAILURE").unmount;
+  var { unmount } = await init("FAILURE");
   screen.getByText("FAILURE");
   screen.getByText("Error occured while gathering the DataSet. Please request a new one.");
   unmount();
 
-  unmount = await init("SUCCESS").unmount;
+  var { unmount } = await init("SUCCESS");
   screen.getByText("SUCCESS");
   screen.getByText("DataSet is ready. Downloading...");
   screen.getByText("Download started...");

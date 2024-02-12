@@ -8,22 +8,53 @@ import {
   drawPaths
 } from '../utils/';
 
+/**
+* @returns {{
+* attributes: object,
+* addAttribute: Function,
+* delAttribute: Function,
+* handleChange: Function,
+* initAttribute: Function,
+* destroyAttribute: Function,
+* handleLevelRemove: Function,
+* deletedOriginAttributes: Function,
+* setDeletedOriginAttributes: Function,
+* findAndReplace: Function,
+* moveUp: Function,
+* moveDown: Function,
+* gather: Function
+* }}
+*/
 export default function useAttributes() {
   const [attributes, setAttributes] = useState({});
   const [deletedOriginAttributes, setDeletedOriginAttributes] = useState([]);
 
+  /**
+  * @param {number} formId
+  * @param {number[]} initData
+  * @returns {undefined}
+  */
   function initAttribute(formId, initData = []) {
     setAttributes((prev) => {
       return { ...prev, [formId]: initData };
     });
   }
 
+  /**
+  * @param {number} formId
+  * @returns {undefined}
+  */
   function destroyAttribute(formId) {
     var newAttributes = { ...attributes };
     delete newAttributes[formId];
     setAttributes(newAttributes);
   }
 
+  /**
+  * @param {number} formId
+  * @param {string} position
+  * @returns {undefined}
+  */
   function addAttribute(formId, position = null) {
     let path;
     var id = formUID();
@@ -45,6 +76,12 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
+  /**
+  * @param {number} formId
+  * @param {string} position
+  * @param {boolean} isChild
+  * @returns {undefined}
+  */
   function delAttribute(formId, position, isChild=false) {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
@@ -56,10 +93,15 @@ export default function useAttributes() {
 
     targetNode.splice(path[path.length - 1], 1);
 
-    refreshPath(targetNode, null, path[path.length - 1]);
+    refreshPath(targetNode, null, Number(path[path.length - 1]));
     setAttributes(newAttributes);
   }
 
+  /**
+  * @param {number} formId
+  * @param {number} levelIndex
+  * @returns {undefined}
+  */
   function handleLevelRemove(formId, levelIndex) {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
@@ -70,6 +112,14 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
+  /**
+  * @param {number} formId
+  * @param {object} target
+  * @param {string} target.value
+  * @param {string} position
+  * @param {boolean} isChild
+  * @returns {undefined}
+  */
   function handleChange(formId, { value }, position, isChild=false) {
     setAttributes((prevAttributes) => {
       var newAttributes = { ...prevAttributes };
@@ -83,6 +133,11 @@ export default function useAttributes() {
     });
   }
 
+  /**
+  * @param {string} replaceTo
+  * @param {string} replaceWith
+  * @returns {undefined}
+  */
   function findAndReplace(replaceTo="", replaceWith="") {
     var newAttributes = { ...attributes };
 
@@ -93,12 +148,18 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  function moveUp(formId, path, index)  {
+  /**
+  * @param {number} formId
+  * @param {string} position
+  * @param {number} index
+  * @returns {undefined}
+  */
+  function moveUp(formId, position, index)  {
     if (index <= 0) return;
 
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
-    path = path.split('_');
+    var path = position.split('_');
 
     var targetNode = path.length > 1
       ? deepFind(target, path.slice(0, path.length - 1)).children
@@ -113,10 +174,16 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
-  function moveDown(formId, path, index)  {
+  /**
+  * @param {number} formId
+  * @param {string} position
+  * @param {number} index
+  * @returns {undefined}
+  */
+  function moveDown(formId, position, index)  {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
-    path = path.split('_');
+    var path = position.split('_');
 
     var targetNode = path.length > 1
       ? deepFind(target, path.slice(0, path.length - 1)).children
@@ -133,6 +200,10 @@ export default function useAttributes() {
     setAttributes(newAttributes);
   }
 
+  /**
+  * @param {number} formID
+  * @returns {object}
+  */
   function gather(formID) {
     var target = attributes[formID];
     drawPaths(target);
