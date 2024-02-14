@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
@@ -6,12 +6,22 @@ import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
 
+/**
+* @type {{
+* label: string,
+* type: string,
+* name: string,
+* placeholder: string,
+* required: boolean
+* }[]}
+*/
 const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
   { label: 'Enter password:', type: 'password', name: 'password1', placeholder: 'password', required: true },
   { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
 ];
 
+/** @returns {ReactElement} */
 export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);

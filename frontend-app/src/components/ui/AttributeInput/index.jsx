@@ -1,9 +1,23 @@
-import { useEffect, useState, useContext } from 'react';
+import { ReactElement, useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../config/api';
 import { AlertContext } from "../../../context/Alert";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {string} props.formId
+* @param {object[]} props.attributes
+* @param {number} props.depth
+* @param {boolean} props.isChild
+* @param {Function} props.delAttribute
+* @param {Function} props.addAttribute
+* @param {Function} props.handleChange
+* @param {Function} props.setDeletedOriginAttributes
+* @param {Function} props.moveUp
+* @param {Function} props.moveDown
+* @returns {ReactElement}
+*/
 export default function AttributeInput({
   formId,
   attributes,

@@ -1,10 +1,15 @@
-import { useEffect, useContext, useRef, useState } from "react";
+import { useEffect, useContext, useRef, useState, ReactElement } from "react";
 import { useBlocker } from "react-router-dom";
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils";
 import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
+/**
+* @param {object} props
+* @param {number} props.taskID
+* @returns {ReactElement}
+*/
 export default function DownloadView({ taskID }) {
   const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");

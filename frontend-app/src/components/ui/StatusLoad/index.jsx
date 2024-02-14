@@ -1,5 +1,13 @@
+import { ReactElement } from "react";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {number} props.progress
+* @param {string} props.info
+* @param {boolean} props.error
+* @returns {ReactElement}
+*/
 export default function StatusLoad({ progress, info, error }) {
   return (
     <div className='iss__statusLoad__wrap'>

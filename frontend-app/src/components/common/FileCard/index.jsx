@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import './styles.css';
 
+/** @type {string} */
 const DEFAULT_STYLE = 'iss__fileCard';
 
+/**
+* @param {object} props
+* @param {number} props.cardIndex
+* @param {string} props.name
+* @param {string} props.author_name
+* @param {string} props.date
+* @param {boolean} props.active
+* @param {string} props.status
+* @param {Function} props.handleCLick
+* @returns {ReactElement}
+*/
 export default function FileCard({
   cardIndex,
   name,

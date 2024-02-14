@@ -1,9 +1,11 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/User";
 
+/** @type {string[]} */
 const SAFE_ROUTES = ["/login", "/registration"];
 
+/** @returns {ReactElement} */
 export default function AppRouter() {
   const [redirect, setRedirect] = useState(false);
   const { user } = useContext(UserContext);

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
 import { useFiles } from "../../hooks";
@@ -8,6 +8,7 @@ import FileDownloadSelector from "../forms/FileDownloadSelector";
 import DownloadView from "../common/DownloadView";
 import "./styles.css";
 
+/** @type {{name: string, value: string, color: string}[]} */
 const OPTIONS = [
   { name: "all", value: "all", color: "common" },
   { name: "on validation", value: "v", color: "blue" },
@@ -15,6 +16,11 @@ const OPTIONS = [
   { name: "declined", value: "d", color: "red" },
 ];
 
+/**
+* @param {object} props
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function FilesDownload({ pathID }) {
   const [isOpen, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

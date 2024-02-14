@@ -5,7 +5,8 @@ import {
   useImperativeHandle,
   forwardRef,
   useRef,
-  useContext
+  useContext,
+  ReactElement
 } from "react";
 import { useNavigate } from 'react-router-dom';
 import { fileApi } from "../../../config/api";
@@ -13,6 +14,12 @@ import { getOriginDomain } from "../../../utils/";
 import { AlertContext } from "../../../context/Alert";
 import "./styles.css";
 
+/**
+* @type {Function}
+* @param {object} event
+* @param {object} event.target
+* @returns {undefined}
+*/
 var handleMediaFallback = ({ target }) => {
   var fallbackSrc = "/images/fallback-media.svg";
 
@@ -23,7 +30,15 @@ var handleMediaFallback = ({ target }) => {
   else target.src = fallbackSrc;
 };
 
-export default forwardRef(function FileMedia({ files, slide, pathID }, ref) {
+/**
+* @param {object} props
+* @param {object[]} props.files
+* @param {number} props.slide
+* @param {number} props.pathID
+* @param {object} ref
+* @returns {ReactElement}
+*/
+function FileMedia({ files, slide, pathID }, ref) {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
@@ -144,4 +159,6 @@ export default forwardRef(function FileMedia({ files, slide, pathID }, ref) {
       >{fileUrl && <MediaItem src={fileUrl} className='mediaFile' />}</div>
     </div>
   );
-});
+}
+
+export default forwardRef(FileMedia);

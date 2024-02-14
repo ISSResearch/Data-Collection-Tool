@@ -1,10 +1,17 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, ReactElemment } from 'react';
 import { useAuthModal, useFileUploader } from '../../../hooks';
 import { AlertContext } from '../../../context/Alert';
 import Load from '../../ui/Load';
 import Form from '../../forms/Form';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.fileManager
+* @param {number} props.pathID
+* @param {Function} props.setUploading
+* @returns {ReactElemment}
+*/
 export default function UploadView({ fileManager, pathID, setUploading }) {
   const [loading, setLoading] = useState(true);
   const [uploadProcess, setUploadProcess] = useState(false);

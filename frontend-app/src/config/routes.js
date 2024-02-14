@@ -5,6 +5,17 @@ import Registration from '../pages/Registration';
 import Blank from '../pages/Blank';
 import ProjectPage from '../pages/ProjectPage';
 
+/**
+* @typedef {object} Route
+* @param {string} path
+* @param {Function} element
+* @param {boolean} exact
+* @param {Route[]} children
+*/
+
+/**
+* @type {Route[]}
+*/
 export const routes = [
   { path: "/", element: <Home />, exact: true },
   { path: '/login', element: <Login />, exact: true, },

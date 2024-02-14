@@ -1,8 +1,15 @@
-import { useContext} from 'react';
+import { useContext, ReactElement } from 'react';
 import { AlertContext } from "../../../context/Alert";
 import FileUploadCard from '../../common/FileUploadCard';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.fileManager
+* @param {object[]} props.attributes
+* @param {Function} props.emitUpload
+* @returns {ReactElement}
+*/
 export default function FileInput({ fileManager, attributes, emitUpload }) {
   const { files, handleUpload, count } = fileManager;
   const { addAlert } = useContext(AlertContext);

@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import { deepCopy, formUID } from "../../../utils/";
 import SelectorWrap from "../../common/SelectorWrap";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.attributes
+* @param {number} props.fileID
+* @param {boolean} props.isFiles
+* @param {Function} props.handleApply
+* @param {object} props.attributeGroups
+* @param {Function} props.handleGroupChange
+* @returns {ReactElement}
+*/
 export default function SelectorGroup({
   attributes,
   fileID,

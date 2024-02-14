@@ -1,16 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from 'react';
+import { useContext, ReactElement } from 'react';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
 import NavLinks from '../common/NavLinks';
 import Logo from '../ui/Logo';
 import './styles.css';
 
+/** @type {{text: string, link: string}[]} */
 const LINK_SET = [
   { text: 'Login', link: '/login' },
   { text: 'Registration', link: '/registration' },
 ];
 
+/** @returns {ReactElement} */
 export default function Header() {
   const { user, initUser } = useContext(UserContext);
   const { addAlert } = useContext(AlertContext);

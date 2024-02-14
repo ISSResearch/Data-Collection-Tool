@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState, ReactElement } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwiper, useFiles } from '../../hooks';
 import { api } from '../../config/api';
@@ -10,16 +10,25 @@ import FileModification from '../common/FileModification';
 import Load from '../ui/Load';
 import './styles.css';
 
+/** @type {{name: string, id: string}[]} */
 const CARD_FILTERS = [
   { name: 'on validation', id: 'v' },
   { name: 'accepted', id: 'a' },
   { name: 'declined', id: 'd' },
 ];
+/** @type {{name: string, id: string}[]} */
 const TYPE_FILTER = [
   { name: 'images', id: 'image' },
   { name: 'videos', id: 'video' },
 ];
 
+/**
+* @param {object} props
+* @param {number} props.pathID
+* @param {object[]} props.attributes
+* @param {boolean} props.canValidate
+* @returns {ReactElement}
+*/
 export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();

@@ -1,6 +1,14 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, ReactElement } from 'react';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.bodySet
+* @param {Function} props.countCallback
+* @param {boolean} [props.parent]
+* @param {number} props.depth
+* @returns {ReactElement}
+*/
 export default function TableBodySet({ bodySet, countCallback, parent, depth }) {
   const [childWrap, setWrap] = useState([]);
 

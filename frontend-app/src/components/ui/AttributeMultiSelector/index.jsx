@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import { spreadChildren } from '../../../utils/';
 import SelectorWrap from '../../common/SelectorWrap';
 import "./styles.css";
 
+/**
+* @param {object} props
+* @param {string} props.selectorName
+* @param {object[]} props.data
+* @param {Function} props.onChange
+* @param {number[]} props.defaultSelected
+* @returns {ReactElement}
+*/
 export default function AttributeMultiSelector({ selectorName, data, onChange, defaultSelected, }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);

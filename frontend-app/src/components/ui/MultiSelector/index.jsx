@@ -1,6 +1,14 @@
-import { useEffect, useState, useRef } from 'react';
+import { ReactElement, useEffect, useState, useRef } from 'react';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {string} props.selectorLabel
+* @param {object[]} props.selectorOptions
+* @param {Function} props.onChange
+* @param {number[]} props.defaultSelected
+* @returns {ReactElement}
+*/
 export default function MultiSelector({
   selectorLabel,
   selectorOptions,

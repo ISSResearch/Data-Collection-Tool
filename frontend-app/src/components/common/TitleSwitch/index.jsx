@@ -1,6 +1,16 @@
 import { Link } from 'react-router-dom';
+import { ReactElement } from "react";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {string} props.title
+* @param {boolean} props.titleLink
+* @param {object[]} props.links
+* @param {string} props.currentRoute
+* @param {string} props.parent
+* @returns {ReactElement}
+*/
 export default function TitleSwitch({ title, titleLink, links, currentRoute, parent }) {
   var createLink = (link) => '/' + [parent, link].join('/');
 

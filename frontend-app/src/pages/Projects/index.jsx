@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useCallback } from 'react';
+import { ReactElement, useEffect, useState, useContext, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
@@ -9,12 +9,16 @@ import ProjectCreate from '../../components/ProjectCreate';
 import TitleSwitch from '../../components/common/TitleSwitch';
 import './styles.css';
 
+/** @type {{name: string, link: string}[]} */
 const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
+/** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
   { name: 'create project', link: 'create', permission: 'hidden' }
 ];
+/** @type {{[variant: string]: ReactElement}} */
 const VARIANTS = { create: ProjectCreate };
 
+/** @returns {ReactElement} */
 export default function Projects() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');

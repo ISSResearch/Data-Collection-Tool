@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../config/api';
 import { useAttributeManager } from '../../hooks';
@@ -7,6 +7,7 @@ import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import Load from '../ui/Load';
 import './styles.css';
 
+/** @returns {ReactElement} */
 export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');

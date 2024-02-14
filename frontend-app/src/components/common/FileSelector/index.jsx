@@ -1,6 +1,13 @@
+import { ReactElement } from "react";
 import FileCard from '../FileCard';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.fileManager
+* @param {object} props.sliderManager
+* @returns {ReactElement}
+*/
 export default function FileSelector({ fileManager, sliderManager }) {
   const { files } = fileManager;
   const { slide, setSlide } = sliderManager;

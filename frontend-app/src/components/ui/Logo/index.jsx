@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { ReactElement } from "react";
 import './styles.css';
 
+/** @returns {ReactElement} */
 export default function Logo() {
   return (
     <Link to="/" className='iss__brand'>

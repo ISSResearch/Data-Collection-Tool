@@ -1,8 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, ReactElement } from 'react';
 import AttributesForm from '../AttributesForm';
 import FindAndReplace from "../../ui/FindAndReplace";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {{
+* formHook: object,
+* levelHook: object,
+* attributeHook: object
+* }} props.attributeManager
+* @param {object[]} props.withBoundAttributes
+* @returns {ReactElement}
+*/
 export default function AttributeCreatorForm({ attributeManager, withBoundAttributes }) {
   const { formHook, levelHook, attributeHook } = attributeManager;
   const { forms, addForm, deleteForm, boundAttributes } = formHook;

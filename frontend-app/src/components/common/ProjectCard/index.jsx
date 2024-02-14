@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
+import { ReactElement } from "react";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.item
+* @returns {ReactElement}
+*/
 export default function ProjectCard({ item }) {
   var prepareDescription = () => {
     var { description } = item;

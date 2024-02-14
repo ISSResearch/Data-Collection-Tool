@@ -1,10 +1,18 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, ReactElement } from "react";
 import { useNavigate } from 'react-router-dom';
 import { api } from "../../../config/api";
 import { AlertContext } from "../../../context/Alert";
 import Load from "../../ui/Load";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {number} props.pathID
+* @param {boolean} props.newFiles
+* @param {object} props.option
+* @param {object} props.fileManager
+* @returns {ReactElement}
+*/
 export default function FileDownloadSelector({
   pathID,
   newFiles,

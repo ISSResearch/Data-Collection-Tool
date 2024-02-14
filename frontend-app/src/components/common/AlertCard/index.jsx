@@ -1,12 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, ReactElement } from "react";
 import CloseCross from "../../ui/CloseCross";
 import "./styles.css";
 
+/** @type {{[color: string]: string}} */
 const COLORS_MAP = {
   red: " alert--red",
   green: " alert--green"
 };
 
+/**
+* @param {object} props
+* @param {string} props.message
+* @param {string} props.color
+* @param {Function} props.closeAction
+* @returns {ReactElement}
+*/
 export default function AlertCard({ message, color, closeAction }) {
   const alertRef = useRef(null);
 

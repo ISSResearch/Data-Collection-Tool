@@ -1,8 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, ReactElement } from "react";
 import "./styles.css";
 
+/** @type {string} */
 const ERROR_CLASS = "input--error";
 
+/**
+* @param {object} props
+* @param {Function} props.onCommit
+* @returns {ReactElement}
+*/
 export default function FindAndReplace({ onCommit }) {
   const [isActive, setIsActive] = useState(false);
   const replaceTo = useRef(null);

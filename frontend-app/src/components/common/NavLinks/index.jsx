@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { ReactElement } from "react";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.links
+* @returns {ReactElement}
+*/
 export default function NavLinks({links}) {
   return (
     <nav>

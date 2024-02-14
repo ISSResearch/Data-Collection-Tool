@@ -1,11 +1,17 @@
 import { useBlocker } from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import { useFileInput } from '../../hooks';
 import SelectorGroup from '../forms/SelectorGroup';
 import FileInput from '../forms/FileInput';
 import UploadView from '../common/UploadView';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.attributes
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function FilesUpload({ attributes, pathID }) {
   const [uploading, setUploading] = useState(false);
   const fileManager = useFileInput();

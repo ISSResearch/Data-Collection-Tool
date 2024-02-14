@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import MultiSelector from '../../ui/MultiSelector';
 import "./styles.css";
 
+/**
+* @param {object} props
+* @param {object} props.item
+* @param {Function} props.onChange
+* @param {number[]} props.applyGroups
+* @returns {ReactElement}
+*/
 export default function SelectorWrap({ item, onChange, applyGroups }) {
   const [options, setOptions] = useState([]);
   const [valueIds, setValuesIds] = useState([]);

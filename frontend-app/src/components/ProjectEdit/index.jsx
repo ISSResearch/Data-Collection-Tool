@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from 'react';
+import { useState, useContext, useRef, ReactElement } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../../hooks';
 import { api } from '../../config/api';
@@ -7,6 +7,14 @@ import Load from '../ui/Load';
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.attributes
+* @param {string} props.projectName
+* @param {string} props.projectDescription
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function ProjectEdit({
   attributes,
   projectName,

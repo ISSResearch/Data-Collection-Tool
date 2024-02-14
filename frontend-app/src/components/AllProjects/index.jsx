@@ -1,7 +1,13 @@
+import { ReactElement } from "react";
 import ProjectCard from "../common/ProjectCard";
 import Load from "../ui/Load";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object[]} props.items
+* @returns {ReactElement}
+*/
 export default function AllProjects({ items }) {
 
   if (!items) return <div className='iss__projects__loading'><Load/></div>;

@@ -10,21 +10,15 @@ import { getOriginDomain } from '../utils/';
 * @param {Function} request
 */
 
-/**
-* type {string}
-*/
+/** @type {string} */
 const origin = process.env.REACT_APP_CASE === 'test'
   ? 'http://iss-test-back'
   : getOriginDomain();
 
-/**
-* type {string}
-*/
+/** @type {string} */
 const storageOrigin = getOriginDomain();
 
-/**
-* @type {Api}
-*/
+/** @type {Api} */
 export const api = axios.create({
   baseURL: `${origin}:8000`,
   headers: { 'Content-Type': 'application/json' },
@@ -33,9 +27,7 @@ export const api = axios.create({
   xsrfHeaderName: "X-CSRFToken"
 });
 
-/**
-* @type {Api}
-*/
+/** @type {Api} */
 export const fileApi = axios.create({
   baseURL: `${storageOrigin}:9000`,
   headers: { 'Content-Type': 'application/json' },

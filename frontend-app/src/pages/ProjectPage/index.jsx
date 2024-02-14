@@ -1,5 +1,5 @@
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useState, useContext, useCallback, ReactElement } from "react";
 import { attributeAdapter } from '../../adapters';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
@@ -14,6 +14,7 @@ import ProjectEdit from "../../components/ProjectEdit";
 import Load from "../../components/ui/Load";
 import './styles.css';
 
+/** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
   { name: 'upload data', link: 'upload', permission: 'upload' },
   { name: 'validate data', link: 'validate', permission: 'view' },
@@ -22,6 +23,7 @@ const PROTECTED_ROUTE_LINKS = [
   { name: 'edit', link: 'edit', permission: 'edit' }
 ];
 
+/** @type {{[variant: string]: ReactElement}} */
 const VARIANTS = {
   upload: FilesUpload,
   validate: FilesValidate,
@@ -31,6 +33,7 @@ const VARIANTS = {
   visibility: ProjectVisibility
 };
 
+/** @returns {ReactElement} */
 export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);

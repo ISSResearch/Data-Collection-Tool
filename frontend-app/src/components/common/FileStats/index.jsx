@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { attributeStatsAdapter, userStatsAdapter } from '../../../adapters';
 import { api } from '../../../config/api';
@@ -7,12 +7,18 @@ import TableBodySet from '../TableBodySet';
 import Load from "../../ui/Load";
 import './styles.css';
 
+/** @type {{[type: string]: Function}} */
 const ADAPTER_MAP = {
   attribute: attributeStatsAdapter,
   user: userStatsAdapter
 };
 
 // TODO make variant via page query
+/**
+* @param {object} props
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function FileStats({ pathID }) {
   const [stats, setStats] = useState([]);
   const [choice, setChoice] = useState("attribute");

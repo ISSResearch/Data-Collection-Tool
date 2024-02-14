@@ -1,12 +1,13 @@
 import { useEffect, useContext, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Fragment } from "react";
+import { Fragment, ReactElement } from "react";
 import { useCollectors } from '../../hooks';
 import { api } from "../../config/api";
 import { AlertContext } from "../../context/Alert";
 import Load from "../ui/Load";
 import './styles.css';
 
+/** @type {{name: string, value: string}[]} */
 const PERMISSIONS = [
   { name: 'Can view project', value: 'visible' },
   { name: 'Can upload', value: 'upload' },
@@ -17,6 +18,11 @@ const PERMISSIONS = [
   { name: 'Can edit', value: 'edit' },
 ];
 
+/**
+* @param {object} props
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function ProjectVisibility({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();

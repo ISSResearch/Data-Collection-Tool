@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, ReactElement } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { AlertContext } from "../../context/Alert";
@@ -6,11 +6,20 @@ import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
 
+/**
+* @type {{
+* label: string,
+* type: string,
+* name: string,
+* placeholder: string
+* }[]}
+*/
 const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
   { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
 ];
 
+/** @returns {ReactElement} */
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);

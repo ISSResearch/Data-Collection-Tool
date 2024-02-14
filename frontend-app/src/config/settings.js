@@ -1,3 +1,4 @@
+/** @type {{[extension: string]: string}} */
 export const TYPES_MAP = {
   'jpg': "image",
   'mkv': "video",

@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import SelectorGroup from "../../forms/SelectorGroup";
 import CloseCross from "../../ui/CloseCross";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {number} props.fileID
+* @param {object} props.file
+* @param {object} props.fileManager
+* @param {object[]} props.attributes
+* @returns {ReactElement}
+*/
 export default function FileUploadCard({
   fileID,
   file,

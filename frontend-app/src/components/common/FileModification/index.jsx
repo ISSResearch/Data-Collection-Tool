@@ -1,4 +1,4 @@
-import { useEffect, useContext, useRef } from 'react';
+import { useEffect, useContext, useRef, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFile } from '../../../hooks';
 import { api } from '../../../config/api';
@@ -6,6 +6,13 @@ import { AlertContext } from "../../../context/Alert";
 import SelectorGroup from '../../forms/SelectorGroup';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.fileManager
+* @param {object} props.sliderManager
+* @param {object[]} props.attributes
+* @returns {ReactElement}
+*/
 export default function FileModification({ fileManager, sliderManager, attributes }) {
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;

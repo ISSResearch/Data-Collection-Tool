@@ -1,7 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, ReactElement } from 'react';
 import FileMedia from '../../ui/FileMedia';
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {object} props.fileManager
+* @param {object} props.sliderManager
+* @param {number} props.pathID
+* @returns {ReactElement}
+*/
 export default function FileSwiper({ fileManager, sliderManager, pathID }) {
   const { files } = fileManager;
   const { slide, slideDec, slideInc } = sliderManager;

@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
+import { ReactElement } from "react";
 import Load from "../../ui/Load";
 import './styles.css';
 
+/**
+* @param {object} props
+* @param {string} props.errors
+* @param {Function} props.callback
+* @param {number[]} props.fields
+* @param {boolean} props.loading
+* @param {string} props.link
+* @returns {ReactElement}
+*/
 export default function Form({ errors, callback, fields, loading, link }) {
   return (
     <div className='iss__formContainer'>
