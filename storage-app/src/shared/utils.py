@@ -19,7 +19,7 @@ def get_db_uri() -> str:
 
     if not all((db_user, db_password, db_host, db_port)): raise AttributeError
 
-    return f'mongodb://{db_user}:{db_password}@{db_host}:{db_port}/'
+    return f"mongodb://{db_user}:{db_password}@{db_host}:{db_port}/"
 
 
 def get_path(from_dir: str = "") -> str:
