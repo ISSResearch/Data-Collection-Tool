@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 from typing import Any
 from fastapi import Request
 from shared.settings import SECRET_ALGO, SECRET_KEY, APP_BACKEND_URL
-from requests import get, Response, ConnectTimeout, ConnectionError
+from requests import Response, ConnectTimeout, ConnectionError
+import requests
 from time import sleep
 
 
@@ -27,7 +28,7 @@ def get_path(from_dir: str = "") -> str:
 
     return "/" + (
         join(*path_list[:path_list.index(from_dir)])
-        if from_dir in path_list
+        if from_dir and from_dir in path_list
         else join(*path_list)
     )
 
@@ -38,7 +39,7 @@ def get_object_id(object_id: str) -> str | ObjectId:
 
 
 def emit_token(
-    delta: dict,
+    delta: dict[str, int],
     secret: str,
     algorithm: str,
     payload: dict[str, Any] = {}
@@ -63,9 +64,11 @@ def parse_request_for_jwt(request: Request) -> dict[str, Any]:
         else request.headers.get("authorization")
     )
 
+    if " " not in request_token: raise JWTError
+
     token_type, token = request_token.split(" ")
 
-    if token_type != "Bearer": raise JWTError
+    if token_type != "Bearer" or not token: raise JWTError
 
     return jwt.decode(token, SECRET_KEY, algorithms=SECRET_ALGO)
 
@@ -87,9 +90,9 @@ def healthcheck_backend_app() -> bool:
         sleep(3)
 
         try:
-            response: Response = get(url, headers=headers)
+            response: Response = requests.get(url, headers=headers)
 
-            if response.status_code == 200 and response.json()["isAuth"]:
+            if response.status_code == 200 and response.json().get("isAuth"):
                 print("2/2 healthcheck passed!")
                 return True
 
