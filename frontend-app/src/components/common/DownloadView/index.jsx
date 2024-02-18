@@ -19,6 +19,8 @@ export default function DownloadView({ taskID }) {
   const componentRef = useRef(null);
 
   // TODO: couldnt clear interval the normal way.
+  // useref as store for handler might help
+  // consider ^ + dinf similar issues everywhere
   const Helper = () => {
     useEffect(() => {
       var interval = setInterval(checkTaskStatus, 5000);
