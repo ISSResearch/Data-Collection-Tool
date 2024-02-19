@@ -129,7 +129,7 @@ class ViewSetServices:
         uploader = FileUploader(request, project_id)
         succeed = uploader.proceed_upload()
 
-        response = {"ok": succeed}
+        response = {"result": succeed}
 
         if succeed: response["created_files"] = FilesSerializer(
             uploader.created_files,
