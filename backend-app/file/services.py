@@ -216,6 +216,7 @@ class FileUploader:
         file_groups_count: int = len(meta.get('atrsGroups', []))
 
         file: File = File(
+            id=meta["fileID"],
             file_name=f'{meta["name"]}.{meta["extension"]}',
             file_type=meta.get("type", 'file'),
             project_id=self.project_id,

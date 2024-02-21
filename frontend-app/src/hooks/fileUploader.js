@@ -110,7 +110,6 @@ export default function useFileUploader(projectID) {
     var proceedFiles = files.filter(({ status }) => status !== "a");
 
     for (var i = 0; i < Math.ceil(proceedFiles.length / atOnce); i++) {
-      console.log("chunk", i);
       await Promise.all(
         proceedFiles
           .slice(atOnce * i, atOnce * (i + 1))

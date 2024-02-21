@@ -14,6 +14,7 @@ from attribute.models import AttributeGroup
 class File(Model):
     STATUSES: tuple = (('d', "declined"), ('a', "accepted"), ('v', "validation"))
 
+    id: CharField = CharField(max_length=24, primary_key=True, unique=True)
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)
     status: CharField = CharField(max_length=1, choices=STATUSES, default='v')

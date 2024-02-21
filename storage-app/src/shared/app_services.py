@@ -1,11 +1,9 @@
-from typing_extensions import Coroutine, Generator, Iterator
 from typing import Any, Pattern
-from gridfs import NoFile, ObjectId, GridOut, GridOutCursor
+from gridfs import NoFile, ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match
 from json import loads
-from os import SEEK_SET
 from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
@@ -197,7 +195,7 @@ class Bucket(BucketObject):
 
         except NoFile: return None
 
-    def get_download_objects(self, file_ids: list[int]) -> AsyncIOMotorGridOutCursor:
+    def get_download_objects(self, file_ids: list[str]) -> AsyncIOMotorGridOutCursor:
         prepared_ids: list[str | ObjectId] = [
             get_object_id(str(object_id))
             for object_id in file_ids

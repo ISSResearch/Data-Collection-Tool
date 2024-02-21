@@ -10,4 +10,4 @@ class File(BaseModel):
 
 class ArchiveTask(BaseModel):
     bucket_name: str
-    file_ids: list[int]
+    file_ids: list[str]
