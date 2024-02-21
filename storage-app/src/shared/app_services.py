@@ -197,7 +197,7 @@ class Bucket(BucketObject):
 
         except NoFile: return None
 
-    def get_download_objects(self, file_ids: list[int]) -> GridOutCursor:
+    def get_download_objects(self, file_ids: list[int]) -> AsyncIOMotorGridOutCursor:
         prepared_ids: list[str | ObjectId] = [
             get_object_id(str(object_id))
             for object_id in file_ids

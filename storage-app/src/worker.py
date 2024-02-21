@@ -11,10 +11,10 @@ WORKER.conf.result_backend = RESULT_URL
 
 
 @WORKER.task(name="produce_download_task")
-def produce_download_task(bucket_name: str, file_ids: list[int]) -> str | None:
+async def produce_download_task(bucket_name: str, file_ids: list[int]) -> str | None:
     zipper: Zipper = Zipper(bucket_name, file_ids)
 
-    zipper.archive_objects()
+    await zipper.archive_objects()
     zipper.write_archive()
     zipper.delete_temp_zip()
 
