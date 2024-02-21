@@ -57,7 +57,7 @@ export default function useFileUploader(projectID) {
     var { name, extension, type, atrsGroups } = file;
 
     formData.append(
-      'meta[]',
+      'meta',
       JSON.stringify({ fileID, name, extension, type, atrsGroups })
     );
 
@@ -99,7 +99,7 @@ export default function useFileUploader(projectID) {
       file.error = response.data?.result || message;
       setFiles((prev) => [...prev]);
     }
-  };
+  }
 
   // TODO: rework: rewrite pool
   /**
@@ -109,11 +109,12 @@ export default function useFileUploader(projectID) {
     const atOnce = 5;
     var proceedFiles = files.filter(({ status }) => status !== "a");
 
-    for (var i = 0; i < Math.ceil(proceedFiles / atOnce); i++) {
+    for (var i = 0; i < Math.ceil(proceedFiles.length / atOnce); i++) {
+      console.log("chunk", i);
       await Promise.all(
         proceedFiles
-          .slice(atOnce * i, atOnce * (i + 0))
-          .map(file => _proceedFile(file))
+          .slice(atOnce * i, atOnce * (i + 1))
+          .map((file) => _proceedFile(file))
       );
     }
   }

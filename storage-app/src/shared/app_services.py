@@ -10,7 +10,10 @@ from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.db_manager import DataBase, AsyncIOMotorGridFSBucket
-from motor.motor_asyncio import AsyncIOMotorGridOutCursor
+from motor.motor_asyncio import (
+    AsyncIOMotorGridOutCursor,
+    AsyncIOMotorGridOut
+)
 from hashlib import md5
 
 
@@ -46,8 +49,8 @@ class ObjectStreaming:
     )
     RANGE_RE: Pattern = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
 
-    def __init__(self, file: GridOut) -> None:
-        self.file: GridOut = file
+    def __init__(self, file: AsyncIOMotorGridOut) -> None:
+        self.file: AsyncIOMotorGridOut = file
         self.range_match: Match[str] | None = None
         self._set_chunks()
 
@@ -58,12 +61,13 @@ class ObjectStreaming:
             else self._stream_file(request)
         )
 
-    def _stream_file(self, request: Request):
+    def _stream_file(self, request: Request) -> StreamingResponse:
         self.range_match: Match[str] | None = self._get_range_match(request)
+
         if self.range_match: self._set_chunks()
 
         response: StreamingResponse = StreamingResponse(
-            iter(self),
+            self._iterator(),
             status_code=(206 if self.range_match else 200),
             media_type=self.content_type
         )
@@ -74,7 +78,7 @@ class ObjectStreaming:
 
         return response
 
-    def _stream_dataset(self):
+    def _stream_dataset(self) -> StreamingResponse:
         response: StreamingResponse = StreamingResponse(self.file)
         file_name: str = self.file.filename + ".zip"
 
@@ -82,28 +86,15 @@ class ObjectStreaming:
 
         return response
 
-    def __iter__(self) -> Iterator: return self._file_iterator()
+    # TODO: find a way to defer closing maybe i could overpass the iterator
+    async def _iterator(self):
+        self.file.seek(self.chunk_start)
+        remaining: int = self.chunk_end
 
-    def _file_iterator(self) -> Generator:
-        self.file.seek(self.chunk_start, SEEK_SET)
-        remaining_chunk: int = self.chunk_length
-
-        while True:
-            bytes_length: int = (
-                self.file.length if not self.range_match
-                else (
-                    CHUNK_SIZE
-                    if remaining_chunk is None
-                    else min(remaining_chunk, CHUNK_SIZE)
-                )
-            )
-
-            data: bytes = self.file.read(bytes_length)
-
-            if not data: break
-            if remaining_chunk: remaining_chunk -= len(data)
-
-            yield data
+        while remaining and (chunk := await self.file.read(CHUNK_SIZE)):
+            remaining -= CHUNK_SIZE if CHUNK_SIZE <= remaining else remaining
+            yield chunk
+        else: self.file.close()
 
     @property
     def content_type(self) -> str:
@@ -126,7 +117,7 @@ class ObjectStreaming:
         )
 
         chunk_start = int(chunk_start)
-        chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
+        chunk_end = int(chunk_end) if chunk_end else self.file.length
 
         if chunk_end >= self.file.length: chunk_end = self.file.length - 1
 
@@ -198,11 +189,11 @@ class Bucket(BucketObject):
     def __init__(self, bucket_name: str) -> None:
         self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
 
-    def get_object(self, object_id: str) -> ObjectStreaming | None:
-        return None
+    async def get_object(self, object_id: str) -> ObjectStreaming | None:
         try:
-            with self._fs.open_download_stream(get_object_id(object_id)) as file:
-                return ObjectStreaming(file)
+            f_id: ObjectId = get_object_id(object_id)
+            file: AsyncIOMotorGridOut = await self._fs.open_download_stream(f_id)
+            return ObjectStreaming(file)
 
         except NoFile: return None
 

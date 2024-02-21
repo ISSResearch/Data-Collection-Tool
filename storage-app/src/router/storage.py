@@ -9,7 +9,7 @@ router = APIRouter()
 @router.get("/api/storage/{bucket_name}/{file_id}/")
 async def get_file(request: Request, bucket_name: str, file_id: str) -> StreamingResponse:
     project_bucket: Bucket = Bucket(bucket_name)
-    stream: ObjectStreaming | None = project_bucket.get_object(file_id)
+    stream: ObjectStreaming | None = await project_bucket.get_object(file_id)
 
     return (
         stream.stream(request) if stream
