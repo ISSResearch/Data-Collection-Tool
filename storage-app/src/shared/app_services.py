@@ -1,4 +1,4 @@
-from typing import Any, Pattern
+from typing import Any, Pattern, Optional
 from gridfs import NoFile, ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
@@ -8,11 +8,11 @@ from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.db_manager import DataBase, AsyncIOMotorGridFSBucket
+from hashlib import md5
 from motor.motor_asyncio import (
     AsyncIOMotorGridOutCursor,
     AsyncIOMotorGridOut
 )
-from hashlib import md5
 
 
 class FileMeta:
@@ -21,7 +21,7 @@ class FileMeta:
 
     def __init__(self, data: str) -> None:
         self._meta: str = data
-        self._prepared_meta: Any | None = None
+        self._prepared_meta: Optional[Any] = None
 
     def get(self) -> dict:
         return {
