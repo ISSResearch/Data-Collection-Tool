@@ -23,8 +23,9 @@ import "./styles.css";
 var handleMediaFallback = ({ target }) => {
   var fallbackSrc = "/images/fallback-media.svg";
 
+  // TODO: after this fallback controls wont show up again, fix
   if (target.tagName === "VIDEO") {
-    target.controls = false;
+    //target.controls = false;
     target.poster = fallbackSrc;
   }
   else target.src = fallbackSrc;
