@@ -1,37 +1,18 @@
-from typing_extensions import Generator, Iterator
-from typing import Any, Pattern
-from gridfs import NoFile, ObjectId, GridOut, GridOutCursor
+from typing import Any, Pattern, Optional
+from gridfs import NoFile, ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match
 from json import loads
-from os import SEEK_SET
 from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
-from shared.db_manager import DataBase, GridFSBucket
+from shared.db_manager import DataBase, AsyncIOMotorGridFSBucket
 from hashlib import md5
-
-
-class Headers:
-    def __init__(self, data: dict[str, str]) -> None:
-        self._headers: dict[str, str] = data
-        self.is_valid: bool = False
-
-    def validate(self) -> None:
-        self.chunk: str | None = self._headers.get("chunk")
-        self.total_chunks: str | None = self._headers.get("total-chunks")
-
-        self.is_valid = bool(self.chunk and self.total_chunks)
-
-    @property
-    def is_new(self) -> bool: return not self.chunk or int(self.chunk) == 1
-
-    @property
-    def is_last_chunk(self) -> bool:
-        try: return bool(self.is_valid and self.chunk == self.total_chunks)
-
-        except AttributeError: return False
+from motor.motor_asyncio import (
+    AsyncIOMotorGridOutCursor,
+    AsyncIOMotorGridOut
+)
 
 
 class FileMeta:
@@ -40,7 +21,7 @@ class FileMeta:
 
     def __init__(self, data: str) -> None:
         self._meta: str = data
-        self._prepared_meta: Any | None = None
+        self._prepared_meta: Optional[Any] = None
 
     def get(self) -> dict:
         return {
@@ -66,8 +47,8 @@ class ObjectStreaming:
     )
     RANGE_RE: Pattern = compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", I)
 
-    def __init__(self, file: GridOut) -> None:
-        self.file: GridOut = file
+    def __init__(self, file: AsyncIOMotorGridOut) -> None:
+        self.file: AsyncIOMotorGridOut = file
         self.range_match: Match[str] | None = None
         self._set_chunks()
 
@@ -78,12 +59,13 @@ class ObjectStreaming:
             else self._stream_file(request)
         )
 
-    def _stream_file(self, request: Request):
+    def _stream_file(self, request: Request) -> StreamingResponse:
         self.range_match: Match[str] | None = self._get_range_match(request)
+
         if self.range_match: self._set_chunks()
 
         response: StreamingResponse = StreamingResponse(
-            iter(self),
+            self._iterator(),
             status_code=(206 if self.range_match else 200),
             media_type=self.content_type
         )
@@ -94,7 +76,7 @@ class ObjectStreaming:
 
         return response
 
-    def _stream_dataset(self):
+    def _stream_dataset(self) -> StreamingResponse:
         response: StreamingResponse = StreamingResponse(self.file)
         file_name: str = self.file.filename + ".zip"
 
@@ -102,28 +84,15 @@ class ObjectStreaming:
 
         return response
 
-    def __iter__(self) -> Iterator: return self._file_iterator()
+    # TODO: find a way to defer closing maybe i could overpass the iterator
+    async def _iterator(self):
+        self.file.seek(self.chunk_start)
+        remaining: int = self.chunk_end
 
-    def _file_iterator(self) -> Generator:
-        self.file.seek(self.chunk_start, SEEK_SET)
-        remaining_chunk: int = self.chunk_length
-
-        while True:
-            bytes_length: int = (
-                self.file.length if not self.range_match
-                else (
-                    CHUNK_SIZE
-                    if remaining_chunk is None
-                    else min(remaining_chunk, CHUNK_SIZE)
-                )
-            )
-
-            data: bytes = self.file.read(bytes_length)
-
-            if not data: break
-            if remaining_chunk: remaining_chunk -= len(data)
-
-            yield data
+        while remaining and (chunk := await self.file.read(CHUNK_SIZE)):
+            remaining -= CHUNK_SIZE if CHUNK_SIZE <= remaining else remaining
+            yield chunk
+        else: self.file.close()
 
     @property
     def content_type(self) -> str:
@@ -146,7 +115,7 @@ class ObjectStreaming:
         )
 
         chunk_start = int(chunk_start)
-        chunk_end = int(chunk_end) if chunk_end else chunk_start + CHUNK_SIZE
+        chunk_end = int(chunk_end) if chunk_end else self.file.length
 
         if chunk_end >= self.file.length: chunk_end = self.file.length - 1
 
@@ -160,94 +129,54 @@ class ObjectStreaming:
 class BucketObject:
     __slots__ = ("file_id", "meta", "headers", "_fs")
 
-    def __init__(self, fs: GridFSBucket) -> None: self._fs = fs
+    def __init__(self, fs: AsyncIOMotorGridFSBucket) -> None: self._fs = fs
 
-    def put_object(
+    async def put_object(
         self,
-        request: Request,
-        file_id: str,
         file: UploadFile,
         file_meta: str
-    ) -> tuple[Any, bool, int]:
-        self._prepare_payload(file_meta, request.headers)
-        self.file_id: ObjectId | str = get_object_id(file_id)
+    ) -> tuple[str, int]:
+        self.meta: FileMeta = FileMeta(file_meta)
 
         try:
-            if self.headers.is_new: self._create_file(file)
-            else: self._append_file(file)
-
-            return True, self.headers.is_last_chunk, (
-                status.HTTP_201_CREATED
-                if self.headers.is_new
-                else status.HTTP_202_ACCEPTED
-            )
+            file_id: str = await self._create_file(file)
+            return file_id, status.HTTP_201_CREATED
 
         except AssertionError:
-            return "Such file already exists", False, status.HTTP_400_BAD_REQUEST
+            return "Such file already exists", status.HTTP_400_BAD_REQUEST
 
         except Exception as error:
             message: str = error.args[0]
-            return message, False, status.HTTP_400_BAD_REQUEST
+            return message, status.HTTP_400_BAD_REQUEST
 
-    def delete_object(self, object_id: str) -> tuple[bool, str]:
-        try: self._fs.delete(get_object_id(object_id))
+    async def delete_object(self, object_id: str) -> tuple[bool, str]:
+        try: await self._fs.delete(get_object_id(object_id))
         except Exception: return False, "error message"
-
         return True, ""
 
-    def _prepare_payload(
-        self,
-        file_meta: str = "",
-        request_headers: dict = {}
-    ) -> None:
-        self.meta: FileMeta = FileMeta(file_meta)
-
-        self.headers: Headers = Headers(request_headers)
-        self.headers.validate()
-
-    def _create_file(self, chunk: UploadFile) -> None:
+    async def _create_file(self, file: UploadFile) -> str:
+        content: bytes = await file.read()
         meta: dict[str, Any] = self.meta.get()
         new_item: dict[str, Any] = {
-            "file_id": self.file_id,
             "filename": meta.get("file_name", ""),
-            "source": chunk.file,
+            "source": content,
             "metadata": meta
         }
 
-        if self.headers.is_last_chunk: self._set_hash(new_item)
+        await self._set_hash(new_item)
 
-        self._fs.upload_from_stream_with_id(**new_item)
+        file_id: ObjectId = await self._fs.upload_from_stream(**new_item)
 
-    def _append_file(self, chunk: UploadFile) -> ObjectId | None:
-        try:
-            previous_file: GridOut = self._fs.open_download_stream(self.file_id)
+        return str(file_id)
 
-            new_item: dict[str, Any] = {
-                "file_id": previous_file._id,
-                "filename": previous_file.name,
-                "source": previous_file.read() + chunk.file.read(),
-                "metadata": previous_file.metadata
-            }
+    async def _set_hash(self, file_item: dict[str, Any]) -> None:
+        new_hash: bytes = md5(file_item["source"]).digest()
 
-            self._fs.delete(previous_file._id)
+        cursor: AsyncIOMotorGridOutCursor = self._fs.find(
+            {"metadata.hash": new_hash}
+        )
 
-            if self.headers.is_last_chunk: self._set_hash(new_item)
-
-            return self._fs.upload_from_stream_with_id(**new_item)
-
-        except NoFile: self._create_file(chunk)
-
-    def _set_hash(self, file_item: dict[str, Any]) -> None:
-        if type(file_item["source"]) != bytes:
-            content: bytes = file_item["source"].read()
-            file_item["source"].seek(0)
-        else: content: bytes = file_item["source"]
-
-        new_hash: bytes = md5(content).digest()
-
-        search_result: set[GridOut] = set(self._fs.find({"metadata.hash": new_hash}))
-
-        if bool(len(search_result)): raise AssertionError
+        if await cursor.fetch_next: raise AssertionError
 
         file_item["metadata"]["hash"] = new_hash
 
@@ -256,27 +185,17 @@ class Bucket(BucketObject):
     __slots__ = ("_fs",)
 
     def __init__(self, bucket_name: str) -> None:
-        self._fs: GridFSBucket = DataBase.get_fs_bucket(bucket_name)
+        self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
 
-    def put_object(
-        self,
-        request: Request,
-        file_id: str,
-        file: UploadFile,
-        file_meta: str
-    ) -> tuple: return super().put_object(request, file_id, file, file_meta)
-
-    def delete_object(self, object_id: str) -> tuple:
-        return super().delete_object(object_id)
-
-    def get_object(self, object_id: str) -> ObjectStreaming | None:
+    async def get_object(self, object_id: str) -> ObjectStreaming | None:
         try:
-            with self._fs.open_download_stream(get_object_id(object_id)) as file:
-                return ObjectStreaming(file)
+            f_id: ObjectId = get_object_id(object_id)
+            file: AsyncIOMotorGridOut = await self._fs.open_download_stream(f_id)
+            return ObjectStreaming(file)
 
         except NoFile: return None
 
-    def get_download_objects(self, file_ids: list[int]) -> GridOutCursor:
+    def get_download_objects(self, file_ids: list[str]) -> AsyncIOMotorGridOutCursor:
         prepared_ids: list[str | ObjectId] = [
             get_object_id(str(object_id))
             for object_id in file_ids

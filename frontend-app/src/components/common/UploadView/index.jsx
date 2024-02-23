@@ -44,7 +44,7 @@ export default function UploadView({ fileManager, pathID, setUploading }) {
     try { await proceedUpload(); }
     catch({ message, authFailed }) {
       addAlert("Uploading file error: " + message, "error", authFailed);
-      if (authFailed) await runModal(true);
+      if (authFailed) await runModal();
       else setUploading(false);
     }
   }

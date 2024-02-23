@@ -15,6 +15,7 @@ from ..utils import (
     healthcheck_backend_app
 )
 
+
 class GetDbUriTest(TestCase):
     def setUp(self):
         self.__user = environ.get("DB_USER", "")

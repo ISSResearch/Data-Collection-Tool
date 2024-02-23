@@ -1,8 +1,8 @@
-from json import dumps, loads # noqa
+from json import dumps
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from datetime import datetime
-from gridfs import GridOutCursor
+from gridfs import GridOut
 from shared.settings import TEMP_BUCKET, SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
 from shared.db_manager import DataBase
 from shared.app_services import Bucket
@@ -11,6 +11,7 @@ from bson import ObjectId
 from typing import Any
 from requests import post, Response
 from os import mkdir, path, remove
+from motor.motor_asyncio import AsyncIOMotorGridOutCursor
 
 
 class Zipper:
@@ -18,8 +19,8 @@ class Zipper:
     archive_extension: str = "zip"
     temp_prefix = "./temp_zip"
 
-    def __init__(self, bucket_name: str, file_ids: list[int]) -> None:
-        self.object_set: GridOutCursor = Bucket(bucket_name) \
+    def __init__(self, bucket_name: str, file_ids: list[str]) -> None:
+        self.object_set: AsyncIOMotorGridOutCursor = Bucket(bucket_name) \
             .get_download_objects(file_ids)
 
         self._get_annotation(bucket_name, file_ids)
@@ -29,7 +30,7 @@ class Zipper:
         self.archive: str = ""
         self.bucket_name = bucket_name
 
-    def archive_objects(self) -> None:
+    async def archive_objects(self) -> None:
         if not self.annotated or self.written: return
 
         self.archive = f"{self.temp_prefix}/{ObjectId()}.{self.archive_extension}"
@@ -37,21 +38,25 @@ class Zipper:
 
         # TODO: check other compress types
         with ZipFile(self.archive, 'w', ZIP_DEFLATED) as zip:
-            for object in self.object_set:
-                zip.writestr(self._get_object_name(object), object.read())
+            # TODO: proper iterating had fetch_next but it returns int apparently
+            # can use db's io loop
+            try:
+                while object := await self.object_set.next():
+                    zip.writestr(self._get_object_name(object), object.read())
+            except StopAsyncIteration: ...
 
             with BytesIO(json_data) as annotation:
                 zip.writestr("annotation.json", annotation.read())
 
         self.written = True
 
-    def write_archive(self) -> str | None:
+    async def write_archive(self) -> str | None:
         if self.archive_id: return self.archive_id
 
         if not self.archive: raise FileExistsError
 
         with open(self.archive, 'rb') as archive:
-            self._archive_id: ObjectId = DataBase \
+            self._archive_id: ObjectId = await DataBase \
                 .get_fs_bucket(TEMP_BUCKET) \
                 .upload_from_stream(
                     filename=f"{self.bucket_name}_dataset",
@@ -61,7 +66,7 @@ class Zipper:
 
     def delete_temp_zip(self) -> None: remove(self.archive)
 
-    def _get_object_name(self, object) -> str:
+    def _get_object_name(self, object: GridOut) -> str:
         prepared_name: str = object.name
         extension: str = object.metadata.get("file_extension", "")
 
@@ -69,7 +74,7 @@ class Zipper:
 
         return prepared_name
 
-    def _get_annotation(self, bucket_name: str, file_ids: list[int]) -> Any:
+    def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"
         payload_token: str = emit_token(
             {"minutes": 1},

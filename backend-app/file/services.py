@@ -129,12 +129,7 @@ class ViewSetServices:
         uploader = FileUploader(request, project_id)
         succeed = uploader.proceed_upload()
 
-        response = {"ok": succeed}
-
-        if succeed: response["created_files"] = FilesSerializer(
-            uploader.created_files,
-            many=True
-        ).data
+        response = {"result": succeed}
 
         return response, (
             HTTP_201_CREATED if succeed
@@ -153,33 +148,25 @@ class FileUploader:
     def __init__(self, request: Request, project_id: int) -> None:
         self.project_id: int = project_id
         self.author_id: int = request.user.id
-        self.files_meta: list[dict[str, Any]] = [
-            loads(item) for item
-            in request.POST.getlist('meta[]')
-        ]
+        self.meta: dict[str, Any] = loads(request.POST.get('meta', ""))
 
         self.free_attributegroups: list[AGroup] = list()
-        self.new_instances: list[tuple[File, list[AGroup], list]] = list()
         self.created_files: list[File] = list()
         self.groups_taken: int = 0
 
     def proceed_upload(self) -> bool:
         try:
             self.get_free_attributegroups()
-            self.gather_instances()
+            self.get_instance()
             self.write_instances()
             self.assign_attributes()
-            self.set_created()
 
             return True
 
         except Exception: return False
 
     def get_free_attributegroups(self) -> None:
-        required_length: int = sum([
-            len(meta.get('atrsGroups', []))
-            for meta in self.files_meta
-        ])
+        required_length: int = len(self.meta.get('atrsGroups', []))
 
         available_groups: list[AGroup] = list(AGroup.get_free_groups())
 
@@ -192,31 +179,24 @@ class FileUploader:
 
         self.free_attributegroups = available_groups[:required_length]
 
-    def gather_instances(self) -> None:
-        self.new_instances.extend(
-            [self._form_instances(meta) for meta in self.files_meta]
-        )
+    def get_instance(self) -> None:
+        self.instance: tuple[File, list, list] = self._form_instance(self.meta)
 
     def write_instances(self) -> None:
-        File.objects.bulk_create(
-            [file for file, _, _ in self.new_instances],
-            batch_size=100
-        )
+        file, file_groups, _ = self.instance
 
+        file.save()
         AGroup.objects.bulk_update(
-            [
-                group
-                for _, file_groups, _ in self.new_instances
-                for group in file_groups
-            ],
+            [group for group in file_groups],
             ['file_id'],
             batch_size=300
         )
 
     def assign_attributes(self) -> None:
+        _, file_groups, file_meta = self.instance
+
         prepared_query: list[tuple[AGroup, list]] = [
             (file_groups[i], file_meta[i])
-            for _, file_groups, file_meta in self.new_instances
             for i in range(len(file_groups))
         ]
 
@@ -232,13 +212,11 @@ class FileUploader:
                 query_values
             )
 
-    def set_created(self) -> None:
-        self.created_files.extend([file for file, _, _ in self.new_instances])
-
-    def _form_instances(self, meta: dict[str, Any]) -> tuple[File, list[AGroup], list]:
+    def _form_instance(self, meta: dict[str, Any]) -> tuple[File, list[AGroup], list]:
         file_groups_count: int = len(meta.get('atrsGroups', []))
 
         file: File = File(
+            id=meta["fileID"],
             file_name=f'{meta["name"]}.{meta["extension"]}',
             file_type=meta.get("type", 'file'),
             project_id=self.project_id,
