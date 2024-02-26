@@ -33,7 +33,7 @@ class ViewSetServices:
 
     def _patch_file(
         self,
-        file_id: int,
+        file_id: str,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
         # TODO: no handler for nofile case. imp tests after
@@ -56,7 +56,7 @@ class ViewSetServices:
             HTTP_202_ACCEPTED if update_valid else HTTP_400_BAD_REQUEST
         )
 
-    def _delete_file(self, file_id: int) -> tuple[dict[str, Any], int]:
+    def _delete_file(self, file_id: str) -> tuple[dict[str, Any], int]:
         try:
             file = File.objects.get(id=file_id)
             file.attributegroup_set.all().delete()

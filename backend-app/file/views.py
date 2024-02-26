@@ -10,11 +10,11 @@ class FileViewSet(APIView, ViewSetServices):
     http_method_names = ("patch", "delete")
     permission_classes = (IsAuthenticated, FilePermission)
 
-    def patch(self, request: Request, fileID: int) -> Response:
+    def patch(self, request: Request, fileID: str) -> Response:
         response, status = self._patch_file(fileID, request.data)
         return Response(response, status=status)
 
-    def delete(self, _, fileID: int) -> Response:
+    def delete(self, _, fileID: str) -> Response:
         response, status = self._delete_file(fileID)
         return Response(response, status=status)
 

@@ -9,7 +9,7 @@ from .views import (
 
 urlpatterns: tuple = (
     path("project/<int:projectID>/", FilesViewSet.as_view()),
-    path("<int:fileID>/", FileViewSet.as_view()),
+    path("<str:fileID>/", FileViewSet.as_view()),
     path("stats/attribute/<int:projectID>/", get_attribute_stats),
     path("stats/user/<int:projectID>/", get_user_stats),
     path("annotation/", get_annotation)
