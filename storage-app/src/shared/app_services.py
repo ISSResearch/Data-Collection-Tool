@@ -1,4 +1,4 @@
-from typing import Any, Pattern, Optional
+from typing import Any, Pattern, Optional, AsyncGenerator
 from gridfs import NoFile, ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
@@ -85,7 +85,7 @@ class ObjectStreaming:
         return response
 
     # TODO: find a way to defer closing maybe i could overpass the iterator
-    async def _iterator(self):
+    async def _iterator(self) -> AsyncGenerator[bytes, None]:
         self.file.seek(self.chunk_start)
         remaining: int = self.chunk_end
 
@@ -105,8 +105,8 @@ class ObjectStreaming:
             else "application/octet-stream"
         )
 
-    def _get_range_match(self, request: Request) -> Match[str] | None:
-        return self.RANGE_RE.match(request.headers.get('range', ''))
+    def _get_range_match(self, request: Request) -> Optional[Match[str]]:
+        return self.RANGE_RE.match(request.headers.get("range", ""))
 
     def _set_chunks(self) -> None:
         chunk_start, chunk_end = (
@@ -187,7 +187,7 @@ class Bucket(BucketObject):
     def __init__(self, bucket_name: str) -> None:
         self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
 
-    async def get_object(self, object_id: str) -> ObjectStreaming | None:
+    async def get_object(self, object_id: str) -> Optional[ObjectStreaming]:
         try:
             f_id: ObjectId = get_object_id(object_id)
             file: AsyncIOMotorGridOut = await self._fs.open_download_stream(f_id)
