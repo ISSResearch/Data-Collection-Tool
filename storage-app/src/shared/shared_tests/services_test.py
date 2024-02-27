@@ -3,9 +3,11 @@ from re import Match
 from ..app_services import FileMeta, ObjectStreaming, BucketObject, Bucket
 from ..utils import get_db_uri
 from json import dumps
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
+from bson import ObjectId 
+from random import randbytes
 
-
+             
 class FileMetaTest(TestCase):
     defaults = {
         'file_extension': None,
@@ -90,11 +92,7 @@ class ObjectStreamingTest(TestCase):
 
     def test_iterator(self):
         stream = ObjectStreaming(self.file({}, b"12345"))
-
-        async def _helper():
-            async for c in stream._iterator(): print(c)
-
-        run(_helper())
+        self.assertFalse(stream)
 
     def test_dataset(self, stream=None):
         if not stream: stream = ObjectStreaming(self.file())._stream_dataset()
@@ -121,12 +119,61 @@ class BucketObjectTest(TestCase):
     def setUpClass(cls): cls.client = AsyncIOMotorClient(get_db_uri())
 
     @classmethod
-    def tearDownClass(cls): cls.client.close()
+    def tearDownClass(cls):
+        async def _h():
+            fs = AsyncIOMotorGridFSBucket(cls.client.test_storage)
+            async for f in fs.find({}): await fs.delete(f._id)
+
+        run(cls.client, _h)
+        cls.client.close()
 
     def test_delete(self):
-        async def _h(): print(123)
+        async def _h():
+            fs = AsyncIOMotorGridFSBucket(self.client.test_storage)
+            bucket = BucketObject(fs)
+
+            f_id = await fs.upload_from_stream(source=b"123", filename="test_file")
+
+            self.assertIsInstance(f_id, ObjectId)
+            self.assertIsNotNone(await fs.find({"_id": f_id}).next())
+
+            res, message = await bucket.delete_object(f_id)
+
+            self.assertTrue(res)
+            self.assertEqual(message, "")
+
+            try:
+                await fs.find({"_id": f_id}).next()
+                self.assertTrue(False)
+            except Exception: self.assertTrue(True)
+
+            res, message = await bucket.delete_object(f_id)
+            self.assertFalse(res)
+            self.assertEqual(message, "error message")
+
+
         run(self.client, _h)
-    # def test_put(self): ...
+
+    def test_put(self):
+        async def _h():
+            file_meta = {"file_name": "test_file", "file_extension": "png", "file_type": "image"}
+            fs = AsyncIOMotorGridFSBucket(self.client.test_storage)
+            bucket = BucketObject(fs)
+            f_id, status = await bucket.put_object(
+                type("file", (object, ), {"read": read}),
+                dumps(file_meta)
+            )
+
+            file = await fs.find({"_id": ObjectId(f_id)}).next()
+
+            self.assertEqual(status, 201)
+            self.assertIsInstance(f_id, str)
+            self.assertEqual(file.length, 5)
+            self.assertEqual(file.filename, file_meta["file_name"])
+
+
+        run(self.client, _h)
+
     # def test_create(self): ...
     # def test_set_has(self): ...
 
@@ -137,11 +184,14 @@ class BucketTest(TestCase):
     def test_get(self): ...
 
 
+async def read(): return randbytes(5)
+
 def run(client, f):
     async def _h():
         session = await client.start_session()
-        async with session.start_transaction() as transaction:
+        async with session.start_transaction() as _:
             await f()
             await session.abort_transaction()
 
     client.get_io_loop().run_until_complete(_h())
+
