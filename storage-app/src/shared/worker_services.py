@@ -82,7 +82,7 @@ class Zipper:
             SECRET_ALGO,
         )
 
-        try: prefix, project_id = bucket_name.split('_')
+        try: _, project_id = bucket_name.split('_')
         except Exception: project_id = ""
 
         headers: dict[str, Any] = {

@@ -136,10 +136,8 @@ class BucketObject:
         file: UploadFile,
         file_meta: str
     ) -> tuple[str, int]:
-        self.meta: FileMeta = FileMeta(file_meta)
-
         try:
-            file_id: str = await self._create_file(file)
+            file_id: str = await self._create_file(file, FileMeta(file_meta))
             return file_id, status.HTTP_201_CREATED
 
         except AssertionError:
@@ -154,9 +152,9 @@ class BucketObject:
         except Exception: return False, "error message"
         return True, ""
 
-    async def _create_file(self, file: UploadFile) -> str:
+    async def _create_file(self, file: UploadFile, file_meta: FileMeta) -> str:
         content: bytes = await file.read()
-        meta: dict[str, Any] = self.meta.get()
+        meta: dict[str, Any] = file_meta.get()
         new_item: dict[str, Any] = {
             "filename": meta.get("file_name", ""),
             "source": content,
@@ -176,6 +174,7 @@ class BucketObject:
             {"metadata.hash": new_hash}
         )
 
+        # TODO: this fetch is gonna be depracated
         if await cursor.fetch_next: raise AssertionError
 
         file_item["metadata"]["hash"] = new_hash
@@ -202,3 +201,4 @@ class Bucket(BucketObject):
         ]
 
         return self._fs.find({"_id": {"$in": prepared_ids}})
+

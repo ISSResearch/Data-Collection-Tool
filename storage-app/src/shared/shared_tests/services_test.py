@@ -1,10 +1,13 @@
 from unittest import TestCase
 from re import Match
 from ..app_services import FileMeta, ObjectStreaming, BucketObject, Bucket
+from ..db_manager import DataBase
 from ..utils import get_db_uri
 from json import dumps
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 from bson import ObjectId 
+from asyncio import run as aiorun
+from ..settings import CHUNK_SIZE
 from random import randbytes
 
              
@@ -33,6 +36,7 @@ class FileMetaTest(TestCase):
 class ObjectStreamingTest(TestCase):
     @classmethod
     def setUpClass(cls):
+        async def _r(size): return bytes(size)
         cls.file = lambda _, m=dict(), f=b"": type(
             "file",
             (object, ),
@@ -40,8 +44,9 @@ class ObjectStreamingTest(TestCase):
                 "metadata": m,
                 "file": f,
                 "length": len(f),
-                "read": lambda _: ...,
+                "read": _r,
                 "seek": lambda _: ...,
+                "close": lambda: ...,
                 "filename": "name"
             }
         )
@@ -92,7 +97,12 @@ class ObjectStreamingTest(TestCase):
 
     def test_iterator(self):
         stream = ObjectStreaming(self.file({}, b"12345"))
-        self.assertFalse(stream)
+
+        async def _h():
+            async for chunk in stream._iterator():
+                self.assertEqual(chunk, bytes(CHUNK_SIZE))
+
+        aiorun(_h())
 
     def test_dataset(self, stream=None):
         if not stream: stream = ObjectStreaming(self.file())._stream_dataset()
@@ -114,7 +124,7 @@ class ObjectStreamingTest(TestCase):
         self.test_filestream(ObjectStreaming(self.file()).stream(self.request("", 0)))
 
 
-class BucketObjectTest(TestCase):
+class BucketTest(TestCase):
     @classmethod
     def setUpClass(cls): cls.client = AsyncIOMotorClient(get_db_uri())
 
@@ -123,16 +133,18 @@ class BucketObjectTest(TestCase):
         async def _h():
             fs = AsyncIOMotorGridFSBucket(cls.client.test_storage)
             async for f in fs.find({}): await fs.delete(f._id)
-
         run(cls.client, _h)
+
+        cls.client.get_io_loop().close()
         cls.client.close()
+        DataBase.close_connection()
 
     def test_delete(self):
         async def _h():
             fs = AsyncIOMotorGridFSBucket(self.client.test_storage)
             bucket = BucketObject(fs)
 
-            f_id = await fs.upload_from_stream(source=b"123", filename="test_file")
+            f_id = await fs.upload_from_stream(source=b"1", filename="test_file")
 
             self.assertIsInstance(f_id, ObjectId)
             self.assertIsNotNone(await fs.find({"_id": f_id}).next())
@@ -151,16 +163,17 @@ class BucketObjectTest(TestCase):
             self.assertFalse(res)
             self.assertEqual(message, "error message")
 
-
         run(self.client, _h)
 
     def test_put(self):
+        async def _r(): return b"234"
+
         async def _h():
             file_meta = {"file_name": "test_file", "file_extension": "png", "file_type": "image"}
             fs = AsyncIOMotorGridFSBucket(self.client.test_storage)
             bucket = BucketObject(fs)
             f_id, status = await bucket.put_object(
-                type("file", (object, ), {"read": read}),
+                type("file", (object, ), {"read": _r}),
                 dumps(file_meta)
             )
 
@@ -168,23 +181,80 @@ class BucketObjectTest(TestCase):
 
             self.assertEqual(status, 201)
             self.assertIsInstance(f_id, str)
-            self.assertEqual(file.length, 5)
+            self.assertEqual(file.length, 3)
             self.assertEqual(file.filename, file_meta["file_name"])
+            self.assertEqual(file.metadata["file_extension"], file_meta["file_extension"])
+            self.assertEqual(file.metadata["file_type"], file_meta["file_type"])
+            self.assertIsNotNone(file.metadata["hash"])
 
+            f_id, status = await bucket.put_object(
+                type("file", (object, ), {"read": _r}),
+                dumps(file_meta)
+            )
+            self.assertEqual(status, 400)
+            self.assertEqual("Such file already exists", f_id)
 
         run(self.client, _h)
 
-    # def test_create(self): ...
-    # def test_set_has(self): ...
+    def test_set_hash(self):
+        async def _r(b=b"3"): return b
 
-class BucketTest(TestCase):
-    def setUp(self): ...
-    def tearDown(self): ...
-    def test_get_downloads(self): ...
-    def test_get(self): ...
+        async def _h():
+            fs = AsyncIOMotorGridFSBucket(self.client.test_storage)
+            bucket = BucketObject(fs)
 
+            await bucket.put_object(
+                type("file", (object, ), {"read": _r}),
+                dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
+            )
+            
+            test_meta = {"source": b"4", "metadata": {}}
+            self.assertIsNone(test_meta.get("hash"))
 
-async def read(): return randbytes(5)
+            await bucket._set_hash(test_meta)
+            self.assertIsNotNone(test_meta["metadata"].get("hash"))
+
+            try: await bucket._set_hash({"source": b"3"})
+            except AssertionError: return 
+
+            self.assertFalse(True)
+
+        run(self.client, _h)
+
+    def test_get_object(self):
+        async def _r(): return randbytes(10)
+
+        async def _h():
+            bucket = Bucket("test_storage")
+
+            f_id, _ = await bucket.put_object(
+                type("file", (object, ), {"read": _r}),
+                dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
+            )
+
+            self.assertIsNone(await bucket.get_object("some"))
+            self.assertIsInstance(await bucket.get_object(f_id), ObjectStreaming)
+            
+        run(self.client, _h)
+
+    def test_get_downloads(self):
+        async def _r(): return randbytes(10)
+
+        async def _h():
+            bucket = Bucket("test_storage")
+
+            f_id, _ = await bucket.put_object(
+                type("file", (object, ), {"read": _r}),
+                dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
+            )
+            
+            self.assertEqual(
+                len([file async for file in bucket.get_download_objects([f_id])]),
+                1
+            )
+
+        run(self.client, _h)
+
 
 def run(client, f):
     async def _h():

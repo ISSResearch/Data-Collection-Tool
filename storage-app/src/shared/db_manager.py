@@ -41,4 +41,8 @@ class DataBase:
     @classmethod
     def close_connection(cls) -> None:
         if not cls.__client: return
+
         cls.__client.close()
+        cls.__client = None
+        cls.__current_db = None
+

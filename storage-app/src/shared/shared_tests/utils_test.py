@@ -3,7 +3,7 @@ from unittest.mock import patch
 from bson import ObjectId
 from ..settings import SECRET_KEY, SECRET_ALGO
 from os import environ, path
-from datetime import datetime
+from datetime import datetime, timedelta
 from jose import jwt, JWTError
 import requests
 from ..utils import (
@@ -88,7 +88,7 @@ class EmitTokenTest(TestCase):
         self.assertEqual(decoded.get("some_data"), 123)
         self.assertEqual(
             datetime.fromtimestamp(decoded.get("exp", 0)).day,
-            today.day + days_delta
+            (today + timedelta(days=days_delta)).day
         )
 
 
