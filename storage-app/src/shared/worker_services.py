@@ -8,8 +8,8 @@ from shared.db_manager import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
 from bson import ObjectId
-from typing import Any
-from requests import post, Response
+from typing import Any, Optional
+import requests
 from os import mkdir, path, remove
 from motor.motor_asyncio import AsyncIOMotorGridOutCursor
 
@@ -25,14 +25,13 @@ class Zipper:
 
         self._get_annotation(bucket_name, file_ids)
 
-        if not path.exists(self.temp_prefix): mkdir(self.temp_prefix)
-
         self.archive: str = ""
         self.bucket_name = bucket_name
 
-    async def archive_objects(self) -> None:
+    async def archive_objects(self) -> Optional[bool]:
         if not self.annotated or self.written: return
 
+        if not path.exists(self.temp_prefix): mkdir(self.temp_prefix)
         self.archive = f"{self.temp_prefix}/{ObjectId()}.{self.archive_extension}"
         json_data: Any = dumps(self.annotation, indent=4).encode('utf-8')
 
@@ -49,8 +48,9 @@ class Zipper:
                 zip.writestr("annotation.json", annotation.read())
 
         self.written = True
+        return self.written
 
-    async def write_archive(self) -> str | None:
+    async def write_archive(self) -> Optional[str]:
         if self.archive_id: return self.archive_id
 
         if not self.archive: raise FileExistsError
@@ -94,7 +94,7 @@ class Zipper:
             "file_ids": file_ids
         }
 
-        response: Response = post(url, headers=headers, json=payload)
+        response: requests.Response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code != 202: raise ConnectionError
 
@@ -104,6 +104,6 @@ class Zipper:
         self.annotated: int = response_data["annotated"]
 
     @property
-    def archive_id(self) -> str | None:
+    def archive_id(self) -> Optional[str]:
         a_id: Any = self.__dict__.get("_archive_id")
         if a_id: return str(a_id)

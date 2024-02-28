@@ -10,6 +10,6 @@ from .shared_tests.db_test import DBTest
 from .shared_tests.services_test import (
     FileMetaTest,
     ObjectStreamingTest,
-    BucketTest
+    BucketTest,
 )
 from .shared_tests.worker_test import ZipperTest

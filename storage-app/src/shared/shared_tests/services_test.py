@@ -1,16 +1,25 @@
 from unittest import TestCase
 from re import Match
 from ..app_services import FileMeta, ObjectStreaming, BucketObject, Bucket
-from ..db_manager import DataBase
-from ..utils import get_db_uri
+from ..db_manager import DataBase, get_db_uri
+from ..settings import CHUNK_SIZE
 from json import dumps
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
-from bson import ObjectId 
+from bson import ObjectId
 from asyncio import run as aiorun
-from ..settings import CHUNK_SIZE
 from random import randbytes
 
-             
+
+def run(client, f):
+    async def _h():
+        session = await client.start_session()
+        async with session.start_transaction() as _:
+            await f()
+            await session.abort_transaction()
+
+    client.get_io_loop().run_until_complete(_h())
+
+
 class FileMetaTest(TestCase):
     defaults = {
         'file_extension': None,
@@ -36,6 +45,7 @@ class FileMetaTest(TestCase):
 class ObjectStreamingTest(TestCase):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         async def _r(size): return bytes(size)
         cls.file = lambda _, m=dict(), f=b"": type(
             "file",
@@ -126,10 +136,18 @@ class ObjectStreamingTest(TestCase):
 
 class BucketTest(TestCase):
     @classmethod
-    def setUpClass(cls): cls.client = AsyncIOMotorClient(get_db_uri())
+    def setUpClass(cls):
+        super().setUpClass()
+        import asyncio
+        try: asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        cls.client = AsyncIOMotorClient(get_db_uri())
 
     @classmethod
     def tearDownClass(cls):
+        super().tearDownClass()
         async def _h():
             fs = AsyncIOMotorGridFSBucket(cls.client.test_storage)
             async for f in fs.find({}): await fs.delete(f._id)
@@ -207,7 +225,7 @@ class BucketTest(TestCase):
                 type("file", (object, ), {"read": _r}),
                 dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
             )
-            
+
             test_meta = {"source": b"4", "metadata": {}}
             self.assertIsNone(test_meta.get("hash"))
 
@@ -215,7 +233,7 @@ class BucketTest(TestCase):
             self.assertIsNotNone(test_meta["metadata"].get("hash"))
 
             try: await bucket._set_hash({"source": b"3"})
-            except AssertionError: return 
+            except AssertionError: return
 
             self.assertFalse(True)
 
@@ -234,7 +252,7 @@ class BucketTest(TestCase):
 
             self.assertIsNone(await bucket.get_object("some"))
             self.assertIsInstance(await bucket.get_object(f_id), ObjectStreaming)
-            
+
         run(self.client, _h)
 
     def test_get_downloads(self):
@@ -247,21 +265,10 @@ class BucketTest(TestCase):
                 type("file", (object, ), {"read": _r}),
                 dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
             )
-            
+
             self.assertEqual(
                 len([file async for file in bucket.get_download_objects([f_id])]),
                 1
             )
 
         run(self.client, _h)
-
-
-def run(client, f):
-    async def _h():
-        session = await client.start_session()
-        async with session.start_transaction() as _:
-            await f()
-            await session.abort_transaction()
-
-    client.get_io_loop().run_until_complete(_h())
-
