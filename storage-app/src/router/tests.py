@@ -1,2 +1,3 @@
-from .router_tests.storage_test import TestGet, TestPost, TestDelete
-from .router_tests.task_test import TestArchive, TestCheckStatus
+from .router_tests.storage_test import StorageRouterTest
+from .router_tests.task_test import TaskRouterTest
+from .router_tests.token_test import TokenRouterTest

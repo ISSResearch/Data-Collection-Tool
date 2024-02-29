@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 from asyncio import run as aiorun
 from os.path import exists
+from asyncio import get_event_loop, new_event_loop, set_event_loop
 
 BUCKET = "test_bucket"
 
@@ -24,13 +25,10 @@ class ZipperTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        import asyncio
-        try: asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        DataBase.close_connection()
+        try: get_event_loop()
+        except RuntimeError: set_event_loop(new_event_loop())
         cls.client = AsyncIOMotorClient(get_db_uri())
-        # if not DataBase._DataBase__client: DataBase._DataBase__client = cls.client
 
     @classmethod
     def tearDownClass(cls) -> None:

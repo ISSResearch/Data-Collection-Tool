@@ -1,18 +1,18 @@
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from unittest import TestCase
-from ..task import router
+from ..token import router
+from asyncio import new_event_loop, set_event_loop, get_event_loop
+from shared.db_manager import DataBase
 from os.path import abspath
 from sys import path
-from shared.db_manager import DataBase
-from asyncio import new_event_loop, set_event_loop, get_event_loop
 
 mod_path = abspath(".")
 src_pos = mod_path.find("src")
 path.append(mod_path[:src_pos+4])
 
 
-class TaskRouterTest(TestCase):
+class TokenRouterTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
