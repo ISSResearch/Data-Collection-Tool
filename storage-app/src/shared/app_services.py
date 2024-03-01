@@ -149,7 +149,7 @@ class BucketObject:
 
     async def delete_object(self, object_id: str) -> tuple[bool, str]:
         try: await self._fs.delete(get_object_id(object_id))
-        except Exception: return False, "error message"
+        except Exception: return False, "no such file"
         return True, ""
 
     async def _create_file(self, file: UploadFile, file_meta: FileMeta) -> str:
@@ -201,4 +201,3 @@ class Bucket(BucketObject):
         ]
 
         return self._fs.find({"_id": {"$in": prepared_ids}})
-

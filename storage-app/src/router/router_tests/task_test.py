@@ -18,16 +18,24 @@ class TaskRouterTest(TestCase):
         super().setUpClass()
         app = FastAPI()
         app.include_router(router)
-
-        DataBase.close_connection()
-
-        try: get_event_loop()
-        except RuntimeError: set_event_loop(new_event_loop())
-
         cls.client = TestClient(app)
 
     @classmethod
     def tearDownClass(cls) -> None:
         super().tearDownClass()
-        DataBase.close_connection()
         cls.client.close()
+
+    def test_produce(self):
+        res = self.client.post(
+            "/api/task/archive/",
+            json={
+                "bucket_name": "test",
+                "file_ids": ["asd", "zxc"]
+            },
+            headers={"Content-Type": "multipart/form-data"}
+        )
+        print(res.json())
+
+    def test_check(self):
+        res = self.client.get("/api/task/asdasd")
+        print(res.json())

@@ -32,6 +32,9 @@ async def upload_file(
 @router.delete("/api/storage/{bucket_name}/{file_id}/")
 async def delete_file(bucket_name: str, file_id: str) -> JSONResponse:
     project_bucket: Bucket = Bucket(bucket_name)
-    result: tuple = await project_bucket.delete_object(file_id)
+    result, message = await project_bucket.delete_object(file_id)
 
-    return JSONResponse(content={"ok": True, "result": result})
+    return JSONResponse(
+        content={"ok": result, "result": message},
+        status_code=200 if result else 404
+    )

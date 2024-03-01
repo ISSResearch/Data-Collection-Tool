@@ -181,7 +181,7 @@ class BucketTest(TestCase):
 
             res, message = await bucket.delete_object(f_id)
             self.assertFalse(res)
-            self.assertEqual(message, "error message")
+            self.assertEqual(message, "no such file")
 
         run(self.client, _h)
 
