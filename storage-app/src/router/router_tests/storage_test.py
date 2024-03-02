@@ -1,6 +1,8 @@
+from requests import post
 from fastapi.testclient import TestClient
-from fastapi import FastAPI, UploadFile
+from random import randbytes
 from json import dumps
+from fastapi import FastAPI
 from unittest import TestCase
 from ..storage import router
 from asyncio import new_event_loop, set_event_loop, get_event_loop
@@ -90,19 +92,45 @@ class StorageRouterTest(TestCase):
 
 
     def test_post(self):
-        return
+        test_file = randbytes(10)
+        invalid_res = self._request(
+            f"/api/storage/{self.bucket_name}/",
+            "post",
+            {"file": test_file}
+        )
         res = self._request(
             f"/api/storage/{self.bucket_name}/",
             "post",
             {
-                "file": UploadFile(b"123"),
-                "file_meta": {
-                    "file_name": "name",
-                    "file_extension": "ext",
-                    "file_type": "type"
+                "file": test_file,
+                "data": {
+                    "file_meta": dumps({
+                        "file_name": "name",
+                        "file_type": "type",
+                        "file_extension": "ext"
+                    })
                 }
             }
         )
+        same_file_res = self._request(
+            f"/api/storage/{self.bucket_name}/",
+            "post",
+            {
+                "file": test_file,
+                "data": {
+                    "file_meta": dumps({
+                        "file_name": "name",
+                        "file_type": "type",
+                        "file_extension": "ext"
+                    })
+                }
+            }
+        )
+        self.assertEqual(invalid_res.status_code, 422)
+        self.assertEqual(res.status_code, 201)
+        self.assertIsNotNone(res.json().get("result"))
+        self.assertEqual(same_file_res.status_code, 400)
+        self.assertEqual(same_file_res.json()["result"], "Such file already exists")
 
     def _request(self, url, method="get", data={}):
         DataBase.close_connection()
@@ -111,8 +139,11 @@ class StorageRouterTest(TestCase):
             "post": self.client.post,
             "delete": self.client.delete
         }
+
         payload = {"url": url}
         if data:
-            payload["data"] = data
-            # payload["headers"] = {"Content-Type": "multipart/form-data; boundary=myboundary"}
+            data, file = data.get("data"), data.get("file")
+            if data: payload["data"] = data
+            if file: payload["files"] = {"file": file}
+
         return method_map[method](**payload)

@@ -15,7 +15,7 @@ def archive_bucket(request_task: ArchiveTask) -> JSONResponse:
         request_task.file_ids
     )
 
-    return JSONResponse(content={"task_id": task.id})
+    return JSONResponse(content={"task_id": task.id}, status_code=201)
 
 
 # TODO: find the way to check if no such task

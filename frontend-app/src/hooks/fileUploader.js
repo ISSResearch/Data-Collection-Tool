@@ -28,7 +28,7 @@ export default function useFileUploader(projectID) {
       data,
       headers: {
         "Authorization": "Bearer " + localStorage.getItem("dtcAccess"),
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
       onUploadProgress: ({ loaded, total }) => {
           file.progress = Math.round((loaded * 100) / total);
