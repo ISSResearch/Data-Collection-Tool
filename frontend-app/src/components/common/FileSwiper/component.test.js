@@ -34,4 +34,4 @@ test("file swiper component test", () => {
   rerender(component());
   expect(swiperHook.current.slide).toBe(1);
   screen.getByText("media_" + swiperHook.current.slide);
-})
+});

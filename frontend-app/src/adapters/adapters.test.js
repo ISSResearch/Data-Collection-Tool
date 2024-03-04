@@ -41,7 +41,7 @@ test("attribute groups adapter test", () => {
   var preparedGroups = attributeGroupsAdapter(raw_file_attributes);
   expect(preparedGroups).toEqual({
     '5738e31f-c43a-4195-b1c2-ea513424a309': { 0: [249, 259, 260], 1: [271] }
-  })
+  });
 });
 
 test("user stats adapter test", () => {

@@ -18,7 +18,7 @@ import "./styles.css";
 * @type {Function}
 * @param {object} event
 * @param {object} event.target
-* @returns {undefined}
+* @returns {void}
 */
 var handleMediaFallback = ({ target }) => {
   var fallbackSrc = "/images/fallback-media.svg";

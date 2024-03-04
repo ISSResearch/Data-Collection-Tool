@@ -9,7 +9,7 @@ export default function useFiles() {
 
   /**
   * @param {object[]} filesData
-  * @returns {undefined}
+  * @returns {void}
   */
   function initFiles(filesData) {
     filesData.forEach((file) => {

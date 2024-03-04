@@ -14,7 +14,7 @@ err.response = {status: 401};
 var authEvent = {
   preventDefault: () => {},
   target: [{value: "name"}, {value: "pass"}]
-}
+};
 
 test("auth modal hook test", async () => {
   window.state = false;
@@ -22,17 +22,17 @@ test("auth modal hook test", async () => {
   global.window[modalID] = {
     showModal: () => (window.state = true),
     close: () => window.state = false
-  }
+  };
   const { result: hook } = renderHook(() => useAuthModal(modalID, () => window.authRes = true));
 
 
   api.get.mockResolvedValue("ok");
   await act(async () => {
     await hook.current.checkAuth();
-  })
+  });
   expect(window.state).toBeFalsy();
 
-  api.get.mockRejectedValue(err)
+  api.get.mockRejectedValue(err);
 
   await act(async () => {
     try { await hook.current.checkAuth(); }

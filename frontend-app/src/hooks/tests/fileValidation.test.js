@@ -16,7 +16,7 @@ test("test file validation hook", () => {
         [key]: (Array.isArray(val)
         ? val
         : Object.values(val)).reduce((newacc, ids) => [...newacc, ...ids], [])
-      }
+      };
     }, {});
 
   act(() => {

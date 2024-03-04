@@ -53,7 +53,7 @@ test("file groupchange test", () => {
 
   act(() => {
     var [key] = Object.keys(groups());
-    hook.current.handleGroupChange({key, type: "copy"})
+    hook.current.handleGroupChange({key, type: "copy"});
   });
   expect(Object.keys(groups())).toHaveLength(2);
   var [origin, copied] = Object.keys(groups());
@@ -83,7 +83,7 @@ test("file groupchange test", () => {
         index: 0,
         selInd: 0
       }
-    })
+    });
   });
   expect(groups()).toEqual({
     [origin]: { '0': [ 20 ] },

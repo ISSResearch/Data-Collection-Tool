@@ -12,10 +12,12 @@ test("alert manager test", () => {
     var [item] = Object.entries(hook.current.alerts);
     var [key, value] = item;
     var _alert = new Alert(message, type);
-    _alert.id = key
+    _alert.id = key;
 
+    _alert.id = value.id;
     if (!session) expect(value).toEqual(_alert);
     else expect(value).toEqual({
+      id: value.id,
       active: true,
       message: "Session expired",
       type: "common"
@@ -23,8 +25,8 @@ test("alert manager test", () => {
 
     act(() => hook.current.removeAlert(key));
     expect(hook.current.alerts[key].active).toBeFalsy();
-  }
+  };
 
   check("some", "type");
   check("zxc", "asd", true);
-})
+});

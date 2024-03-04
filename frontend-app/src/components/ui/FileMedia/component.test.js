@@ -14,7 +14,7 @@ afterEach(() => {
 test("file media ui component test", async() => {
   const { result: rf } = renderHook(() => useRef(null));
 
-  const component = slide => (
+  const component = (slide) => (
     <MemoryRouter>
       <AlertContext.Provider value={ {alerts: []} }>
         <FileMedia ref={rf.current} files={prepared_files} slide={slide || 0} pathID={1} />
@@ -35,7 +35,7 @@ test("file media ui component test", async() => {
       rerender: async (slide) => {
         await act(async () => await rerender(component(slide)));
       }
-    }
+    };
   };
 
   const getMedia = (i) => container
@@ -63,7 +63,7 @@ test("file media ui component test", async() => {
 
   act(() => rf.current.current());
 
-  expect(container.querySelector(".mediaItem").style.transform).toBe("translate(0px, 0px) scale(1)")
+  expect(container.querySelector(".mediaItem").style.transform).toBe("translate(0px, 0px) scale(1)");
 
   await rerender(1);
   expect(getMedia(1)).not.toBeNull();

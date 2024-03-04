@@ -13,7 +13,7 @@ export default function useAttributeManager() {
 
   /**
   * @param {{levels?: object, attributes?: object}} data
-  * @returns {undefined}
+  * @returns {void}
   */
   function addForm(data) {
     var formId = formUID();
@@ -26,7 +26,7 @@ export default function useAttributeManager() {
 
   /**
   * @param {number} formId
-  * @returns {undefined}
+  * @returns {void}
   */
   function deleteForm(formId) {
     const newForms = { ...forms };
@@ -37,7 +37,7 @@ export default function useAttributeManager() {
   }
 
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   function clearForms() { setForms({}); }
 
@@ -60,7 +60,7 @@ export default function useAttributeManager() {
 
   /**
   * @param {object[]} boundAttributes
-  * @returns {undefined}
+  * @returns {void}
   */
   function boundAttributes(boundAttributes) {
     const preparedData = deepCopy(boundAttributes).reduce((acc, item) => {

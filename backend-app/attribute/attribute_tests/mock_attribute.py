@@ -3,6 +3,7 @@ from file.models import File
 from attribute.models import Attribute, Level, AttributeGroup
 from user.models import CustomUser
 from random import random
+from uuid import uuid4
 
 
 class MockCase:
@@ -14,6 +15,7 @@ class MockCase:
         )
         self.project = Project.objects.create(name='p_name')
         self.file_ = File.objects.create(
+            id=str(uuid4())[:24],
             file_name='f_name',
             project=self.project,
             author_id=self.user.id

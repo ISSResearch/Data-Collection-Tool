@@ -29,7 +29,7 @@ test('all project component test', () => {
   );
 
   expect(screen.queryByTestId('load-c')).toBeNull();
-  expect(screen.queryByRole('link')).toBeNull()
+  expect(screen.queryByRole('link')).toBeNull();
   expect(screen.queryByRole('heading')).toBeNull();
   expect(screen.getByText('No projects.'));
 });

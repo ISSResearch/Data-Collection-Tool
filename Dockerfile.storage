@@ -17,4 +17,6 @@ COPY ./storage-app/requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY ./storage-app/src ./src
+
 RUN chown -R iss:iss /app

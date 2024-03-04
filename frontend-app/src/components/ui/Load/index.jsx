@@ -3,7 +3,7 @@ import './styles.css';
 
 /**
 * @param {object} props
-* @param {boolean} props.isInline
+* @param {boolean} [props.isInline]
 * @returns {ReactElement}
 */
 export default function Load({ isInline }) {

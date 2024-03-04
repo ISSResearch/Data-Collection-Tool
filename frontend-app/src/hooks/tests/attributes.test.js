@@ -36,7 +36,7 @@ test("attribute manipulate test", () => {
     hook.current.addAttribute(formID, initLen.toString());
     hook.current.addAttribute(formID, initLen.toString());
     hook.current.addAttribute(formID, initLen.toString());
-  })
+  });
 
   var attrs = hook.current.attributes[formID];
   expect(attrs).toHaveLength(initLen + 1);

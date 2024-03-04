@@ -16,7 +16,7 @@ export default function useFile() {
 
   /**
   * @param {object} entry
-  * @returns {undefined}
+  * @returns {void}
   */
   function initFile(entry) {
     var newFile = deepCopy(entry);
@@ -26,7 +26,7 @@ export default function useFile() {
   /**
   * @param {object} target
   * @param {string} target.value
-  * @returns {undefined}
+  * @returns {void}
   */
   function changeName({ value }) {
     setFile((prev) => {
@@ -39,7 +39,7 @@ export default function useFile() {
   * @param {number} changeItem.key
   * @param {string} changeItem.type
   * @param {object} changeItem.payload
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleGroupChange({ key, type, payload }) {
     var changeMap = {

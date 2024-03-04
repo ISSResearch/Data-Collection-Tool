@@ -12,7 +12,7 @@ test("selectoritem component test, case initial", () => {
     <MultiSelector
       selectorLabel={"test_selector"}
       selectorOptions={attributes}
-      onChange={e => change = e}
+      onChange={(e) => change = e}
       defaultSelected={[]}
     />
   );
@@ -27,13 +27,13 @@ test("selectoritem component test, case initial", () => {
       if (opened) className += " options--open";
       expect(container.querySelector(containerClass).className).toBe(className);
       return opened;
-    }
+    };
   };
 
   const { container } = render(component());
   var toggle = toggler();
 
-  screen.getByText("clear test_selector")
+  screen.getByText("clear test_selector");
   expect(toggle()).toBeTruthy();
   expect(toggle()).toBeFalsy();
   expect(toggle()).toBeTruthy();
@@ -49,8 +49,8 @@ test("selectoritem component test, case initial", () => {
   );
 
   fireEvent.change(screen.getByRole("listbox"), { target: { value: [attributes[0].id] } });
-  fireEvent.click(screen.getByRole("button"))
-  toggle(true)
+  fireEvent.click(screen.getByRole("button"));
+  toggle(true);
 
   expect(container.querySelector(containerClass).className).toBe(containerClass.slice(1));
   expect(change).toEqual([attributes[0].id]);
@@ -71,8 +71,8 @@ test("selectoritem component test, case with defaults", () => {
     <MultiSelector
       selectorLabel={"test_selector"}
       selectorOptions={attributes}
-      onChange={e => change = e}
-      defaultSelected={attributes.map(e => e.id)}
+      onChange={(e) => change = e}
+      defaultSelected={attributes.map((e) => e.id)}
     />
   );
 

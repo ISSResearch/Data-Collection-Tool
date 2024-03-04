@@ -6,7 +6,7 @@ import { AlertContext } from '../../context/Alert';
 import Registration from '.';
 
 test("login page test", () => {
-  const { result: userHook } = renderHook(() => useState(null))
+  const { result: userHook } = renderHook(() => useState(null));
 
   render(
     <MemoryRouter>

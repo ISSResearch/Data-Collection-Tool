@@ -58,4 +58,4 @@ test("tablebodyset component test", () => {
   );
 
   tester()(prepared_attribute_stats);
-})
+});

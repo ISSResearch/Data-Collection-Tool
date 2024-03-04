@@ -8,7 +8,7 @@ import Home from '../Home';
 import Projects from '../Projects';
 
 test("login page test", () => {
-  const { result: userHook } = renderHook(() => useUser(null))
+  const { result: userHook } = renderHook(() => useUser(null));
 
   render(
     <UserContext.Provider value={userHook.current}>

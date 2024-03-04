@@ -55,7 +55,7 @@ test("selector component test, solo applied", () => {
     if (children) attributesStack.push({
       ...children[0],
       attributes: children[0].attributes.filter(({ parent }) => {
-        var { attributes } = attributesStack[attributesStack.length - 1]
+        var { attributes } = attributesStack[attributesStack.length - 1];
         return parent === attributes[0].id;
       })
     });

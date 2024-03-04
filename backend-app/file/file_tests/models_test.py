@@ -2,6 +2,7 @@ from django.test import TestCase
 from attribute.attribute_tests.mock_attribute import MockCase
 from file.models import File
 from attribute.models import Attribute
+from uuid import uuid4
 
 
 class FileModelTest(TestCase):
@@ -13,6 +14,7 @@ class FileModelTest(TestCase):
     def test_create_file(self):
         init_count = self.case.project.file_set.count()
         credentials = {
+            "id": str(uuid4())[:24],
             "file_name": 'new_test.png',
             "file_type": 'image',
             "project": self.case.project,
@@ -28,6 +30,7 @@ class FileModelTest(TestCase):
             set(
                 File.objects
                 .values_list(
+                    "id",
                     "file_name",
                     "file_type",
                     "project",

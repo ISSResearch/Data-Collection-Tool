@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom';
 import TitleSwitch from '.';
 
 function test_selected_option(options, current, parentLink, titleLink) {
@@ -41,7 +41,7 @@ test("title switch component test", () => {
       currentRoute={route}
       parent='projects/1'
     />
-  </MemoryRouter>
+  </MemoryRouter>;
 
   const { rerender } = render(component(true, "upload"));
   test_selected_option(options, 'upload', 'projects/1', true);

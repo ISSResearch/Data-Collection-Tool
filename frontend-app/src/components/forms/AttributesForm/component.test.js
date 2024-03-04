@@ -1,7 +1,7 @@
 import { fireEvent, render, renderHook, act, screen } from '@testing-library/react';
 import AttributesForm from '.';
 import { AlertContext } from '../../../context/Alert';
-import { MemoryRouter } from "react-router-dom"
+import { MemoryRouter } from "react-router-dom";
 import { useAttributeManager } from '../../../hooks/';
 import { api } from '../../../config/api';
 
@@ -31,7 +31,7 @@ test("attributes form component test", async () => {
   );
 
   const { rerender } = render(component());
-  let item = managerHook.current.levelHook.levels[firstForm][0]
+  let item = managerHook.current.levelHook.levels[firstForm][0];
   item.orig = true;
   item.uid = item.id;
 

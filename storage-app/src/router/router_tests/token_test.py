@@ -9,7 +9,7 @@ from shared.settings import SECRET_KEY, SECRET_ALGO
 
 mod_path = abspath(".")
 src_pos = mod_path.find("src")
-path.append(mod_path[:src_pos+4])
+path.append(mod_path[:src_pos + 4])
 
 
 class TokenRouterTest(TestCase):
@@ -34,5 +34,5 @@ class TokenRouterTest(TestCase):
         decoded = jwt.decode(res.json(), SECRET_KEY, algorithms=SECRET_ALGO)
         self.assertEqual(
             set(decoded.keys()),
-            { "token_type", "exp", "iat", "jti"}
+            {"token_type", "exp", "iat", "jti"}
         )

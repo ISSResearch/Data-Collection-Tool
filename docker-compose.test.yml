@@ -11,11 +11,21 @@ services:
     networks:
       - iss_test_network
 
+  iss-test-storage-db:
+    image: mongo:7.0.1-rc0
+    container_name: iss-test-storage-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: testuser
+      MONGO_INITDB_ROOT_PASSWORD: testuserpass
+    networks:
+      - iss_test_network
+
   iss-test-back:
     container_name: iss-test-back
     image: iss_back_tst
     build:
-      dockerfile: Dockerfile.back-tmp
+      dockerfile: Dockerfile.backend
     restart: always
     depends_on:
       - iss-test-db
@@ -25,7 +35,8 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-      SERVER_ORIGINS: 'iss-test-front,iss-test-back'
+      DEBUG: true
+      SERVER_ORIGINS: "iss-test-front,iss-test-back"
       SECRET_KEY: test-secret-key
     command: >
       sh -c "python manage.py makemigrations user &&
@@ -38,9 +49,58 @@ services:
     networks:
       - iss_test_network
 
+  iss-test-storage:
+    container_name: iss-test-storage
+    image: iss_storage_tst
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    environment:
+      DB_HOST: iss-test-storage-db
+      APP_BACKEND_URL: iss-test-back:8000
+      DB_USER: testuser
+      DB_PASSWORD: testuserpass
+      DEBUG: true
+      CELERY_BROKER_URL: redis://iss-test-broker:6379/0
+      SECRET_KEY: test-secret-key
+    depends_on:
+      - iss-test-storage-db
+      - iss-test-back
+    command: python3 src/app.py
+    networks:
+      - iss_test_network
+
+  iss-test-broker:
+    container_name: iss-test-broker
+    image: redis:alpine3.18
+    restart: always
+    command: redis-server
+    networks:
+      - iss_test_network
+
+  iss-test-worker:
+    container_name: iss-test-worker
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    environment:
+      DB_HOST: iss-test-storage-db
+      APP_BACKEND_URL: iss-test-back:8000
+      DB_USER: testuser
+      DB_PASSWORD: testuserpass
+      DEBUG: true
+      CELERY_BROKER_URL: redis://iss-test-broker:6379/0
+      SECRET_KEY: test-secret-key
+    depends_on:
+      - iss-test-broker
+      - iss-test-back
+    command: python3 src/worker.py
+    networks:
+      - iss_test_network
+
   iss-test-front:
     container_name: iss-test-front
-    image: iss_front
+    image: iss_front_tst
     build:
       dockerfile: Dockerfile.frontend
     restart: always
@@ -58,48 +118,48 @@ services:
     image: iss_tests
     build:
       dockerfile: Dockerfile.tests
-    depends_on:
-      - iss-selenium-chrome
-      - iss-selenium-fox
+    # depends_on:
+    #   - iss-selenium-chrome
+    #   - iss-selenium-fox
     command: tail -f /dev/null
     networks:
       - iss_test_network
 
-  iss-selenium-hub:
-    container_name: iss-selenium-hub
-    image: seleniarm/hub
-    depends_on:
-      - iss-test-front
-    networks:
-      - iss_test_network
+  # iss-selenium-hub:
+  #   container_name: iss-selenium-hub
+  #   image: seleniarm/hub
+  #   depends_on:
+  #     - iss-test-front
+  #   networks:
+  #     - iss_test_network
 
-  iss-selenium-chrome:
-    container_name: iss-selenium-chrome
-    image: seleniarm/node-chromium
-    depends_on:
-      - iss-selenium-hub
-    volumes:
-      - /dev/shm:/dev/shm
-    environment:
-      SE_EVENT_BUS_HOST: iss-selenium-hub
-      SE_EVENT_BUS_PUBLISH_PORT: 4442
-      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-    networks:
-      - iss_test_network
+  # iss-selenium-chrome:
+  #   container_name: iss-selenium-chrome
+  #   image: seleniarm/node-chromium
+  #   depends_on:
+  #     - iss-selenium-hub
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   environment:
+  #     SE_EVENT_BUS_HOST: iss-selenium-hub
+  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
+  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+  #   networks:
+  #     - iss_test_network
 
-  iss-selenium-fox:
-    container_name: iss-selenium-fox
-    image: seleniarm/node-firefox
-    depends_on:
-      - iss-selenium-hub
-    volumes:
-      - /dev/shm:/dev/shm
-    environment:
-      SE_EVENT_BUS_HOST: iss-selenium-hub
-      SE_EVENT_BUS_PUBLISH_PORT: 4442
-      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-    networks:
-      - iss_test_network
+  # iss-selenium-fox:
+  #   container_name: iss-selenium-fox
+  #   image: seleniarm/node-firefox
+  #   depends_on:
+  #     - iss-selenium-hub
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   environment:
+  #     SE_EVENT_BUS_HOST: iss-selenium-hub
+  #     SE_EVENT_BUS_PUBLISH_PORT: 4442
+  #     SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+  #   networks:
+  #     - iss_test_network
 
 networks:
   iss_test_network:

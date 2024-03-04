@@ -1,3 +1,4 @@
+# flake8: noqa
 from .shared_tests.utils_test import (
     GetDbUriTest,
     GetPathTest,
@@ -13,3 +14,4 @@ from .shared_tests.services_test import (
     BucketTest,
 )
 from .shared_tests.worker_test import ZipperTest
+# flake8: noqa

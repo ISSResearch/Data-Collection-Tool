@@ -27,7 +27,7 @@ export class Alert {
   }
 
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   disable() { this.active = false; }
 }
@@ -42,7 +42,7 @@ export function useAlerts() {
   * @param {string} message
   * @param {string} type
   * @param {boolean} noSession
-  * @returns {undefined}
+  * @returns {void}
   */
   function addAlert(message, type, noSession=false) {
     var alert = new Alert(message, type, noSession);
@@ -51,7 +51,7 @@ export function useAlerts() {
 
   /**
   * @param {number} id
-  * @returns {undefined}
+  * @returns {void}
   */
   function removeAlert(id) {
     setAlerts((prev) => {

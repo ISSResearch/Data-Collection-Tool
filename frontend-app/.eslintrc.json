@@ -53,8 +53,8 @@
     "semi": "error",
     "arrow-parens": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "no-empty-function": "error",
-    "@typescript-eslint/no-empty-function": "error",
+    "no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unused-vars": "error"
   }
 }

@@ -109,7 +109,7 @@ test("bound attributes test", () => {
   expect(attributes[0].children[0].children).toHaveLength(2);
 
   expect(levels).toHaveLength(3);
-  expect(levels[1].attributes).toHaveLength(4)
+  expect(levels[1].attributes).toHaveLength(4);
 
-  expect(Object.keys(hook.current.formHook.forms)).toHaveLength(3)
+  expect(Object.keys(hook.current.formHook.forms)).toHaveLength(3);
 });

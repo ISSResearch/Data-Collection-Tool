@@ -11,7 +11,7 @@ jest.mock("../../hooks/fileInput", () => {
     count: () => 1,
     validate: () => ({ isValid: true }),
     gatherFiles: () => []
-  })
+  });
 });
 afterEach(() => {
   jest.restoreAllMocks();

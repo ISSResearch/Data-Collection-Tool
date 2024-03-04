@@ -15,9 +15,9 @@ test("find and replace ui component test", () => {
       if (opened) className += " form--open";
       expect(container.querySelector(parentClass).className).toBe(className);
       return opened;
-    }
+    };
   };
-  const component = () => <FindAndReplace onCommit={(t,w) => {replaceTo=t;replaceWith=w}}/>;
+  const component = () => <FindAndReplace onCommit={(t,w) => {replaceTo=t;replaceWith=w;}}/>;
 
   const { container } = render(component());
   expect(container.querySelector(parentClass).className).toBe(parentClass.slice(1));

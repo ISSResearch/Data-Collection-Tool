@@ -7,9 +7,9 @@ import './styles.css';
 * @param {object} props
 * @param {string} props.errors
 * @param {Function} props.callback
-* @param {number[]} props.fields
+* @param {object[]} props.fields
 * @param {boolean} props.loading
-* @param {string} props.link
+* @param {object} props.link
 * @returns {ReactElement}
 */
 export default function Form({ errors, callback, fields, loading, link }) {

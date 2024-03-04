@@ -82,6 +82,10 @@ export default function useFileUploader(projectID) {
     );
   }
 
+  /**
+  * @param {object} file
+  * @returns {Promise<undefined>}
+  */
   async function _proceedFile(file) {
     try {
       var fileID = await _writeFile(file);

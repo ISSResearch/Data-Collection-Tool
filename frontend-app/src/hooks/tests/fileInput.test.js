@@ -12,8 +12,8 @@ const makeFiles = (num=25) => {
   for (let i = 0; i < num; i++) {
     files.push({ file: '', name: `file${i}.png`, type: 'image/png' });
   }
-  return files
-}
+  return files;
+};
 
 test("file input hook test", () => {
   const { result: hook } = renderHook(() => useFileInput());
@@ -91,7 +91,7 @@ test("file input attribute groups change test", () => {
 
   act(() => {
     var [key] = Object.keys(first());
-    hook.current.handleGroupChange({fileID, key, type: "copy"})
+    hook.current.handleGroupChange({fileID, key, type: "copy"});
   });
   expect(Object.keys(first())).toHaveLength(2);
   var [origin, copied] = Object.keys(first());
@@ -123,7 +123,7 @@ test("file input attribute groups change test", () => {
         index: 0,
         selInd: 0
       }
-    })
+    });
   });
   expect(first()).toEqual({
     [origin]: { '0': [ 20 ] },

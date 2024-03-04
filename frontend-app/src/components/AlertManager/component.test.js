@@ -12,7 +12,7 @@ test("alert manager component test", () => {
     </AlertContext.Provider>
   );
 
-  const { rerender, container } = render(component())
+  const { rerender, container } = render(component());
 
   expect(container.querySelectorAll(".alertCard")).toHaveLength(0);
   act(() => {

@@ -45,4 +45,3 @@ class DataBase:
         cls.__client.close()
         cls.__client = None
         cls.__current_db = None
-

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/** @returns {undefined} */
+/** @returns {void} */
 export default function Home() {
   const navigate = useNavigate();
 

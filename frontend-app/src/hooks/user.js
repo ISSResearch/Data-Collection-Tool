@@ -8,7 +8,7 @@ export default function useUser() {
 
   /**
   * @param {object} userData
-  * @returns {undefined}
+  * @returns {void}
   */
   function initUser(userData) { setUser(userData || null); }
 

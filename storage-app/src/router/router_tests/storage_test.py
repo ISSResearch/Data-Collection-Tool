@@ -1,4 +1,3 @@
-from requests import post
 from fastapi.testclient import TestClient
 from random import randbytes
 from json import dumps
@@ -18,7 +17,7 @@ from shared.db_manager import (
 
 mod_path = abspath(".")
 src_pos = mod_path.find("src")
-path.append(mod_path[:src_pos+4])
+path.append(mod_path[:src_pos + 4])
 
 
 class StorageRouterTest(TestCase):
@@ -89,7 +88,6 @@ class StorageRouterTest(TestCase):
         self.assertTrue(valid_res.json()["ok"])
         self.assertEqual(invalid_res.json()["result"], "no such file")
         self.assertEqual(valid_res.json()["result"], "")
-
 
     def test_post(self):
         test_file = randbytes(10)

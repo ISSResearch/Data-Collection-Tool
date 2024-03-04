@@ -1,7 +1,7 @@
 import { fireEvent, render, renderHook, act, screen } from '@testing-library/react';
 import FileDownloadSelector from '.';
 import { AlertContext } from '../../../context/Alert';
-import { MemoryRouter } from "react-router-dom"
+import { MemoryRouter } from "react-router-dom";
 import { useFiles } from '../../../hooks/';
 import { api } from '../../../config/api';
 import { raw_files } from "../../../config/mock_data";
@@ -39,8 +39,8 @@ test("download selcetor form component test", async () => {
     return {
       container,
       rerender: async (nw, opt) => await act(async() => await rerender(component(nw, opt)))
-    }
-  }
+    };
+  };
 
   const { container, rerender } = await init();
   await rerender();

@@ -23,7 +23,7 @@ export default function useLevels() {
   /**
   * @param {number} formId
   * @param {number[]} initData
-  * @returns {undefined}
+  * @returns {void}
   */
   function initLevel(formId, initData = []) {
     setLevels((prev) => {
@@ -33,7 +33,7 @@ export default function useLevels() {
 
   /**
   * @param {number} formId
-  * @returns {undefined}
+  * @returns {void}
   */
   function destroyLevel(formId) {
     var newLevels = { ...levels };
@@ -44,7 +44,7 @@ export default function useLevels() {
   /**
   * @throws {{message}} Error
   * @param {number} formId
-  * @returns {undefined}
+  * @returns {void}
   */
   function addLevel(formId) {
     if (levels[formId][levels[formId].length - 1]?.multiple)
@@ -60,7 +60,7 @@ export default function useLevels() {
   /**
   * @param {number} formId
   * @param {number} index
-  * @returns {undefined}
+  * @returns {void}
   */
   function delLevel(formId, index) {
     var newLevels = { ...levels };
@@ -77,7 +77,7 @@ export default function useLevels() {
   * @param {object} target
   * @param {string} target.value
   * @param {number} index
-  * @returns {undefined}
+  * @returns {void}
   */
   function changeLevel(formId, { value }, index) {
     var newLevels = { ...levels };
@@ -94,7 +94,7 @@ export default function useLevels() {
   * @param {number} formId
   * @param {number} index
   * @param {object} target
-  * @returns {undefined}
+  * @returns {void}
   */
   function setMultiple(formId, index, target) {
     if (index + 1 < levels[formId].length) {
@@ -114,7 +114,7 @@ export default function useLevels() {
   /**
   * @param {number} formId
   * @param {number} index
-  * @returns {undefined}
+  * @returns {void}
   */
   function setRequired(formId, index) {
     var newLevels = { ...levels };
@@ -129,7 +129,7 @@ export default function useLevels() {
   /**
   * @param {string} replaceTo
   * @param {string} replaceWith
-  * @returns {undefined}
+  * @returns {void}
   */
   function findAndReplace(replaceTo="", replaceWith="") {
     const newLevels = { ...levels };

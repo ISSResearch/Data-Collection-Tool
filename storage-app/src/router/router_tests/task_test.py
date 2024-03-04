@@ -4,13 +4,10 @@ from unittest import TestCase
 from ..task import router
 from os.path import abspath
 from sys import path
-from shared.db_manager import DataBase
-from json import dumps
-from asyncio import new_event_loop, set_event_loop, get_event_loop
 
 mod_path = abspath(".")
 src_pos = mod_path.find("src")
-path.append(mod_path[:src_pos+4])
+path.append(mod_path[:src_pos + 4])
 
 
 class TaskRouterTest(TestCase):

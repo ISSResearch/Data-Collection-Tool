@@ -7,21 +7,21 @@ jest.mock("../../../config/api", () => {
   var get = (r) => {
     var pathSplit = r.split("/");
     var task = pathSplit[pathSplit.length - 2];
-    if (task === "temp_token") return
+    if (task === "temp_token") return;
     return {
       data: task !== "temp_token"
       ? { archive_id: "arch_id_123", status: task }
       : { token: null }
-    }
-  }
-  return { fileApi: { get } }
+    };
+  };
+  return { fileApi: { get } };
 });
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
 test("download view component test", async () => {
-  const router = task => createBrowserRouter([
+  const router = (task) => createBrowserRouter([
     {
       path: "/",
       element: <AlertContext.Provider value={{addAlert: () => {}}}>
@@ -32,10 +32,10 @@ test("download view component test", async () => {
 
   const init = async (task) => {
     return await act(async () => {
-      const { container, unmount } = await render(<RouterProvider router={router(task)} />)
+      const { container, unmount } = await render(<RouterProvider router={router(task)} />);
       return { container, unmount };
     });
-  }
+  };
 
   var { unmount } = await init("PENDING");
   expect(screen.getByText("PENDING").className).toBe("iss__downloadingView__title__id");
@@ -43,12 +43,12 @@ test("download view component test", async () => {
   screen.getByText(/The DataSet is preparing. The download will start soon.../);
   unmount();
 
-  var { unmount } = await init("FAILURE");
+  await init("FAILURE");
   screen.getByText("FAILURE");
   screen.getByText("Error occured while gathering the DataSet. Please request a new one.");
   unmount();
 
-  var { unmount } = await init("SUCCESS");
+  await init("SUCCESS");
   screen.getByText("SUCCESS");
   screen.getByText("DataSet is ready. Downloading...");
   screen.getByText("Download started...");

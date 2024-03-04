@@ -32,7 +32,7 @@ export default function useAttributes() {
   /**
   * @param {number} formId
   * @param {number[]} initData
-  * @returns {undefined}
+  * @returns {void}
   */
   function initAttribute(formId, initData = []) {
     setAttributes((prev) => {
@@ -42,7 +42,7 @@ export default function useAttributes() {
 
   /**
   * @param {number} formId
-  * @returns {undefined}
+  * @returns {void}
   */
   function destroyAttribute(formId) {
     var newAttributes = { ...attributes };
@@ -53,7 +53,7 @@ export default function useAttributes() {
   /**
   * @param {number} formId
   * @param {string} position
-  * @returns {undefined}
+  * @returns {void}
   */
   function addAttribute(formId, position = null) {
     let path;
@@ -80,7 +80,7 @@ export default function useAttributes() {
   * @param {number} formId
   * @param {string} position
   * @param {boolean} isChild
-  * @returns {undefined}
+  * @returns {void}
   */
   function delAttribute(formId, position, isChild=false) {
     var newAttributes = { ...attributes };
@@ -100,7 +100,7 @@ export default function useAttributes() {
   /**
   * @param {number} formId
   * @param {number} levelIndex
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleLevelRemove(formId, levelIndex) {
     var newAttributes = { ...attributes };
@@ -118,7 +118,7 @@ export default function useAttributes() {
   * @param {string} target.value
   * @param {string} position
   * @param {boolean} isChild
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleChange(formId, { value }, position, isChild=false) {
     setAttributes((prevAttributes) => {
@@ -136,7 +136,7 @@ export default function useAttributes() {
   /**
   * @param {string} replaceTo
   * @param {string} replaceWith
-  * @returns {undefined}
+  * @returns {void}
   */
   function findAndReplace(replaceTo="", replaceWith="") {
     var newAttributes = { ...attributes };
@@ -152,7 +152,7 @@ export default function useAttributes() {
   * @param {number} formId
   * @param {string} position
   * @param {number} index
-  * @returns {undefined}
+  * @returns {void}
   */
   function moveUp(formId, position, index)  {
     if (index <= 0) return;
@@ -178,7 +178,7 @@ export default function useAttributes() {
   * @param {number} formId
   * @param {string} position
   * @param {number} index
-  * @returns {undefined}
+  * @returns {void}
   */
   function moveDown(formId, position, index)  {
     var newAttributes = { ...attributes };

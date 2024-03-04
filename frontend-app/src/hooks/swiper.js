@@ -15,14 +15,14 @@ export default function useSwiper(slides=5) {
   const [maxSlides, setMax] = useState(slides);
 
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   function slideDec() {
     slide > 0 && setSlide((prev) => prev - 1);
   }
 
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   function slideInc() {
     slide < (maxSlides - 1) && setSlide((prev) => prev + 1);

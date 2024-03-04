@@ -22,7 +22,7 @@ test("file info component test", async () => {
         attributes={prepared_attributes}
       />
     </AlertContext.Provider>
-  </MemoryRouter>
+  </MemoryRouter>;
 
  api.request.mockResolvedValue({});
   act(() => {

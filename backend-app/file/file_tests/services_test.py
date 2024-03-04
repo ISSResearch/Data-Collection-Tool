@@ -11,6 +11,7 @@ from attribute.models import AttributeGroup, Attribute
 from file.models import File
 from project.models import Project
 from user.models import CustomUser
+from uuid import uuid4
 
 
 class ViewServicesTest(TestCase, ViewSetServices):
@@ -28,20 +29,21 @@ class ViewServicesTest(TestCase, ViewSetServices):
         post = type(
             'POST',
             (object,),
-            {'getlist': lambda x: [dumps({
+            {'get': lambda *x: dumps({
+                "fileID": str(uuid4())[:24],
                 "name": "blog3",
                 "extension": "png",
                 "type": "image",
                 "atrsGroups": [[self.case.attribute.id]]
-            })]}
+            })}
         )
         invalid_post = type(
             'POST',
             (object,),
-            {'getlist': lambda x: [dumps({
+            {'get': lambda *x: dumps({
                 "type": "image",
                 "atrsGroups": [[self.case.attribute.id]]
-            })]}
+            })}
         )
         request = type(
             'request',
@@ -59,22 +61,23 @@ class ViewServicesTest(TestCase, ViewSetServices):
         res_invalid, code_invalid = self._create_file(111, invalid_request)
 
         self.assertEqual(code_invalid, 406)
-        self.assertFalse(res_invalid["ok"])
+        self.assertFalse(res_invalid["result"])
 
         self.assertEqual(code, 201)
-        self.assertTrue(res["ok"])
-        self.assertIsNotNone(res["created_files"])
+        self.assertTrue(res["result"])
 
         self.assertEqual(self.case.project.file_set.count(), init_count + 1)
 
     def test_get_files(self):
         file1 = File.objects.create(
+            id=str(uuid4())[:24],
             file_name="file",
             file_type="video",
             project=self.case.project,
             author=self.case.user
         )
         file2 = File.objects.create(
+            id=str(uuid4())[:24],
             file_name="file",
             file_type="image",
             project=self.case.project,
@@ -109,6 +112,7 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
     def test_delete_file(self):
         file = File.objects.create(
+            id=str(uuid4())[:24],
             file_name="file",
             file_type="ext",
             project=self.case.project,
@@ -347,6 +351,7 @@ class FileUploaderTest(TestCase):
         cls.case = MockCase()
         cls.base_check = False
         cls.file_data = {
+            "fileID": str(uuid4())[:24],
             "name": "blog3",
             "extension": "png",
             "type": "image",
@@ -355,7 +360,7 @@ class FileUploaderTest(TestCase):
         cls.post = type(
             'POST',
             (object,),
-            {'getlist': lambda x: [dumps(cls.file_data)]}
+            {'get': lambda *x: dumps(cls.file_data)}
         )
         cls.request = type(
             'request',
@@ -433,7 +438,7 @@ class FileUploaderTest(TestCase):
         self.assertIsNotNone(res[0].id)
 
     def test_gather_instances(self):
-        temp = self.uploader.files_meta
+        temp = self.uploader.meta
         self.assertEqual(self.uploader.new_instances, [])
         self._gather_instances_mixin([])
         self._gather_instances_mixin(temp)
@@ -441,7 +446,7 @@ class FileUploaderTest(TestCase):
     def test_get_groups(self):
         init_ag_count = AttributeGroup.objects.count()
         self.assertEqual(self.uploader.free_attributegroups, [])
-        temp = self.uploader.files_meta
+        temp = self.uploader.meta
 
         self._get_groups_mixin([])
         self._get_groups_mixin(temp)
@@ -452,15 +457,15 @@ class FileUploaderTest(TestCase):
         )
 
     def test_proceed_upload(self):
-        temp = self.uploader.files_meta
-        self.uploader.files_meta = None
+        temp = self.uploader.meta
+        self.uploader.meta = None
         self.assertFalse(self.uploader.proceed_upload())
 
-        self.uploader.files_meta = temp
+        self.uploader.meta = temp
 
         expected_count = sum([
             len(meta["atrsGroups"])
-            for meta in self.uploader.files_meta
+            for meta in self.uploader.meta
         ])
 
         self.assertTrue(self.uploader.proceed_upload())
@@ -482,12 +487,12 @@ class FileUploaderTest(TestCase):
         )
 
     def _get_groups_mixin(self, meta):
-        self.uploader.files_meta = meta
+        self.uploader.meta = meta
         self.uploader.get_free_attributegroups()
         self.assertEqual(len(self.uploader.free_attributegroups), len(meta))
 
     def _gather_instances_mixin(self, meta):
-        self.uploader.files_meta = meta
+        self.uploader.meta = meta
         self.uploader.gather_instances()
         self.assertEqual(len(self.uploader.new_instances), len(meta))
 
@@ -512,7 +517,7 @@ class FileUploaderTest(TestCase):
     def _base_check(self):
         self.assertEqual(self.uploader.project_id, self.case.project.id)
         self.assertEqual(self.uploader.author_id, self.case.user.id)
-        self.assertEqual(self.uploader.files_meta, [self.file_data])
+        self.assertEqual(self.uploader.meta, self.file_data)
 
         self.assertEqual(self.uploader.free_attributegroups, list())
         self.assertEqual(self.uploader.new_instances, list())

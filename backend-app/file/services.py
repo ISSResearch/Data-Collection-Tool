@@ -14,7 +14,7 @@ from user.models import CustomUser
 from json import loads
 from typing import Any
 from uuid import UUID
-from .serializers import File, FileSerializer, FilesSerializer
+from .serializers import File, FileSerializer
 
 
 class ViewSetServices:
@@ -151,7 +151,6 @@ class FileUploader:
         self.meta: dict[str, Any] = loads(request.POST.get('meta', ""))
 
         self.free_attributegroups: list[AGroup] = list()
-        self.created_files: list[File] = list()
         self.groups_taken: int = 0
 
     def proceed_upload(self) -> bool:

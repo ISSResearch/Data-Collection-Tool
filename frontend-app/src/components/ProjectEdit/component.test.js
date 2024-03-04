@@ -19,7 +19,7 @@ test("project edit component test", async () => {
     fireEvent.click(screen.getByRole('button', { name: 'DELETE PROJECT' }));
     fireEvent.input(screen.getByPlaceholderText("Exact Project name"), {target: {value}});
     fireEvent.click(screen.getByRole("button", {name: "submit"}));
-  }
+  };
   const component = () => (
     <MemoryRouter>
       <AlertContext.Provider value={{addAlert: () => throwAlert = true}}>

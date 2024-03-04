@@ -4,6 +4,7 @@ from file.models import File
 from user.models import CustomUser
 from attribute.models import Attribute
 from json import dumps
+from uuid import uuid4
 
 
 class FileViewSetTest(TestCase):
@@ -78,6 +79,7 @@ class FileViewSetTest(TestCase):
 
     def test_delete_file(self):
         self.case.project.file_set.create(
+            id="zxcqwe",
             file_name="asd",
             author_id=self.admin.id
         )
@@ -152,7 +154,8 @@ class FilesViewSetTest(TestCase):
 
     def test_post_files(self):
         init_count = self.case.project.file_set.count()
-        request = {
+        request = lambda: {
+            "fileID": str(uuid4())[:24],
             "name": "blog3 copy",
             "extension": "png",
             "type": "image",
@@ -161,7 +164,7 @@ class FilesViewSetTest(TestCase):
 
         invalid_response = self.client.post(
             f'/api/files/project/{self.case.project.id}/',
-            data={'meta[]': [dumps(request)]},
+            data={'meta': dumps(request())},
             HTTP_AUTHORIZATION="Bearer " + self.case.user.emit_token()
         )
 
@@ -169,20 +172,20 @@ class FilesViewSetTest(TestCase):
 
         response = self.client.post(
             f'/api/files/project/{self.case.project.id}/',
-            data={'meta[]': [dumps(request)]},
+            data={'meta': dumps(request())},
             HTTP_AUTHORIZATION="Bearer " + self.case.user.emit_token()
         )
 
         self.assertEqual(init_count + 1, self.case.project.file_set.count())
         admin_response = self.client.post(
             f'/api/files/project/{self.case.project.id}/',
-            data={'meta[]': [dumps(request)]},
+            data={'meta': dumps(request())},
             HTTP_AUTHORIZATION="Bearer " + self.admin.emit_token()
         )
 
         self.assertEqual(invalid_response.status_code, 403)
         self.assertTrue(admin_response.status_code == response.status_code == 201)
-        self.assertTrue(all([admin_response.data["ok"], response.data['ok']]))
+        self.assertTrue(all([admin_response.data["result"], response.data['result']]))
         self.assertEqual(init_count + 2, self.case.project.file_set.count())
 
 

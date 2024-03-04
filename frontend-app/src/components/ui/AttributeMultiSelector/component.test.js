@@ -28,7 +28,7 @@ test("attribute multi selector ui component base test", () => {
     .parentNode
     .parentNode;
   expect(wrapper.className).toBe("iss__filterSelector__options");
-  fireEvent.click(wrapper.parentNode.querySelector(".iss__filterSelector__selected"))
+  fireEvent.click(wrapper.parentNode.querySelector(".iss__filterSelector__selected"));
 
   rerender(component());
   wrapper = screen
@@ -38,7 +38,7 @@ test("attribute multi selector ui component base test", () => {
   expect(wrapper.className).toBe("iss__filterSelector__options options--open");
 
   selected = [246, 249];
-  rerender(component())
+  rerender(component());
   expect(screen.getAllByText("-not set-")).toHaveLength(2);
   wrapper = screen
     .getByText(/clear attribute_selector/)
@@ -52,7 +52,7 @@ test("attribute multi selector ui component base test", () => {
     Array.from(
       wrapper.parentNode
       .querySelectorAll(".iss__filterSelector__selected span")
-    ).map(e => e.innerHTML)
+    ).map((e) => e.innerHTML)
   ).toEqual(["ford", "honda"]);
 
   fireEvent.click(screen.getByText(/clear attribute_selector/));

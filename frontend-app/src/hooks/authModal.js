@@ -48,7 +48,7 @@ export default function useAuthModal(modalId, successCallback) {
     }
   }
 
-  /** @returns {undefined} */
+  /** @returns {void} */
   function closeModal() { window[modalId].close(); }
 
   /**

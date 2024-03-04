@@ -82,7 +82,7 @@ class ObjectStreamingTest(TestCase):
             "type/ext"
         )
 
-        meta["file_extension"] = "";
+        meta["file_extension"] = ""
         self.assertEqual(
             ObjectStreaming(self.file(meta)).content_type,
             "application/octet-stream"
@@ -150,6 +150,7 @@ class BucketTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
+
         async def _h():
             fs = AsyncIOMotorGridFSBucket(cls.client.test_storage)
             async for f in fs.find({}): await fs.delete(f._id)

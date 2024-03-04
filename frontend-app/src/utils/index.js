@@ -59,7 +59,7 @@ export function deepFind(arr, indexes, pointer = 0) {
 * @param {object[]} node
 * @param {string} parentPath
 * @param {number} changeIndex
-* @returns {undefined}
+* @returns {void}
 */
 export function refreshPath(node, parentPath = null, changeIndex = null) {
   node.forEach((item, index) => {
@@ -77,7 +77,11 @@ export function refreshPath(node, parentPath = null, changeIndex = null) {
 }
 
 /** @returns {number} */
-export function formUID() { return Number(Math.random().toFixed(16).slice(2)); }
+export function formUID() {
+  var uid = Math.random().toFixed(16).slice(2);
+  if (uid[0] === "0") uid += "0";
+  return Number(uid);
+}
 
 /**
 * @param {object[]} items
@@ -140,7 +144,7 @@ export function spreadChildren(data, refresh = true) {
 * @param {string} lookUpVal
 * @param {string} replaceWith
 * @param {boolean} head
-* @returns {undefined}
+* @returns {void}
 */
 export function traverseWithReplace(
   items,
@@ -163,7 +167,7 @@ export function traverseWithReplace(
 /**
 * @param {object[]} items
 * @param {number} parentOrder
-* @returns {undefined}
+* @returns {void}
 */
 export function drawPaths(items, parentOrder=0) {
   items.forEach((item, index) => {

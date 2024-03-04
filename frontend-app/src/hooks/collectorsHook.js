@@ -15,7 +15,7 @@ export default function useCollectors() {
 
   /**
   * @param {object[]} originCollectors
-  * @returns {undefined}
+  * @returns {void}
   */
   function initData(originCollectors) {
     var preparedCollectors = originCollectors.reduce((acc, collector) => {
@@ -33,7 +33,7 @@ export default function useCollectors() {
   * @param {string} name
   * @param {object} target
   * @param {boolean} target.checked
-  * @returns {undefined}
+  * @returns {void}
   */
   function changeCollector(id, name, { checked }) {
     var newCollectors = { ...collectors };

@@ -20,4 +20,4 @@ test("home page test", () => {
   );
 
   screen.getByText('Projects');
-})
+});

@@ -12,7 +12,7 @@ test("select group component base test", () => {
 
   expect(screen.getByRole('group').className).toBe('iss__selectGroup');
   expect(screen.getAllByRole("button", {name:'delete group'})).toHaveLength(1);
-  expect(screen.queryAllByRole("button", {name: "copy group"})).toHaveLength(0)
+  expect(screen.queryAllByRole("button", {name: "copy group"})).toHaveLength(0);
   expect(screen.getAllByText('-not set-')).toHaveLength(3);
   expect(screen.getByRole("button", {name:'apply to all'}).className).toBe('iss__selectGroup__button button--disabled');
 
@@ -36,7 +36,7 @@ test("select group component base test with preset", () => {
 
   expect(screen.getByRole('group').className).toBe('iss__selectGroup style--min');
   expect(screen.getAllByRole("button", {name:'delete group'})).toHaveLength(1);
-  expect(screen.queryAllByRole("button", {name: "copy group"})).toHaveLength(1)
+  expect(screen.queryAllByRole("button", {name: "copy group"})).toHaveLength(1);
   expect(screen.getAllByText('-not set-')).toHaveLength(4);
   expect(screen.getByRole("button", {name:'apply to all'}).className).toBe('iss__selectGroup__button');
 });
@@ -49,7 +49,7 @@ test("select group component test, case fileUploadCard", () => {
       { file: '', name: `file1.png`, type: 'image/png' }
     ]);
   });
-  act(() => filesManager.current.handleApplyGroups(apply_groups))
+  act(() => filesManager.current.handleApplyGroups(apply_groups));
   const fileID = Object.keys(filesManager.current.files)[0];
 
   const component = () => (
@@ -72,12 +72,12 @@ test("select group component test, case fileUploadCard", () => {
 
   fireEvent.click(screen.getByText('copy group'));
 
-  rerender(component())
+  rerender(component());
 
   expect(screen.getAllByText('delete group')).toHaveLength(2);
 
   fireEvent.click(screen.getAllByRole("button", {name:'delete group'})[0]);
 
-  rerender(component())
+  rerender(component());
   expect(screen.queryAllByText('delete group')).toHaveLength(1);
 });

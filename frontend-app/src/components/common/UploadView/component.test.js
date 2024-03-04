@@ -12,7 +12,7 @@ test("uploading view component test", () => {
   const { result: hookItem } = renderHook(() => useFileInput());
   const component = () => <AlertContext.Provider value={{addAlert: () => {}}}>
     <UploadingView fileManager={hookItem.current} />
-  </AlertContext.Provider>
+  </AlertContext.Provider>;
 
   global.URL.createObjectURL = () => {};
   act(() => {
@@ -41,7 +41,7 @@ test("uploading view component test", () => {
   file.progress = 50;
   file.status = 'a';
 
-  rerender(component())
+  rerender(component());
 
   var [newresult, newname] = screen.getByText('file1').parentNode.childNodes;
   var [newprogress] = progressWrap.childNodes;

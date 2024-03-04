@@ -6,7 +6,7 @@ test("test swiper hook", () => {
 
   expect(hookItem.current.slide).toBe(0);
 
-  act(() => hookItem.current.setSlide(2))
+  act(() => hookItem.current.setSlide(2));
   expect(hookItem.current.slide).toBe(2);
 
   act(() => hookItem.current.slideDec());
@@ -29,7 +29,7 @@ test("test swiper hook", () => {
 
   act(() => {
     hookItem.current.setMax(5);
-    hookItem.current.setSlide(4)
+    hookItem.current.setSlide(4);
   });
   expect(hookItem.current.slide).toBe(4);
 });

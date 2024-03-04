@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => {
 });
 afterEach(() => {
   jest.restoreAllMocks();
-})
+});
 
 test("app router component without user test", () => {
   render(

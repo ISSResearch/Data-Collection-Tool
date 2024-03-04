@@ -22,7 +22,7 @@ export default function useFileInput() {
 
   /**
   * @param {File[]} uploaded
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleUpload(uploaded) {
     setFiles((prev) => {
@@ -32,7 +32,7 @@ export default function useFileInput() {
 
   /**
   * @param {object} groups
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleApplyGroups(groups) {
     var newApplyGroups = deepCopy(groups);
@@ -45,7 +45,7 @@ export default function useFileInput() {
   * @param {object} target
   * @param {string} target.value
   * @param {number} chandeID
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleNameChange({ value }, chandeID) {
     setFiles((prev) => {
@@ -57,7 +57,7 @@ export default function useFileInput() {
 
   /**
   * @param {number} deleteId
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleDelete(deleteId) {
     setFiles((prev) => {
@@ -74,7 +74,7 @@ export default function useFileInput() {
   * @param {number} changeItem.key
   * @param {string} changeItem.type
   * @param {object} changeItem.payload
-  * @returns {undefined}
+  * @returns {void}
   */
   function handleGroupChange({ fileID, key, type, payload }) {
     var changeMap = {

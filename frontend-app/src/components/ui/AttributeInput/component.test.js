@@ -39,7 +39,7 @@ test("attribute inout basic test", () => {
 
   expect(screen.queryAllByText('confirm')).toHaveLength(0);
   expect(screen.queryAllByText('------|')).toHaveLength(0);
-  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(0)
+  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(0);
 
   act(() => {
     attributes.current.levelHook.addLevel(form);
@@ -49,30 +49,30 @@ test("attribute inout basic test", () => {
   rerender(component());
   expect(screen.queryAllByText('confirm')).toHaveLength(0);
   expect(screen.queryAllByText('------|')).toHaveLength(0);
-  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(1)
+  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(1);
   expect(screen.getAllByRole("button")).toHaveLength(1);
 
   act(() => {
     attributes.current.levelHook.addLevel(form);
-    attributes.current.attributeHook.addAttribute(form, "0")
+    attributes.current.attributeHook.addAttribute(form, "0");
   });
 
   rerender(component());
   expect(screen.queryAllByText('------|')).toHaveLength(1);
-  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(2)
+  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(2);
   var buttons = screen.getAllByRole("button");
   expect(buttons).toHaveLength(3);
   buttons.forEach((b, i) => expect(b.className).toBe("inputButton--" + (i % 2 ? "add" : "del")));
 
   fireEvent.click(screen.getAllByRole("button")[1]);
   rerender(component());
-  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(3)
+  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(3);
   expect(screen.getAllByRole("button")).toHaveLength(4);
 
   fireEvent.click(screen.getAllByRole("button")[3]);
   fireEvent.click(screen.getAllByRole("button")[2]);
   rerender(component());
-  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(1)
+  expect(screen.queryAllByPlaceholderText("Attribute name")).toHaveLength(1);
   expect(screen.getAllByRole("button")).toHaveLength(2);
   expect(screen.queryByText("confirm")).toBeNull();
 });
@@ -94,8 +94,8 @@ test("attribute input component preset test", async () => {
 
   const getParentInputs = () => {
     return screen.queryAllByPlaceholderText("Attribute name")
-      .filter(input => input.parentNode.parentNode.className === "iss__attributeForm")
-  }
+      .filter((input) => input.parentNode.parentNode.className === "iss__attributeForm");
+  };
   const component = () => (<MemoryRouter>
     <AlertContext.Provider value={ alerts }>
       <AttributeInput
@@ -135,7 +135,7 @@ test("attribute input component preset test", async () => {
   fireEvent.change(screen.getByDisplayValue(''), { target: { value: 'new_test' } });
   rerender(component());
   screen.getByDisplayValue('new_test');
-  var parents = getParentInputs().map(e => e.value);
+  var parents = getParentInputs().map((e) => e.value);
   expect(getParentInputs()).toHaveLength(2);
 
   fireEvent.click(getParentInputs()[0].parentNode.querySelectorAll("svg")[1]);

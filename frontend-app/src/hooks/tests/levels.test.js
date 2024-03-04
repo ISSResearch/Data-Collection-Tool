@@ -37,7 +37,7 @@ test("level manipulate test", () => {
 
   hook.current.levels[formID][initLen + 1].multiple = true;
   try { act(() => hook.current.addLevel(formID)); }
-  catch ({message}) { expect(message).toBe("You can`t set new level after multiple one.") }
+  catch ({message}) { expect(message).toBe("You can`t set new level after multiple one."); }
 
   expect(hook.current.levels[formID]).toHaveLength(initLen + 2);
 
@@ -60,7 +60,7 @@ test("level manipulate test", () => {
   });
 
   try { act(() => hook.current.setMultiple(formID, 0)); }
-  catch({message}) { expect(message).toBe("Cannot set properties of undefined (setting 'checked')")}
+  catch({message}) { expect(message).toBe("Cannot set properties of undefined (setting 'checked')"); }
 
   expect(hook.current.levels[formID][0].required).toBeTruthy();
   expect(hook.current.levels[formID][1].required).toBeFalsy();

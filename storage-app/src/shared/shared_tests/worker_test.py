@@ -4,7 +4,6 @@ from ..worker_services import Zipper
 from ..db_manager import DataBase, get_db_uri
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
-from asyncio import run as aiorun
 from os.path import exists
 from asyncio import get_event_loop, new_event_loop, set_event_loop
 
@@ -66,6 +65,7 @@ class ZipperTest(TestCase):
 
     def test_write(self):
         zipper = self._get_zipper()
+
         async def _h():
             self.assertTrue(await zipper.archive_objects())
             self.assertTrue(exists(zipper.archive))
@@ -83,6 +83,7 @@ class ZipperTest(TestCase):
 
     def test_delete(self):
         zipper = self._get_zipper()
+
         async def _h():
             self.assertTrue(await zipper.archive_objects())
             self.assertTrue(exists(zipper.archive))
@@ -93,6 +94,7 @@ class ZipperTest(TestCase):
 
     def _test_object_name(self, zipper, obj):
         name = zipper._get_object_name(obj)
+        self.assertEqual(name, "test_bucket_dataset")
 
     @staticmethod
     @patch(
