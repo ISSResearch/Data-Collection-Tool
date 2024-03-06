@@ -1,5 +1,7 @@
 name: Tests CI
 
+runs-on: self-hosted
+
 on:
   workflow_dispatch:
   # push:
