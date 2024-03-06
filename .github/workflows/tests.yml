@@ -1,7 +1,5 @@
 name: Tests CI
 
-runs-on: self-hosted
-
 on:
   workflow_dispatch:
   # push:
@@ -9,8 +7,8 @@ on:
   #     - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  tests:
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v3
