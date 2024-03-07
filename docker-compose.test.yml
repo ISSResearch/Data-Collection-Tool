@@ -26,6 +26,7 @@ services:
     image: iss_back_tst
     build:
       dockerfile: Dockerfile.backend
+      context: .
     restart: always
     depends_on:
       - iss-test-db
@@ -54,6 +55,7 @@ services:
     image: iss_storage_tst
     build:
       dockerfile: Dockerfile.storage
+      context: .
     restart: always
     environment:
       DB_HOST: iss-test-storage-db
@@ -82,6 +84,7 @@ services:
     container_name: iss-test-worker
     build:
       dockerfile: Dockerfile.storage
+      context: .
     restart: always
     environment:
       DB_HOST: iss-test-storage-db
@@ -103,6 +106,7 @@ services:
     image: iss_front_tst
     build:
       dockerfile: Dockerfile.frontend
+      context: .
     restart: always
     depends_on:
       - iss-test-back
@@ -118,6 +122,7 @@ services:
     image: iss_tests
     build:
       dockerfile: Dockerfile.tests
+      context: .
     # depends_on:
     #   - iss-selenium-chrome
     #   - iss-selenium-fox
