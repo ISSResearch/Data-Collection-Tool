@@ -35,7 +35,7 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-      DEBUG: true
+      DEBUG: "true"
       SERVER_ORIGINS: "iss-test-front,iss-test-back"
       SECRET_KEY: test-secret-key
     command: >
@@ -60,7 +60,7 @@ services:
       APP_BACKEND_URL: iss-test-back:8000
       DB_USER: testuser
       DB_PASSWORD: testuserpass
-      DEBUG: true
+      DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
     depends_on:
@@ -88,7 +88,7 @@ services:
       APP_BACKEND_URL: iss-test-back:8000
       DB_USER: testuser
       DB_PASSWORD: testuserpass
-      DEBUG: true
+      DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
     depends_on:
@@ -108,7 +108,7 @@ services:
       - iss-test-back
     environment:
       CASE: test
-      CI: true
+      CI: "true"
     command: npm start
     networks:
       - iss_test_network
