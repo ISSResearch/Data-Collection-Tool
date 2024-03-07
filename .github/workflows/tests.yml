@@ -1,10 +1,9 @@
 name: Tests CI
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches-ignore:
-  #     - main
+  push:
+    branches-ignore:
+      - main
 
 jobs:
   build:
