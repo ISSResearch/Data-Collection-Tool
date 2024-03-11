@@ -66,7 +66,7 @@ class ObjectStreaming:
 
         response: StreamingResponse = StreamingResponse(
             self._iterator(),
-            status_code=(206 if self.range_match else 200),
+            status_code=206,
             media_type=self.content_type
         )
 
@@ -89,8 +89,10 @@ class ObjectStreaming:
         self.file.seek(self.chunk_start)
         remaining: int = self.chunk_length
 
-        while remaining and (chunk := await self.file.read(CHUNK_SIZE)):
-            remaining -= CHUNK_SIZE if CHUNK_SIZE <= remaining else remaining
+        while remaining and (
+            chunk := await self.file.read(read := min(CHUNK_SIZE, remaining))
+        ):
+            remaining -= read
             yield chunk
         else: self.file.close()
 
@@ -115,9 +117,11 @@ class ObjectStreaming:
         )
 
         chunk_start = int(chunk_start)
-        chunk_end = int(chunk_end) if chunk_end else self.file.length
-
-        if chunk_end >= self.file.length: chunk_end = self.file.length - 1
+        chunk_end = (
+            _end
+            if chunk_end and (_end := int(chunk_end)) < self.file.length
+            else self.file.length - 1
+        )
 
         chunk_length: int = chunk_end - chunk_start + 1
 
