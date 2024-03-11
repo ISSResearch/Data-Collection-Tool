@@ -32,6 +32,7 @@ jobs:
   clean:
     runs-on: self-hosted
     needs: test
+    if: always()
     steps:
       - name: Clean up
         run: |
