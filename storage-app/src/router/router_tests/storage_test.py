@@ -69,7 +69,7 @@ class StorageRouterTest(TestCase):
 
         self.assertEqual(no_bucket_no_file_res.status_code, 404)
         self.assertEqual(bucket_no_file_res.status_code, 404)
-        self.assertEqual(file_res.status_code, 200)
+        self.assertEqual(file_res.status_code, 206)
         self.assertEqual(b"asd", file_res.read())
 
     def test_delete(self):
