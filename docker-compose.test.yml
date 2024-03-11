@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.7"
 
 services:
   iss-test-db:
@@ -26,6 +26,7 @@ services:
     image: iss_back_tst
     build:
       dockerfile: Dockerfile.backend
+      context: .
     restart: always
     depends_on:
       - iss-test-db
@@ -35,7 +36,7 @@ services:
       DB_HOST: iss-test-db
       DB_NAME: iss_test_app_db
       CASE: test
-      DEBUG: true
+      DEBUG: "true"
       SERVER_ORIGINS: "iss-test-front,iss-test-back"
       SECRET_KEY: test-secret-key
     command: >
@@ -54,13 +55,14 @@ services:
     image: iss_storage_tst
     build:
       dockerfile: Dockerfile.storage
+      context: .
     restart: always
     environment:
       DB_HOST: iss-test-storage-db
       APP_BACKEND_URL: iss-test-back:8000
       DB_USER: testuser
       DB_PASSWORD: testuserpass
-      DEBUG: true
+      DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
     depends_on:
@@ -82,13 +84,14 @@ services:
     container_name: iss-test-worker
     build:
       dockerfile: Dockerfile.storage
+      context: .
     restart: always
     environment:
       DB_HOST: iss-test-storage-db
       APP_BACKEND_URL: iss-test-back:8000
       DB_USER: testuser
       DB_PASSWORD: testuserpass
-      DEBUG: true
+      DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
     depends_on:
@@ -103,12 +106,13 @@ services:
     image: iss_front_tst
     build:
       dockerfile: Dockerfile.frontend
+      context: .
     restart: always
     depends_on:
       - iss-test-back
     environment:
       CASE: test
-      CI: true
+      CI: "true"
     command: npm start
     networks:
       - iss_test_network
@@ -118,6 +122,7 @@ services:
     image: iss_tests
     build:
       dockerfile: Dockerfile.tests
+      context: .
     # depends_on:
     #   - iss-selenium-chrome
     #   - iss-selenium-fox

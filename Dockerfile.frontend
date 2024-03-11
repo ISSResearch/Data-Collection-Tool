@@ -2,7 +2,9 @@ FROM node:20.4-slim
 
 WORKDIR /app
 
-COPY ./frontend-app/*.json/ ./
+COPY ./frontend-app/package.json ./
+COPY ./frontend-app/tsconfig.json ./
+COPY ./frontend-app/.eslintrc.json ./
 
 RUN npm install
 

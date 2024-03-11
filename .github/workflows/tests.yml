@@ -1,0 +1,41 @@
+name: Tests CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Images
+        run: docker-compose -f docker-compose.test.yml build
+
+  test:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Run Tests
+        run: |
+          docker-compose -f docker-compose.test.yml up -d --force-recreate
+          sleep 30
+          docker exec iss-test-front npm run lint
+          docker exec iss-tests flake8
+          docker exec iss-test-front npm run test
+          # docker exec iss-test-front npm run compile
+          docker exec iss-test-back ./manage.py test
+          docker exec iss-test-storage python3 src/test.py
+          # docker exec iss-tests python3 test.py
+
+  clean:
+    runs-on: self-hosted
+    needs: test
+    steps:
+      - name: Clean up
+        run: |
+          docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+          docker system prune --all --volumes --force
+      
+

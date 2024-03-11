@@ -87,7 +87,7 @@ class ObjectStreaming:
     # TODO: find a way to defer closing maybe i could overpass the iterator
     async def _iterator(self) -> AsyncGenerator[bytes, None]:
         self.file.seek(self.chunk_start)
-        remaining: int = self.chunk_end
+        remaining: int = self.chunk_length
 
         while remaining and (chunk := await self.file.read(CHUNK_SIZE)):
             remaining -= CHUNK_SIZE if CHUNK_SIZE <= remaining else remaining
