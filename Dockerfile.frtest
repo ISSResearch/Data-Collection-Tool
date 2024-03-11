@@ -1,0 +1,8 @@
+FROM node:20.4-slim
+
+WORKDIR /app
+
+COPY ./frontend-app/ ./
+
+RUN npm install
+
