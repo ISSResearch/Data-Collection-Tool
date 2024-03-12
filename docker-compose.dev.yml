@@ -35,11 +35,14 @@ services:
       DB_HOST: iss-main-db
       DB_NAME: ${DB_APP_DB_NAME}
       SERVER_ORIGINS: ${SERVER_ORIGINS}
+      DEBUG: ${DEBUG}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
       MAX_WORKER: ${MAX_WORKER}
     depends_on:
       - iss-main-db
+    volumes:
+      - ./backend-app:/app
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
@@ -61,6 +64,7 @@ services:
       APP_BACKEND_URL: iss-back:8000
       DB_USER: ${DB_STORAGE_USER}
       DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      DEBUG: ${DEBUG}
       CELERY_BROKER_URL: ${BROKER_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
@@ -68,6 +72,8 @@ services:
     depends_on:
       - iss-storage-db
       - iss-back
+    volumes:
+      - ./storage-app/src:/app/src
     command: python3 src/app.py
     networks:
       - iss_network
@@ -82,8 +88,10 @@ services:
       - iss-back
     ports:
       - 3000:3000
-    command: >
-      sh -c "npm run build && serve -s build"
+    volumes:
+      - ./frontend-app/src:/app/src
+      - ./frontend-app/public:/app/public
+    command: npm start
     networks:
       - iss_network
 
@@ -103,11 +111,14 @@ services:
     build:
       dockerfile: Dockerfile.storage
     restart: always
+    volumes:
+      - ./storage-app/src:/app/src
     environment:
       DB_HOST: iss-storage-db
       APP_BACKEND_URL: iss-back:8000
       DB_USER: ${DB_STORAGE_USER}
       DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      DEBUG: ${DEBUG}
       CELERY_BROKER_URL: ${BROKER_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
@@ -130,6 +141,23 @@ services:
       - 8000:8000
     volumes:
       - ./nginx:/etc/nginx/conf.d
+    networks:
+      - iss_network
+
+  dashboard:
+    container_name: iss_dashboard
+    build:
+      dockerfile: Dockerfile.storage
+    ports:
+      - 9090:5555
+    environment:
+      CELERY_BROKER_URL: ${BROKER_URL}
+      CELERY_RESULT_BACKEND: ${BROKER_URL}
+    restart: always
+    depends_on:
+      - iss-broker
+      - iss-worker
+    command: celery --broker=redis://iss-broker:6379/0 flower --port=5555
     networks:
       - iss_network
 
