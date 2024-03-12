@@ -1,7 +1,7 @@
 start:
 	docker compose up -d
 
-start-b:
+start-new:
 	docker compose up -d --build
 
 stop:
@@ -9,6 +9,18 @@ stop:
 
 restart:
 	make stop && make start
+
+start-dev:
+	docker compose -f docker-compose.dev.yml up -d
+
+start-dev-new:
+	docker compose -f docker-compose.dev.yml up -d --build
+
+stop-dev:
+	docker compose -f docker-compose.dev.yml down
+
+restart-dev:
+	make stop-dev && make start-dev
 
 start-test:
 	docker compose -f docker-compose.test.yml up -d --build
