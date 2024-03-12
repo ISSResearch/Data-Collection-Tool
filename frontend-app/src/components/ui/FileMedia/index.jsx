@@ -25,7 +25,7 @@ var handleMediaFallback = ({ target }) => {
 
   // TODO: after this fallback controls wont show up again, fix
   if (target.tagName === "VIDEO") {
-    //target.controls = false;
+    target.controls = false;
     target.poster = fallbackSrc;
   }
   else target.src = fallbackSrc;
@@ -58,7 +58,7 @@ function FileMedia({ files, slide, pathID }, ref) {
         onError={(e) => handleMediaFallback(e)}
       />
       : <img alt="validation_item" {...props} onError={(e) => handleMediaFallback(e)} />;
-  }, [typeVideo]);
+  }, [fileUrl]);
 
   let scale = 1,
     panning = false,

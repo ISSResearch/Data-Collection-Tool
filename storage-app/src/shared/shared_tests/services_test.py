@@ -110,11 +110,15 @@ class ObjectStreamingTest(TestCase):
         self.assertEqual(stream.chunk_length, 2)
 
     def test_iterator(self):
-        stream = ObjectStreaming(self.file({}, b"12345"))
+        _file = self.file({}, b"12345")
+        stream = ObjectStreaming(_file)
 
         async def _h():
             async for chunk in stream._iterator():
-                self.assertEqual(chunk, bytes(CHUNK_SIZE))
+                self.assertEqual(
+                    chunk,
+                    bytes(min(_file.length, CHUNK_SIZE))
+                )
 
         aiorun(_h())
 

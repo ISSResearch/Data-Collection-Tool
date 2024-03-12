@@ -23,7 +23,7 @@ TEMP_BUCKET: str = "temp_storage"
 BROKER_URL: str | None = getenv("CELERY_BROKER_URL")
 RESULT_URL: str | None = BROKER_URL
 
-CHUNK_SIZE: int = 1024 * int(1024 / 2)
+CHUNK_SIZE: int = 1024 * 512
 
 DB_STORAGE: str = "storage"
 
