@@ -39,27 +39,33 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   const navigate = useNavigate();
 
   function getPageQuery() {
+    var from = pageQuery.get("date_from");
+    var to =  pageQuery.get("date_to");
+
     return {
       card: pageQuery.getAll('card[]'),
       attr: pageQuery.getAll('attr[]'),
       type: pageQuery.getAll('type[]'),
       author: pageQuery.getAll('author[]'),
+      date: (from || to) && { from, to }
     };
   }
 
   function handleChange(filterType, query) {
-    var { card, attr, type, author } = getPageQuery();
+    var { card, attr, type, author, date } = getPageQuery();
 
     setPageQuery({
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
       'type[]': filterType === 'type' ? query : type,
       'author[]': filterType === 'author' ? query : author,
+      "date_from": filterType === "date" ? query.from : date.from,
+      "date_to": filterType === "date" ? query.to : date.to,
     });
   }
 
   useEffect(() => {
-    var { card, attr, type, author } = getPageQuery();
+    var { card, attr, type, author, date } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
 
@@ -69,15 +75,24 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         params: { card, attr, type, author },
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       }),
-     canValidate && api.get(`api/users/collectors/${pathID}/`, {
-       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
-     })
+      canValidate && api.get(`api/users/collectors/${pathID}/`, {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      })
     ])
       .then(([fileFetch, authorFetch]) => {
         var { value: { data } } = fileFetch;
         fileManager.initFiles(data);
         sliderManager.setMax(data.length);
 
+        /**
+        * @type {{
+        * prettyName: string,
+        * name: string,
+        * data?: Array,
+        * selected: Array | object,
+        * type?: string
+        * }[]}
+        */
         var _filterData = [
           {
             prettyName: 'Card Filter:',
@@ -90,7 +105,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
             name: 'attr',
             data: attributes,
             selected: attr,
-            attributes: true
+            type: "attr"
           },
           {
             prettyName: 'Filetype Filter:',
@@ -100,15 +115,22 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
           },
         ];
 
-        if (canValidate) _filterData.push({
-          prettyName: 'Author Filter:',
-          name: 'author',
-          data: authorFetch.value.data.map(({id, username}) => ({ name: username, id })),
-          selected: author,
-        });
+        if (canValidate) _filterData.push(...[
+          {
+            prettyName: "Author Filter:",
+            name: "author",
+            data: authorFetch.value.data.map(({id, username}) => ({ name: username, id })),
+            selected: author,
+          },
+          {
+            prettyName: "Date Filter:",
+            name: "date",
+            selected: date,
+            type: "date",
+          }
+        ]);
 
         setFilterData(_filterData);
-
         setLoading(false);
       })
       .catch(({ message, response }) => {
@@ -124,7 +146,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
 
   return (
     <>
-      <ValidationFilterGroup filterData={filterData} onChange={handleChange} />
+      <ValidationFilterGroup filterData={filterData} onChange={handleChange}/>
       {
         fileManager.files.length
           ? <div className='iss__validation'>
