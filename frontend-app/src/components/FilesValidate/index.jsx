@@ -53,15 +53,23 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
 
   function handleChange(filterType, query) {
     var { card, attr, type, author, date } = getPageQuery();
-
-    setPageQuery({
+    var preparedQuery = {
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
       'type[]': filterType === 'type' ? query : type,
       'author[]': filterType === 'author' ? query : author,
-      "date_from": filterType === "date" ? query.from : date.from,
-      "date_to": filterType === "date" ? query.to : date.to,
-    });
+    };
+
+    if (filterType === "date" || date?.from) {
+      let value = filterType === "date" ? query?.from : date?.from;
+      if (value) preparedQuery.date_from = value;
+    }
+    if (filterType === "date" || date?.to) {
+      let value = filterType === "date" ? query?.to : date?.to;
+      if (value) preparedQuery.date_to = value;
+    }
+
+    setPageQuery(preparedQuery);
   }
 
   useEffect(() => {
@@ -72,7 +80,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     // TODO: query collectors depend on uploads to project by users
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
-        params: { card, attr, type, author },
+        params: { card, attr, type, author, from: date?.from, to: date?.to },
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       }),
       canValidate && api.get(`api/users/collectors/${pathID}/`, {

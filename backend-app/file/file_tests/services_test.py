@@ -12,6 +12,7 @@ from file.models import File
 from project.models import Project
 from user.models import CustomUser
 from uuid import uuid4
+from datetime import datetime as dt, timedelta as td
 
 
 class ViewServicesTest(TestCase, ViewSetServices):
@@ -199,6 +200,12 @@ class ViewServicesTest(TestCase, ViewSetServices):
         query["author"] = self.admin
         self._form_query_mixin(query)
 
+        query["from_"] = dt.now().strftime("%Y-%m-%d")
+        self._form_query_mixin(query)
+
+        query["to"] = (dt.now() + td(days=1)).strftime("%Y-%m-%d")
+        self._form_query_mixin(query)
+
     def _form_query_mixin(self, data={}):
         query, filter = self._get_query(**data)
         res = self._form_query(
@@ -215,7 +222,9 @@ class ViewServicesTest(TestCase, ViewSetServices):
         status="",
         downloaded=False,
         author=[],
-        user=None
+        user=None,
+        from_="",
+        to=""
     ):
         request_query = type(
             "query",

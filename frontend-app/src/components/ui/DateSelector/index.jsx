@@ -7,10 +7,7 @@ import './styles.css';
 * @param {{ from: string, to: string }} [props.defaultSelected]
 * @returns {ReactElement}
 */
-export default function DateSelector({
-  onChange,
-  defaultSelected,
-}) {
+export default function DateSelector({ onChange, defaultSelected }) {
   const [isOpen, setIsOpen] = useState(false);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");

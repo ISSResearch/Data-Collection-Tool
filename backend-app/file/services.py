@@ -9,11 +9,13 @@ from rest_framework.request import QueryDict
 from rest_framework.views import Request
 from django.db import connection
 from django.db.models import Count, Subquery, QuerySet
+from django.utils import timezone as tz
 from attribute.models import Level, AttributeGroup as AGroup
 from user.models import CustomUser
 from json import loads
 from typing import Any
 from uuid import UUID
+from datetime import datetime as dt
 from .serializers import File, FileSerializer
 
 
@@ -28,7 +30,9 @@ class ViewSetServices:
         ("file_type__in", "type[]", True),
         ("status", "status", False),
         ("is_downloaded", "downloaded", False),
-        ("author__in", "author[]", True)
+        ("author__in", "author[]", True),
+        ("upload_date__gte", "from", False),
+        ("upload_date__lte", "to", False)
     )
 
     def _patch_file(
@@ -87,12 +91,18 @@ class ViewSetServices:
                 else request_query.get(param)
             )
 
-            if query_param: query[filter_name] = (
-                False if filter_name == "is_downloaded"
-                else query_param
-            )
+            if query_param:
+                query[filter_name] = self._get_param(filter_name, query_param)
 
         return query
+
+    def _get_param(self, filter_name: str, query_param: Any) -> Any:
+        date_from_str = lambda d: tz.make_aware(dt.strptime(d, "%Y-%m-%d"))
+        match filter_name:
+            case "is_downloaded": return False
+            case "upload_date__gte": return date_from_str(query_param)
+            case "upload_date__lte": return date_from_str(query_param)
+            case _: return query_param
 
     def _get_files(
         self,
