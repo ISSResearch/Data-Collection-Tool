@@ -18,11 +18,18 @@ class File(Model):
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)
     status: CharField = CharField(max_length=1, choices=STATUSES, default='v')
-    upload_date: DateTimeField = DateTimeField(auto_now_add=True)
     is_downloaded: BooleanField = BooleanField(default=False)
+    upload_date: DateTimeField = DateTimeField(auto_now_add=True)
+    update_date: DateTimeField = DateTimeField(auto_now_add=True, null=True)
 
     project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
     author: ForeignKey = ForeignKey("user.CustomUser", on_delete=DO_NOTHING)
+    validator: ForeignKey = ForeignKey(
+        "user.CustomUser",
+        null=True,
+        on_delete=DO_NOTHING,
+        related_name="validator"
+    )
 
     class Meta:
         db_table = "file"

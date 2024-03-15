@@ -2,6 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import TitleSwitch from '.';
 
+/**
+* @param {Array} options
+* @param {string} current
+* @param {string} parentLink
+* @param {object} titleLink
+* @returns {void}
+*/
 function test_selected_option(options, current, parentLink, titleLink) {
   var title = screen.getByRole('heading');
   var [titleChild] = title.children;

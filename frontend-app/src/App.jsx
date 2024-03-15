@@ -1,6 +1,6 @@
 import { UserContext } from "./context/User";
 import { AlertContext } from "./context/Alert";
-import { useState, useEffect } from "react";
+import { ReactElement, useState, useEffect } from "react";
 import { useUser, useAlerts } from "./hooks";
 import { api } from "./config/api";
 import AppRouter from "./components/AppRouter";
@@ -9,6 +9,7 @@ import StatusLoad from "./components/ui/StatusLoad";
 import AlertManager from "./components/AlertManager";
 import './app.css';
 
+/** @returns {ReactElement} */
 export default function App() {
   const { user, initUser } = useUser();
   const alertManager = useAlerts();
