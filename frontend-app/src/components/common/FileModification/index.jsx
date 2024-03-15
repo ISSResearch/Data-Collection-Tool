@@ -83,11 +83,17 @@ export default function FileModification({ fileManager, sliderManager, attribute
   return (
     <div className='iss__fileInfo'>
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
+      {
+        file.status !== "v" &&
+        <div className="iss__fileInfo__validator">
+          <span>validated by: <b>{file.validator_name}</b></span>
+          <span>{file.update_date}</span>
+        </div>
+      }
       <SelectorGroup
         fileID={file.id}
         attributes={attributes}
         attributeGroups={file.attributeGroups}
-        fileIndex={slide}
         handleGroupChange={handleGroupChange}
       />
       {

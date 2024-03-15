@@ -32,7 +32,13 @@ class FileSerializerTest(TestCase):
 
         self.assertEqual(
             set(data.keys()),
-            data_keys.union({'upload_date', 'attributes', 'author_name'})
+            data_keys.union({
+                'upload_date',
+                "update_date",
+                'attributes',
+                'author_name',
+                "validator_name"
+            })
         )
         self.assertEqual(
             {val for key, val in data.items() if key in data_keys},
@@ -42,7 +48,15 @@ class FileSerializerTest(TestCase):
         self.assertEqual(data["attributes"][0].keys(), {"uid", "attributes"})
 
     def test_update_file_serializer(self):
-        data = FileSerializer(self.case.file_, {'status': 'a'}, partial=True)
+        data = FileSerializer(
+            self.case.file_,
+            {'status': 'a'},
+            partial=True,
+            context={"validator": self.case.user}
+        )
+        init_date = data.instance.upload_date
+
+        self.assertIsNone(data.instance.validator)
 
         if data.is_valid(): data.update_file()
 
@@ -50,6 +64,8 @@ class FileSerializerTest(TestCase):
 
         self.assertEqual(updated_data['status'], 'a')
         self.assertFalse(bool(updated_data['attributes']))
+        self.assertIsNotNone(updated_data.get("validator_name"))
+        self.assertNotEqual(updated_data.get("update_date"), init_date)
 
     def test_update_attribute_file_serializer(self):
         self.case.attribute2 = self.case.attributegroup.attribute.create(

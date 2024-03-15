@@ -13,9 +13,12 @@ from project.models import Project
 from user.models import CustomUser
 from uuid import uuid4
 from datetime import datetime as dt, timedelta as td
+from django.utils import timezone as tz
 
 
 class ViewServicesTest(TestCase, ViewSetServices):
+    date_format: str = "%Y-%m-%d"
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -147,9 +150,18 @@ class ViewServicesTest(TestCase, ViewSetServices):
                 str(self.case.attributegroup.uid): [new_attr.id],
             }
         }
+        request = lambda payload={}: type(
+            "rq",
+            (object,),
+            {"data": payload, "user": self.case.user}
+        )
 
-        res, code = self._patch_file(self.case.file_.id, request_data)
-        invalid_res, invalid_code = self._patch_file(self.case.file_.id, {"status": 123})
+        valid_rq_init_date = File.objects.get(id=self.case.file_.id).update_date,
+
+        self.assertIsNone(File.objects.get(id=self.case.file_.id).validator)
+
+        res, code = self._patch_file(self.case.file_.id, request(request_data))
+        invalid_res, invalid_code = self._patch_file(self.case.file_.id, request({"status": 123}))
 
         self.assertEqual(invalid_code, 400)
         self.assertFalse(invalid_res["ok"])
@@ -180,6 +192,11 @@ class ViewServicesTest(TestCase, ViewSetServices):
             File.objects.get(id=self.case.file_.id).status,
             "a"
         )
+        self.assertNotEqual(
+            File.objects.get(id=self.case.file_.id).update_date,
+            valid_rq_init_date
+        )
+        self.assertIsNotNone(File.objects.get(id=self.case.file_.id).validator)
 
     def test_form_query(self):
         query = {}
@@ -200,10 +217,10 @@ class ViewServicesTest(TestCase, ViewSetServices):
         query["author"] = self.admin
         self._form_query_mixin(query)
 
-        query["from_"] = dt.now().strftime("%Y-%m-%d")
+        query["from_"] = dt.now().strftime(self.date_format)
         self._form_query_mixin(query)
 
-        query["to"] = (dt.now() + td(days=1)).strftime("%Y-%m-%d")
+        query["to"] = (dt.now() + td(days=1)).strftime(self.date_format)
         self._form_query_mixin(query)
 
     def _form_query_mixin(self, data={}):
@@ -257,6 +274,16 @@ class ViewServicesTest(TestCase, ViewSetServices):
         if author:
             query.set("author[]", author)
             filter["author__in"] = author
+        if from_:
+            query.set("from", from_)
+            filter["upload_date__gte"] = tz.make_aware(
+                dt.strptime(from_, self.date_format)
+            )
+        if to:
+            query.set("to", to)
+            filter["upload_date__lte"] = tz.make_aware(
+                dt.strptime(to, self.date_format)
+            )
 
         return query, filter
 

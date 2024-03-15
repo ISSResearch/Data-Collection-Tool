@@ -2,6 +2,11 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import SelectorWrap from '.';
 import { prepared_attributes } from '../../../config/mock_data';
 
+/**
+* @param {object} attribute
+* @param {number} [choicePos=1]
+* @returns {void}
+*/
 function test_solo_selector(attribute, choicePos = 1) {
   var selector = screen.queryByRole('combobox', { name: attribute.name });
 

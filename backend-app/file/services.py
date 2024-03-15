@@ -38,7 +38,7 @@ class ViewSetServices:
     def _patch_file(
         self,
         file_id: str,
-        request_data: dict[str, Any]
+        request: Request
     ) -> tuple[dict[str, Any], int]:
         # TODO: no handler for nofile case. imp tests after
         file = File.objects \
@@ -46,7 +46,12 @@ class ViewSetServices:
             .prefetch_related("attributegroup_set") \
             .get(id=file_id)
 
-        updated_file = FileSerializer(file, request_data, partial=True)
+        updated_file = FileSerializer(
+            file,
+            request.data,
+            partial=True,
+            context={"validator": request.user}
+        )
         update_valid = updated_file.is_valid()
 
         if update_valid: updated_file.update_file()

@@ -36,11 +36,12 @@ class FileModelTest(TestCase):
                     "project",
                     "author",
                     "status",
-                    "is_downloaded"
+                    "is_downloaded",
+                    "validator",
                 )
                 .get(id=new_file.id)
             ),
-            set(credentials.values()).union({'v', False})
+            set(credentials.values()).union({'v', False, None})
         )
         self.assertEqual(init_count + 1, self.case.project.file_set.count())
 
