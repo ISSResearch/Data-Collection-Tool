@@ -113,6 +113,8 @@ class ViewServicesTest(TestCase, ViewSetServices):
         self._get_mixin(1, True, query={"type_": ["image"]})
         self._get_mixin(1, True, query={"type_": ["video"]})
         self._get_mixin(1, True, attrs=[new_attr.id])
+        self._get_mixin(1, True, query={"page": 1, "per_page": 1})
+        self._get_mixin(2, True, query={"page": 1, "per_page": 2})
 
     def test_delete_file(self):
         file = File.objects.create(
@@ -241,14 +243,16 @@ class ViewServicesTest(TestCase, ViewSetServices):
         author=[],
         user=None,
         from_="",
-        to=""
+        to="",
+        page=None,
+        per_page=None
     ):
         request_query = type(
             "query",
             (object,),
             {
-                "get": lambda this, item: getattr(this, item, None),
-                "getlist": lambda this, item: getattr(this, item, None),
+                "get": lambda this, item, default=None: getattr(this, item, default),
+                "getlist": lambda this, item, default=None: getattr(this, item, default),
                 "set": lambda this, item, value: setattr(this, item, value)
             }
         )
@@ -259,6 +263,8 @@ class ViewServicesTest(TestCase, ViewSetServices):
         if not user: user = self.case.user
         if not user.is_superuser: filter["author_id"] = user.id
 
+        if page: query.set("page", page)
+        if per_page: query.set("per_page", per_page)
         if card:
             query.set("card[]", card)
             filter["status__in"] = card
@@ -296,7 +302,7 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
         res, code = self._get_files(self.case.project.id, user, query)
         self.assertEqual(code, 200)
-        self.assertEqual(len(res), expected)
+        self.assertEqual(len(res["data"]), expected)
 
 
 class AnnotationTest(TestCase):
