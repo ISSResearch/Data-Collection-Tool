@@ -19,7 +19,7 @@ test("files validate component base test", async () => {
     </MemoryRouter>
   );
 
-  global.Promise.allSettled = () => Promise.resolve([{value:{data:[]}}]);
+  global.Promise.allSettled = () => Promise.resolve([{value:{data:{data: []}}}]);
   global.URL.revokeObjectURL = () => "";
   fileApi.get.mockResolvedValue();
 
@@ -39,7 +39,12 @@ test("files validate component test", async () => {
     </MemoryRouter>
   );
 
-  global.Promise.allSettled = () => Promise.resolve([{value:{data:raw_files}}]);
+  var data = {
+    data: raw_files,
+    page: 1,
+    total_pages: 1
+  };
+  global.Promise.allSettled = () => Promise.resolve([{ value: { data: data } }]);
   global.URL.revokeObjectURL = () => "";
   fileApi.get.mockResolvedValue();
 

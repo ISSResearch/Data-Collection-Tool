@@ -56,10 +56,10 @@ function tester() {
         var arrow = getByTestId(row, 'table-row-icon');
         expect(arrow.parentNode.style._values["padding-left"])
           .toBe(`${24 + 12 * depth}px`);
-        expect(arrow[Object.keys(arrow)[1]].className).toBe('iss__stats__table--icon');
+        expect(arrow[Object.keys(arrow)[1]].className).toBe('iss__arrowIcon iss__stats__table--icon ');
         fireEvent.click(row);
 
-        expect(arrow[Object.keys(arrow)[1]].className).toBe('iss__stats__table--icon icon--flip');
+        expect(arrow[Object.keys(arrow)[1]].className).toBe('iss__arrowIcon iss__stats__table--icon icon--flip');
 
         testRows(el.children, depth+1);
       }

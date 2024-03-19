@@ -47,12 +47,14 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       attr: pageQuery.getAll('attr[]'),
       type: pageQuery.getAll('type[]'),
       author: pageQuery.getAll('author[]'),
-      date: (from || to) && { from, to }
+      date: (from || to) && { from, to },
+      page: pageQuery.get("page")
     };
   }
 
+  // TODO: refactor
   function handleChange(filterType, query) {
-    var { card, attr, type, author, date } = getPageQuery();
+    var { card, attr, type, author, date, page } = getPageQuery();
     var preparedQuery = {
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
@@ -68,19 +70,23 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       let value = filterType === "date" ? query?.to : date?.to;
       if (value) preparedQuery.date_to = value;
     }
+    if (filterType === "page" || page) {
+      let value = filterType === "page" ? query : page;
+      if (value) preparedQuery.page = value;
+    }
 
     setPageQuery(preparedQuery);
   }
 
   useEffect(() => {
-    var { card, attr, type, author, date } = getPageQuery();
+    var { card, attr, type, author, date, page } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
 
     // TODO: query collectors depend on uploads to project by users
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
-        params: { card, attr, type, author, from: date?.from, to: date?.to },
+        params: { card, attr, type, author, from: date?.from, to: date?.to, page },
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       }),
       canValidate && api.get(`api/users/collectors/${pathID}/`, {
@@ -89,8 +95,11 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     ])
       .then(([fileFetch, authorFetch]) => {
         var { value: { data } } = fileFetch;
-        fileManager.initFiles(data);
-        sliderManager.setMax(data.length);
+        var { data: files, page, per_page, total_pages: totalPages } = data;
+
+        fileManager.initFiles(files);
+        sliderManager.setMax(per_page);
+        sliderManager.setPagination({ page, totalPages });
 
         /**
         * @type {{
@@ -158,8 +167,16 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       {
         fileManager.files.length
           ? <div className='iss__validation'>
-            <FileSelector fileManager={fileManager} sliderManager={sliderManager} />
-            <FileSwiper pathID={pathID} fileManager={fileManager} sliderManager={sliderManager} />
+            <FileSelector
+              fileManager={fileManager}
+              sliderManager={sliderManager}
+              onChange={handleChange}
+            />
+            <FileSwiper
+              pathID={pathID}
+              fileManager={fileManager}
+              sliderManager={sliderManager}
+            />
             {
               canValidate &&
               <FileModification

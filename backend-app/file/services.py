@@ -10,6 +10,7 @@ from rest_framework.views import Request
 from django.db import connection
 from django.db.models import Count, Subquery, QuerySet
 from django.utils import timezone as tz
+from django.core.paginator import Paginator
 from attribute.models import Level, AttributeGroup as AGroup
 from user.models import CustomUser
 from json import loads
@@ -114,7 +115,7 @@ class ViewSetServices:
         project_id: int,
         request_user: CustomUser,
         request_query: QueryDict[str, Any]
-    ) -> tuple[list[dict[str, Any]], int]:
+    ) -> tuple[dict[str, list[dict[str, Any]] | int], int]:
         filter_query = self._form_query(project_id, request_user, request_query)
 
         files = File.objects \
@@ -134,7 +135,19 @@ class ViewSetServices:
             files = files.filter(attributegroup__in=Subquery(sub_query))
         else: files = files.distinct()
 
-        return FileSerializer(files, many=True).data, HTTP_200_OK
+        page: int = int(request_query.get("page", 1))
+        per_page: int = int(request_query.get("per_page", 25))
+        paginator: Paginator = Paginator(files, per_page)
+
+        return {
+            "data": FileSerializer(
+                paginator.page(page).object_list,
+                many=True
+            ).data,
+            "page": page,
+            "per_page": paginator.per_page,
+            "total_pages": paginator.num_pages
+        }, HTTP_200_OK
 
     def _create_file(
         self,

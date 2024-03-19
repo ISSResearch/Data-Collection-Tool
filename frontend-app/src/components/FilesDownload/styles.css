@@ -57,12 +57,11 @@
     position: relative;
 }
 
-.arrow__pic {
+.iss__filesDownload__selected > svg {
     position: absolute;
     right: 0;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    fill: var(--issBrand);
+    top: 20%;
+    right: 5%;
 }
 
 .iss__filesDownload__options__wrap {

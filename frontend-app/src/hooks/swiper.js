@@ -7,12 +7,15 @@ import { useState } from "react";
 * setSlide: Function,
 * slideDec: Function,
 * slideInc: Function,
-* setMax: Function
+* setMax: Function,
+* pagination: object,
+* setPagination: Function
 * }}
 */
 export default function useSwiper(slides=5) {
   const [slide, setSlide] = useState(0);
   const [maxSlides, setMax] = useState(slides);
+  const [pagination, setPagination] = useState(null);
 
   /**
   * @returns {void}
@@ -28,5 +31,13 @@ export default function useSwiper(slides=5) {
     slide < (maxSlides - 1) && setSlide((prev) => prev + 1);
   }
 
-  return { slide, setSlide, slideDec, slideInc, setMax };
+  return {
+    slide,
+    setSlide,
+    slideDec,
+    slideInc,
+    setMax,
+    pagination,
+    setPagination
+  };
 }

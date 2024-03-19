@@ -147,8 +147,8 @@ class FilesViewSetTest(TestCase):
         self.assertEqual(invalid_request.status_code, 403)
         self.assertTrue(admin_request.status_code == request.status_code == 200)
         self.assertTrue(
-            len(request.data)
-            == len(admin_request.data)
+            len(request.data["data"])
+            == len(admin_request.data["data"])
             == self.case.project.file_set.count()
         )
 

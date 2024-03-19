@@ -38,16 +38,12 @@
     left: 4px;
     top: 50%;
     margin-right: 8px;
-    width: 12px;
-    height: 6px;
     transform: translateY(-50%);
 }
 .icon--flip {
     top: initial;
     bottom: 50%;
-    rotate: 180deg;
     stroke: var(--issBrand);
-    fill: var(--issBrand);
 }
 .iss__stats__table__levelName {
     opacity: 0.3;
@@ -70,6 +66,6 @@
     }
     .iss__stats__table-row:hover .icon--flip {
         stroke: white;
-        fill: white;
+        fill: white !important;
     }
 }
