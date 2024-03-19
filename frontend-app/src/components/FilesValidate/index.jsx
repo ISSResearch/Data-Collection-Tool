@@ -52,6 +52,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     };
   }
 
+  // TODO: refactor
   function handleChange(filterType, query) {
     var { card, attr, type, author, date, page } = getPageQuery();
     var preparedQuery = {

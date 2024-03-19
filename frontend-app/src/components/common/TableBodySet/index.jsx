@@ -47,6 +47,7 @@ export default function TableBodySet({ bodySet, countCallback, parent, depth }) 
               {
                 children &&
                 <Arrow
+                  data-testid='table-row-icon'
                   point={childWrap.includes(index) ? "top" : "bot"}
                   color={!childWrap.includes(index) && "black"}
                   classes={["iss__stats__table--icon", childWrap.includes(index) ? "icon--flip" : ""]}
