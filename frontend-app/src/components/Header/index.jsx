@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useContext, ReactElement } from 'react';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { ReactElement } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { addAlert } from "../../slices/alerts";
+import { setUser } from "../../slices/users";
 import NavLinks from '../common/NavLinks';
 import Logo from '../ui/Logo';
 import './styles.css';
@@ -14,14 +15,14 @@ const LINK_SET = [
 
 /** @returns {ReactElement} */
 export default function Header() {
-  const { user, initUser } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const user = useSelector(state => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function logOutUser() {
     localStorage.removeItem("dtcAccess");
-    initUser(null);
-    addAlert("User logged out", "success");
+    dispatch(setUser(null));
+    dispatch(addAlert({ message: "User logged out", type: "success" }));
     navigate("/login");
   }
 

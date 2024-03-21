@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState, ReactElement } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useDispatch } from "react-redux";
+import { setUser } from '../../slices/users';
+import { addAlert } from '../../slices/alerts';
 import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
@@ -23,8 +24,7 @@ const FIELD_SET = [
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { initUser } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,13 +45,13 @@ export default function Login() {
       var { accessToken } = data;
       localStorage.setItem("dtcAccess", accessToken);
 
-      initUser(data.user);
-      addAlert("User logged", "success");
+      dispatch(setUser(data.user));
+      dispatch(addAlert({ message: "User logged", type: "success" }));
 
       if (location.pathname === '/login') navigate('/');
     }
     catch ({ message }) {
-      addAlert("User login failed: " + message, "error");
+      dispatch(addAlert({ message: "User login failed: " + message, type: "error" }));
       setErrors(message);
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);
@@ -60,7 +60,7 @@ export default function Login() {
 
   useEffect(() => {
     localStorage.removeItem("dtcAccess");
-    initUser(null);
+    dispatch(setUser(null));
   }, []);
 
   return (

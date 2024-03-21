@@ -1,5 +1,6 @@
-import { useContext, ReactElement } from "react";
-import { AlertContext } from "../../context/Alert";
+import { ReactElement } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeAlert } from "../../slices/alerts";
 import AlertCard from "../common/AlertCard";
 import "./styles.css";
 
@@ -15,20 +16,20 @@ const COLOR_MAP = {
  * @returns {ReactElement}
  */
 export default function AlertManager({ maxOnScreen }) {
-  const { alerts, removeAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
+  const alerts = useSelector(state => state.activeAlerts);
 
   return (
     <aside className="alertManager">
       {
         Object.values(alerts)
-          .filter((active) => active)
           .slice(0, maxOnScreen)
           .map(({ id, message, type }) => (
             <AlertCard
               key={id}
               message={message}
               color={COLOR_MAP[type]}
-              closeAction={() => removeAlert(id)}
+              closeAction={() => dispatch(removeAlert(id))}
             />
           ))
       }

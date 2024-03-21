@@ -1,7 +1,8 @@
-import { useContext, useState, ReactElement } from 'react';
+import { useState, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useDispatch } from "react-redux";
+import { addAlert } from '../../slices/alerts';
+import { setUser } from '../../slices/users';
 import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
@@ -25,8 +26,7 @@ const FIELD_SET = [
 export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { initUser } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function sendForm(event) {
@@ -51,12 +51,12 @@ export default function Registration() {
       var { accessToken, user } = data;
       localStorage.setItem("dtcAccess", accessToken);
 
-      initUser(user);
-      addAlert(`User ${user.namename} created`, "success");
+      dispatch(setUser(user));
+      dispatch(addAlert({ message: `User ${user.namename} created`, type: "success" }));
       navigate('/');
     }
     catch ({ message }) {
-      addAlert("User registration failed" + message, "error");
+      dispatch(addAlert({ message: "User registration failed" + message, type: "error" }));
       setErrors(message);
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);
