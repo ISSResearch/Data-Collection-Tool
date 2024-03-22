@@ -5,13 +5,13 @@ import {
   useImperativeHandle,
   forwardRef,
   useRef,
-  useContext,
   ReactElement
 } from "react";
 import { useNavigate } from 'react-router-dom';
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils/";
-import { AlertContext } from "../../../context/Alert";
+import { addAlert } from "../../../slices/alerts";
+import { useDispatch } from "react-redux";
 import "./styles.css";
 
 /**
@@ -43,7 +43,7 @@ function FileMedia({ files, slide, pathID }, ref) {
   const [fileUrl, setFileUrl] = useState(null);
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const mediaRef = useRef(null);
 
@@ -137,7 +137,11 @@ function FileMedia({ files, slide, pathID }, ref) {
         })
         .catch(({ message, response }) => {
           var authFailed = response?.status === 401 || response?.status === 403;
-          addAlert("Getting temp token error" + message, "error", authFailed);
+          dispatch(addAlert({
+            message: "Getting temp token error" + message,
+            type: "error",
+            noSession: authFailed
+          }));
           if (authFailed) navigate("/login");
         });
     }

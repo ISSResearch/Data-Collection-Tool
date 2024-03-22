@@ -1,5 +1,6 @@
-import { useContext, ReactElement } from 'react';
-import { AlertContext } from "../../../context/Alert";
+import { ReactElement } from 'react';
+import { addAlert } from '../../../slices/alerts';
+import { useDispatch } from "react-redux";
 import FileUploadCard from '../../common/FileUploadCard';
 import './styles.css';
 
@@ -12,14 +13,15 @@ import './styles.css';
 */
 export default function FileInput({ fileManager, attributes, emitUpload }) {
   const { files, handleUpload, count } = fileManager;
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
 
   function sendForm(event) {
     event.preventDefault();
 
     var { isValid, message } = fileManager.validate(attributes);
 
-    if (!isValid) addAlert("Uploading failed: " + message, "error");
+    if (!isValid)
+      dispatch(addAlert({ message: "Uploading failed: " + message, type: "error" }));
     else emitUpload();
   }
 

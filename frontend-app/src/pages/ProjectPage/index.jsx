@@ -1,8 +1,8 @@
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState, useContext, useCallback, ReactElement } from "react";
+import { useEffect, useState, useCallback, ReactElement } from "react";
 import { attributeAdapter } from '../../adapters';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useSelector, useDispatch } from "react-redux";
+import { addAlert } from "../../slices/alerts";
 import { api } from "../../config/api";
 import ProjectVisibility from "../../components/ProjectVisibility";
 import FilesValidate from "../../components/FilesValidate";
@@ -39,9 +39,9 @@ export default function ProjectPage() {
   const [project, setProject] = useState(null);
   const [userOptions, setUserOptions] = useState([]);
   const [currentRoute, setCurrentRoute] = useState('projects');
-  const { user } = useContext(UserContext);
   const { projectID } = useParams();
-  const { addAlert } = useContext(AlertContext);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,7 +66,7 @@ export default function ProjectPage() {
       var checkAgainst = pageLoc === "validate" ? "view" : pageLoc;
 
       if (!check_path[checkAgainst]) {
-        addAlert("Project permission denied for current user", "error");
+        dispatch(addAlert({ message: "Project permission denied for current user", type: "error" }));
         navigate('/404');
       }
     }
@@ -95,7 +95,11 @@ export default function ProjectPage() {
         .catch(({ message, response }) => {
           var authFailed = response?.status === 401 || response?.status === 403;
 
-          addAlert("Getting project data error: " + message, "error", authFailed);
+          dispatch(addAlert({
+            message: "Getting project data error: " + message,
+            type: "error",
+            noSession: authFailed
+          }));
 
           navigate(authFailed ? "/login" : '/404');
         });

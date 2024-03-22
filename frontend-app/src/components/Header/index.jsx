@@ -15,7 +15,7 @@ const LINK_SET = [
 
 /** @returns {ReactElement} */
 export default function Header() {
-  const user = useSelector(state => state.user);
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

@@ -1,8 +1,9 @@
-import { useEffect, useContext, useRef, useState, ReactElement } from "react";
+import { useEffect, useRef, useState, ReactElement } from "react";
 import { useBlocker } from "react-router-dom";
 import { fileApi } from "../../../config/api";
 import { getOriginDomain } from "../../../utils";
-import { AlertContext } from "../../../context/Alert";
+import { useDispatch } from "react-redux";
+import { addAlert } from "../../../slices/alerts";
 import "./styles.css";
 
 /**
@@ -15,7 +16,7 @@ export default function DownloadView({ taskID }) {
   const [message, setMessage] = useState("");
   const [download, setDownload] = useState(false);
   const [pageBlock] = useState(true);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const componentRef = useRef(null);
 
   // TODO: couldnt clear interval the normal way.
@@ -45,7 +46,7 @@ export default function DownloadView({ taskID }) {
       clipboardTip.innerHTML = "cant copy";
       clipboardTip.classList.add("clipboardTip--error");
 
-      addAlert("Clipboard error: " + message, "error");
+      dispatch(addAlert({ message: "Clipboard error: " + message, type: "error" }));
     }
 
     componentRef.current.appendChild(clipboardTip);
@@ -55,12 +56,12 @@ export default function DownloadView({ taskID }) {
 
   const statusHandlers = {
     SUCCESS: (archiveID) => {
-      addAlert("Got dataset", "success");
+      dispatch(addAlert({ message: "Got dataset", type: "success" }));
       setMessage("DataSet is ready. Downloading...");
       getDataset(archiveID);
     },
     FAILURE: () => {
-      addAlert("Preparing dataset error", "error");
+      dispatch(addAlert({ message: "Preparing dataset error", type: "error" }));
       setMessage(
         "Error occured while gathering the DataSet. Please request a new one.",
       );
@@ -94,7 +95,11 @@ export default function DownloadView({ taskID }) {
         response.status === 401 || response.status === 403
       );
 
-      addAlert("Process request error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Process request error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
     }
   }
 
@@ -116,7 +121,11 @@ export default function DownloadView({ taskID }) {
         response.status === 401 || response.status === 403
       );
 
-      addAlert("Proccess status respons error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Proccess status respons error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
     }
   }
 

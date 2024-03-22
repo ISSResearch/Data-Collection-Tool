@@ -1,8 +1,9 @@
-import { useEffect, useState, useContext, ReactElement } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { attributeStatsAdapter, userStatsAdapter } from '../../../adapters';
 import { api } from '../../../config/api';
-import { AlertContext } from "../../../context/Alert";
+import { addAlert } from '../../../slices/alerts';
+import { useDispatch } from "react-redux";
 import TableBodySet from '../TableBodySet';
 import Load from "../../ui/Load";
 import './styles.css';
@@ -23,7 +24,7 @@ export default function FileStats({ pathID }) {
   const [stats, setStats] = useState([]);
   const [choice, setChoice] = useState("attribute");
   const [loading, setLoading] = useState(true);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const countItem = (a, b, c) => {
@@ -60,7 +61,11 @@ export default function FileStats({ pathID }) {
           response.status === 401 || response.status === 403
         );
 
-        addAlert("Getting stats error: " + message, "error", authFailed);
+        dispatch(addAlert({
+          message: "Getting stats error: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
         if (authFailed) navigate("/login");
       });

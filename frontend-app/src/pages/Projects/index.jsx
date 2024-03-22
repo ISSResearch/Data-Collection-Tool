@@ -1,7 +1,7 @@
-import { ReactElement, useEffect, useState, useContext, useCallback } from 'react';
+import { ReactElement, useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useSelector, useDispatch } from "react-redux";
+import { addAlert } from '../../slices/alerts';
 import { api } from '../../config/api';
 import Load from "../../components/ui/Load";
 import AllProjects from '../../components/AllProjects';
@@ -22,8 +22,8 @@ const VARIANTS = { create: ProjectCreate };
 export default function Projects() {
   const [projects, setProjects] = useState(null);
   const [currentRoute, setCurrentRoute] = useState('projects');
-  const { user } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,7 +53,11 @@ export default function Projects() {
       .catch(({ message, response }) => {
         var authFailed = response && (response.status === 401 || response.status === 403);
 
-        addAlert("Project Page load failed: " + message, "error", authFailed);
+        dispatch(addAlert({
+          message: "Project Page load failed: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
         if (authFailed) navigate("/login");
       });
