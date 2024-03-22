@@ -1,9 +1,10 @@
-import { useState, ReactElement } from 'react';
+import { useState, ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { addAlert } from '../../slices/alerts';
 import { setUser } from '../../slices/users';
 import { api } from '../../config/api';
+import { setLink, setNav, setTitle, setParent, setCurrent } from '../../slices/heads';
 import Form from '../../components/forms/Form';
 import './styles.css';
 
@@ -20,6 +21,12 @@ const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
   { label: 'Enter password:', type: 'password', name: 'password1', placeholder: 'password', required: true },
   { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
+];
+
+/** @type {{name: string, link: string }[]} */
+const ROUTE_LINKS = [
+  { name: "login", link: "login" },
+  { name: "registration", link: "registration" },
 ];
 
 /** @returns {ReactElement} */
@@ -63,9 +70,16 @@ export default function Registration() {
     }
   }
 
+  useEffect(() => {
+    dispatch(setTitle("Registration"));
+    dispatch(setNav(ROUTE_LINKS));
+    dispatch(setParent());
+    dispatch(setCurrent("registration"));
+    dispatch(setLink());
+  }, []);
+
   return (
     <div className="iss__registrationPage">
-      <h1>Registration Page</h1>
       <Form
         loading={loading}
         errors={errors}

@@ -1,23 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/** @typedef {{ title: string, nav: Array, current: string, parent: string}} State */
 /**
-* @param {{ title: string, nav: Array }} state
-* @param {object} value
-* @param {string} value.payload
+* @param {State} state
+* @param {string} type
+* @param {Array | string} payload
 * @returns {void}
 */
-function _setTitle(state, { payload }) {
-  state.title = payload || "";
-}
-
-/**
-* @param {{ title: string, nav: Array }} state
-* @param {object} value
-* @param {Array} value.payload
-* @returns {void}
-*/
-function _setNav(state, { payload }) {
-  state.nav = payload || [];
+function set(state, type, payload) {
+  var defaults = { nav: [], link: false };
+  state[type] = payload || defaults[type] || "";
 }
 
 /** @type {object} */
@@ -25,11 +17,20 @@ export const headSlice = createSlice({
   name: 'head',
   initialState: {
     title: "",
-    nav: []
+    nav: [],
+    current: "",
+    parent: "",
+    link: false,
   },
-  reducers: { setTitle: _setTitle, setNav: _setNav }
+  reducers: {
+    setTitle: (state, { payload }) => set(state, "title", payload),
+    setNav: (state, { payload }) => set(state, "nav", payload),
+    setCurrent: (state, { payload }) => set(state, "current", payload),
+    setParent: (state, { payload }) => set(state, "parent", payload),
+    setLink: (state, { payload }) => set(state, "link", payload),
+  }
 });
 
-export const { setTitle, setNav } = headSlice.actions;
+export const { setTitle, setNav, setCurrent, setParent, setLink } = headSlice.actions;
 
 export default headSlice.reducer;

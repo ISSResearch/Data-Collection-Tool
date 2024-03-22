@@ -4,12 +4,12 @@ import { attributeAdapter } from '../../adapters';
 import { useSelector, useDispatch } from "react-redux";
 import { addAlert } from "../../slices/alerts";
 import { api } from "../../config/api";
+import { setLink, setNav, setTitle, setParent, setCurrent } from "../../slices/heads";
 import ProjectVisibility from "../../components/ProjectVisibility";
 import FilesValidate from "../../components/FilesValidate";
 import FilesUpload from "../../components/FilesUpload";
 import FilesDownload from "../../components/FilesDownload";
 import FileStats from "../../components/common/FileStats";
-import TitleSwitch from "../../components/common/TitleSwitch";
 import ProjectEdit from "../../components/ProjectEdit";
 import Load from "../../components/ui/Load";
 import './styles.css';
@@ -37,10 +37,9 @@ const VARIANTS = {
 export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);
-  const [userOptions, setUserOptions] = useState([]);
-  const [currentRoute, setCurrentRoute] = useState('projects');
   const { projectID } = useParams();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
+  const currentRoute = useSelector((state) => state.head.current);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,8 +70,6 @@ export default function ProjectPage() {
       }
     }
 
-    setCurrentRoute(pageLoc);
-
     if (!project) {
       api.get(`/api/projects/${projectID}/`, {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
@@ -83,12 +80,11 @@ export default function ProjectPage() {
 
           var { permissions } = data;
 
-          if (user.is_superuser) setUserOptions([...PROTECTED_ROUTE_LINKS]);
-          else {
-            setUserOptions([
-              ...PROTECTED_ROUTE_LINKS.filter(({ permission }) => permissions[permission])
-            ]);
-          }
+          dispatch(setNav(
+            user.is_superuser
+             ? PROTECTED_ROUTE_LINKS
+             : PROTECTED_ROUTE_LINKS.filter(({ permission }) => permissions[permission])
+          ));
 
           setLoading(false);
         })
@@ -104,6 +100,12 @@ export default function ProjectPage() {
           navigate(authFailed ? "/login" : '/404');
         });
     }
+
+    dispatch(setCurrent(pageLoc));
+    dispatch(setParent(`projects/${projectID}`));
+    dispatch(setTitle(project?.name));
+    dispatch(setLink(true));
+
   }, [project, location]);
 
   if (loading) return (<div className="iss_projectPage__load"><Load /></div>);
@@ -111,13 +113,6 @@ export default function ProjectPage() {
   return (
     <div className='iss__projectPage'>
       <Link to="/projects" className="iss__projectPage__button">back to</Link>
-      <TitleSwitch
-        title={project.name}
-        titleLink={true}
-        links={userOptions}
-        currentRoute={currentRoute}
-        parent={`projects/${projectID}`}
-      />
       {
         currentRoute === `projects/${projectID}` &&
         <p

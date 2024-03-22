@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Alert } from '../models';
+import { formUID } from '../utils';
 
 /**
 * @param {object} state
@@ -9,7 +9,11 @@ import { Alert } from '../models';
 */
 function add(state, { payload }) {
   var { message, type, noSession } = payload;
-  var alert = new Alert(message, type, noSession);
+  var alert = {
+    id: formUID(),
+    message: noSession ? "Session expired" : message,
+    type: noSession ? "common" : type,
+  };
   state.activeAlerts[alert.id] =  alert;
 }
 
@@ -20,8 +24,7 @@ function add(state, { payload }) {
 * @returns {void}
 */
 function remove(state, { payload: id }) {
-  var alert = state.active[id];
-  alert.disable();
+  var alert = state.activeAlerts[id];
   delete state.activeAlerts[id];
   state.recentAlerts[id] = alert;
 }

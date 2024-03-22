@@ -1,45 +1,36 @@
 .iss__titleSwitch {
     display: flex;
-    margin-bottom: 40px;
-    gap: 40px;
+    gap: 20px;
     width: fit-content;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--issBrand);
-}
-.iss__titleSwitch__navWrap {
-    place-self: flex-end;
+    place-items: center;
 }
 .iss__titleSwitch__nav {
     display: flex;
     width: fit-content;
     list-style: none;
+    gap: 8px;
 }
 .iss__titleSwitch__navItem,
 .iss__titleSwitch__navItem--active {
-    display: block;
-    padding: 4px 8px;
-    outline: 1px solid #62abff00;
+    font-size: 14px;
+    text-decoration: none;
     transition:
         outline 0.3s ease,
         color 0.3s ease;
-    text-decoration: none;
 }
 .iss__titleSwitch__navItem--active {
     pointer-events: none;
-    outline: 1px solid var(--issBrand);
-    background-color: var(--issBrand);
-    color: white;
+    color: var(--issBrand);
+    text-decoration: underline;
+}
+.iss__titleSwitch__title {
+    font-size: 28px;
 }
 .iss__titleSwitch__title > * {
     text-decoration: none;
     color: var(--issBrand);
     transition: color 0.3s ease;
-    font-size: 42px;
-}
-@media (max-width: 1024px) {
-    .iss__titleSwitch {
-        gap: 20px;
-    }
+    font-size: 28px;
 }
 @media (max-width: 768px) {
     .iss__titleSwitch__title > * {

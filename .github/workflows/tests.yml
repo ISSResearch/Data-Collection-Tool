@@ -37,6 +37,6 @@ jobs:
       - name: Clean up
         run: |
           docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
-          docker system prune --all --volumes --force
+          docker system prune --volumes --force
       
 

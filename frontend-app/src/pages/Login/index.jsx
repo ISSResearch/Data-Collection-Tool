@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { setUser } from '../../slices/users';
 import { addAlert } from '../../slices/alerts';
+import { setLink, setNav, setTitle, setParent, setCurrent } from '../../slices/heads';
 import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
@@ -13,11 +14,18 @@ import './styles.css';
 * type: string,
 * name: string,
 * placeholder: string
+* required: boolean
 * }[]}
 */
 const FIELD_SET = [
   { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
   { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
+];
+
+/** @type {{name: string, link: string }[]} */
+const ROUTE_LINKS = [
+  { name: "login", link: "login" },
+  { name: "registration", link: "registration" },
 ];
 
 /** @returns {ReactElement} */
@@ -61,11 +69,15 @@ export default function Login() {
   useEffect(() => {
     localStorage.removeItem("dtcAccess");
     dispatch(setUser(null));
+    dispatch(setTitle("Login"));
+    dispatch(setNav(ROUTE_LINKS));
+    dispatch(setParent());
+    dispatch(setLink());
+    dispatch(setCurrent("login"));
   }, []);
 
   return (
     <div className="iss__loginPage">
-      <h1>Login Page</h1>
       <Form
         callback={sendForm}
         loading={loading}

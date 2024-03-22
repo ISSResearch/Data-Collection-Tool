@@ -17,7 +17,7 @@ const COLOR_MAP = {
  */
 export default function AlertManager({ maxOnScreen }) {
   const dispatch = useDispatch();
-  const alerts = useSelector((state) => state.activeAlerts);
+  const alerts = useSelector((state) => state.alerts.activeAlerts);
 
   return (
     <aside className="alertManager">

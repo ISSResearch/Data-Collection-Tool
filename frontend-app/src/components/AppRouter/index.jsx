@@ -8,7 +8,7 @@ const SAFE_ROUTES = ["/login", "/registration"];
 /** @returns {ReactElement} */
 export default function AppRouter() {
   const [redirect, setRedirect] = useState(false);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
   const location = useLocation();
 
   useEffect(() => {

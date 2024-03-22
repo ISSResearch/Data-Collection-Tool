@@ -3,26 +3,28 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { addAlert } from '../../slices/alerts';
 import { api } from '../../config/api';
+import { setNav, setLink, setTitle, setParent, setCurrent } from '../../slices/heads';
 import Load from "../../components/ui/Load";
 import AllProjects from '../../components/AllProjects';
 import ProjectCreate from '../../components/ProjectCreate';
-import TitleSwitch from '../../components/common/TitleSwitch';
 import './styles.css';
 
 /** @type {{name: string, link: string}[]} */
 const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
+
 /** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
   { name: 'create project', link: 'create', permission: 'hidden' }
 ];
+
 /** @type {{[variant: string]: ReactElement}} */
 const VARIANTS = { create: ProjectCreate };
 
 /** @returns {ReactElement} */
 export default function Projects() {
   const [projects, setProjects] = useState(null);
-  const [currentRoute, setCurrentRoute] = useState('projects');
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
+  const currentRoute = useSelector((state) => state.head.current);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,7 +44,11 @@ export default function Projects() {
     };
     var pageRoute = getLocation();
 
-    setCurrentRoute(() => pageRoute);
+    dispatch(setCurrent(pageRoute));
+    dispatch(setTitle("Projects"));
+    dispatch(setParent("projects"));
+    dispatch(setLink());
+    dispatch(setNav(userOptions));
 
     if (pageRoute === "create") return setProjects([]);
 
@@ -65,12 +71,6 @@ export default function Projects() {
 
   return (
     <div className="iss__projects">
-      <TitleSwitch
-        title='Projects'
-        links={userOptions}
-        currentRoute={currentRoute}
-        parent={'projects'}
-      />
       {
         !projects
           ? <div className="iss__projects__load"><Load /></div>

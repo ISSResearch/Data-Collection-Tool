@@ -3,19 +3,14 @@ import { ReactElement } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { addAlert } from "../../slices/alerts";
 import { setUser } from "../../slices/users";
-import NavLinks from '../common/NavLinks';
+import TitleSwitch from "../common/TitleSwitch";
 import Logo from '../ui/Logo';
 import './styles.css';
 
-/** @type {{text: string, link: string}[]} */
-const LINK_SET = [
-  { text: 'Login', link: '/login' },
-  { text: 'Registration', link: '/registration' },
-];
-
 /** @returns {ReactElement} */
 export default function Header() {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
+  const head = useSelector((state) => state.head);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -29,19 +24,22 @@ export default function Header() {
   return (
     <header className='iss__header'>
       <Logo />
-      <div className="iss__header__user">
-        {
-          user
-          ? <>
-            <span className='iss__header__username'>{user.username}</span>
-            <button
-              onClick={logOutUser}
-              className='iss__header__logoutButton'
-            >Logout</button>
-          </>
-          : <NavLinks links={LINK_SET} />
-        }
-      </div>
+      <TitleSwitch
+        title={head.title}
+        links={head.nav}
+        currentRoute={head.current}
+        parent={head.parent}
+      />
+      {
+        user &&
+        <div className="iss__header__user">
+          <span className='iss__header__username'>{user.username}</span>
+          <button
+            onClick={logOutUser}
+            className='iss__header__logoutButton'
+          >Logout</button>
+        </div>
+      }
     </header>
   );
 }
