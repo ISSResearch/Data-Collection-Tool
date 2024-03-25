@@ -1,11 +1,12 @@
 import { fireEvent, render, act, renderHook, screen } from '@testing-library/react';
 import FileModification from '.';
-import { AlertContext } from '../../../context/Alert';
 import { MemoryRouter } from "react-router-dom";
 import { api } from '../../../config/api';
 import { useFiles, useSwiper } from '../../../hooks';
 import { raw_files, prepared_attributes } from '../../../config/mock_data';
 import { deepCopy } from '../../../utils';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
 
 jest.mock("../../../config/api");
 afterEach(() => {
@@ -15,15 +16,15 @@ afterEach(() => {
 test("file info component test", async () => {
   const { result: filesHook } = renderHook(() => useFiles());
   const { result: swiperHook } = renderHook(() => useSwiper());
-  const component = () => <MemoryRouter>
-    <AlertContext.Provider value={{}}>
+  const component = () => <Provider store={createStore()}>
+    <MemoryRouter>
       <FileModification
         fileManager={filesHook.current}
         sliderManager={swiperHook.current}
         attributes={prepared_attributes}
       />
-    </AlertContext.Provider>
-  </MemoryRouter>;
+  </MemoryRouter>
+  </Provider>;
 
   var files  = deepCopy(raw_files);
   files[0].status = "v";

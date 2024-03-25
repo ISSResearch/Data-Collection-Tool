@@ -1,6 +1,7 @@
 import { fireEvent, render, renderHook, act, screen } from '@testing-library/react';
 import FileDownloadSelector from '.';
-import { AlertContext } from '../../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
 import { MemoryRouter } from "react-router-dom";
 import { useFiles } from '../../../hooks/';
 import { api } from '../../../config/api';
@@ -16,16 +17,16 @@ test("download selcetor form component test", async () => {
 
   api.get.mockResolvedValue({data:raw_files});
   const component = (nw=false, opt="") => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FileDownloadSelector
           pathID={1}
           newFiles={nw}
           option={{value: opt}}
           fileManager={files.current}
         />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   const init = async() => {

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import createStore from "../../store";
 import { MemoryRouter } from "react-router-dom";
-import { AlertContext } from '../../context/Alert';
 import { api, fileApi } from '../../config/api';
 import FilesDownload from '.';
 
@@ -13,11 +14,11 @@ afterEach(() => {
 
 test("files download component base test", async () => {
   const { container } = render(
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FilesDownload pathID={1} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   expect(screen.getAllByText('all')).toHaveLength(2);

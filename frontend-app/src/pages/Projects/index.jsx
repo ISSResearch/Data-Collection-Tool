@@ -67,7 +67,7 @@ export default function Projects() {
 
         if (authFailed) navigate("/login");
       });
-  }, [location]);
+  }, [location, user]);
 
   return (
     <div className="iss__projects">

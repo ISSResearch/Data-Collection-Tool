@@ -1,6 +1,7 @@
 import { render, screen, act } from "@testing-library/react";
 import FilesValidate from ".";
-import { AlertContext } from "../../context/Alert";
+import { Provider } from "react-redux";
+import createStore from "../../store";
 import { MemoryRouter } from "react-router-dom";
 import { fileApi } from "../../config/api";
 import { prepared_attributes, raw_files } from "../../config/mock_data";
@@ -12,11 +13,11 @@ afterEach(() => {
 
 test("files validate component base test", async () => {
   const component = (val=false) => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FilesValidate pathID={1} attributes={prepared_attributes} canValidate={val} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   global.Promise.allSettled = () => Promise.resolve([{value:{data:{data: []}}}]);
@@ -32,11 +33,11 @@ test("files validate component base test", async () => {
 
 test("files validate component test", async () => {
   const component = (val=false) => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FilesValidate pathID={1} attributes={prepared_attributes} canValidate={val} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   var data = {

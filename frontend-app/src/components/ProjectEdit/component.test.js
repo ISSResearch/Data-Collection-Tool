@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { AlertContext } from '../../context/Alert';
+import { useEffect } from 'react';
 import ProjectEdit from '.';
+import { Provider, useSelector } from 'react-redux';
+import createStore from "../../store";
 import { prepared_attributes } from '../../config/mock_data';
 
 jest.mock("../../config/api", () => ({
@@ -14,25 +16,32 @@ afterEach(() => {
 
 
 test("project edit component test", async () => {
-  var throwAlert = false;
+  var alertTrigger;
+
   var tryDelete = async (value ) => {
     fireEvent.click(screen.getByRole('button', { name: 'DELETE PROJECT' }));
     fireEvent.input(screen.getByPlaceholderText("Exact Project name"), {target: {value}});
     fireEvent.click(screen.getByRole("button", {name: "submit"}));
   };
-  const component = () => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => throwAlert = true}}>
+  const component = () => {
+    const Inner = () => {
+      const alerts = useSelector((s) => s.alerts.activeAlerts);
+      useEffect(() => {
+        alertTrigger = Object.keys(alerts).length;
+      }, [alerts]);
+      return <MemoryRouter>
         <ProjectEdit
           attributes={prepared_attributes}
           projectName={'project name'}
           projectDescription={'project description'}
           pathID={123}
         />
-      </AlertContext.Provider>
-    </MemoryRouter>
-  );
-
+      </MemoryRouter>;
+    };
+    return <Provider store={createStore()}>
+      <Inner/>
+    </Provider>;
+  };
   const { container } = render(component());
 
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
@@ -57,7 +66,7 @@ test("project edit component test", async () => {
     .toBe("http://localhost/projects/123/visibility");
 
   await tryDelete("some");
-  expect(throwAlert).toBeTruthy();
+  expect(alertTrigger).toBeTruthy();
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
   // TODO: resolve warning
   await tryDelete("project name");

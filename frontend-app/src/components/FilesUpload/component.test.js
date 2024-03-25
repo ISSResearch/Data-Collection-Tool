@@ -1,7 +1,8 @@
 import { render, fireEvent, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import createStore from "../../store";
 import FilesUpload from '.';
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { AlertContext } from '../../context/Alert';
 import { prepared_attributes } from "../../config/mock_data";
 
 jest.mock("../../hooks/fileInput", () => {
@@ -21,9 +22,9 @@ test("files upload component test", () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element:  <AlertContext.Provider value={{addAlert: () => {}}}>
+      element:  <Provider store={createStore()}>
         <FilesUpload attributes={prepared_attributes} />
-      </AlertContext.Provider>
+      </Provider>
     }
   ]);
   const { container } = render(<RouterProvider router={router}/>);

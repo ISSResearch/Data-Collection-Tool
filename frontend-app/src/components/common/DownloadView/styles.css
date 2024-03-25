@@ -34,7 +34,7 @@
     color: white;
     font-size: 8px;
     transform: translate(0px, -100%);
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow: 1px 1px 1px 0px var(--issLightBrand);
 }
 

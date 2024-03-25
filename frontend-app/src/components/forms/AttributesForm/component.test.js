@@ -1,6 +1,7 @@
 import { fireEvent, render, renderHook, act, screen } from '@testing-library/react';
 import AttributesForm from '.';
-import { AlertContext } from '../../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
 import { MemoryRouter } from "react-router-dom";
 import { useAttributeManager } from '../../../hooks/';
 import { api } from '../../../config/api';
@@ -18,16 +19,16 @@ test("attributes form component test", async () => {
   const [firstForm] = Object.keys(managerHook.current.formHook.forms);
 
   const component = () => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{ addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <AttributesForm
           formId={firstForm}
           deleteForm={managerHook.current.formHook.deleteForm}
           levelHook={managerHook.current.levelHook}
           attributeHook={managerHook.current.attributeHook}
         />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   const { rerender } = render(component());

@@ -1,7 +1,8 @@
 import { render, screen, act } from '@testing-library/react';
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import createStore from "../../../store";
+import { Provider } from 'react-redux';
 import DownloadView from '.';
-import { AlertContext } from '../../../context/Alert';
 
 jest.mock("../../../config/api", () => {
   var get = (r) => {
@@ -24,9 +25,9 @@ test("download view component test", async () => {
   const router = (task) => createBrowserRouter([
     {
       path: "/",
-      element: <AlertContext.Provider value={{addAlert: () => {}}}>
+      element: <Provider store={createStore()}>
         <DownloadView taskID={task} />
-      </AlertContext.Provider>,
+      </Provider>
     }
   ]);
 

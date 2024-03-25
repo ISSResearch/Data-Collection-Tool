@@ -1,23 +1,21 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { UserContext } from "../../context/User";
-import { AlertContext } from '../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../store";
 import Home from '.';
 import Projects from '../Projects';
 
 test("home page test", () => {
-  render(
-    <UserContext.Provider value={{ user: { is_superuser: false } }}>
-    <AlertContext.Provider value={{addAlert: () => {}}}>
+  const { container } = render(
+    <Provider store={createStore()}>
       <MemoryRouter initialEntries={['/']}>
         <Routes>
           <Route path={'/'} element={<Home/>} exact={true} />
           <Route path={'projects/'} element={<Projects/>} exact={true} />
         </Routes>
       </MemoryRouter>
-    </AlertContext.Provider>
-    </UserContext.Provider>
+    </Provider>
   );
 
-  screen.getByText('Projects');
+  expect(container.querySelector(".iss__projects")).not.toBeNull();
 });

@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { UserContext } from "../../context/User";
+import { Provider, useDispatch } from 'react-redux';
+import createStore from "../../store";
+import { setUser } from '../../slices/users';
 import { MemoryRouter } from 'react-router-dom';
 import AppRouter from '../../components/AppRouter';
 
@@ -18,13 +20,11 @@ afterEach(() => {
 
 test("app router component without user test", () => {
   render(
-    <UserContext.Provider
-      value={{ user: false }}
-    >
+    <Provider store={createStore()}>
       <MemoryRouter initialEntries={['/projects/1']}>
         <AppRouter/>
       </MemoryRouter>
-    </UserContext.Provider>
+    </Provider>
   );
 
   expect(screen.queryByText("mock outlet")).toBeNull();
@@ -32,15 +32,19 @@ test("app router component without user test", () => {
 });
 
 test("app router component with user test", () => {
-  render(
-    <UserContext.Provider
-      value={{ user: true }}
-    >
-      <MemoryRouter initialEntries={['/projects/1']}>
+  const component = () => {
+    const Inner = () => {
+      const dispatch = useDispatch();
+      dispatch(setUser({is_superuser:true}));
+      return <MemoryRouter initialEntries={['/projects/1']}>
         <AppRouter/>
-      </MemoryRouter>
-    </UserContext.Provider>
-  );
+      </MemoryRouter>;
+    };
+    return <Provider store={createStore()}>
+      <Inner />
+    </Provider>;
+  };
+  render(component());
 
   expect(screen.queryByText("mock navigate")).toBeNull();
   screen.getByText("mock outlet");

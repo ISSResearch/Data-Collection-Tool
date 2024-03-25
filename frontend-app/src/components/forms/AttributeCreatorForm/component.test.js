@@ -1,7 +1,8 @@
 import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import AttributeCreatorForm from '.';
 import useAttributeManager from '../../../hooks/attributeManager';
-import { AlertContext } from '../../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
 import { MemoryRouter } from "react-router-dom";
 import { prepared_attributes } from '../../../config/mock_data';
 
@@ -9,11 +10,11 @@ test("attribute creator form component test", () => {
   const { result: attributeManager } = renderHook(() => useAttributeManager());
 
   const component = () => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <AttributeCreatorForm attributeManager={attributeManager.current} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
   const { rerender, container } = render(component());
 
@@ -35,14 +36,14 @@ test("attribute creator form component with bounds test", () => {
   const { result: attributeManager } = renderHook(() => useAttributeManager());
 
   const component = () => (
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <AttributeCreatorForm
           attributeManager={attributeManager.current}
           withBoundAttributes={prepared_attributes}
         />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   const { rerender } = render(component());

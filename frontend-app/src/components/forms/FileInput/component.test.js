@@ -1,7 +1,8 @@
 import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import FileInput from '.';
-import { AlertContext } from '../../../context/Alert';
 import { useFileInput } from '../../../hooks';
+import createStore from "../../../store";
+import { Provider } from 'react-redux';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -12,9 +13,9 @@ test("file input component test", () => {
   global.URL.createObjectURL = () => "";
 
   const component = () => (
-    <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
       <FileInput fileManager={fileManager.current} />
-    </AlertContext.Provider>
+    </Provider>
   );
   const { rerender, container } = render(component());
 

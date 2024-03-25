@@ -1,15 +1,16 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import ProjectCreate from '.';
 import { MemoryRouter } from 'react-router-dom';
-import { AlertContext } from '../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../store";
 
 test("project create component test", () => {
   render(
-    <MemoryRouter>
-      <AlertContext.Provider value={{ addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <ProjectCreate />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   expect(screen.getAllByRole('group')).toHaveLength(2);
