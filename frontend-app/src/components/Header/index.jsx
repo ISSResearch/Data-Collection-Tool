@@ -29,6 +29,7 @@ export default function Header() {
         links={head.nav}
         currentRoute={head.current}
         parent={head.parent}
+        titleLink={head.link}
       />
       {
         user &&

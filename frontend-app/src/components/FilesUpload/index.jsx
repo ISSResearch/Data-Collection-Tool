@@ -46,7 +46,6 @@ export default function FilesUpload({ attributes, pathID }) {
         handleApply={fileManager.handleApplyGroups}
         isFiles={Boolean(Object.values(fileManager.files).length)}
       />
-      <div className='iss__filesUpload__form__border' />
       <FileInput
         fileManager={fileManager}
         attributes={attributes}

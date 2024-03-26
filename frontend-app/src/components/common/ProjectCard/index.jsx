@@ -20,7 +20,7 @@ export default function ProjectCard({ item }) {
   return (
     <Link to={`/projects/${item.id}`} className='iss__projectCard'>
       <h3 className='iss__projectCard__name'>{item.name}</h3>
-      <p className='iss__projectCard__text'>{prepareDescription()}</p>
+      <p className='iss__projectCard__text' dangerouslySetInnerHTML={{ __html: prepareDescription() }} />
       <time className='iss__projectCard__date'>{item.created_at}</time>
     </Link>
   );

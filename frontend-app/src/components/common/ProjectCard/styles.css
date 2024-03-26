@@ -4,7 +4,7 @@
     text-decoration: none;
     background-color: white;
     border: 1px solid var(--issBrand);
-    border-radius: 2px;
+    border-radius: 4px;
     padding: 12px 20px;
     transition:
         background-color 0.3s ease,
@@ -17,7 +17,7 @@
     word-break: break-all;
 }
 .iss__projectCard__text {
-    font-size: 18px;
+    font-size: 14px;
     color: black;
     margin-bottom: 20px;
 }

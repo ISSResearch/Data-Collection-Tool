@@ -1,20 +1,22 @@
 .iss__fileSelector {
+    background-color: white;
+    padding: 12px 8px;
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-width: 16%;
+    max-width: min(20%, 260px);
     width: 100%;
+    justify-content: space-between;
 }
 .iss__fileSelector__inner {
-    padding: 4px 2px;
     width: 100%;
     height: fit-content;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 4px;
     max-height: 500px;
     overflow-y: scroll;
-    border: 1px solid var(--issBrand);
 }
 .iss__fileSelector__pagination {
     width: 100%;
@@ -30,6 +32,7 @@
     gap: 4px;
 }
 .iss_fileSelector__pagination__input > input {
+    border-radius: 4px;
     width: 40px;
     font-size: 18px;
     display: flex;

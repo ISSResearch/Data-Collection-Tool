@@ -18,8 +18,8 @@ import './styles.css';
 * }[]}
 */
 const FIELD_SET = [
-  { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
-  { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
+  { label: 'Username:', type: 'text', name: 'username', placeholder: 'username', required: true },
+  { label: 'Password:', type: 'password', name: 'password', placeholder: 'password', required: true },
 ];
 
 /** @type {{name: string, link: string }[]} */
@@ -83,7 +83,6 @@ export default function Login() {
         loading={loading}
         errors={errors}
         fields={FIELD_SET}
-        link={{ to: '/registration', text: 'Or Registry' }}
       />
     </div>
   );

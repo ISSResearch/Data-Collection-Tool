@@ -112,7 +112,7 @@ export default function ProjectPage() {
 
   return (
     <div className='iss__projectPage'>
-      <Link to="/projects" className="iss__projectPage__button">back to</Link>
+      <Link to="/projects" className="iss__projectPage__button">back</Link>
       {
         currentRoute === `projects/${projectID}` &&
         <p

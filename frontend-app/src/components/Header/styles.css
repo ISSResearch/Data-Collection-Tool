@@ -21,7 +21,7 @@
     border: 1px solid var(--issBrand);
     cursor: pointer;
     padding: 4px 8px;
-    border-radius: 2px;
+    border-radius: 4px;
     transition:
         color 0.3s ease,
         background-color 0.3s ease;

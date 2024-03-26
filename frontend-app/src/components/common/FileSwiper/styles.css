@@ -1,8 +1,8 @@
 .iss__fileswiper {
     position: relative;
     width: 100%;
-    height: 600px;
     overflow-y: hidden;
+    flex-grow: 1;
 }
 .iss__fileswiper__controls {
     backdrop-filter: blur(10px);
@@ -12,6 +12,7 @@
     padding: 4px;
     transform: translate(-50%, -100%);
     border: 1px solid var(--issBrand);
+    border-radius: 4px;
     display: flex;
     place-items: center;
     gap: 12px;

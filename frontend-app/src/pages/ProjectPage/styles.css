@@ -1,9 +1,8 @@
 .iss__projectPage {
     display: flex;
     flex-direction: column;
-    background-color: white;
-    border-radius: 2px;
-    padding: 20px;
+    border-radius: 4px;
+    flex-grow: 1;
 }
 .iss_projectPage__load {
     width: 100%;
@@ -16,7 +15,8 @@
     place-self: center;
 }
 .iss__projectPage__button {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
+    border-radius: 4px;
     text-decoration: none;
     border: 1px solid var(--issBrand);
     background-color: var(--issBrand);
@@ -28,10 +28,12 @@
         background-color 0.3s ease;
 }
 .iss__projectPage__button::before {
-    content: "< --";
+    content: "<--";
     padding: 0 6px;
 }
 .iss__projectPage__description {
+    padding: 40px 20px;
+    background-color: white;
     font-size: 16px;
     margin-bottom: 20px;
 }
@@ -41,6 +43,6 @@
 }
 @media (hover: hover) {
     .iss__projectPage__button:hover::after {
-        content: " all projects";
+        content: " to all projects";
     }
 }

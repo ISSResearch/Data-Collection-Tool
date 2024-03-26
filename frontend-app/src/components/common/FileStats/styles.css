@@ -29,6 +29,7 @@
     place-content: center;
 }
 .iss__stats__table {
+    background-color: white;
     width: 100%;
     border-collapse: collapse;
     min-width: 520px;

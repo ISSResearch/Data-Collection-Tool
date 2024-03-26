@@ -8,6 +8,7 @@
     gap: 12px;
     max-width: 240px;
     width: 100%;
+    border-radius: 4px;
     border: none;
     height: fit-content;
 }
@@ -31,6 +32,7 @@
 }
 
 .iss__selectGroup__button {
+    border-radius: 4px;
     border: 1px solid white;
     color: white;
     background-color: var(--issBrand);

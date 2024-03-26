@@ -85,7 +85,6 @@ export default function Registration() {
         errors={errors}
         callback={sendForm}
         fields={FIELD_SET}
-        link={{ to: '/login', text: 'Or Login' }}
       />
     </div>
   );

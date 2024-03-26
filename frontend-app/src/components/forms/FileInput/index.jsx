@@ -43,9 +43,9 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
             fileManager.count() ? '' : ' send--disabled'
           }`
         }
-      >SEND ALL</button>
+      >Upload</button>
       <label className='iss__fileInput__upload'>
-        UPLOAD
+        Add Media
         <input
           type="file"
           multiple

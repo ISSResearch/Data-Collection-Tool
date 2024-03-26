@@ -6,12 +6,22 @@
 }
 .iss__projects__card {
     padding: 6px;
-    width: 33%;
+    width: 20%;
 }
 .iss__projects__loading {
     width: 100%;
     display: flex;
     place-content: center;
+}
+@media (max-width: 1669.99px) {
+    .iss__projects__card {
+        width: 25%;
+    }
+}
+@media (max-width: 1279.99px) {
+    .iss__projects__card {
+        width: 33%;
+    }
 }
 @media (max-width: 768px) {
     .iss__projects__card {

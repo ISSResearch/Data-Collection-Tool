@@ -1,72 +1,63 @@
 .iss__formContainer {
-  max-width: 400px;
-  width: 100%;
-  border: 1px solid var(--issBrand);
-  padding: 40px 20px;
-  position: relative;
+    max-width: 360px;
+    width: 100%;
+    padding: 40px 0px;
+    position: relative;
 }
 .iss__form {
-  display: flex;
-  flex-direction: column;
-  place-items: center;
-  gap: 20px;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    gap: 20px;
+    width: 100%;
 }
 .iss__formContainer__errors {
-  font-size: 16px;
-  color: red;
-  margin-bottom: 20px;
+    font-size: 16px;
+    color: red;
+    margin-bottom: 20px;
 }
 .iss__input {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 16px;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+    width: 100%;
 }
 .iss__input input {
-  padding: 4px 8px;
-  border: 1px solid var(--issBrand);
-  background-color: #0077ff05;
-  outline: none;
+    padding: 8px 0px;
+    border: none;
+    border-bottom: 1px solid var(--issBrand);
+    outline: none;
+    font-size: 14px;
 }
-.iss__formButton, .iss__regButton {
-  padding: 8px 12px;
-  width: fit-content;
-  place-self: center;
-  background-color: var(--issBrand);
-  border: 1px solid var(--issBrand);
-  color: white;
-  cursor: pointer;
-  transition: color 0.3s ease, background-color 0.3s ease;
-}
-.iss__regButton {
-  color: white !important;
-}
-.iss__regButton {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  border: 0;
+.iss__formButton {
+    margin-top: 20px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    width: fit-content;
+    place-self: center;
+    background-color: var(--issBrand);
+    border: 1px solid var(--issBrand);
+    color: white;
+    cursor: pointer;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
 }
 .iss__formLoad {
-  margin: 0 auto;
+    margin: 0 auto;
 }
-@media (hover:hover) {
-  .iss__formContainer a:hover {
-    color: var(--issBrand) !important;
-  }
-  .iss__regButton:hover {
-    border-top: 1px solid var(--issBrand);
-    border-left: 1px solid var(--issBrand);
-  }
-  .iss__formButton:hover, .iss__regButton:hover {
-    color: var(--issBrand);
-    background-color: white;
-  }
+@media (hover: hover) {
+    .iss__formContainer a:hover {
+        color: var(--issBrand) !important;
+    }
+    .iss__formButton:hover {
+        color: var(--issBrand);
+        background-color: white;
+    }
 }
 @media (max-width: 375px) {
-  .iss__form {
-    margin-bottom: 40px;
-  }
+    .iss__form {
+        margin-bottom: 40px;
+    }
 }

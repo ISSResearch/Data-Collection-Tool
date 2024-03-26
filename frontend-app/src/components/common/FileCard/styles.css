@@ -1,41 +1,42 @@
 .iss__fileCard {
-  width: 100%;
-  display: flex;
-  cursor: pointer;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid var(--issBrand);
-  color: var(--issBrand);
-  transition: 0.3s ease;
+    width: 100%;
+    border-radius: 4px;
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid var(--issBrand);
+    color: var(--issBrand);
+    transition: 0.3s ease;
 }
-.iss__fileCard>h3 {
-  word-break: break-all;
+.iss__fileCard > h3 {
+    word-break: break-all;
 }
 .card--accepted {
-  background-color: rgb(153, 255, 98, 0.2);
-  border: 1px solid var(--issGreen);
-  color: var(--issGreen);
+    background-color: rgb(153, 255, 98, 0.2);
+    border: 1px solid var(--issGreen);
+    color: var(--issGreen);
 }
 .card--rejected {
-  background-color: rgba(255, 98, 98, 0.2);
-  border: 1px solid var(--issRed);
-  color: var(--issRed);
+    background-color: rgba(255, 98, 98, 0.2);
+    border: 1px solid var(--issRed);
+    color: var(--issRed);
 }
 .card--active {
-  filter: none !important;
-  cursor: default;
-  background-color: rgb(98, 171, 255, 0.2);
+    filter: none !important;
+    cursor: default;
+    background-color: rgb(98, 171, 255, 0.2);
 }
 .iss__fileCard p {
-  margin: 6px 0 12px;
+    margin: 6px 0 12px;
 }
 .iss__fileCard time {
-  font-size: 8px;
-  place-self: flex-end;
+    font-size: 8px;
+    place-self: flex-end;
 }
-@media (hover:hover) {
-  .iss__fileCard:hover {
-    filter: sepia(2);
-  }
+@media (hover: hover) {
+    .iss__fileCard:hover {
+        filter: sepia(2);
+    }
 }

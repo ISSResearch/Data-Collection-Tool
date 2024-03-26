@@ -30,6 +30,7 @@
     background-color: white;
     position: relative;
     height: fit-content;
+    border-radius: 4px;
 }
 .iss__attributesForm__checkbox {
     display: flex;
@@ -51,8 +52,10 @@
     border: none;
     padding: 6px 8px;
     outline: none;
+    border-radius: 4px;
 }
 .iss__attributesForm__button {
+    border-radius: 4px;
     border: none;
     position: relative;
     background: none;
