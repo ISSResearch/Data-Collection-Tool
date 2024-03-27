@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { ReactElement } from "react";
 import Load from "../../ui/Load";
 import './styles.css';
@@ -9,10 +8,9 @@ import './styles.css';
 * @param {Function} props.callback
 * @param {object[]} props.fields
 * @param {boolean} props.loading
-* @param {object} props.link
 * @returns {ReactElement}
 */
-export default function Form({ errors, callback, fields, loading, link }) {
+export default function Form({ errors, callback, fields, loading }) {
   return (
     <div className='iss__formContainer'>
       {
@@ -41,7 +39,6 @@ export default function Form({ errors, callback, fields, loading, link }) {
             : <button className='iss__formButton'>submit</button>
         }
       </form>
-      { link && <Link className="iss__regButton" to={link.to}>{link.text}</Link> }
     </div>
   );
 }

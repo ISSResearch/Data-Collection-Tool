@@ -1,7 +1,8 @@
-import { ReactElement, useEffect, useState, useContext } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../config/api';
-import { AlertContext } from "../../../context/Alert";
+import { addAlert } from '../../../slices/alerts';
+import { useDispatch } from "react-redux";
 import './styles.css';
 
 /**
@@ -32,7 +33,7 @@ export default function AttributeInput({
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function proceedOriginalAttributeDelete(path, id) {
@@ -52,7 +53,11 @@ export default function AttributeInput({
     }
     catch ({ message, response }) {
       var authFailed = response.status === 401;
-      addAlert('Current or child Attributes are set for Files.', "error", authFailed);
+      dispatch(addAlert({
+        message: 'Current or child Attributes are set for Files.',
+        type: "error",
+        noSession: authFailed
+      }));
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
     }

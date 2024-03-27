@@ -1,8 +1,9 @@
 import { fireEvent, act, render, renderHook, screen } from '@testing-library/react';
 import AttributeInput from '.';
-import { useAttributeManager, useAlerts } from '../../../hooks';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
+import { useAttributeManager, } from '../../../hooks';
 import { MemoryRouter } from 'react-router-dom';
-import { AlertContext } from '../../../context/Alert';
 import { prepared_attributes } from '../../../config/mock_data';
 import { api } from '../../../config/api';
 
@@ -14,26 +15,27 @@ afterEach(() => {
 
 test("attribute inout basic test", () => {
   const { result: attributes } = renderHook(() => useAttributeManager());
-  const { result: alerts } = renderHook(() => useAlerts());
 
   act(() => attributes.current.formHook.addForm());
   const [form] = Object.keys(attributes.current.formHook.forms);
 
-  const component = () => (<MemoryRouter>
-    <AlertContext.Provider value={ alerts }>
-      <AttributeInput
-        formId={form}
-        attributes={attributes.current.attributeHook.attributes[form]}
-        depth={attributes.current.levelHook.levels[form].length}
-        delAttribute={attributes.current.attributeHook.delAttribute}
-        addAttribute={attributes.current.attributeHook.addAttribute}
-        handleChange={attributes.current.attributeHook.handleChange}
-        setDeletedOriginAttributes={attributes.current.attributeHook.setDeletedOriginAttributes}
-        moveUp={attributes.current.attributeHook.moveUp}
-        moveDown={attributes.current.attributeHook.moveDown}
-      />
-      </AlertContext.Provider>
-  </MemoryRouter>);
+  const component = () => (
+    <Provider store={createStore()}>
+      <MemoryRouter>
+        <AttributeInput
+          formId={form}
+          attributes={attributes.current.attributeHook.attributes[form]}
+          depth={attributes.current.levelHook.levels[form].length}
+          delAttribute={attributes.current.attributeHook.delAttribute}
+          addAttribute={attributes.current.attributeHook.addAttribute}
+          handleChange={attributes.current.attributeHook.handleChange}
+          setDeletedOriginAttributes={attributes.current.attributeHook.setDeletedOriginAttributes}
+          moveUp={attributes.current.attributeHook.moveUp}
+          moveDown={attributes.current.attributeHook.moveDown}
+        />
+    </MemoryRouter>
+  </Provider>
+  );
 
   const { rerender } = render(component());
 
@@ -79,7 +81,6 @@ test("attribute inout basic test", () => {
 
 test("attribute input component preset test", async () => {
   const { result: hook } = renderHook(() => useAttributeManager());
-  const { result: alerts } = renderHook(() => useAlerts());
 
   act(() => hook.current.formHook.boundAttributes(prepared_attributes.slice(0, 1)));
   const [firstForm] = Object.keys(hook.current.formHook.forms);
@@ -96,21 +97,23 @@ test("attribute input component preset test", async () => {
     return screen.queryAllByPlaceholderText("Attribute name")
       .filter((input) => input.parentNode.parentNode.className === "iss__attributeForm");
   };
-  const component = () => (<MemoryRouter>
-    <AlertContext.Provider value={ alerts }>
-      <AttributeInput
-        formId={firstForm}
-        attributes={hook.current.attributeHook.attributes[firstForm]}
-        depth={hook.current.levelHook.levels[firstForm].length}
-        delAttribute={hook.current.attributeHook.delAttribute}
-        addAttribute={hook.current.attributeHook.addAttribute}
-        handleChange={hook.current.attributeHook.handleChange}
-        setDeletedOriginAttributes={hook.current.attributeHook.setDeletedOriginAttributes}
-        moveUp={hook.current.attributeHook.moveUp}
-        moveDown={hook.current.attributeHook.moveDown}
-      />
-    </AlertContext.Provider>
-  </MemoryRouter>);
+  const component = () => (
+    <Provider store={createStore()}>
+      <MemoryRouter>
+        <AttributeInput
+          formId={firstForm}
+          attributes={hook.current.attributeHook.attributes[firstForm]}
+          depth={hook.current.levelHook.levels[firstForm].length}
+          delAttribute={hook.current.attributeHook.delAttribute}
+          addAttribute={hook.current.attributeHook.addAttribute}
+          handleChange={hook.current.attributeHook.handleChange}
+          setDeletedOriginAttributes={hook.current.attributeHook.setDeletedOriginAttributes}
+          moveUp={hook.current.attributeHook.moveUp}
+          moveDown={hook.current.attributeHook.moveDown}
+        />
+      </MemoryRouter>
+  </Provider>
+  );
 
   const { rerender } = render(component());
   expect(screen.queryAllByText('confirm')).toHaveLength(0);

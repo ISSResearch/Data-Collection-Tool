@@ -1,8 +1,9 @@
-import { useEffect, useContext, useState, ReactElement } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwiper, useFiles } from '../../hooks';
 import { api } from '../../config/api';
-import { AlertContext } from "../../context/Alert";
+import { addAlert } from '../../slices/alerts';
+import { useDispatch } from "react-redux";
 import ValidationFilterGroup from '../forms/ValidationFilterGroup';
 import FileSelector from '../common/FileSelector';
 import FileSwiper from '../common/FileSwiper';
@@ -33,7 +34,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState({});
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const fileManager = useFiles();
   const sliderManager = useSwiper();
   const navigate = useNavigate();
@@ -153,7 +154,11 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       .catch(({ message, response }) => {
         var authFailed = response && (response.status === 401 || response.status === 403);
 
-        addAlert("Getting project files error: " + message, "error", authFailed);
+        dispatch(addAlert({
+          message: "Getting project files error: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
         if (authFailed) navigate("/login");
       });

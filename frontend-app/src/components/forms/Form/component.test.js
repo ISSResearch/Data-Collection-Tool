@@ -6,17 +6,15 @@ const fieldSet = [
   {label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true},
   {label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true},
 ];
-const bottomLink = { to: '/registration', text: 'Or Registry' };
 
 test("form component test", () => {
   render(
     <MemoryRouter>
-      <Form fields={fieldSet} link={bottomLink} />
+      <Form fields={fieldSet} />
     </MemoryRouter>
   );
 
   expect(screen.queryByText(/Request failure:/)).toBeNull();
-  expect(screen.queryByText(bottomLink.text)).not.toBeNull();
   screen.getByText('submit');
 
   fieldSet.forEach(({ label, placeholder, type, required }) => {
@@ -31,7 +29,7 @@ test("form component test", () => {
 test("form component test fail test", () => {
   render(
     <MemoryRouter>
-      <Form loading errors={'error message'} fields={fieldSet} link={bottomLink}/>
+      <Form loading errors={'error message'} fields={fieldSet} />
     </MemoryRouter>
   );
 

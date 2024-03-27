@@ -1,41 +1,42 @@
 .iss__header {
-  padding: 12px 20px;
-  display: flex;
-  justify-content: space-between;
-  place-items: center;
-  position: sticky;
-  top: 0px;
-  background-color: white;
-  z-index: 10;
-  box-shadow: 0px 0px 4px 0px var(--issBrand);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+    padding: 12px 20px;
+    gap: 20px;
+    display: flex;
+    place-items: center;
+    position: sticky;
+    top: 0px;
+    background-color: white;
+    z-index: 10;
+    box-shadow: 0px 0px 4px 0px var(--issBrand);
 }
 .iss__header__user {
-  display: flex;
-  gap: 20px;
-  place-items: center;
-  color: var(--issBrand);
+    display: flex;
+    margin-left: auto;
+    gap: 12px;
+    place-items: center;
+    color: var(--issBrand);
 }
 .iss__header__logoutButton {
-  background: none;
-  border: 1px solid var(--issBrand);
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.3s ease, background-color 0.3s ease;
+    background: none;
+    border: 1px solid var(--issBrand);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
 }
-@media (hover:hover) {
-  .iss__header__logoutButton:hover {
-    background-color: var(--issBrand);
-    color: white;
-  }
+@media (hover: hover) {
+    .iss__header__logoutButton:hover {
+        background-color: var(--issBrand);
+        color: white;
+    }
 }
 @media (max-width: 575px) {
-  .iss__header {
-    padding: 10px;
-  }
-  .iss__brand {
-    gap: 4px;
-  }
-
+    .iss__header {
+        padding: 10px;
+    }
+    .iss__brand {
+        gap: 4px;
+    }
 }

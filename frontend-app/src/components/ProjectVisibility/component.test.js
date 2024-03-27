@@ -1,7 +1,8 @@
 import { fireEvent, act, render, screen } from "@testing-library/react";
 import ProjectVisibility from ".";
+import { Provider } from "react-redux";
+import createStore from "../../store";
 import { MemoryRouter } from 'react-router-dom';
-import { AlertContext } from '../../context/Alert';
 import { api } from "../../config/api";
 
 jest.mock('../../config/api');
@@ -20,11 +21,11 @@ test("project visibility test", async () => {
     edit: false,
   };
   const component = () => (
-    <MemoryRouter>
-      <AlertContext.Provider value={ { addAlert: (e) => e} }>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <ProjectVisibility pathID={1} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
   const init = async () => {
     var rerender, container;

@@ -1,5 +1,5 @@
 .zoomWrap {
-    border: 1px solid var(--issBrand);
+    border-radius: 4px;
     max-width: 100%;
     height: 100%;
     margin: 0 auto;

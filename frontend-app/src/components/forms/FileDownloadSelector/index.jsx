@@ -1,7 +1,8 @@
-import { useEffect, useState, useContext, ReactElement } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import { useNavigate } from 'react-router-dom';
 import { api } from "../../../config/api";
-import { AlertContext } from "../../../context/Alert";
+import { useDispatch } from "react-redux";
+import { addAlert } from "../../../slices/alerts";
 import Load from "../../ui/Load";
 import './styles.css';
 
@@ -21,7 +22,7 @@ export default function FileDownloadSelector({
 }) {
   const { files, setFiles } = fileManager;
   const [loading, setLoading] = useState(false);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   function selectFile(index, { checked }) {
@@ -35,7 +36,7 @@ export default function FileDownloadSelector({
   useEffect(() => {
     setLoading(true);
 
-    var params = {};
+    var params = { per_page: 100 };
 
     if (newFiles) params.downloaded = false;
     if (option.value !== 'all') params.status = option.value;
@@ -45,7 +46,7 @@ export default function FileDownloadSelector({
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
-        setFiles(data);
+        setFiles(data.data);
         setLoading(false);
       })
       .catch(({ message, response }) => {
@@ -53,7 +54,11 @@ export default function FileDownloadSelector({
           response.status === 401 || response.status === 403
         );
 
-        addAlert("Getting files error: " + message, "error", authFailed);
+        dispatch(addAlert({
+          message: "Getting files error: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
         if (authFailed) navigate("/login");
       });

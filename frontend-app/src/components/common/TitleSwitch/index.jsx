@@ -12,7 +12,10 @@ import './styles.css';
 * @returns {ReactElement}
 */
 export default function TitleSwitch({ title, titleLink, links, currentRoute, parent }) {
-  var createLink = (link) => '/' + [parent, link].join('/');
+  var createLink = (link) =>  {
+    var set = [parent, link];
+    return '/' + set.filter((l) => l).join('/');
+  };
 
   return (
     <div className='iss__titleSwitch'>

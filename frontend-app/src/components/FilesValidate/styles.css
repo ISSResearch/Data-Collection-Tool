@@ -1,10 +1,12 @@
 .iss__validation__load {
-  width: 100%;
-  display: flex;
-  place-content: center;
+    width: 100%;
+    display: flex;
+    place-content: center;
 }
 .iss__validation {
-  width: 100%;
-  display: flex;
-  gap: 20px;
+    min-height: 520px;
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    gap: 12px;
 }

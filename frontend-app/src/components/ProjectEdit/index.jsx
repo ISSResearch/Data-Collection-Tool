@@ -1,8 +1,9 @@
-import { useState, useContext, useRef, ReactElement } from 'react';
+import { useState, useRef, ReactElement } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAttributeManager } from '../../hooks';
 import { api } from '../../config/api';
-import { AlertContext } from "../../context/Alert";
+import { addAlert } from '../../slices/alerts';
+import { useDispatch } from "react-redux";
 import Load from '../ui/Load';
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import './styles.css';
@@ -24,9 +25,9 @@ export default function ProjectEdit({
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
   const [preview, setPreview] = useState(projectDescription);
-  const { addAlert } = useContext(AlertContext);
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const deleteInput = useRef(null);
 
@@ -71,7 +72,8 @@ export default function ProjectEdit({
     event.preventDefault();
     if (loading) return;
 
-    if (!validateNewAttributes()) return addAlert('Some attribute forms are missed.', "error");
+    if (!validateNewAttributes())
+      return dispatch(addAlert({ message: 'Some attribute forms are missed.', type: "error" }));
 
     setLoading(true);
 
@@ -94,14 +96,18 @@ export default function ProjectEdit({
         }
       );
 
-      addAlert(`Project ${projectName} changed`, "success");
+      dispatch(addAlert({ message: `Project ${projectName} changed`, type: "success" }));
 
       window.location.reload();
     }
     catch ({ message, response }) {
       var authFailed = response.status === 401 || response.status === 403;
 
-      addAlert("Updating project error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Updating project error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
 
       if (authFailed) navigate("/login");
 
@@ -111,7 +117,10 @@ export default function ProjectEdit({
 
   async function deleteProject() {
       if (deleteInput.current.value !== projectName) {
-      addAlert("Entered name differs from the actual Project name.", "error");
+      dispatch(addAlert({
+        message: "Entered name differs from the actual Project name.",
+        type: "error"
+      }));
       setDeleteAccept(false);
       return;
     }
@@ -127,13 +136,20 @@ export default function ProjectEdit({
           }
         }
       );
-      addAlert(`Project ${projectName} deleted`, "success");
+      dispatch(addAlert({
+        message: `Project ${projectName} deleted`,
+        type: "success"
+      }));
       navigate('/');
     }
     catch({ message, response }) {
       var authFailed = response.status === 401 || response.status === 403;
 
-      addAlert("Deleting project error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Deleting project error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
 
       if (authFailed) navigate("/login");
 

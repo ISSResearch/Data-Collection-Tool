@@ -1,8 +1,9 @@
-import { useState, useContext, ReactElement } from "react";
+import { useState, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
 import { useFiles } from "../../hooks";
-import { AlertContext } from "../../context/Alert";
+import { useDispatch } from "react-redux";
+import { addAlert } from "../../slices/alerts";
 import Load from "../ui/Load";
 import FileDownloadSelector from "../forms/FileDownloadSelector";
 import Arrow from "../ui/Arrow";
@@ -29,7 +30,7 @@ export default function FilesDownload({ pathID }) {
   const [manual, setManual] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [task, setTask] = useState("");
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const fileManager = useFiles();
   const navigate = useNavigate();
 
@@ -91,7 +92,10 @@ export default function FilesDownload({ pathID }) {
       );
 
       if (data?.task_id) {
-        addAlert(`Download task ${data.task_id} created`, "success");
+        dispatch(addAlert({
+          message: `Download task ${data.task_id} created`,
+          type: "success"
+        }));
         setTask(data.task_id);
       }
     }
@@ -100,7 +104,11 @@ export default function FilesDownload({ pathID }) {
         response.status === 401 || response.status === 403
       );
 
-      addAlert("Getting files data error:" + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Getting files data error:" + message,
+        type: "error",
+        noSession: authFailed
+      }));
 
       if (authFailed) navigate("/login");
     }

@@ -2,9 +2,10 @@ import { fireEvent, render, act, renderHook } from '@testing-library/react';
 import { useRef } from 'react';
 import { fileApi } from '../../../config/api';
 import FileMedia from ".";
-import { AlertContext } from '../../../context/Alert';
 import { MemoryRouter } from 'react-router-dom';
 import { prepared_files } from "../../../config/mock_data";
+import createStore from "../../../store";
+import { Provider } from 'react-redux';
 
 jest.mock('../../../config/api');
 afterEach(() => {
@@ -15,11 +16,11 @@ test("file media ui component test", async() => {
   const { result: rf } = renderHook(() => useRef(null));
 
   const component = (slide) => (
-    <MemoryRouter>
-      <AlertContext.Provider value={ {alerts: []} }>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FileMedia ref={rf.current} files={prepared_files} slide={slide || 0} pathID={1} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   );
 
   fileApi.get.mockResolvedValue({data: "key"});

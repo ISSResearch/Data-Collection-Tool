@@ -1,8 +1,9 @@
-import { useState, useContext, ReactElement } from 'react';
+import { useState, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../config/api';
 import { useAttributeManager } from '../../hooks';
-import { AlertContext } from "../../context/Alert";
+import { addAlert } from '../../slices/alerts';
+import { useDispatch } from "react-redux";
 import AttributeCreatorForm from '../forms/AttributeCreatorForm';
 import Load from '../ui/Load';
 import './styles.css';
@@ -11,7 +12,7 @@ import './styles.css';
 export default function ProjectCreate() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const attributeManager = useAttributeManager();
   const navigate = useNavigate();
 
@@ -45,13 +46,17 @@ export default function ProjectCreate() {
           }
         }
       );
-      addAlert("Project created", "success");
+      dispatch(addAlert({ message: "Project created", type: "success" }));
       navigate("/projects/");
     }
     catch({ message, response }) {
       var authFailed = response && (response.status === 401 || response.status === 403);
 
-      addAlert("Creating preoject error:" + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Creating preoject error:" + message,
+        type: "error",
+        noSession: authFailed
+      }));
 
       if (authFailed) navigate("/login");
 

@@ -1,6 +1,7 @@
-import { useEffect, useState, useContext, ReactElemment } from 'react';
+import { useEffect, useState, ReactElemment } from 'react';
 import { useAuthModal, useFileUploader } from '../../../hooks';
-import { AlertContext } from '../../../context/Alert';
+import { addAlert } from '../../../slices/alerts';
+import { useDispatch } from "react-redux";
 import Load from '../../ui/Load';
 import Form from '../../forms/Form';
 import './styles.css';
@@ -23,7 +24,7 @@ export default function UploadView({ fileManager, pathID, setUploading }) {
     modalLoading,
     modalErrors
   } = useAuthModal("authModal", runUpload);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
 
   async function runModal() {
     try {
@@ -31,7 +32,11 @@ export default function UploadView({ fileManager, pathID, setUploading }) {
       return true;
     }
     catch({ message, authFailed }) {
-      addAlert("Uploading check error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Uploading check error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
       if (!authFailed) setUploading(false);
     }
   }
@@ -43,7 +48,11 @@ export default function UploadView({ fileManager, pathID, setUploading }) {
 
     try { await proceedUpload(); }
     catch({ message, authFailed }) {
-      addAlert("Uploading file error: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Uploading file error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
       if (authFailed) await runModal();
       else setUploading(false);
     }
@@ -71,35 +80,37 @@ export default function UploadView({ fileManager, pathID, setUploading }) {
           fields={modalFields}
         />
       </dialog>
-      {
-        files.map(({ name, progress, status, error }, index) => (
-          <div key={index} className='iss__uploadProgress__item'>
-            <div
-              className={
-                [
-                  'iss__uploadProgress__completion',
-                  status ? `complete-status-${status}` : ''
-                ].join(' ')
-              }
-            />
-            <span
-              className={
-                [
-                  'iss__uploadProgress__fileName',
-                  status ? `name-status-${status}` : ''
-                ].join(' ')
-              }
-            >{name}</span>
-            <div className='iss__uploadProgress__progressWrap'>
+      <section className="iss__uploadFiles">
+        {
+          files.map(({ name, progress, status, error }, index) => (
+            <div key={index} className='iss__uploadProgress__item'>
               <div
-                style={{ width: `${progress || 0}%` }}
-                className='iss__uploadProgress__progress'
+                className={
+                  [
+                    'iss__uploadProgress__completion',
+                    status ? `complete-status-${status}` : ''
+                  ].join(' ')
+                }
               />
+              <span
+                className={
+                  [
+                    'iss__uploadProgress__fileName',
+                    status ? `name-status-${status}` : ''
+                  ].join(' ')
+                }
+              >{name}</span>
+              <div className='iss__uploadProgress__progressWrap'>
+                <div
+                  style={{ width: `${progress || 0}%` }}
+                  className='iss__uploadProgress__progress'
+                />
+              </div>
+              {error && <p className='iss__uploadProgress__error'>{error}</p>}
             </div>
-            {error && <p className='iss__uploadProgress__error'>{error}</p>}
-          </div>
-        ))
-      }
+          ))
+        }
+      </section>
     </>
   );
 }

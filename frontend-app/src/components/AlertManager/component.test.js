@@ -1,24 +1,28 @@
-import { render, renderHook, act } from '@testing-library/react';
-import { AlertContext } from '../../context/Alert';
+import { render, act } from '@testing-library/react';
+import { Provider, useDispatch } from 'react-redux';
+import { addAlert } from '../../slices/alerts';
+import createStore from "../../store";
 import AlertManager from '.';
-import { useAlerts } from "../../hooks";
 
 test("alert manager component test", () => {
-  const { result: alerts } = renderHook(() => useAlerts());
   const max = 6;
-  const component = () => (
-    <AlertContext.Provider value={alerts.current}>
-      <AlertManager maxOnScreen={max}/>
-    </AlertContext.Provider>
-  );
+  var adder;
+  const component = () => {
+    const Inner = () => {
+      const dispatch = useDispatch();
+      adder = () => dispatch(addAlert({}));
+      return <AlertManager maxOnScreen={max}/>;
+    };
+    return <Provider store={createStore()}><Inner/></Provider>;
+  };
 
-  const { rerender, container } = render(component());
+  const { container } = render(component());
 
   expect(container.querySelectorAll(".alertCard")).toHaveLength(0);
   act(() => {
-    for (var i=0; i < 10; i++) alerts.current.addAlert("", "", true);
+    for (var i=0; i < 10; i++) adder();
   });
 
-  rerender(component());
+  render(component());
   expect(container.querySelectorAll(".alertCard")).toHaveLength(max);
 });

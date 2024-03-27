@@ -1,7 +1,9 @@
 .iss__filesDownload__fileSelector {
     max-width: 100%;
     width: 100%;
-    border: 1px solid var(--issBrand);
+    border: none;
+    border-radius: 4px;
+    background-color: white;
     max-height: 800px;
     overflow-x: scroll;
     display: flex;
@@ -28,19 +30,19 @@
     border-bottom: 1px solid rgb(0, 0, 0, 0.2);
     cursor: pointer;
 }
-.iss__filesDownload__fileSelector__item>input {
+.iss__filesDownload__fileSelector__item > input {
     flex-shrink: 0;
 }
-.iss__filesDownload__fileSelector__item>span:last-of-type {
+.iss__filesDownload__fileSelector__item > span:last-of-type {
     word-break: break-all;
 }
-.file--a>span {
+.file--a > span {
     color: var(--issLightGreen);
 }
-.file--d>span {
+.file--d > span {
     color: var(--issLightRed);
 }
-@media (hover:hover) {
+@media (hover: hover) {
     .file--v:hover {
         background-color: rgb(98, 171, 255, 0.2);
     }
@@ -49,5 +51,5 @@
     }
     .file--d:hover {
         background-color: rgb(255, 98, 98, 0.2);
-}
+    }
 }

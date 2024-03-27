@@ -1,10 +1,12 @@
 import { act, render, screen } from '@testing-library/react';
-import { UserContext } from "../../context/User";
+import createStore from "../../store";
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { AlertContext } from '../../context/Alert';
 import { raw_project } from '../../config/mock_data';
 import { api } from '../../config/api';
 import ProjectPage from '.';
+import { useEffect } from 'react';
+import { setUser } from '../../slices/users';
 
 jest.mock('../../config/api');
 
@@ -18,20 +20,27 @@ afterEach(() => {
 });
 
 test("project page test", async () => {
+  var nav;
   const options = [
     { name: 'upload data', value: 'upload' },
     { name: 'validate data', value: 'validate' },
     { name: 'download data', value: 'download' },
     { name: 'statistics', value: 'stats' },
   ];
-  const component = (admin) =>
-    <UserContext.Provider value={{ user: { is_superuser: admin } }}>
-    <AlertContext.Provider value={{addAlert: () => {}}}>
-      <MemoryRouter initialEntries={['/projects/1']}>
+  const component = (admin) => {
+    const Inner = () => {
+      const dispatch = useDispatch();
+      const _nav = useSelector((s) => s.head.nav);
+      dispatch(setUser({is_superuser: admin}));
+      useEffect(() => {nav=_nav;}, [_nav]);
+      return <MemoryRouter initialEntries={['/projects/1']}>
         <ProjectPage />
-      </MemoryRouter>
-    </AlertContext.Provider>
-    </UserContext.Provider>;
+      </MemoryRouter>;
+    };
+    return <Provider store={createStore()}>
+      <Inner/>
+    </Provider>;
+  };
 
   api.get.mockResolvedValue({ data: raw_project });
 
@@ -43,11 +52,11 @@ test("project page test", async () => {
   expect(screen.getByText(/Description/).innerHTML.split('<br>').slice(1).join("<br>"))
     .toBe(raw_project.description);
 
-  expect(screen.getByRole('navigation').children[0].children).toHaveLength(0);
+  expect(nav).toHaveLength(0);
 
   unmount();
 
   await act(async () => render(component(true)));
 
-  expect(screen.getByRole('navigation').children[0].children).toHaveLength(options.length + 1);
+  expect(nav).toHaveLength(options.length + 1);
 });

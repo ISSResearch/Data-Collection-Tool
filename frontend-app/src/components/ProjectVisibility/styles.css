@@ -1,56 +1,64 @@
 .iss__visibility__load {
-  width: 100%;
-  display: flex;
-  place-content: center;
+    width: 100%;
+    display: flex;
+    place-content: center;
 }
 .iss__visibility__form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  place-items: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
 }
 .iss__visibility__submitButton {
-  grid-area: edit-button;
-  place-self: center;
-  width: fit-content;
-  background: none;
-  border: 1px solid var(--issBrand);
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: background-color 0.3s ease;
+    background-color: white;
+    border-radius: 4px;
+    grid-area: edit-button;
+    place-self: center;
+    width: fit-content;
+    border: 1px solid var(--issBrand);
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: background-color 0.3s ease;
 }
-.iss__visibility__submitButton>span {
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: color 0.3s ease;
+.iss__visibility__submitButton > span {
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.3s ease;
 }
 .iss__visibility__table {
-  border-collapse: collapse;
-  margin-bottom: 40px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
 }
-.iss__visibility__table-row>th, .iss__visibility__table-cell {
-  border: 1px solid rgb(98, 171, 255, 0.7);
-  padding: 4px;
+.iss__visibility__table-row > th,
+.iss__visibility__table-cell {
+    background-color: white;
+    border: 1px solid rgb(98, 171, 255, 0.7);
+    padding: 4px;
 }
 .iss__visibility__table-cell:not(:first-of-type) {
-  padding: 0;
-  height: 20px;
+    padding: 0;
+    height: 20px;
 }
-.iss__visibility__table-cell>input[type="checkbox"] {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;
+.iss__visibility__table-cell > input[type="checkbox"] {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    transition: background-color 0.3s ease;
 }
-@media(hover:hover) {
-  .iss__visibility__submitButton:hover {
-    background-color: var(--issBrand);
-  }
-  .iss__visibility__submitButton:hover>span {
-    color: white;
-  }
-  .iss__visibility__table-body>tr:hover  {
-    background-color: rgb(98, 171, 255, 0.2);
-  }
+@media (hover: hover) {
+    .iss__visibility__submitButton:hover {
+        background-color: var(--issBrand);
+    }
+    .iss__visibility__submitButton:hover > span {
+        color: white;
+    }
+    .iss__visibility__table-body > tr:hover {
+        background-color: rgb(98, 171, 255, 0.2);
+    }
+    .iss__visibility__table-cell > input[type="checkbox"]:hover {
+        background-color: #62abff69;
+    }
 }

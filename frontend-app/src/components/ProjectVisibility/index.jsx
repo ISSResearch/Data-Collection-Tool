@@ -1,9 +1,10 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Fragment, ReactElement } from "react";
 import { useCollectors } from '../../hooks';
 import { api } from "../../config/api";
-import { AlertContext } from "../../context/Alert";
+import { addAlert } from "../../slices/alerts";
+import { useDispatch } from "react-redux";
 import Load from "../ui/Load";
 import './styles.css';
 
@@ -26,7 +27,7 @@ const PERMISSIONS = [
 export default function ProjectVisibility({ pathID }) {
   const [loading, setLoading] = useState({ page: true, submit: false });
   const { collectors, changeCollector, initData, gatherData } = useCollectors();
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function sendForm(event) {
@@ -47,13 +48,17 @@ export default function ProjectVisibility({ pathID }) {
       });
 
       initData(data);
-      addAlert("Visibility for project changed", "success");
+      dispatch(addAlert({ message: "Visibility for project changed", type: "success" }));
       setLoading({ ...loading, submit: false });
     }
     catch({ message, response }) {
       var authFailed = response?.status === 401 || response?.status === 403;
 
-      addAlert("Updating collectors error" + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Updating collectors error" + message,
+        type: "error",
+        noSession: authFailed
+      }));
 
       if (authFailed) navigate("/login");
     }
@@ -70,7 +75,11 @@ export default function ProjectVisibility({ pathID }) {
       .catch(({ message, response }) => {
         var authFailed = response.status === 401 || response.status === 403;
 
-        addAlert("Getting collectors error: " + message, "error", authFailed);
+        dispatch(addAlert({
+          message: "Getting collectors error: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
         if (authFailed) navigate("/login");
       });

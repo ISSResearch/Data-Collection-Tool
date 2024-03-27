@@ -27,7 +27,6 @@
 h1 {
     color: var(--issBrand);
     font-size: 42px;
-    line-height: 0.75;
 }
 
 h3 {
@@ -46,6 +45,7 @@ a {
 }
 
 input[type="checkbox"] {
+    background-color: white;
     appearance: none;
     width: 22px;
     height: 22px;
@@ -87,7 +87,7 @@ input[type="checkbox"]:checked::after {
 .iss__pageContent {
     max-width: var(--maxWidth);
     width: 100%;
-    padding: 40px 20px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
 }

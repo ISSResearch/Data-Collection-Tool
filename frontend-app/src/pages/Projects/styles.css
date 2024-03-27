@@ -1,12 +1,12 @@
 .iss__projects__load {
-  width: 100%;
-  display: flex;
-  place-content: center;
+    width: 100%;
+    display: flex;
+    place-content: center;
 }
 .iss__projects {
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  border-radius: 12px;
-  padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 4px;
+    padding: 40px 20px;
 }

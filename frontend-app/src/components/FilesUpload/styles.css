@@ -1,21 +1,13 @@
 .iss__filesUpload {
+    flex-grow: 1;
     width: 100%;
     display: flex;
-    gap: 20px;
+    gap: 12px;
     position: relative;
 }
 
-.iss__filesUpload__form__border {
-    background-color: var(--issBrand);
-    margin: -20px 0;
-    width: 1px;
-}
 @media (max-width: 768px) {
     .iss__filesUpload {
         flex-direction: column;
-    }
-
-    .iss__filesUpload__form__border {
-        display: none;
     }
 }

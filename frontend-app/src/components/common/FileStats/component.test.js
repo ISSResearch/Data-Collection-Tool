@@ -1,7 +1,8 @@
 import { act, render, screen, fireEvent } from '@testing-library/react';
 import { raw_attribute_stats } from '../../../config/mock_data';
 import FilesStats from '.';
-import { AlertContext } from '../../../context/Alert';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
 import { MemoryRouter } from "react-router-dom";
 import { api } from '../../../config/api';
 
@@ -14,11 +15,11 @@ test("files stats component test", async () => {
   api.get.mockResolvedValue({ data: raw_attribute_stats });
 
   await act(async () => await render(
-    <MemoryRouter>
-      <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
+      <MemoryRouter>
         <FilesStats pathID={1} />
-      </AlertContext.Provider>
-    </MemoryRouter>
+      </MemoryRouter>
+    </Provider>
   ));
 
   screen.getByRole('table');

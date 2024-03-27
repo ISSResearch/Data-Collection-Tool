@@ -1,8 +1,9 @@
-import { useEffect, useContext, useRef, ReactElement } from 'react';
+import { useEffect, useRef, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFile } from '../../../hooks';
 import { api } from '../../../config/api';
-import { AlertContext } from "../../../context/Alert";
+import { addAlert } from '../../../slices/alerts';
+import { useDispatch } from "react-redux";
 import SelectorGroup from '../../forms/SelectorGroup';
 import './styles.css';
 
@@ -17,7 +18,7 @@ export default function FileModification({ fileManager, sliderManager, attribute
   const { files, setFiles } = fileManager;
   const { slide, slideInc } = sliderManager;
   const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const acceptRef = useRef(null);
   const declineRef = useRef(null);
@@ -66,7 +67,11 @@ export default function FileModification({ fileManager, sliderManager, attribute
       var authFailed = response && (
         response.status === 401 || response.status === 403
       );
-      addAlert("Updating file failed: " + message, "error", authFailed);
+      dispatch(addAlert({
+        message: "Updating file failed: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
       if (authFailed) navigate("/login");
     }
   }

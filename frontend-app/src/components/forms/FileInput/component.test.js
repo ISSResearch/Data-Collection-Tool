@@ -1,7 +1,8 @@
 import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import FileInput from '.';
-import { AlertContext } from '../../../context/Alert';
 import { useFileInput } from '../../../hooks';
+import createStore from "../../../store";
+import { Provider } from 'react-redux';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -12,9 +13,9 @@ test("file input component test", () => {
   global.URL.createObjectURL = () => "";
 
   const component = () => (
-    <AlertContext.Provider value={{addAlert: () => {}}}>
+    <Provider store={createStore()}>
       <FileInput fileManager={fileManager.current} />
-    </AlertContext.Provider>
+    </Provider>
   );
   const { rerender, container } = render(component());
 
@@ -25,7 +26,7 @@ test("file input component test", () => {
 
   expect(Object.entries(fileManager.current.files)).toHaveLength(0);
   fireEvent.change(
-    screen.getByLabelText('UPLOAD'),
+    screen.getByLabelText('Add Media'),
     { target: { files: upload_files } }
   );
   expect(Object.entries(fileManager.current.files)).toHaveLength(Object.keys(upload_files).length);

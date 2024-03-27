@@ -11,6 +11,7 @@
 }
 
 .iss__attributecreator__addButton {
+    border-radius: 4px;
     position: relative;
     width: fit-content;
     background: none;

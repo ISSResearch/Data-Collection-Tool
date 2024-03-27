@@ -1,8 +1,10 @@
-import { useContext, useState, ReactElement } from 'react';
+import { useState, ReactElement, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useDispatch } from "react-redux";
+import { addAlert } from '../../slices/alerts';
+import { setUser } from '../../slices/users';
 import { api } from '../../config/api';
+import { setLink, setNav, setTitle, setParent, setCurrent } from '../../slices/heads';
 import Form from '../../components/forms/Form';
 import './styles.css';
 
@@ -21,12 +23,17 @@ const FIELD_SET = [
   { label: 'Confirm password:', type: 'password', name: 'password2', placeholder: 'confirm password', required: true },
 ];
 
+/** @type {{name: string, link: string }[]} */
+const ROUTE_LINKS = [
+  { name: "login", link: "login" },
+  { name: "registration", link: "registration" },
+];
+
 /** @returns {ReactElement} */
 export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { initUser } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function sendForm(event) {
@@ -51,27 +58,33 @@ export default function Registration() {
       var { accessToken, user } = data;
       localStorage.setItem("dtcAccess", accessToken);
 
-      initUser(user);
-      addAlert(`User ${user.namename} created`, "success");
+      dispatch(setUser(user));
+      dispatch(addAlert({ message: `User ${user.namename} created`, type: "success" }));
       navigate('/');
     }
     catch ({ message }) {
-      addAlert("User registration failed" + message, "error");
+      dispatch(addAlert({ message: "User registration failed" + message, type: "error" }));
       setErrors(message);
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);
     }
   }
 
+  useEffect(() => {
+    dispatch(setTitle("Registration"));
+    dispatch(setNav(ROUTE_LINKS));
+    dispatch(setParent());
+    dispatch(setCurrent("registration"));
+    dispatch(setLink());
+  }, []);
+
   return (
     <div className="iss__registrationPage">
-      <h1>Registration Page</h1>
       <Form
         loading={loading}
         errors={errors}
         callback={sendForm}
         fields={FIELD_SET}
-        link={{ to: '/login', text: 'Or Login' }}
       />
     </div>
   );

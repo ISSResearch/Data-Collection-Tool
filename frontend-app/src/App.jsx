@@ -1,8 +1,8 @@
-import { UserContext } from "./context/User";
-import { AlertContext } from "./context/Alert";
 import { ReactElement, useState, useEffect } from "react";
-import { useUser, useAlerts } from "./hooks";
 import { api } from "./config/api";
+import { setUser } from "./slices/users";
+import { addAlert } from "./slices/alerts";
+import { useDispatch } from "react-redux";
 import AppRouter from "./components/AppRouter";
 import Header from "./components/Header";
 import StatusLoad from "./components/ui/StatusLoad";
@@ -11,8 +11,7 @@ import './app.css';
 
 /** @returns {ReactElement} */
 export default function App() {
-  const { user, initUser } = useUser();
-  const alertManager = useAlerts();
+  const dispatch = useDispatch();
   const [statusData, setStatusData] = useState({ done: false });
 
   useEffect(() => {
@@ -25,15 +24,19 @@ export default function App() {
       .then(({ data }) => {
         if (data.isAuth) {
           setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
-          initUser(data.user);
-          alertManager.addAlert("Session checked", "success");
+          dispatch(setUser(data.user));
+          dispatch(addAlert({ message: "Session checked", type: "success" }));
         }
         setStatusData({ ...statusData, done: true });
       })
       .catch(({ message, response }) => {
         var authFailed = response?.status === 403 || response?.status === 401;
-
-        alertManager.addAlert("User check failed: " + message, "error", authFailed);
+        var payload = {
+          messsage: "User check failed: " + message,
+          type: "error",
+          noSession: authFailed
+        };
+        dispatch(addAlert(payload));
 
         if (authFailed) {
           localStorage.removeItem("dtcAccess");
@@ -49,8 +52,7 @@ export default function App() {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, initUser }}>
-    <AlertContext.Provider value={ alertManager }>
+    <>
       <Header />
       {
         !statusData.done
@@ -64,7 +66,6 @@ export default function App() {
           : <AppRouter />
       }
       <AlertManager maxOnScreen={5} />
-    </AlertContext.Provider>
-    </UserContext.Provider>
+    </>
   );
 }

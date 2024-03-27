@@ -1,7 +1,9 @@
-import { useContext, useEffect, useState, ReactElement } from 'react';
+import { useEffect, useState, ReactElement } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UserContext } from '../../context/User';
-import { AlertContext } from "../../context/Alert";
+import { useDispatch } from "react-redux";
+import { setUser } from '../../slices/users';
+import { addAlert } from '../../slices/alerts';
+import { setLink, setNav, setTitle, setParent, setCurrent } from '../../slices/heads';
 import { api } from '../../config/api';
 import Form from '../../components/forms/Form';
 import './styles.css';
@@ -12,19 +14,25 @@ import './styles.css';
 * type: string,
 * name: string,
 * placeholder: string
+* required: boolean
 * }[]}
 */
 const FIELD_SET = [
-  { label: 'Enter username:', type: 'text', name: 'username', placeholder: 'username', required: true },
-  { label: 'Enter password:', type: 'password', name: 'password', placeholder: 'password', required: true },
+  { label: 'Username:', type: 'text', name: 'username', placeholder: 'username', required: true },
+  { label: 'Password:', type: 'password', name: 'password', placeholder: 'password', required: true },
+];
+
+/** @type {{name: string, link: string }[]} */
+const ROUTE_LINKS = [
+  { name: "login", link: "login" },
+  { name: "registration", link: "registration" },
 ];
 
 /** @returns {ReactElement} */
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
-  const { initUser } = useContext(UserContext);
-  const { addAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,13 +53,13 @@ export default function Login() {
       var { accessToken } = data;
       localStorage.setItem("dtcAccess", accessToken);
 
-      initUser(data.user);
-      addAlert("User logged", "success");
+      dispatch(setUser(data.user));
+      dispatch(addAlert({ message: "User logged", type: "success" }));
 
       if (location.pathname === '/login') navigate('/');
     }
     catch ({ message }) {
-      addAlert("User login failed: " + message, "error");
+      dispatch(addAlert({ message: "User login failed: " + message, type: "error" }));
       setErrors(message);
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);
@@ -60,18 +68,21 @@ export default function Login() {
 
   useEffect(() => {
     localStorage.removeItem("dtcAccess");
-    initUser(null);
+    dispatch(setUser(null));
+    dispatch(setTitle("Login"));
+    dispatch(setNav(ROUTE_LINKS));
+    dispatch(setParent());
+    dispatch(setLink());
+    dispatch(setCurrent("login"));
   }, []);
 
   return (
     <div className="iss__loginPage">
-      <h1>Login Page</h1>
       <Form
         callback={sendForm}
         loading={loading}
         errors={errors}
         fields={FIELD_SET}
-        link={{ to: '/registration', text: 'Or Registry' }}
       />
     </div>
   );

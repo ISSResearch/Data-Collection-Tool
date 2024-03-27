@@ -1,7 +1,8 @@
 import { screen, render, renderHook, act } from '@testing-library/react';
-import UploadingView from '.';
-import { AlertContext } from '../../../context/Alert';
 import { useFileInput, useFileUploader } from '../../../hooks';
+import { Provider } from 'react-redux';
+import createStore from "../../../store";
+import UploadingView from '.';
 
 jest.mock('../../../hooks/fileUploader');
 afterEach(() => {
@@ -10,9 +11,10 @@ afterEach(() => {
 
 test("uploading view component test", () => {
   const { result: hookItem } = renderHook(() => useFileInput());
-  const component = () => <AlertContext.Provider value={{addAlert: () => {}}}>
+  const component = () => <Provider store={createStore()}>
     <UploadingView fileManager={hookItem.current} />
-  </AlertContext.Provider>;
+  </Provider>;
+
 
   global.URL.createObjectURL = () => {};
   act(() => {

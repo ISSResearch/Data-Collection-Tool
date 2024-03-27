@@ -11,10 +11,17 @@
 .iss__uploadProgress__modal::backdrop {
     background: #d8eaffb5;
 }
+.iss__uploadFiles {
+    background-color: white;
+    border-radius: 4px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 .iss__uploadProgress__item {
     display: flex;
     gap: 20px;
-    margin-bottom: 12px;
 }
 .complete-status-f {
     background-color: var(--issLightRed);
@@ -30,6 +37,7 @@
     overflow: hidden;
 }
 .iss__uploadProgress__progressWrap {
+    border-radius: 4px;
     width: 200px;
     height: 20px;
     border: 1px solid var(--issBrand);
