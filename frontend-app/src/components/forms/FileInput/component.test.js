@@ -26,7 +26,7 @@ test("file input component test", () => {
 
   expect(Object.entries(fileManager.current.files)).toHaveLength(0);
   fireEvent.change(
-    screen.getByLabelText('UPLOAD'),
+    screen.getByLabelText('Add Media'),
     { target: { files: upload_files } }
   );
   expect(Object.entries(fileManager.current.files)).toHaveLength(Object.keys(upload_files).length);

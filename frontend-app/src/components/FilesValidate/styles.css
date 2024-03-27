@@ -4,6 +4,7 @@
     place-content: center;
 }
 .iss__validation {
+    min-height: 520px;
     flex-grow: 1;
     width: 100%;
     display: flex;

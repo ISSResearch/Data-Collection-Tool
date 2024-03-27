@@ -17,6 +17,7 @@
 }
 
 .iss__filesDownload__form > input {
+    border-radius: 4px;
     border: 1px solid var(--issBrand);
     padding: 4px 8px;
     outline: none;
@@ -43,6 +44,7 @@
 }
 
 .iss__filesDownload__selector {
+    border-radius: 4px;
     border: 1px solid var(--issBrand);
     position: relative;
     place-self: center;
@@ -50,6 +52,8 @@
 }
 
 .iss__filesDownload__selected {
+    background-color: white;
+    border-radius: 4px;
     width: 100%;
     height: 100%;
     padding: 4px 8px;
@@ -69,14 +73,13 @@
     max-height: 0;
     position: absolute;
     width: 100%;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
     left: 0;
     bottom: 0;
     transform: translateY(100%);
     background-color: white;
     border: 1px solid var(--issBrand);
-    box-shadow: 1px 1px 2px var(--issBrand);
     z-index: 1;
 }
 
@@ -108,21 +111,21 @@
 }
 
 .iss__filesDownload__button {
+    border-radius: 4px;
+    background-color: white;
     max-width: 120px;
     width: 100%;
-    background: none;
     border: 1px solid var(--issBrand);
-    color: var(--issBrand);
     cursor: pointer;
     padding: 4px 8px;
     text-decoration: none;
     display: flex;
     place-content: center;
-    transition:
-        color 0.3s ease,
-        background-color 0.3s ease;
+    transition: background-color 0.3s ease;
 }
-
+.iss__filesDownload__button > span {
+    transition: color 0.3s ease;
+}
 .block--button {
     pointer-events: none;
 }
@@ -144,6 +147,8 @@
 @media (hover: hover) {
     .iss__filesDownload__button:hover {
         background-color: var(--issBrand);
+    }
+    .iss__filesDownload__button:hover > span {
         color: white;
     }
 

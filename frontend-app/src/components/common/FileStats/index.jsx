@@ -53,6 +53,7 @@ export default function FileStats({ pathID }) {
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
+        console.log(ADAPTER_MAP[choice](data));
         setStats(ADAPTER_MAP[choice](data));
         setLoading(false);
       })
@@ -103,37 +104,33 @@ export default function FileStats({ pathID }) {
       }
     </fieldset>
     {
-      choice && <>
-      {
-        loading
-        ? <div className='iss__stats__load'><Load /></div>
-        : <section className="iss__stats__tableWrap">
-          <table className='iss__stats__table'>
-            <thead className='iss__stats__table-header'>
-              <tr className='iss__stats__table-row-outer'>
-                <th>{choice.at().toUpperCase() + choice.slice(1)}</th>
-                <th className='row-v'>On validation</th>
-                <th className='row-a'>Accepted</th>
-                <th className='row-d'>Declined</th>
-                <th>total</th>
-              </tr>
-            </thead>
-            <tbody className='iss__stats__table-body'>
-              <TableBodySet bodySet={stats} countCallback={countItem} parent />
-            </tbody>
-            <tfoot className='iss__stats__table-footer'>
-              <tr className='iss__stats__table-row-outer'>
-                <td><b>total</b></td>
-                <td>{countStatus('v')}</td>
-                <td>{countStatus('a')}</td>
-                <td>{countStatus('d')}</td>
-                <td>{countTotal()}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </section>
-      }
-      </>
+      loading
+      ? <div className='iss__stats__load'><Load /></div>
+      : <section className="iss__stats__tableWrap">
+        <table className='iss__stats__table'>
+          <thead className='iss__stats__table-header'>
+            <tr className='iss__stats__table-row-outer'>
+              <th>{choice.at().toUpperCase() + choice.slice(1)}</th>
+              <th className='row-v'>On validation</th>
+              <th className='row-a'>Accepted</th>
+              <th className='row-d'>Declined</th>
+              <th>total</th>
+            </tr>
+          </thead>
+          <tbody className='iss__stats__table-body'>
+            <TableBodySet bodySet={stats} countCallback={countItem} parent />
+          </tbody>
+          <tfoot className='iss__stats__table-footer'>
+            <tr className='iss__stats__table-row-outer'>
+              <td><b>total</b></td>
+              <td>{countStatus('v')}</td>
+              <td>{countStatus('a')}</td>
+              <td>{countStatus('d')}</td>
+              <td>{countTotal()}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
     }
     </>
   );

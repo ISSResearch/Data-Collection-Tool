@@ -12,10 +12,10 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-test("download selcetor form component test", async () => {
+test("download selector form component test", async () => {
   const { result: files } = renderHook(() => useFiles());
 
-  api.get.mockResolvedValue({data:raw_files});
+  api.get.mockResolvedValue({data:{data:raw_files}});
   const component = (nw=false, opt="") => (
     <Provider store={createStore()}>
       <MemoryRouter>

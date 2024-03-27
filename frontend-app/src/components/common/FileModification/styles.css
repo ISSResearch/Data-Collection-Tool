@@ -45,6 +45,7 @@
     pointer-events: none;
 }
 .iss__fileInfo__validator {
+    width: 100%;
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;

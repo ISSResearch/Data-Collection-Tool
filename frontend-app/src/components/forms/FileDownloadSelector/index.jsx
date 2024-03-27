@@ -36,7 +36,7 @@ export default function FileDownloadSelector({
   useEffect(() => {
     setLoading(true);
 
-    var params = {};
+    var params = { per_page: 100 };
 
     if (newFiles) params.downloaded = false;
     if (option.value !== 'all') params.status = option.value;
@@ -46,7 +46,7 @@ export default function FileDownloadSelector({
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
-        setFiles(data);
+        setFiles(data.data);
         setLoading(false);
       })
       .catch(({ message, response }) => {
