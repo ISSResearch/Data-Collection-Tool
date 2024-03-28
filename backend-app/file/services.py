@@ -136,7 +136,9 @@ class ViewSetServices:
         else: files = files.distinct()
 
         page: int = int(request_query.get("page", 1))
-        per_page: int = int(request_query.get("per_page", 25))
+        per_page: str | int = request_query.get("per_page")
+        per_page = files.count() if per_page == "max" else int(per_page or 25)
+
         paginator: Paginator = Paginator(files, per_page)
 
         return {

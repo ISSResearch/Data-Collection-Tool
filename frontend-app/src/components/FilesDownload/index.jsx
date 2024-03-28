@@ -6,27 +6,30 @@ import { useDispatch } from "react-redux";
 import { addAlert } from "../../slices/alerts";
 import Load from "../ui/Load";
 import FileDownloadSelector from "../forms/FileDownloadSelector";
-import Arrow from "../ui/Arrow";
+import ValidationFilterGroup from '../forms/ValidationFilterGroup';
 import DownloadView from "../common/DownloadView";
 import "./styles.css";
 
-/** @type {{name: string, value: string, color: string}[]} */
-const OPTIONS = [
-  { name: "all", value: "all", color: "common" },
-  { name: "on validation", value: "v", color: "blue" },
-  { name: "accepted", value: "a", color: "green" },
-  { name: "declined", value: "d", color: "red" },
+/** @type {{name: string, id: string}[]} */
+const CARD_FILTERS = [
+  { name: 'on validation', id: 'v' },
+  { name: 'accepted', id: 'a' },
+  { name: 'declined', id: 'd' },
 ];
-
+/** @type {{name: string, id: string}[]} */
+const TYPE_FILTER = [
+  { name: 'images', id: 'image' },
+  { name: 'videos', id: 'video' },
+];
 /**
 * @param {object} props
 * @param {number} props.pathID
+* @param {object} props.attributes
 * @returns {ReactElement}
 */
-export default function FilesDownload({ pathID }) {
-  const [isOpen, setOpen] = useState(false);
+export default function FilesDownload({ pathID, attributes }) {
+  const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [option, setOption] = useState(OPTIONS[0]);
   const [manual, setManual] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [task, setTask] = useState("");
@@ -34,10 +37,36 @@ export default function FilesDownload({ pathID }) {
   const fileManager = useFiles();
   const navigate = useNavigate();
 
-  const handleSelect = (index) => {
-    setOption(OPTIONS[index]);
-    setOpen(!isOpen);
-  };
+  const FILTER_FIELDS = [
+    {
+      prettyName: 'Card Filter:',
+      name: 'card',
+      data: CARD_FILTERS,
+    },
+    {
+      prettyName: 'Attribute Filter:',
+      name: 'attr',
+      data: attributes,
+      type: "attr"
+    },
+    {
+      prettyName: 'Filetype Filter:',
+      name: 'type',
+      data: TYPE_FILTER,
+    },
+  ];
+
+  function handleChange(type, data) {
+    setFilterData((prev) => ({ ...prev, [type]: data }));
+  }
+
+  function handleTaskInput({ value }) {
+    var className = "set--hidden";
+    var hideElement = document.querySelector(".iss__filesDownload__mainSet");
+
+    if (!value) return hideElement.classList.remove(className);
+    if (!hideElement.classList.contains(className)) hideElement.classList.add(className);
+  }
 
   async function getFiles() {
     var file_ids;
@@ -47,31 +76,22 @@ export default function FilesDownload({ pathID }) {
       .map(({ id }) => id);
 
     else {
-      var params = {};
-
+      var params = { ...filterData, per_page: "max" };
       if (isNew) params.downloaded = false;
-      if (option.value !== "all") params.status = option.value;
 
       var { data } = await api.get(`/api/files/project/${pathID}/`, {
         params,
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
       });
-      file_ids = (
-        isNew ? data.filter(({ is_downloaded }) => !is_downloaded) : data
+      file_ids = (isNew
+        ? data.data.filter(({ is_downloaded }) => !is_downloaded)
+        : data.data
       ).map(({ id }) => id);
     }
 
     if (!file_ids.length) throw new Error("No content");
 
     return file_ids;
-  }
-
-  function handleTaskInput({ value }) {
-    var className = "set--hidden";
-    var hideElement = document.querySelector(".iss__filesDownload__mainSet");
-
-    if (!value) return hideElement.classList.remove(className);
-    if (!hideElement.classList.contains(className)) hideElement.classList.add(className);
   }
 
   async function downloadSelected(event) {
@@ -123,37 +143,12 @@ export default function FilesDownload({ pathID }) {
       <h2 className="iss__filesDownload__caption">
         Choose files to download or enter existing taskID
       </h2>
+      <ValidationFilterGroup filterData={FILTER_FIELDS} onChange={handleChange} />
       <form
         onSubmit={(event) => downloadSelected(event)}
         className="iss__filesDownload__form"
       >
         <fieldset className="iss__filesDownload__mainSet">
-          <div className="iss__filesDownload__selector">
-            <div
-              onClick={() => setOpen(!isOpen)}
-              className={`iss__filesDownload__selected option--${option.color}`}
-            >
-              <span>{option.name}</span>
-              <Arrow size={16} />
-            </div>
-            <div
-              className={
-                `iss__filesDownload__options__wrap${isOpen ? " options--open" : ""}`
-              }
-            >
-              <div className="iss__filesDownload__options">
-                {
-                  OPTIONS.map(({ name, value, color }, index) => (
-                    <span
-                      key={value}
-                      onClick={() => handleSelect(index)}
-                      className={`option--${color}`}
-                    >{name}</span>
-                  ))
-                }
-              </div>
-            </div>
-          </div>
           <label className="iss__filesDownload__inputBox__wrap">
             <input type="checkbox" onChange={() => setIsNew(!isNew)} />
             <span>not downloaded before</span>
@@ -185,8 +180,8 @@ export default function FilesDownload({ pathID }) {
         manual &&
         <FileDownloadSelector
           pathID={pathID}
-          newFiles={isNew}
-          option={option}
+          params={filterData}
+          isNew={isNew}
           fileManager={fileManager}
         />
       }

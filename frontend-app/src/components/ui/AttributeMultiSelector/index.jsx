@@ -9,10 +9,10 @@ import "./styles.css";
 * @param {string} props.selectorName
 * @param {object[]} props.data
 * @param {Function} props.onChange
-* @param {number[]} props.defaultSelected
+* @param {number[]} [props.defaultSelected]
 * @returns {ReactElement}
 */
-export default function AttributeMultiSelector({ selectorName, data, onChange, defaultSelected, }) {
+export default function AttributeMultiSelector({ selectorName, data, onChange, defaultSelected }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const [selectors, setSelectors] = useState({});
@@ -34,12 +34,15 @@ export default function AttributeMultiSelector({ selectorName, data, onChange, d
     var selectorData = Object.values(selectors)
       .reduce((acc, item) => [...acc, ...item], []);
     onChange(selectorName, selectorData);
+    setSelected([1]);
     setIsOpen(false);
   }
 
   useEffect(() => {
     var attributes = spreadChildren(data, false)
       .reduce((acc, { attributes }) => [...acc, ...attributes], []);
+
+    if (!defaultSelected) return;
 
     var defaultNames = defaultSelected.reduce((acc, id) => {
       var attribute = attributes
@@ -60,7 +63,11 @@ export default function AttributeMultiSelector({ selectorName, data, onChange, d
         {
           selected.length
             ? <>
-              {selected.map((name, index) => <span key={name + index}>{name}</span>)}
+              {
+                defaultSelected
+                ? <>{selected.map((name, index) => <span key={name + index}>{name}</span>)}</>
+                : <span>some selected...</span>
+              }
             </>
             : <span className='off--title'>-not set-</span>
         }

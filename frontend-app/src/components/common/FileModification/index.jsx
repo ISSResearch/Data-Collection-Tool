@@ -61,7 +61,8 @@ export default function FileModification({ fileManager, sliderManager, attribute
         newFiles[slide] = { ...file, status, attributes: preparedAtrs };
         return newFiles;
       });
-       slideInc();
+
+      slideInc();
     }
     catch({ message, response }) {
       var authFailed = response && (

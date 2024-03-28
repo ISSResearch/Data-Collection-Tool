@@ -7,7 +7,7 @@
     padding: 40px 20px;
     width: fit-content;
     place-self: center;
-    min-width: 600px;
+    min-width: 520px;
 }
 @media (max-width: 768px) {
     .iss__loginPage {
