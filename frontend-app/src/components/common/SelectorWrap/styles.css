@@ -10,6 +10,9 @@
 
 .iss__selectorWrap {
     margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .iss__selector__name {

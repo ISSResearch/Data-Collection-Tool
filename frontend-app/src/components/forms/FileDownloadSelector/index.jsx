@@ -9,15 +9,15 @@ import './styles.css';
 /**
 * @param {object} props
 * @param {number} props.pathID
-* @param {boolean} props.newFiles
-* @param {object} props.option
+* @param {object} props.params
+* @param {boolean} props.isNew
 * @param {object} props.fileManager
 * @returns {ReactElement}
 */
 export default function FileDownloadSelector({
   pathID,
-  newFiles,
-  option,
+  params,
+  isNew,
   fileManager
 }) {
   const { files, setFiles } = fileManager;
@@ -36,13 +36,11 @@ export default function FileDownloadSelector({
   useEffect(() => {
     setLoading(true);
 
-    var params = { per_page: 100 };
-
-    if (newFiles) params.downloaded = false;
-    if (option.value !== 'all') params.status = option.value;
+    var _params = { ...params, per_page: "max" };
+    if (isNew) _params.downloaded = false;
 
     api.get(`/api/files/project/${pathID}/`, {
-      params,
+      params: _params,
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
@@ -62,14 +60,16 @@ export default function FileDownloadSelector({
 
         if (authFailed) navigate("/login");
       });
-  }, [newFiles, option]);
+  }, [params]);
 
   if (loading) return (<div className='iss__filesDownload__loadWrap'><Load /></div>);
 
   return (
     <fieldset className='iss__filesDownload__fileSelector'>
+      First 250:
       {
-        files.map(({ id, file_name, status, is_downloaded }, index) => (
+        files.length
+        ? files.map(({ id, file_name, status, is_downloaded }, index) => (
           <label
             key={id}
             className={`iss__filesDownload__fileSelector__item file--${status}`}
@@ -83,6 +83,7 @@ export default function FileDownloadSelector({
             <span>{file_name}</span>
           </label>
         ))
+        : <><br/><br/>No Data</>
       }
     </fieldset>
   );

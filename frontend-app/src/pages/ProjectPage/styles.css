@@ -15,6 +15,9 @@
     place-self: center;
 }
 .iss__projectPage__button {
+    display: flex;
+    gap: 4px;
+    place-items: center;
     margin-bottom: 12px;
     border-radius: 4px;
     text-decoration: none;
@@ -26,10 +29,6 @@
     transition:
         color 0.3s ease,
         background-color 0.3s ease;
-}
-.iss__projectPage__button::before {
-    content: "<--";
-    padding: 0 6px;
 }
 .iss__projectPage__description {
     padding: 40px 20px;

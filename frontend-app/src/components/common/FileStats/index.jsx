@@ -53,7 +53,6 @@ export default function FileStats({ pathID }) {
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
-        console.log(ADAPTER_MAP[choice](data));
         setStats(ADAPTER_MAP[choice](data));
         setLoading(false);
       })

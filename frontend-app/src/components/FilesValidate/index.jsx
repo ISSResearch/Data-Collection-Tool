@@ -33,7 +33,7 @@ const TYPE_FILTER = [
 export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState([]);
   const dispatch = useDispatch();
   const fileManager = useFiles();
   const sliderManager = useSwiper();
@@ -96,10 +96,10 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     ])
       .then(([fileFetch, authorFetch]) => {
         var { value: { data } } = fileFetch;
-        var { data: files, page, per_page, total_pages: totalPages } = data;
+        var { data: files, page, total_pages: totalPages } = data;
 
         fileManager.initFiles(files);
-        sliderManager.setMax(per_page);
+        sliderManager.setMax(files.length);
         sliderManager.setPagination({ page, totalPages });
 
         /**

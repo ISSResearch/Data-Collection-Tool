@@ -113,8 +113,9 @@ class ViewServicesTest(TestCase, ViewSetServices):
         self._get_mixin(1, True, query={"type_": ["image"]})
         self._get_mixin(1, True, query={"type_": ["video"]})
         self._get_mixin(1, True, attrs=[new_attr.id])
-        self._get_mixin(1, True, query={"page": 1, "per_page": 1})
-        self._get_mixin(2, True, query={"page": 1, "per_page": 2})
+        self._get_mixin(1, True, query={"page": 1, "per_page": 1}, per_page=1)
+        self._get_mixin(2, True, query={"page": 1, "per_page": 2}, per_page=2)
+        self._get_mixin(3, True, query={"page": 1, "per_page": "max"}, per_page="max")
 
     def test_delete_file(self):
         file = File.objects.create(
@@ -293,7 +294,7 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
         return query, filter
 
-    def _get_mixin(self, expected, is_admin=False, query={}, attrs=[]):
+    def _get_mixin(self, expected, is_admin=False, query={}, attrs=[], per_page=25):
         query, _ = self._get_query(**query)
 
         if attrs: query.set("attr[]", attrs)
@@ -302,7 +303,16 @@ class ViewServicesTest(TestCase, ViewSetServices):
 
         res, code = self._get_files(self.case.project.id, user, query)
         self.assertEqual(code, 200)
+
         self.assertEqual(len(res["data"]), expected)
+        self.assertEqual(
+            res["per_page"],
+            (
+                len(res["data"])
+                if per_page == "max"
+                else per_page
+            )
+        )
 
 
 class AnnotationTest(TestCase):
