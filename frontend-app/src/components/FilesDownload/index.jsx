@@ -172,9 +172,7 @@ export default function FilesDownload({ pathID, attributes }) {
           className={
             `iss__filesDownload__button${ loading ? " block--button" : "" }`
           }
-        >
-          {loading ? <Load isInline /> : <span>request</span>}
-        </button>
+        >{loading ? <Load isInline /> : <span>request</span>}</button>
       </form>
       {
         manual &&

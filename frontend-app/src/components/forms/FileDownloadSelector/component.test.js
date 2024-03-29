@@ -15,14 +15,15 @@ afterEach(() => {
 test("download selector form component test", async () => {
   const { result: files } = renderHook(() => useFiles());
 
-  api.get.mockResolvedValue({data:{data:raw_files}});
-  const component = (nw=false, opt="") => (
+  api.get.mockResolvedValue({data:{data:[]}});
+
+  const component = (nw=false) => (
     <Provider store={createStore()}>
       <MemoryRouter>
         <FileDownloadSelector
+          params={{}}
           pathID={1}
           newFiles={nw}
-          option={{value: opt}}
           fileManager={files.current}
         />
       </MemoryRouter>
@@ -30,23 +31,34 @@ test("download selector form component test", async () => {
   );
 
   const init = async() => {
-    var rerender, container;
+    var rerender, container, unmount;
     await act( async () => {
-      const {rerender: r, container: c} = await render(component());
+      const {unmount: u, rerender: r, container: c} = await render(component());
       rerender = r;
       container = c;
+      unmount = u;
     });
 
     return {
       container,
+      unmount,
       rerender: async (nw, opt) => await act(async() => await rerender(component(nw, opt)))
     };
   };
 
-  const { container, rerender } = await init();
+  var { unmount, rerender: _r } = await init();
+  await _r();
+
+  expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+  screen.getByText(/No Data/);
+  unmount();
+
+  api.get.mockResolvedValue({data:{data:raw_files}});
+  var { container, rerender } = await init();
   await rerender();
 
   expect(screen.getAllByRole("checkbox")).toHaveLength(raw_files.length);
+  expect(screen.queryByText(/No Data/)).toBeNull();
 
   raw_files.forEach(({status, is_downloaded}, index) => {
     expect(!is_downloaded).toBe(screen.getAllByRole("checkbox")[index].checked);

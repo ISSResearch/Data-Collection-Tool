@@ -12,6 +12,7 @@ import FilesDownload from "../../components/FilesDownload";
 import FileStats from "../../components/common/FileStats";
 import ProjectEdit from "../../components/ProjectEdit";
 import Load from "../../components/ui/Load";
+import Arrow from "../../components/ui/Arrow";
 import './styles.css';
 
 /** @type {{name: string, link: string, permission: string}[]} */
@@ -112,7 +113,10 @@ export default function ProjectPage() {
 
   return (
     <div className='iss__projectPage'>
-      <Link to="/projects" className="iss__projectPage__button">back</Link>
+      <Link to="/projects" className="iss__projectPage__button">
+        <Arrow color="white" point="left" />
+        back
+      </Link>
       {
         currentRoute === `projects/${projectID}` &&
         <p
