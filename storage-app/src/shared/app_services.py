@@ -195,8 +195,8 @@ class Bucket(BucketObject):
             f_id: ObjectId = get_object_id(object_id)
             file: AsyncIOMotorGridOut = await self._fs.open_download_stream(f_id)
             return ObjectStreaming(file)
-
         except NoFile: return None
+        finally: file.close()
 
     def get_download_objects(self, file_ids: list[str]) -> AsyncIOMotorGridOutCursor:
         prepared_ids: list[str | ObjectId] = [
