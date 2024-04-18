@@ -191,12 +191,14 @@ class Bucket(BucketObject):
         self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
 
     async def get_object(self, object_id: str) -> Optional[ObjectStreaming]:
+        file: Optional[AsyncIOMotorGridOut] = None
         try:
             f_id: ObjectId = get_object_id(object_id)
-            file: AsyncIOMotorGridOut = await self._fs.open_download_stream(f_id)
+            file = await self._fs.open_download_stream(f_id)
             return ObjectStreaming(file)
-
         except NoFile: return None
+        finally:
+            if file: file.close()
 
     def get_download_objects(self, file_ids: list[str]) -> AsyncIOMotorGridOutCursor:
         prepared_ids: list[str | ObjectId] = [
