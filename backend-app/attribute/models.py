@@ -9,7 +9,6 @@ from django.db.models import (
     BooleanField
 )
 from tree_queries.models import TreeNode
-from django.db.models import QuerySet
 from uuid import uuid4
 
 

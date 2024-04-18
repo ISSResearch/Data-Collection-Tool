@@ -15,7 +15,6 @@ from attribute.models import Level, AttributeGroup
 from user.models import CustomUser
 from json import loads
 from typing import Any
-from uuid import UUID
 from datetime import datetime as dt
 from .serializers import File, FileSerializer
 
