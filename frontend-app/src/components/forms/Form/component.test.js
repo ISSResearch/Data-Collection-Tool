@@ -19,7 +19,7 @@ test("form component test", () => {
 
   fieldSet.forEach(({ label, placeholder, type, required }) => {
     var input = screen.getByPlaceholderText(placeholder);
-    screen.getByLabelText(label);
+    screen.getByLabelText(new RegExp(label));
     expect(input.value).toBe('');
     expect(input.required).toBe(required);
     expect(input.type).toBe(type);
