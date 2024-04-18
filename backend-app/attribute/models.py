@@ -52,6 +52,3 @@ class AttributeGroup(Model):
         db_table = "attribute_group"
 
     def __str__(self) -> str: return str(self.uid)
-
-    @classmethod
-    def get_free_groups(cls) -> QuerySet: return cls.objects.filter(file_id=None)

@@ -114,13 +114,3 @@ class AttributeGroupModelTest(TestCase):
         )
         self.assertEqual(group.attribute.count(), 1)
         self.assertTrue(group.file.id == self.case.file_.id)
-
-    def test_get_free_attributegroups(self):
-        groups = AttributeGroup.objects.bulk_create({
-            AttributeGroup() for _ in range(5)
-        })
-
-        self.assertEqual(
-            AttributeGroup.get_free_groups().count(),
-            len(groups)
-        )

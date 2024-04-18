@@ -11,6 +11,14 @@ import './styles.css';
 * @returns {ReactElement}
 */
 export default function Form({ errors, callback, fields, loading }) {
+  const handleVisibility = ({ type, target }) => {
+    var toggleClass = "eye--toggle";
+    var { parentElement } = target;
+    var [input] = parentElement.children;
+    input.type = type === "mousedown" ? "text" : "password";
+    target.classList.toggle(toggleClass);
+  };
+
   return (
     <div className='iss__formContainer'>
       {
@@ -30,6 +38,14 @@ export default function Form({ errors, callback, fields, loading }) {
                 required={required}
                 placeholder={placeholder}
               />
+              {
+                type === "password" &&
+                <span
+                  onMouseDown={handleVisibility}
+                  onMouseUp={handleVisibility}
+                  className="eyeIcon"
+                >&#128065;</span>
+              }
             </label>
           ))
         }

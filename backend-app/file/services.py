@@ -7,11 +7,11 @@ from rest_framework.status import (
 )
 from rest_framework.request import QueryDict
 from rest_framework.views import Request
-from django.db import connection
+from django.db import connection, transaction
 from django.db.models import Count, Subquery, QuerySet
 from django.utils import timezone as tz
 from django.core.paginator import Paginator
-from attribute.models import Level, AttributeGroup as AGroup
+from attribute.models import Level, AttributeGroup
 from user.models import CustomUser
 from json import loads
 from typing import Any
@@ -127,7 +127,7 @@ class ViewSetServices:
         attribute_query = request_query.getlist("attr[]")
 
         if attribute_query:
-            sub_query = AGroup.objects \
+            sub_query = AttributeGroup.objects \
                 .filter(attribute__in=attribute_query) \
                 .annotate(count=Count("uid")) \
                 .filter(count=len(attribute_query)) \
@@ -157,18 +157,18 @@ class ViewSetServices:
         request: Request
     ) -> tuple[dict[str, Any], int]:
         uploader = FileUploader(request, project_id)
-        succeed = uploader.proceed_upload()
+        uploader.proceed_upload()
 
-        response = {"result": succeed}
+        response = {"result": uploader.success}
 
         return response, (
-            HTTP_201_CREATED if succeed
+            HTTP_201_CREATED if uploader.success
             else HTTP_406_NOT_ACCEPTABLE
         )
 
 
 class FileUploader:
-    ASSIGN_GROUP_QUERY: str = """
+    ASSIGN_QUERY: str = """
         insert into attribute_group_attribute
         (attributegroup_id, attribute_id)
         values (%s, %s)
@@ -180,93 +180,40 @@ class FileUploader:
         self.author_id: int = request.user.id
         self.meta: dict[str, Any] = loads(request.POST.get('meta', ""))
 
-        self.free_attributegroups: list[AGroup] = list()
-        self.groups_taken: int = 0
-
-    def proceed_upload(self) -> bool:
+    def proceed_upload(self) -> None:
         try:
-            self.get_free_attributegroups()
-            self.get_instance()
-            self.write_instances()
-            self.assign_attributes()
+            with transaction.atomic():
+                meta_groups: list[dict[str, Any]] = self.meta.get('atrsGroups', [])
 
-            return True
+                file: File = File.objects.create(
+                    id=self.meta["fileID"],
+                    file_name=f'{self.meta["name"]}.{self.meta["extension"]}',
+                    file_type=self.meta.get("type", 'file'),
+                    project_id=self.project_id,
+                    author_id=self.author_id,
+                )
 
-        except Exception: return False
+                file_groups: list[AttributeGroup] = [
+                    AttributeGroup.objects.create(file=file)
+                    for _ in range(len(meta_groups))
+                ]
 
-    def get_free_attributegroups(self) -> None:
-        required_length: int = len(self.meta.get('atrsGroups', []))
+                self.assign_attributes(file_groups, meta_groups)
 
-        available_groups: list[AGroup] = list(AGroup.get_free_groups())
+                self.success = True
 
-        new_groups: list[AGroup] = AGroup.objects.bulk_create(
-            [AGroup() for _ in range(required_length - len(available_groups))],
-            batch_size=400
-        )
+        except Exception: self.success = False
 
-        available_groups.extend(new_groups)
+    def assign_attributes(self, file_groups, meta_groups) -> None:
+        assert len(file_groups) == len(meta_groups)
 
-        self.free_attributegroups = available_groups[:required_length]
-
-    def get_instance(self) -> None:
-        self.instance: tuple[File, list, list] = self._form_instance(self.meta)
-
-    def write_instances(self) -> None:
-        file, file_groups, _ = self.instance
-
-        file.save()
-        AGroup.objects.bulk_update(
-            [group for group in file_groups],
-            ['file_id'],
-            batch_size=300
-        )
-
-    def assign_attributes(self) -> None:
-        _, file_groups, file_meta = self.instance
-
-        prepared_query: list[tuple[AGroup, list]] = [
-            (file_groups[i], file_meta[i])
-            for i in range(len(file_groups))
-        ]
-
-        query_values: list[tuple[UUID, int]] = [
-            (group_id.uid, attribute_id)
-            for group_id, attributes in prepared_query
+        if query_values := [
+            (group.uid, attribute_id)
+            for group, attributes in zip(file_groups, meta_groups)
             for attribute_id in attributes
-        ]
-
-        if query_values:
-            with connection.cursor() as cur: cur.executemany(
-                self.ASSIGN_GROUP_QUERY,
-                query_values
-            )
-
-    def _form_instance(self, meta: dict[str, Any]) -> tuple[File, list[AGroup], list]:
-        file_groups_count: int = len(meta.get('atrsGroups', []))
-
-        file: File = File(
-            id=meta["fileID"],
-            file_name=f'{meta["name"]}.{meta["extension"]}',
-            file_type=meta.get("type", 'file'),
-            project_id=self.project_id,
-            author_id=self.author_id,
-        )
-
-        file_groups: list[AGroup] = self._assign_groups(file, file_groups_count)
-
-        return file, file_groups, meta.get('atrsGroups', [])
-
-    def _assign_groups(self, file: File, groups_count: int) -> list[AGroup]:
-        file_groups: list[AGroup] = list()
-        end: int = self.groups_taken + groups_count
-
-        for group in self.free_attributegroups[self.groups_taken:end]:
-            group.file = file
-            file_groups.append(group)
-
-        self.groups_taken += groups_count
-
-        return file_groups
+        ]:
+            with connection.cursor() as cur:
+                cur.executemany(self.ASSIGN_QUERY, query_values)
 
 
 class StatsServices:
