@@ -11,6 +11,12 @@ import { getOriginDomain } from '../utils/';
 */
 
 /** @type {string} */
+const backendPort = process.env.BACKEND_PORT;
+
+/** @type {string} */
+const storagePort = process.env.STORAGE_PORT;
+
+/** @type {string} */
 const origin = process.env.REACT_APP_CASE === 'test'
   ? 'http://iss-test-back'
   : getOriginDomain();
@@ -20,7 +26,7 @@ const storageOrigin = getOriginDomain();
 
 /** @type {Api} */
 export const api = axios.create({
-  baseURL: `${origin}:8000`,
+  baseURL: `${origin}:${backendPort}`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
   xsrfCookieName: "csrftoken",
@@ -29,7 +35,7 @@ export const api = axios.create({
 
 /** @type {Api} */
 export const fileApi = axios.create({
-  baseURL: `${storageOrigin}:9000`,
+  baseURL: `${storageOrigin}:${storagePort}`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
   xsrfCookieName: "csrftoken",

@@ -5,6 +5,8 @@ from datetime import timedelta
 DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
+FRONTEND_PORT = getenv("FRONTEND_PORT")
+
 TEST_ENV = getenv('CASE') == 'test'
 
 DEBUG = getenv('DEBUG') == 'true'
@@ -14,7 +16,7 @@ SELF_ORIGIN = None
 
 if RAW_ORIGIN:
     RAW_ORIGIN = RAW_ORIGIN.replace(' ', '').split(',')
-    SELF_ORIGIN = [f"http://{origin}:3000" for origin in RAW_ORIGIN]
+    SELF_ORIGIN = [f"http://{origin}:{FRONTEND_PORT}" for origin in RAW_ORIGIN]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

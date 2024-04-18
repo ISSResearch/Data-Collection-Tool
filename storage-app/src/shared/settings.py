@@ -1,6 +1,6 @@
 from multiprocessing import cpu_count
 from os import getenv
-from typing import Any
+from typing import Any, Optional
 
 max_workers: int = int(getenv("MAX_WORKER", 0))
 available_workers: int = cpu_count() * 2 + 1
@@ -12,6 +12,11 @@ WORKERS: int = (
 )
 
 DEBUG: bool = getenv("DEBUG") == "true"
+
+FRONTEND_PORT: Optional[str]  = getenv("FRONTEND_PORT")
+STORAGE_PORT: Optional[str] = getenv("STORAGE_PORT")
+
+assert STORAGE_PORT
 
 APP_BACKEND_URL: str = "http://" + getenv("APP_BACKEND_URL", "127.0.0.1")
 SECRET_KEY: str = getenv("SECRET_KEY", "")
@@ -32,13 +37,13 @@ SELF_ORIGIN: list[str] = []
 
 if RAW_ORIGIN:
     RAW_ORIGIN = RAW_ORIGIN.replace(' ', '').split(',')
-    SELF_ORIGIN = [f"http://{origin}:3000" for origin in RAW_ORIGIN]
+    SELF_ORIGIN = [f"http://{origin}:{FRONTEND_PORT}" for origin in RAW_ORIGIN]
 
 UVICORN_CONF: dict[str, Any] = {
     "app": "app:APP",
     "workers": WORKERS,
     "host": '0.0.0.0',
-    "port": 9000,
+    "port": int(STORAGE_PORT),
     "reload": DEBUG,
     "log_level": "debug" if DEBUG else "critical"
 }
