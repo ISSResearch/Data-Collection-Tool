@@ -10,13 +10,13 @@ import './styles.css';
 /**
 * @param {object} props
 * @param {object} props.fileManager
-* @param {object} props.sliderManager
+* @param {number} props.slide
+* @param {Function} props.slideInc
 * @param {object[]} props.attributes
 * @returns {ReactElement}
 */
-export default function FileModification({ fileManager, sliderManager, attributes }) {
+export default function FileModification({ fileManager, slide, slideInc, attributes }) {
   const { files, setFiles } = fileManager;
-  const { slide, slideInc } = sliderManager;
   const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ export default function FileModification({ fileManager, sliderManager, attribute
         return newFiles;
       });
 
-      slideInc();
+      slideInc(true);
     }
     catch({ message, response }) {
       var authFailed = response && (

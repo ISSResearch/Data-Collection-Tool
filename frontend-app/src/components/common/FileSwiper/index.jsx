@@ -5,29 +5,33 @@ import './styles.css';
 /**
 * @param {object} props
 * @param {object} props.fileManager
-* @param {object} props.sliderManager
+* @param {number} props.slide
 * @param {number} props.pathID
+* @param {Function} props.slideDec
+* @param {Function} props.slideInc
 * @returns {ReactElement}
 */
-export default function FileSwiper({ fileManager, sliderManager, pathID }) {
+export default function FileSwiper({ slideDec, slideInc, fileManager, slide, pathID }) {
   const { files } = fileManager;
-  const { slide, slideDec, slideInc } = sliderManager;
+  const parent = useRef(null);
   const childRef = useRef(null);
   const incRef = useRef(null);
   const decRef = useRef(null);
 
-  function handleKeyPressed({ key }) {
+  const handleKeyPressed = ({ key }) => {
     if (key === 'x') handleReset();
     var buttonMap = {
       ArrowRight: incRef,
       ArrowLeft: decRef
     };
     buttonMap[key]?.current.click();
-  }
+  };
 
-  function handleReset() { childRef.current(); }
+  const handleReset = () => childRef.current();
 
   useEffect(() => {
+    parent.current.style.maxHeight = `calc(100vh - ${parent.current.offsetTop + 20}px)`;
+
     window.addEventListener("keydown", handleKeyPressed);
     return () => {
       window.removeEventListener("keydown", handleKeyPressed);
@@ -35,12 +39,12 @@ export default function FileSwiper({ fileManager, sliderManager, pathID }) {
   }, []);
 
   return (
-    <div className='iss__fileswiper'>
+    <div ref={parent} className='iss__fileswiper'>
       <FileMedia pathID={pathID} files={files} slide={slide} ref={childRef} />
       <div className='iss__fileswiper__controls'>
         <button
           ref={decRef}
-          onClick={slideDec}
+          onClick={() => slideDec()}
           type="button"
           className="slider-button slide-dec"
         >
@@ -53,7 +57,7 @@ export default function FileSwiper({ fileManager, sliderManager, pathID }) {
         </button>
         <button
           ref={incRef}
-          onClick={slideInc}
+          onClick={() => slideInc()}
           type="button"
           className="slider-button slide-inc"
         >
