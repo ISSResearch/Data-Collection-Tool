@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useId } from "react";
 import FileCard from '../FileCard';
 import Arrow from "../../ui/Arrow";
 import './styles.css';
@@ -23,7 +23,7 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
   }
 
   return (
-    <section className="iss__fileSelector">
+    <section key={useId()} className="iss__fileSelector">
       <div className='iss__fileSelector__inner'>
         {
           files.map(({id, file_name, upload_date, status, author_name}, index) => (

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useId } from 'react';
 import { addAlert } from '../../../slices/alerts';
 import { useDispatch } from "react-redux";
 import FileUploadCard from '../../common/FileUploadCard';
@@ -32,6 +32,7 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
 
   return (
     <form
+      key={useId()}
       onSubmit={sendForm}
       onDrop={handleDrop}
       onDragOver={(ev) => ev.preventDefault()}

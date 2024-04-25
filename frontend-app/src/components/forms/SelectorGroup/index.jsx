@@ -1,4 +1,4 @@
-import { useState, ReactElement } from "react";
+import { useState, ReactElement, useId } from "react";
 import { deepCopy, formUID } from "../../../utils/";
 import SelectorWrap from "../../common/SelectorWrap";
 import './styles.css';
@@ -69,7 +69,7 @@ export default function SelectorGroup({
   }
 
   return (
-    <fieldset className={`iss__selectGroup${fileID ? ' style--min' : ''}`}>
+    <fieldset key={useId()} className={`iss__selectGroup${fileID ? ' style--min' : ''}`}>
       <button
         onClick={addGroup}
         type='button'
