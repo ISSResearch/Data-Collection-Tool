@@ -1,5 +1,5 @@
 import { useEffect, useState, ReactElement } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { setUser } from '../../slices/users';
 import { addAlert } from '../../slices/alerts';
@@ -33,7 +33,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
 
   async function sendForm(event) {
@@ -56,7 +55,7 @@ export default function Login() {
       dispatch(setUser(data.user));
       dispatch(addAlert({ message: "User logged", type: "success" }));
 
-      if (location.pathname === '/login') navigate('/');
+      if (location.pathname === '/login') window.open('/', "_self");
     }
     catch ({ message }) {
       dispatch(addAlert({ message: "User login failed: " + message, type: "error" }));
