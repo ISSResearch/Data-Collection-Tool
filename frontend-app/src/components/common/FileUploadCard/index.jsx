@@ -5,7 +5,7 @@ import './styles.css';
 
 /**
 * @param {object} props
-* @param {number} props.fileID
+* @param {string} props.fileID
 * @param {object} props.file
 * @param {object} props.fileManager
 * @param {object[]} props.attributes

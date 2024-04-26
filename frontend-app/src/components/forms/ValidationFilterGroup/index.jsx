@@ -1,4 +1,4 @@
-import { ReactElement, useId } from "react";
+import { ReactElement } from "react";
 import MultiSelector from "../../ui/MultiSelector";
 import DateSelector from "../../ui/DateSelector";
 import AttributeMultiSelector from "../../ui/AttributeMultiSelector";
@@ -40,7 +40,7 @@ function FilterSwitch ({ filter, onChange }) {
 */
 export default function ValidationFilterGroup({ filterData, onChange }) {
   return (
-    <fieldset key={useId()} className='iss__validation__filters'>
+    <fieldset className='iss__validation__filters'>
       {
         filterData.map((filter) => (
           <div key={filter.name} className="iss__validation__filters__item">

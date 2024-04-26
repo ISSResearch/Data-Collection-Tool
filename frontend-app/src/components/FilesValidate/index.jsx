@@ -34,12 +34,34 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState([]);
+  // todo: temp solution: in case current filtered cards updated i have to fetch same page
+  const [updated, setUpdated] = useState(false);
   const dispatch = useDispatch();
   const fileManager = useFiles();
   const sliderManager = useSwiper();
   const navigate = useNavigate();
 
-  function getPageQuery() {
+  const slideDec = () => {
+    var { slide, slideDec, pagination } = sliderManager;
+    var { page } = pagination || {};
+
+    if (slide === 0 && page !== 1)
+      handleChange("page", page - Number(!updated));
+    else slideDec();
+  };
+
+  const slideInc = (update=false) => {
+    if (update) setUpdated(true);
+
+    var { slide, slideInc, pagination } = sliderManager;
+    var { per_page, page, totalPages } = pagination || {};
+
+    if (slide === (per_page - 1) && page < totalPages)
+      handleChange("page", page + Number(!updated));
+    else slideInc();
+  };
+
+  const getPageQuery = () => {
     var from = pageQuery.get("date_from");
     var to =  pageQuery.get("date_to");
 
@@ -51,10 +73,10 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       date: (from || to) && { from, to },
       page: pageQuery.get("page")
     };
-  }
+  };
 
   // TODO: refactor
-  function handleChange(filterType, query) {
+  const handleChange = (filterType, query) => {
     var { card, attr, type, author, date, page } = getPageQuery();
     var preparedQuery = {
       'card[]': filterType === 'card' ? query : card,
@@ -77,9 +99,11 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     }
 
     setPageQuery(preparedQuery);
-  }
+  };
 
   useEffect(() => {
+    setUpdated(false);
+
     var { card, attr, type, author, date, page } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
@@ -96,11 +120,11 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     ])
       .then(([fileFetch, authorFetch]) => {
         var { value: { data } } = fileFetch;
-        var { data: files, page, total_pages: totalPages } = data;
+        var { data: files, page, total_pages: totalPages, per_page } = data;
 
         fileManager.initFiles(files);
         sliderManager.setMax(files.length);
-        sliderManager.setPagination({ page, totalPages });
+        sliderManager.setPagination({ page, totalPages, per_page });
 
         /**
         * @type {{
@@ -180,14 +204,17 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
             <FileSwiper
               pathID={pathID}
               fileManager={fileManager}
-              sliderManager={sliderManager}
+              slide={sliderManager.slide}
+              slideInc={slideInc}
+              slideDec={slideDec}
             />
             {
               canValidate &&
               <FileModification
                 fileManager={fileManager}
-                sliderManager={sliderManager}
                 attributes={attributes}
+                slide={sliderManager.slide}
+                slideInc={slideInc}
               />
             }
           </div>

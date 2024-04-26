@@ -1,4 +1,4 @@
-import { ReactElement, useId } from "react";
+import { ReactElement } from "react";
 import Load from "../../ui/Load";
 import './styles.css';
 
@@ -20,7 +20,7 @@ export default function Form({ errors, callback, fields, loading }) {
   };
 
   return (
-    <div key={useId()} className='iss__formContainer'>
+    <div className='iss__formContainer'>
       {
         errors &&
           <p className='iss__formContainer__errors'>

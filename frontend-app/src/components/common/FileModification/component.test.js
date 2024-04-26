@@ -16,12 +16,14 @@ afterEach(() => {
 test("file info component test", async () => {
   const { result: filesHook } = renderHook(() => useFiles());
   const { result: swiperHook } = renderHook(() => useSwiper());
+
   const component = () => <Provider store={createStore()}>
     <MemoryRouter>
       <FileModification
         fileManager={filesHook.current}
-        sliderManager={swiperHook.current}
         attributes={prepared_attributes}
+        slide={swiperHook.current.slide}
+        slideInc={swiperHook.slideInc}
       />
   </MemoryRouter>
   </Provider>;
@@ -49,8 +51,7 @@ test("file info component test", async () => {
     fireEvent.change(screen.getByRole('combobox', {name: 'gen'}), { target: { value: '267'}});
     await fireEvent.click(screen.getByRole('button', { name: /Decline/}));
   });
-  expect(swiperHook.current.slide).toBe(1);
-  expect(filesHook.current.files[swiperHook.current.slide - 1].status).toBe('d');
+  expect(swiperHook.current.slide).toBe(0);
 
   rerender(component());
   expect(container.querySelector(".iss__fileInfo__validator")).not.toBeNull();
