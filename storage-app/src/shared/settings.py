@@ -13,7 +13,7 @@ WORKERS: int = (
 
 DEBUG: bool = getenv("DEBUG") == "true"
 
-FRONTEND_PORT: Optional[str]  = getenv("FRONTEND_PORT")
+FRONTEND_PORT: Optional[str] = getenv("FRONTEND_PORT")
 STORAGE_PORT: Optional[str] = getenv("STORAGE_PORT")
 
 assert STORAGE_PORT
