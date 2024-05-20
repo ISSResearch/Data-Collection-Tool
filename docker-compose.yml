@@ -6,8 +6,8 @@ services:
     image: postgres:15.3-alpine
     restart: always
     environment:
-      POSTGRES_DB: ${DB_APP_DB_NAME}
-      POSTGRES_HOST_AUTH_METHOD: ${DB_APP_AUTH_METHOD}
+      POSTGRES_DB: ${DB_APP_DB_NAME:-app_db}
+      POSTGRES_HOST_AUTH_METHOD: ${DB_APP_AUTH_METHOD:-trust}
     volumes:
       - ./db:/var/lib/postgresql/data
     networks:
@@ -17,8 +17,8 @@ services:
     image: mongo:7.0.1-rc0
     container_name: iss-storage-db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_STORAGE_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_STORAGE_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
     volumes:
       - ./storage:/data/db
     restart: always
@@ -33,13 +33,13 @@ services:
     restart: always
     environment:
       DB_HOST: iss-main-db
-      DB_NAME: ${DB_APP_DB_NAME}
-      SERVER_ORIGINS: ${SERVER_ORIGINS}
+      DB_NAME: ${DB_APP_DB_NAME:-app_db}
+      SERVER_ORIGINS: ${SERVER_ORIGINS:-localhost}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
-      MAX_WORKER: ${MAX_WORKER}
-      BACKEND_PORT: ${BACKEND_PORT}
-      FRONTEND_PORT: ${FRONTEND_PORT}
+      MAX_WORKER: ${MAX_WORKER:-5}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
     depends_on:
       - iss-main-db
     command: >
@@ -60,16 +60,16 @@ services:
     restart: always
     environment:
       DB_HOST: iss-storage-db
-      APP_BACKEND_URL: iss-back:${BACKEND_URL}
-      DB_USER: ${DB_STORAGE_USER}
-      DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      APP_BACKEND_URL: iss-back:${BACKEND_PORT:-8000}
+      DB_USER: ${DB_STORAGE_USER:-admin}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
       CELERY_BROKER_URL: ${BROKER_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
-      MAX_WORKER: ${MAX_WORKER}
-      BACKEND_PORT: ${BACKEND_PORT}
-      FRONTEND_PORT: ${FRONTEND_PORT}
-      STORAGE_PORT: ${STORAGE_PORT}
+      MAX_WORKER: ${MAX_WORKER:-5}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
     depends_on:
       - iss-storage-db
       - iss-back
@@ -86,11 +86,11 @@ services:
     depends_on:
       - iss-back
     environment:
-      BACKEND_PORT: ${BACKEND_PORT}
-      PORT: ${FRONTEND_PORT}
-      STORAGE_PORT: ${STORAGE_PORT}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      PORT: ${FRONTEND_PORT:-3000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     command: >
       sh -c "npm run build && serve -s build"
     networks:
@@ -114,12 +114,13 @@ services:
     restart: always
     environment:
       DB_HOST: iss-storage-db
-      APP_BACKEND_URL: iss-back:${BACKEND_PORT}
-      DB_USER: ${DB_STORAGE_USER}
-      DB_PASSWORD: ${DB_STORAGE_PASSWORD}
+      APP_BACKEND_URL: iss-back:${BACKEND_PORT:-8000}
+      DB_USER: ${DB_STORAGE_USER:-admin}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
       CELERY_BROKER_URL: ${BROKER_URL}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
     depends_on:
       - iss-broker
       - iss-back
@@ -135,13 +136,13 @@ services:
       - iss-back
       - iss-storage
     environment:
-      BACKEND_PORT: ${BACKEND_PORT}
-      STORAGE_PORT: ${STORAGE_PORT}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
     ports:
-      - "${STORAGE_PORT}:${STORAGE_PORT}"
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${STORAGE_PORT:-9000}:${STORAGE_PORT:-9000}"
+      - "${BACKEND_PORT:-8000}:${BACKEND_PORT:-8000}"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx:/etc/nginx/templates
     networks:
       - iss_network
 

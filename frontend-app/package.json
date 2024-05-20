@@ -15,7 +15,7 @@
     "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "start": "export REACT_APP_CASE=$CASE && react-scripts start",
+    "start": "export REACT_APP_STORAGE_PORT=$STORAGE_PORT && export REACT_APP_BACKEND_PORT=$BACKEND_PORT && export REACT_APP_CASE=$CASE && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

@@ -20,7 +20,7 @@ export default function App() {
     const accessToken = localStorage.getItem("dtcAccess");
     setStatusData({ ...statusData, progress: 60, info: 'checking session...' });
 
-    api.get('/api/users/check/', { headers: { "Authorization": "Bearer " + accessToken } })
+    api.get("/api/users/check/", { headers: { "Authorization": "Bearer " + accessToken } })
       .then(({ data }) => {
         if (data.isAuth) {
           setStatusData({ ...statusData, progress: 80, info: 'preparing session...' });
