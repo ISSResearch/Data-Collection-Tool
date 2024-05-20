@@ -23,10 +23,10 @@ restart-dev:
 	make stop-dev && make start-dev
 
 start-test:
-	docker compose -f docker-compose.yml -f docker-compose.test.yml up -d --build
+	docker compose -f docker-compose.test.yml up -d --build
 
 stop-test:
-	docker compose -f docker-compose.yml -f docker-compose.test.yml down
+	docker compose -f docker-compose.test.yml down
 
 restart-test:
 	make stop-test && make start-test

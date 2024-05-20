@@ -39,6 +39,7 @@ services:
       DEBUG: "true"
       SERVER_ORIGINS: "iss-test-front,iss-test-back"
       SECRET_KEY: test-secret-key
+      BACKEND_PORT: 8000
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
@@ -65,6 +66,7 @@ services:
       DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
+      STORAGE_PORT: 9000
     depends_on:
       - iss-test-storage-db
       - iss-test-back
@@ -94,6 +96,7 @@ services:
       DEBUG: "true"
       CELERY_BROKER_URL: redis://iss-test-broker:6379/0
       SECRET_KEY: test-secret-key
+      STORAGE_PORT: 9000
     depends_on:
       - iss-test-broker
       - iss-test-back
