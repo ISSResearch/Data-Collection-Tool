@@ -19,7 +19,9 @@ test("file swiper component test", () => {
 
   const component = () => (<FileSwiper
     fileManager={filesHook.current}
-    sliderManager={swiperHook.current}
+    slide={swiperHook.current.slide}
+    slideInc={swiperHook.current.slideInc}
+    slideDec={swiperHook.current.slideDec}
     pathID={1}
   />);
 

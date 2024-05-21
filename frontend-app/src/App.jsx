@@ -6,7 +6,9 @@ import { useDispatch } from "react-redux";
 import AppRouter from "./components/AppRouter";
 import Header from "./components/Header";
 import StatusLoad from "./components/ui/StatusLoad";
+import Fallback from "./components/Fallback";
 import AlertManager from "./components/AlertManager";
+import ErrorBoundary from "./ErrorBoundary";
 import './app.css';
 
 /** @returns {ReactElement} */
@@ -52,7 +54,7 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <ErrorBoundary fallback={<Fallback/>}>
       <Header />
       {
         !statusData.done
@@ -66,6 +68,6 @@ export default function App() {
           : <AppRouter />
       }
       <AlertManager maxOnScreen={5} />
-    </>
+    </ErrorBoundary>
   );
 }

@@ -35,13 +35,11 @@ test("file selector component test", () => {
 
   rerender(component());
   expect(container.querySelector(".iss__fileSelector__pagination")).not.toBeNull();
-  expect(screen.getByRole("spinbutton").value).toBe("1");
+	screen.getByText("1 of 3");
   expect(container.querySelectorAll(".nav--block")).toHaveLength(1);
-  fireEvent.blur(screen.getByRole("spinbutton"), {target: {value: "3"}});
-  expect(screen.getByRole("spinbutton").value).toBe("3");
   expect(container.querySelectorAll(".nav--block")).toHaveLength(1);
   rerender(component());
-  fireEvent.click(container.querySelector("svg"));
+  fireEvent.click(container.querySelectorAll("svg")[1]);
   rerender(component());
   expect(container.querySelectorAll(".nav--block")).toHaveLength(0);
 });

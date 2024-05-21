@@ -15,7 +15,9 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
   const { files, handleUpload, count } = fileManager;
   const dispatch = useDispatch();
 
-  function sendForm(event) {
+  const renderCount = () => `Selected: ${count()} item${count() !== 1 ? 's' : ""}.`;
+
+  const sendForm = (event) => {
     event.preventDefault();
 
     var { isValid, message } = fileManager.validate(attributes);
@@ -23,9 +25,9 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
     if (!isValid)
       dispatch(addAlert({ message: "Uploading failed: " + message, type: "error" }));
     else emitUpload();
-  }
+  };
 
-  var handleDrop = (ev) => {
+  const handleDrop = (ev) => {
     ev.preventDefault();
     handleUpload([...ev.dataTransfer.files]);
   };
@@ -52,9 +54,7 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
           onChange={({ target }) => handleUpload(Object.values(target.files))}
         />
       </label>
-      <div className='iss__fileInput__note'>
-        Selected: {count()} item{Boolean(count() !== 1) && 's'}.
-      </div>
+      <span className='iss__fileInput__note'>{ renderCount() }</span>
       <div className='iss__fileInput__filesUploaded'>
         {
           Object.entries(files).map(([key, file]) => (

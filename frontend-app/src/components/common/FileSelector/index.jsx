@@ -22,6 +22,8 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
     ) onChange("page", newPage);
   }
 
+  const renderPage = () => `${pagination.page} of ${pagination.totalPages}`;
+
   return (
     <section className="iss__fileSelector">
       <div className='iss__fileSelector__inner'>
@@ -50,7 +52,7 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
             classes={[pagination.page <= 1 ? "nav--block" : ""]}
           />
           <div className="iss_fileSelector__pagination__input">
-            <input
+            {/* <input
               type="number"
               defaultValue={pagination.page}
               onBlur={({target}) => handleChange(target.value)}
@@ -58,8 +60,8 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
               max={pagination.totalPages}
               onKeyDown={({ target, key }) => key === "Enter" && handleChange(target.value)}
               disabled={pagination.totalPages <= 1}
-            />
-            of {pagination.totalPages}
+            /> */}
+            { renderPage() }
           </div>
           <Arrow
             size={16}

@@ -22,6 +22,7 @@
     gap: 8px;
     font-size: 16px;
     width: 100%;
+    position: relative;
 }
 .iss__input input {
     padding: 8px 0px;
@@ -29,6 +30,17 @@
     border-bottom: 1px solid var(--issBrand);
     outline: none;
     font-size: 14px;
+}
+.eyeIcon {
+    cursor: pointer;
+    bottom: 8px;
+    right: 8px;
+    position: absolute;
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+.eye--toggle {
+    text-shadow: 0px 0px 10px var(--issBrand);
 }
 .iss__formButton {
     margin-top: 20px;
@@ -54,6 +66,9 @@
     .iss__formButton:hover {
         color: var(--issBrand);
         background-color: white;
+    }
+    .eyeIcon:hover {
+        opacity: 1;
     }
 }
 @media (max-width: 375px) {
