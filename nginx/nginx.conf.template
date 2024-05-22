@@ -1,8 +1,8 @@
 upstream iss-back {
-  server iss-back:8000;
+  server iss-back:${BACKEND_PORT};
 }
 server {
-  listen 8000;
+  listen ${BACKEND_PORT};
   location / {
     proxy_pass http://iss-back;
     proxy_set_header X-Forwarded-Host $server_name;
@@ -34,10 +34,10 @@ server {
 }
 
 upstream iss-storage {
-  server iss-storage:9000;
+  server iss-storage:${STORAGE_PORT};
 }
 server {
-  listen 9000;
+  listen ${STORAGE_PORT};
   location / {
     proxy_pass http://iss-storage;
     proxy_set_header X-Forwarded-Host $server_name;

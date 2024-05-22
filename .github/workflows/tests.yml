@@ -21,11 +21,16 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yml up -d --force-recreate
           sleep 30
+          echo Running front lint...
           docker exec iss-test-front npm run lint
+          echo Running back/storage lint...
           docker exec iss-tests flake8
+          echo Running front tests...
           docker exec iss-test-front npm run test
           # docker exec iss-test-front npm run compile
+          echo Running back tests...
           docker exec iss-test-back ./manage.py test
+          echo Running storage tests...
           docker exec iss-test-storage python3 src/test.py
           # docker exec iss-tests python3 test.py
 

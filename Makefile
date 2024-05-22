@@ -11,13 +11,13 @@ restart:
 	make stop && make start
 
 start-dev:
-	docker compose -f docker-compose.dev.yml up -d
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 start-dev-new:
-	docker compose -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 
 stop-dev:
-	docker compose -f docker-compose.dev.yml down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 restart-dev:
 	make stop-dev && make start-dev

@@ -22,6 +22,9 @@
     padding: 4px 8px;
     cursor: pointer;
     outline: 1px solid var(--issBrand);
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
 }
 
 .iss__fileInput__upload input {

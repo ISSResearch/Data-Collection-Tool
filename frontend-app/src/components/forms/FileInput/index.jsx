@@ -42,11 +42,11 @@ export default function FileInput({ fileManager, attributes, emitUpload }) {
       <button
         className={
           `iss__filesUpload__sendButton${
-            fileManager.count() ? '' : ' send--disabled'
+            fileManager.count() ? "" : " send--disabled"
           }`
         }
       >Upload</button>
-      <label className='iss__fileInput__upload'>
+      <label className="iss__fileInput__upload notranslate">
         Add Media
         <input
           type="file"
