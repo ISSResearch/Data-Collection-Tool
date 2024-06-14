@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { useEffect } from 'react';
 import ProjectEdit from '.';
 import { Provider, useSelector } from 'react-redux';
@@ -29,19 +29,25 @@ test("project edit component test", async () => {
       useEffect(() => {
         alertTrigger = Object.keys(alerts).length;
       }, [alerts]);
-      return <MemoryRouter>
-        <ProjectEdit
-          attributes={prepared_attributes}
-          projectName={'project name'}
-          projectDescription={'project description'}
-          pathID={123}
-        />
-      </MemoryRouter>;
-    };
-    return <Provider store={createStore()}>
-      <Inner/>
-    </Provider>;
+      return <ProjectEdit
+        attributes={prepared_attributes}
+        projectName={'project name'}
+        projectDescription={'project description'}
+        pathID={123}
+      />;
+    }
+
+    const router = createBrowserRouter([
+      {
+        path: "/",
+        element:  <Provider store={createStore()}>
+          <Inner/>
+        </Provider>
+      }
+    ]);
+    return  <RouterProvider router={router}/>;
   };
+
   const { container } = render(component());
 
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
