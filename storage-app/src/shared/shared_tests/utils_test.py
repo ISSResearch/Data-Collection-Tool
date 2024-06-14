@@ -6,7 +6,6 @@ from os import environ, path
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 import requests
-import time
 from ..utils import (
     get_db_uri,
     get_path,

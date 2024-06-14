@@ -209,10 +209,10 @@ class ViewServicesTest(TestCase, ViewSetServices):
         self.assertEqual(res2, ["-status", "-upload_date"])
 
         res3 = self._form_orders({})
-        self.assertEqual(res2, ["-status", "-upload_date"])
+        self.assertEqual(res3, ["-status", "-upload_date"])
 
-        res3 = self._form_orders({"fake": "value"})
-        self.assertEqual(res2, ["-status", "-upload_date"])
+        res4 = self._form_orders({"fake": "value"})
+        self.assertEqual(res4, ["-status", "-upload_date"])
 
     def test_form_filters(self):
         query = {}
