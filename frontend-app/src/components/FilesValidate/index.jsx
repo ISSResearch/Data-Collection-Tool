@@ -22,6 +22,11 @@ const TYPE_FILTER = [
   { name: 'images', id: 'image' },
   { name: 'videos', id: 'video' },
 ];
+/** @type {{name: string, id: string}[]} */
+const DATE_SORT = [
+  { name: 'descending', id: 'desc' },
+  { name: 'ascending', id: 'asc' },
+];
 
 /**
 * @param {object} props
@@ -34,6 +39,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
   const [filterData, setFilterData] = useState([]);
+  const [sortData, setSortData] = useState([]);
   // todo: temp solution: in case current filtered cards updated i have to fetch same page
   const [updated, setUpdated] = useState(false);
   const dispatch = useDispatch();
@@ -45,8 +51,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     var { slide, slideDec, pagination } = sliderManager;
     var { page } = pagination || {};
 
-    if (slide === 0 && page !== 1)
-      handleChange("page", page - Number(!updated));
+    if (slide === 0 && page !== 1) handleChange("page", page - Number(!updated));
     else slideDec();
   };
 
@@ -71,13 +76,15 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       type: pageQuery.getAll('type[]'),
       author: pageQuery.getAll('author[]'),
       date: (from || to) && { from, to },
-      page: pageQuery.get("page")
+      page: pageQuery.get("page"),
+      dateSort: pageQuery.get("dateSort")
     };
   };
 
   // TODO: refactor
   const handleChange = (filterType, query) => {
-    var { card, attr, type, author, date, page } = getPageQuery();
+    var { card, attr, type, author, date, page, dateSort } = getPageQuery();
+
     var preparedQuery = {
       'card[]': filterType === 'card' ? query : card,
       'attr[]': filterType === 'attr' ? query : attr,
@@ -97,6 +104,10 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       let value = filterType === "page" ? query : page;
       if (value) preparedQuery.page = value;
     }
+    if (filterType === "dateSort" || dateSort) {
+      let value = filterType === "dateSort" ? query[0] : dateSort;
+      if (value) preparedQuery.dateSort = value;
+    }
 
     setPageQuery(preparedQuery);
   };
@@ -104,14 +115,14 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   useEffect(() => {
     setUpdated(false);
 
-    var { card, attr, type, author, date, page } = getPageQuery();
+    var { card, attr, type, author, date, page, dateSort } = getPageQuery();
 
     if (!card.length) handleChange("card", ['v']);
 
-    // TODO: query collectors depend on uploads to project by users
+    // TODO: query collectors depend on uploads to project by users, REFACTOR!
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
-        params: { card, attr, type, author, from: date?.from, to: date?.to, page },
+        params: { card, attr, type, author, from: date?.from, to: date?.to, page, dateSort },
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       }),
       canValidate && api.get(`api/users/collectors/${pathID}/`, {
@@ -173,6 +184,14 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         ]);
 
         setFilterData(_filterData);
+        setSortData([
+          {
+            prettyName: 'Date sort:',
+            name: 'dateSort',
+            data: DATE_SORT,
+            selected: [dateSort || "desc"],
+          },
+        ]);
         setLoading(false);
       })
       .catch(({ message, response }) => {
@@ -193,6 +212,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
   return (
     <>
       <ValidationFilterGroup filterData={filterData} onChange={handleChange}/>
+      <ValidationFilterGroup filterData={sortData} onChange={handleChange}/>
       {
         fileManager.files.length
           ? <div className='iss__validation'>

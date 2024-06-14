@@ -1,5 +1,5 @@
 import { useState, useRef, ReactElement } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useBlocker  } from 'react-router-dom';
 import { useAttributeManager } from '../../hooks';
 import { api } from '../../config/api';
 import { addAlert } from '../../slices/alerts';
@@ -30,6 +30,11 @@ export default function ProjectEdit({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const deleteInput = useRef(null);
+
+  useBlocker(() => {
+    var msg = "Are you sure you wanna leave the editing? All unsaved data will be lost";
+    return !window.confirm(msg);
+  });
 
   function validateNewAttributes() {
     var newAttirbutes = Object.values(attributeManagerNew.attributeHook.attributes);
