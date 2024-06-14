@@ -35,7 +35,7 @@ test("project edit component test", async () => {
         projectDescription={'project description'}
         pathID={123}
       />;
-    }
+    };
 
     const router = createBrowserRouter([
       {
