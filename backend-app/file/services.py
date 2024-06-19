@@ -75,11 +75,15 @@ class ViewSetServices:
 
         except Exception: return {"deleted": False}, HTTP_400_BAD_REQUEST
 
-    def _form_query(
+    def _form_orders(self, query: QueryDict) -> list[str]:
+        date_order = ("" if query.get("dateSort") == "asc" else "-") + "upload_date"
+        return ["-status", date_order]
+
+    def _form_filters(
         self,
         project_id: int,
         request_user: CustomUser,
-        request_query: QueryDict[str, Any]
+        request_query: QueryDict
     ) -> dict[str, Any]:
         only_self_files: bool = not any([
             request_user.is_superuser,
@@ -92,7 +96,8 @@ class ViewSetServices:
 
         for filter_name, param, is_list in self.FILES_QUERIES:
             query_param = (
-                request_query.getlist(param) if is_list
+                request_query.getlist(param)
+                if is_list
                 else request_query.get(param)
             )
 
@@ -113,15 +118,16 @@ class ViewSetServices:
         self,
         project_id: int,
         request_user: CustomUser,
-        request_query: QueryDict[str, Any]
-    ) -> tuple[dict[str, list[dict[str, Any]] | int], int]:
-        filter_query = self._form_query(project_id, request_user, request_query)
+        request_query: QueryDict
+    ) -> tuple[dict[str, Any], int]:
+        filters = self._form_filters(project_id, request_user, request_query)
+        orders = self._form_orders(request_query)
 
         files = File.objects \
             .select_related("author") \
             .prefetch_related(*self.FILES_PREFETCH_FIELDS) \
-            .order_by("-status", "-upload_date") \
-            .filter(**filter_query)
+            .order_by(*orders) \
+            .filter(**filters)
 
         attribute_query = request_query.getlist("attr[]")
 
@@ -134,8 +140,8 @@ class ViewSetServices:
             files = files.filter(attributegroup__in=Subquery(sub_query))
         else: files = files.distinct()
 
-        page: int = int(request_query.get("page", 1))
-        per_page: str | int = request_query.get("per_page")
+        page = int(request_query.get("page", 1))
+        per_page = request_query.get("per_page")
         per_page = files.count() if per_page == "max" else int(per_page or 25)
 
         paginator: Paginator = Paginator(files, per_page)

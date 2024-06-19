@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { ReactElement } from "react";
-import './styles.css';
+import "./styles.css";
 
 /**
 * @param {object} props

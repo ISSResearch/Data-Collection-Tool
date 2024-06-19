@@ -12,7 +12,6 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-// TODO: resolve controlled input warning
 test("attributes form component test", async () => {
   const { result: managerHook } = renderHook(() => useAttributeManager());
   act(() => managerHook.current.formHook.addForm());

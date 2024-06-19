@@ -14,7 +14,6 @@ const ADAPTER_MAP = {
   user: userStatsAdapter
 };
 
-// TODO make variant via page query
 /**
 * @param {object} props
 * @param {number} props.pathID

@@ -136,23 +136,24 @@ class HealthCheckTest(TestCase):
     _valid = lambda *ar, **kw: HealthCheckTest._rq(200, {"isAuth": True})
 
     def test(self):
-        # TODO: works but takes to much time due to sleep inside the function
-        # mock sleep too
-        return
+        @patch("time.sleep", side_effect=lambda x: ...)
         @patch("requests.get", side_effect=self._no_status)
-        def _test_no_status(mock_func): return healthcheck_backend_app()
+        def _test_no_status(*args): return healthcheck_backend_app()
         self.assertFalse(_test_no_status())
 
+        @patch("time.sleep", side_effect=lambda x: ...)
         @patch("requests.get", side_effect=self._no_data)
-        def _test_no_data(mock_func): return healthcheck_backend_app()
+        def _test_no_data(*args): return healthcheck_backend_app()
         self.assertFalse(_test_no_data())
 
+        @patch("time.sleep", side_effect=lambda x: ...)
         @patch("requests.get", side_effect=self._no_connection)
-        def _test_no_connection(mock_func): return healthcheck_backend_app()
+        def _test_no_connection(*args): return healthcheck_backend_app()
         self.assertFalse(_test_no_connection())
 
+        @patch("time.sleep", side_effect=lambda x: ...)
         @patch("requests.get", side_effect=self._valid)
-        def _test_valid(mock_func): return healthcheck_backend_app()
+        def _test_valid(*args): return healthcheck_backend_app()
         self.assertTrue(_test_valid())
 
     @staticmethod

@@ -26,8 +26,8 @@ test("files validate component base test", async () => {
 
   await act(async () => await render(component()));
 
-  screen.getByRole("group");
-  expect(screen.getAllByRole("listbox")).toHaveLength(3);
+  expect(screen.getAllByRole("group")).toHaveLength(2);
+  expect(screen.getAllByRole("listbox")).toHaveLength(4);
   screen.getByText("No files just yet or no query matches selected params.");
 });
 

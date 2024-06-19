@@ -293,9 +293,24 @@ class AnnotationViewTest(TestCase):
             HTTP_AUTHORIZATION="Bearer " + self.admin.emit_token()
         )
 
-        self.assertTrue(invalid_request.status_code == request.status_code == 403)
-        self.assertEqual(admin_request.status_code, 202)
-        self.assertEqual(admin_request.data["annotated"], 1)
+        internal_request = self.client.post(
+            "/api/files/annotation/",
+            data={
+                "project_id": self.case.project.id,
+                "file_ids": [self.case.file_.id]
+            },
+            content_type="application/json",
+            HTTP_AUTHORIZATION="Internal " + self.admin.emit_token()
+        )
+
+        self.assertTrue(
+            invalid_request.status_code
+            == request.status_code
+            == admin_request.status_code
+            == 403
+        )
+        self.assertEqual(internal_request.status_code, 202)
+        self.assertEqual(internal_request.data["annotated"], 1)
         self.assertEqual(
             self.case.project.file_set.filter(is_downloaded=True).count(),
             1

@@ -16,3 +16,11 @@ class UserPermission(BasePermission):
         if method == "GET":
             checkup.append(bool(request.user.project_view.filter(id=project_id)))
             return any(checkup)
+
+
+class InternalPermission(BasePermission):
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        app = request.user
+        fake_name = f"{app.first_name} {app.last_name}"
+
+        return app.is_superuser and fake_name == "internal app"

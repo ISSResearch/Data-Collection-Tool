@@ -1,4 +1,4 @@
 {
-  "venvPath": ".",
+  "venvPath": "./",
   "venv": "venv"
 }

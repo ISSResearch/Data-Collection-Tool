@@ -18,6 +18,5 @@ test("project create component test", () => {
   expect(screen.queryByTestId('load-c')).toBeNull();
 
   fireEvent.input(screen.getByPlaceholderText("Enter project name"), {target: {value: "some"}});
-  // TODO: due to synthetic i cant get inout from form - resolve;
   fireEvent.click(screen.getByRole('button', { name: 'Create Project' }));
 });

@@ -14,7 +14,6 @@
 .iss__projectCard__name {
     color: var(--issBrand);
     margin-bottom: 12px;
-    word-break: break-all;
 }
 .iss__projectCard__text {
     font-size: 14px;

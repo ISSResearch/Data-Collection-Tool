@@ -201,34 +201,47 @@ class ViewServicesTest(TestCase, ViewSetServices):
         )
         self.assertIsNotNone(File.objects.get(id=self.case.file_.id).validator)
 
-    def test_form_query(self):
+    def test_form_orders(self):
+        res1 = self._form_orders({"dateSort": "asc"})
+        self.assertEqual(res1, ["-status", "upload_date"])
+
+        res2 = self._form_orders({"dateSort": "desc"})
+        self.assertEqual(res2, ["-status", "-upload_date"])
+
+        res3 = self._form_orders({})
+        self.assertEqual(res3, ["-status", "-upload_date"])
+
+        res4 = self._form_orders({"fake": "value"})
+        self.assertEqual(res4, ["-status", "-upload_date"])
+
+    def test_form_filters(self):
         query = {}
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["card"] = [self.case.file_.status]
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["type_"] = ["image"]
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["status"] = "v"
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["downloaded"] = True
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["author"] = self.admin
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["from_"] = dt.now().strftime(self.date_format)
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
         query["to"] = (dt.now() + td(days=1)).strftime(self.date_format)
-        self._form_query_mixin(query)
+        self._form_filters_mixin(query)
 
-    def _form_query_mixin(self, data={}):
+    def _form_filters_mixin(self, data={}):
         query, filter = self._get_query(**data)
-        res = self._form_query(
+        res = self._form_filters(
             self.case.project.id,
             self.case.user,
             query

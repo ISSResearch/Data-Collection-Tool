@@ -9,7 +9,7 @@ from fastapi import Request
 from shared.settings import SECRET_ALGO, SECRET_KEY, APP_BACKEND_URL
 from requests import Response, ConnectTimeout, ConnectionError
 import requests
-from time import sleep
+import time
 
 
 def get_db_uri() -> str:
@@ -74,6 +74,11 @@ def parse_request_for_jwt(request: Request) -> dict[str, Any]:
 
 
 def healthcheck_backend_app() -> bool:
+    """ Note:
+        request and time imported fully due to test process
+        tests mock whole package
+        import just function wont be mocked
+    """
     url: str = APP_BACKEND_URL + "/api/users/check/"
 
     payload_token: str = emit_token(
@@ -87,7 +92,7 @@ def healthcheck_backend_app() -> bool:
     for attempt_n in range(5):
         print(f"1/2 backend app healthcheck attempt {attempt_n + 1}...")
 
-        sleep(3)
+        time.sleep(3)
 
         try:
             response: Response = requests.get(url, headers=headers)

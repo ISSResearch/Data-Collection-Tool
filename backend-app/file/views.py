@@ -2,6 +2,7 @@ from rest_framework.views import Response, APIView, Request
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from project.permissions import ProjectStatsPermission
+from user.permissions import InternalPermission
 from .permissions import FilePermission
 from .services import ViewSetServices, StatsServices, _annotate_files
 
@@ -46,9 +47,8 @@ def get_user_stats(_, projectID: int) -> Response:
     return Response(response, status=status)
 
 
-# TODO: only internal?
 @api_view(("POST",))
-@permission_classes((IsAuthenticated, ProjectStatsPermission))
+@permission_classes((IsAuthenticated, InternalPermission))
 def get_annotation(request: Request) -> Response:
     response, status = _annotate_files(request.data)
     return Response(response, status=status)
