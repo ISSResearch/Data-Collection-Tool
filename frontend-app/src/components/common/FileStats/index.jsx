@@ -118,7 +118,7 @@ export default function FileStats({ pathID }) {
           <tbody className='iss__stats__table-body'>
             <TableBodySet bodySet={stats} countCallback={countItem} parent />
           </tbody>
-          <tfoot className='iss__stats__table-footer'>
+          <tfoot style={{display: "none"}} className='iss__stats__table-footer'>
             <tr className='iss__stats__table-row-outer'>
               <td><b>total</b></td>
               <td>{countStatus('v')}</td>

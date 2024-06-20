@@ -6,6 +6,7 @@ from attribute.serializers import AttributeGroupSerializer
 from .models import File
 from user.models import CustomUser
 from typing import Optional
+from django.db import transaction
 
 
 class FileSerializer(ModelSerializer):
@@ -30,11 +31,9 @@ class FileSerializer(ModelSerializer):
         self.validated_data["update_date"] = timezone.now()
         self.validated_data["validator"] = self.context.get("validator")
 
-        super().update(self.instance, self.validated_data)
-
-        self.instance.update_attributes(
-            self.initial_data.get("attribute", {}),
-        )
+        with transaction.atomic():
+            super().update(self.instance, self.validated_data)
+            self.instance.update_attributes(self.initial_data.get("attribute", {}))
 
         return self.instance
 

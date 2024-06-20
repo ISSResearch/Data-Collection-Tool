@@ -3,7 +3,8 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_201_CREATED,
     HTTP_200_OK,
-    HTTP_202_ACCEPTED
+    HTTP_202_ACCEPTED,
+    HTTP_404_NOT_FOUND
 )
 from rest_framework.request import QueryDict
 from rest_framework.views import Request
@@ -40,11 +41,12 @@ class ViewSetServices:
         file_id: str,
         request: Request
     ) -> tuple[dict[str, Any], int]:
-        # TODO: no handler for nofile case. imp tests after
-        file = File.objects \
-            .select_related("author") \
-            .prefetch_related("attributegroup_set") \
-            .get(id=file_id)
+        try:
+            file = File.objects \
+                .select_related("author") \
+                .prefetch_related("attributegroup_set") \
+                .get(id=file_id)
+        except File.DoesNotExist: return {"errors": "no such file"}, HTTP_404_NOT_FOUND
 
         updated_file = FileSerializer(
             file,
@@ -52,9 +54,10 @@ class ViewSetServices:
             partial=True,
             context={"validator": request.user}
         )
-        update_valid = updated_file.is_valid()
 
-        if update_valid: updated_file.update_file()
+        if update_valid := updated_file.is_valid():
+            try: updated_file.update_file()
+            except Exception: update_valid = False
 
         response = {"ok": update_valid}
 
@@ -67,11 +70,12 @@ class ViewSetServices:
 
     def _delete_file(self, file_id: str) -> tuple[dict[str, Any], int]:
         try:
-            file = File.objects.get(id=file_id)
-            file.attributegroup_set.all().delete()
-            file.delete()
+            with transaction.atomic():
+                file = File.objects.get(id=file_id)
+                file.attributegroup_set.all().delete()
+                file.delete()
 
-            return {"deleted": True}, HTTP_202_ACCEPTED
+                return {"deleted": True}, HTTP_202_ACCEPTED
 
         except Exception: return {"deleted": False}, HTTP_400_BAD_REQUEST
 
@@ -95,14 +99,11 @@ class ViewSetServices:
         if only_self_files: query["author_id"] = request_user.id
 
         for filter_name, param, is_list in self.FILES_QUERIES:
-            query_param = (
+            if query_param := (
                 request_query.getlist(param)
                 if is_list
                 else request_query.get(param)
-            )
-
-            if query_param:
-                query[filter_name] = self._get_param(filter_name, query_param)
+            ): query[filter_name] = self._get_param(filter_name, query_param)
 
         return query
 

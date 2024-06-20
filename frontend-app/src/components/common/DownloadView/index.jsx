@@ -8,7 +8,7 @@ import "./styles.css";
 
 /**
 * @param {object} props
-* @param {number} props.taskID
+* @param {string} props.taskID
 * @returns {ReactElement}
 */
 export default function DownloadView({ taskID }) {
@@ -39,7 +39,18 @@ export default function DownloadView({ taskID }) {
     clipboardTip.style.top = Y + "px";
 
     try {
-      await navigator.clipboard.writeText(taskID);
+      var { clipboard } = navigator;
+
+      if (clipboard) await clipboard.writeText(taskID);
+      else {
+        var fakeClipboard = document.createElement("textarea");
+        fakeClipboard.value = taskID;
+        document.body.appendChild(fakeClipboard);
+        fakeClipboard.select();
+        document.execCommand("copy");
+        document.body.removeChild(fakeClipboard);
+      }
+
       clipboardTip.innerHTML = "copied to clipboard";
     }
     catch ({ message }) {

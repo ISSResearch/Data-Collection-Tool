@@ -27,6 +27,15 @@ def check_user(request: Request) -> Response:
 
 
 @api_view(("POST",))
+@permission_classes((IsAuthenticated,))
+def logout_user(request: Request) -> Response:
+    request.user.token = None
+    request.user.save()
+
+    return Response()
+
+
+@api_view(("POST",))
 @permission_classes(())
 @authentication_classes(())
 def login_user(request: Request) -> Response:

@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { addAlert } from "../../slices/alerts";
 import { setUser } from "../../slices/users";
+import { api } from '../../config/api';
 import TitleSwitch from "../common/TitleSwitch";
 import Logo from '../ui/Logo';
 import './styles.css';
@@ -15,6 +16,12 @@ export default function Header() {
   const navigate = useNavigate();
 
   async function logOutUser() {
+    api.request('/api/users/logout/', {
+      method: 'post',
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
+      }
+    });
     localStorage.removeItem("dtcAccess");
     dispatch(setUser(null));
     dispatch(addAlert({ message: "User logged out", type: "success" }));

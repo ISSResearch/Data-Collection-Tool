@@ -1,34 +1,34 @@
-start:
+prod:
 	docker compose up -d
 
-start-new:
+prod-new:
 	docker compose up -d --build
 
-stop:
+prod-stop:
 	docker compose down
 
-restart:
+prod-restart:
 	make stop && make start
 
-start-dev:
+dev:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
-start-dev-new:
+dev-new:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 
-stop-dev:
+dev-stop:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
-restart-dev:
+dev-restart:
 	make stop-dev && make start-dev
 
-start-test:
+test:
 	docker compose -f docker-compose.test.yml up -d --build
 
-stop-test:
+test-stop:
 	docker compose -f docker-compose.test.yml down
 
-restart-test:
+test-restart:
 	make stop-test && make start-test
 
 appdb-dump-schema:

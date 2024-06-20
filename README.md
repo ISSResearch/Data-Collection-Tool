@@ -3,27 +3,27 @@
 ## Makefile convinient commands (**docker/docker-compose** and **.env file** are supposed to be set):
 
 - start project:
-  `make start`
+  `make prod`
 - stop project:
-  `make stop`
+  `make prod-stop`
 - restart project:
-  `make restart`
+  `make prod-restart`
 - start project with rebuild:
-  `make start-new`
+  `make prod-new`
 - start development project:
-  `make start-dev`
+  `make dev`
 - stop development project:
-  `make stop-dev`
+  `make dev-stop`
 - restart development project:
-  `make restart-dev`
+  `make dev-restart`
 - start project with rebuild:
-  `make start-dev-new`
+  `make dev-new`
 - start tests:
-  `make start-test`
+  `make test`
 - stop tests:
-  `make stop-test`
+  `make test-stop`
 - restart tests:
-  `make restart-test`
+  `make test-restart`
 - dump main apps database schema:
   `make appdb-dump-schema`
 - dump main apps database data:

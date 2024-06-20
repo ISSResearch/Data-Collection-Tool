@@ -40,6 +40,29 @@ class UserCheckViewTest(TestCase):
         self.assertTrue(result.data.get("isAuth"))
 
 
+class UserLogoutViewTest(TestCase):
+    ENDPOINT = "/api/users/logout/"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = CustomUser.objects.create(**MOCK_COLLECTOR_DATA)
+        cls.user.set_password(MOCK_COLLECTOR_DATA["password"])
+        cls.user.save()
+        cls.user.emit_token()
+
+    def test_logout(self):
+        self.assertIsNotNone(CustomUser.objects.get(id=self.user.id).token)
+
+        unauth_res = self.client.post(self.ENDPOINT, HTTP_AUTHORIZATION="Bearer asd")
+        res = self.client.post(self.ENDPOINT, HTTP_AUTHORIZATION="Bearer " + self.user.token)
+
+        self.assertEqual(unauth_res.status_code, 403)
+        self.assertEqual(res.status_code, 200)
+
+        self.assertIsNone(CustomUser.objects.get(id=self.user.id).token)
+
+
 class UserLoginViewTest(TestCase):
     ENDPOINT = "/api/users/login/"
 

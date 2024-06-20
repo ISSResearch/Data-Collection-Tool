@@ -61,7 +61,6 @@ class ViewMixIn(APIView):
 
         return response, status
 
-    @transaction.atomic
     def _perform_delete(self, id: int) -> bool:
         query: dict[str, int] = {"uid" if self.model is Level else "id": id}
         delete_item: Level | Attribute = self.model.objects.get(**query)
