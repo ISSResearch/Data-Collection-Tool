@@ -460,7 +460,6 @@ class FileUploaderTest(TestCase):
             expected_group_count
         )
 
-
     def test_assign_attributes(self):
         uploader = FileUploader(self.request, self.case.project.id)
 
