@@ -14,6 +14,7 @@ from .user_tests.views_test import (
     UserCheckViewTest,
     UserLoginViewTest,
     UserCreateViewTest,
-    CollectorViewSetTest
+    CollectorViewSetTest,
+    UserLogoutViewTest
 )
 # flake8: noqa

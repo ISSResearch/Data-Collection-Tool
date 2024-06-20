@@ -6,8 +6,7 @@ from file.file_tests.services_test import (
     ViewServicesTest,
     AnnotationTest,
     StatsServiceTest,
-    # TODO: rewrote uploader - rewrite test
-    # FileUploaderTest,
+    FileUploaderTest,
 )
 from file.file_tests.views_test import (
     FileViewSetTest,

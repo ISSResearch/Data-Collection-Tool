@@ -7,6 +7,7 @@ from rest_framework.status import (
     HTTP_202_ACCEPTED
 )
 from django.db.models import QuerySet
+from django.db import transaction
 from typing import Any
 from user.models import CustomUser
 from .serializers import ProjectSerializer, Project, ProjectsSerializer
@@ -36,12 +37,15 @@ class ViewSetServices:
         new_project: ProjectsSerializer = ProjectsSerializer(data=request_data)
 
         if valid := new_project.is_valid():
-            new_project.save()
-            new_project.add_attributes()
+            try:
+                with transaction.atomic():
+                    new_project.save()
+                    new_project.add_attributes()
+            except Exception: valid = False
 
-        response_data: dict[str, Any] = {"ok": valid}
+        response_data = {"ok": valid}
 
-        if not valid: response_data["errors"] = new_project.errors
+        if not valid: response_data["errors"] = new_project.errors or "Unexpected error"
 
         return (
             response_data,
@@ -74,19 +78,22 @@ class ViewSetServices:
         pk: int,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
-        project: Project = Project.objects \
+        project = Project.objects \
             .prefetch_related("attribute_set") \
             .get(id=pk)
 
-        updated: ProjectSerializer = ProjectSerializer(
+        updated = ProjectSerializer(
             project,
             data=request_data,
             partial=True
         )
 
         if valid := updated.is_valid():
-            updated.save()
-            updated.add_attributes()
+            try:
+                with transaction.atomic():
+                    updated.save()
+                    updated.add_attributes()
+            except Exception: valid = False
 
         response: dict[str, Any] = {'ok': valid}
 

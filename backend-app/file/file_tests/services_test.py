@@ -159,6 +159,10 @@ class ViewServicesTest(TestCase, ViewSetServices):
             {"data": payload, "user": self.case.user}
         )
 
+        no_file_rq = self._patch_file("asdasd901823", request(request_data))
+        self.assertEqual(no_file_rq[1], 404)
+        self.assertEqual(no_file_rq[0]["errors"], "no such file")
+
         valid_rq_init_date = File.objects.get(id=self.case.file_.id).update_date,
 
         self.assertIsNone(File.objects.get(id=self.case.file_.id).validator)
@@ -433,160 +437,48 @@ class FileUploaderTest(TestCase):
             {'user': cls.case.user, 'POST': cls.post}
         )
 
-    def setUp(self):
-        self.uploader = FileUploader(self.request, self.case.project.id)
-        if not self.base_check: self._base_check()
+    def test_proceed_upload(self):
+        uploader = FileUploader(self.request, self.case.project.id)
+        init_count = File.objects.count()
 
-    def test_assing_groups(self):
-        res = self.uploader._assign_groups(self.case.file_, 1)
-        self.assertEqual(res, [])
-        self.assertEqual(self.uploader.groups_taken, 1)
+        temp = uploader.meta
+        uploader.meta = None
+        uploader.proceed_upload()
 
-        groups = AttributeGroup.objects.bulk_create(
-            {AttributeGroup() for _ in range(3)}
-        )
-        self.uploader.free_attributegroups = list(groups)
-        res_2 = self.uploader._assign_groups(self.case.file_, 2)
+        self.assertFalse(uploader.success)
 
-        self.assertTrue(all([
-            self.case.file_ == group.file
-            for group in groups[self.uploader.groups_taken:]
-        ]))
-        self.assertTrue(self.case.file_ != groups[0].file)
+        uploader.meta = temp
 
-        self.assertEqual(len(res_2), 2)
+        expected_group_count = len(uploader.meta["atrsGroups"])
 
-    def test_form_instances(self):
-        meta = {**self.file_data}
-        del meta["atrsGroups"]
-        self._form_instances_mixin(meta)
-        self._form_instances_mixin({**meta, "atrsGroups": []})
-        self._form_instances_mixin({**meta, "atrsGroups": [1, 2]})
+        uploader.proceed_upload()
+        self.assertTrue(uploader.success)
 
-    def test_set_created(self):
-        self.assertTrue(
-            self.uploader.created_files
-            == self.uploader.new_instances
-            == []
+        self.assertEqual(init_count + 1, File.objects.count())
+        self.assertEqual(
+            File.objects.get(id=self.file_data["fileID"]).attributegroup_set.count(),
+            expected_group_count
         )
 
-        self.uploader.new_instances = [(1, 2, 3)] * 3
-        self.uploader.set_created()
-
-        self.assertEqual(self.uploader.created_files, [1] * 3)
 
     def test_assign_attributes(self):
-        groups = AttributeGroup.objects.bulk_create(
-            {AttributeGroup() for _ in range(1)}
-        )
-        self.uploader.free_attributegroups = list(groups)
-        res = self.uploader._form_instances(self.file_data)
-        self.uploader.new_instances = [res]
+        uploader = FileUploader(self.request, self.case.project.id)
 
-        self.uploader.assign_attributes()
+        meta_groups = uploader.meta["atrsGroups"]
+        try:
+            uploader.assign_attributes([], meta_groups)
+            self.assertTrue(False)
+        except Exception: self.assertTrue(True)
 
-        self.assertEqual(
-            res[1][0].attribute.count(),
-            len(self.file_data["atrsGroups"])
-        )
+        groups = [AttributeGroup.objects.create() for _ in range(len(meta_groups))]
 
-    def test_write_instances(self):
-        groups = AttributeGroup.objects.bulk_create(
-            {AttributeGroup() for _ in range(1)}
-        )
-        self.uploader.free_attributegroups = list(groups)
-        res = self.uploader._form_instances(self.file_data)
-        self.uploader.new_instances = [res]
-
-        self.assertIsNone(res[0].id)
-        self.uploader.write_instances()
-        self.assertIsNotNone(res[0].id)
-
-    def test_gather_instances(self):
-        temp = self.uploader.meta
-        self.assertEqual(self.uploader.new_instances, [])
-        self._gather_instances_mixin([])
-        self._gather_instances_mixin(temp)
-
-    def test_get_groups(self):
-        init_ag_count = AttributeGroup.objects.count()
-        self.assertEqual(self.uploader.free_attributegroups, [])
-        temp = self.uploader.meta
-
-        self._get_groups_mixin([])
-        self._get_groups_mixin(temp)
+        uploader.assign_attributes(groups, meta_groups)
 
         self.assertEqual(
-            init_ag_count + sum([len(m["atrsGroups"]) for m in temp]),
-            AttributeGroup.objects.count()
-        )
-
-    def test_proceed_upload(self):
-        temp = self.uploader.meta
-        self.uploader.meta = None
-        self.assertFalse(self.uploader.proceed_upload())
-
-        self.uploader.meta = temp
-
-        expected_count = sum([
-            len(meta["atrsGroups"])
-            for meta in self.uploader.meta
-        ])
-
-        self.assertTrue(self.uploader.proceed_upload())
-
-        self.assertTrue(
-            len(self.uploader.free_attributegroups)
-            == len(self.uploader.new_instances)
-            == len(self.uploader.created_files)
-            == expected_count
-        )
-
-        self.assertEqual(
-            self.uploader.free_attributegroups[0].file,
-            self.uploader.created_files[0]
+            groups[0].attribute.count(),
+            len(meta_groups[0])
         )
         self.assertEqual(
-            self.uploader.free_attributegroups[0].attribute.first().id,
-            self.case.attribute.id
+            set(groups[0].attribute.values_list("id", flat=True)),
+            set(meta_groups[0])
         )
-
-    def _get_groups_mixin(self, meta):
-        self.uploader.meta = meta
-        self.uploader.get_free_attributegroups()
-        self.assertEqual(len(self.uploader.free_attributegroups), len(meta))
-
-    def _gather_instances_mixin(self, meta):
-        self.uploader.meta = meta
-        self.uploader.gather_instances()
-        self.assertEqual(len(self.uploader.new_instances), len(meta))
-
-    def _form_instances_mixin(self, meta):
-        groups = AttributeGroup.objects.bulk_create(
-            {AttributeGroup() for _ in range(2)}
-        )
-        self.uploader.free_attributegroups = list(groups)
-
-        res_file, res_groups, res_meta = self.uploader._form_instances(meta)
-
-        self.assertEqual(res_meta, meta.get("atrsGroups", []))
-        self.assertTrue(isinstance(res_file, File))
-        self.assertEqual(
-            res_file.file_name,
-            f'{meta["name"]}.{meta["extension"]}'
-        )
-        self.assertEqual(res_file.file_type, meta["type"])
-        self.assertEqual(len(res_groups), len(meta.get("atrsGroups", [])))
-        self.assertTrue(all([res_file == g.file for g in res_groups]))
-
-    def _base_check(self):
-        self.assertEqual(self.uploader.project_id, self.case.project.id)
-        self.assertEqual(self.uploader.author_id, self.case.user.id)
-        self.assertEqual(self.uploader.meta, self.file_data)
-
-        self.assertEqual(self.uploader.free_attributegroups, list())
-        self.assertEqual(self.uploader.new_instances, list())
-        self.assertEqual(self.uploader.created_files, list())
-        self.assertEqual(self.uploader.groups_taken, 0)
-
-        self.base_check = True
