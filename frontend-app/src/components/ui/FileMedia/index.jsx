@@ -14,21 +14,20 @@ import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
 import "./styles.css";
 
+const FALLBACK_SRC = "/images/fallback-media.svg";
+
 /**
 * @type {Function}
 * @param {object} event
 * @param {object} event.target
 * @returns {void}
 */
-var handleMediaFallback = ({ target }) => {
-  var fallbackSrc = "/images/fallback-media.svg";
-
-  // TODO: after this fallback controls wont show up again, fix
+const handleMediaFallback = ({ target }) => {
   if (target.tagName === "VIDEO") {
     target.controls = false;
-    target.poster = fallbackSrc;
+    target.poster = FALLBACK_SRC;
   }
-  else target.src = fallbackSrc;
+  else target.src = FALLBACK_SRC;
 };
 
 /**
@@ -47,17 +46,17 @@ function FileMedia({ files, slide, pathID }, ref) {
   const navigate = useNavigate();
   const mediaRef = useRef(null);
 
-  var MediaItem = useCallback((props) => {
+  const MediaItem = useCallback((props) => {
     return typeVideo
       ? <video
         autoPlay
         muted
-        controls
         playsInline
+        controls
         { ...props }
-        onError={(e) => handleMediaFallback(e)}
+        onError={handleMediaFallback}
       />
-      : <img alt="validation_item" {...props} onError={(e) => handleMediaFallback(e)} />;
+      : <img alt="media" {...props} onError={handleMediaFallback} />;
   }, [fileUrl]);
 
   let scale = 1,
@@ -66,38 +65,38 @@ function FileMedia({ files, slide, pathID }, ref) {
     pointY = 0,
     start = { x: 0, y: 0 };
 
-  function resetZoom() {
+  const resetZoom = () => {
     scale = 1;
     panning = false;
     pointX = 0;
     pointY = 0;
     start = { x: 0, y: 0 };
     setTransform();
-  }
+  };
 
   useImperativeHandle(ref, () => resetZoom);
 
-  function setTransform() {
+  const setTransform = () => {
     mediaRef.current.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-  }
+  };
 
-  function handleMouseDown(ev) {
+  const handleMouseDown = (ev) => {
     ev.preventDefault();
     start = { x: ev.clientX - pointX, y: ev.clientY - pointY };
     panning = true;
-  }
+  };
 
-  function handleMouseUp() { panning = false; }
+  const handleMouseUp = () => panning = false;
 
-  function handleMouseMove(ev) {
+  const handleMouseMove = (ev) => {
     ev.preventDefault();
     if (!panning) return;
     pointX = ev.clientX - start.x;
     pointY = ev.clientY - start.y;
     setTransform();
-  }
+  };
 
-  function handleWheel(ev) {
+  const handleWheel = (ev) => {
     let xs = (ev.clientX - pointX) / scale,
       ys = (ev.clientY - pointY) / scale,
       delta = (ev.wheelDelta ? ev.wheelDelta : -ev.deltaY);
@@ -105,7 +104,7 @@ function FileMedia({ files, slide, pathID }, ref) {
     pointX = ev.clientX - xs * scale;
     pointY = ev.clientY - ys * scale;
     setTransform();
-  }
+  };
 
   useEffect(() => {
     var media = mediaRef.current;
@@ -161,7 +160,12 @@ function FileMedia({ files, slide, pathID }, ref) {
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
         className="mediaItem"
-      >{fileUrl && <MediaItem src={fileUrl} className='mediaFile' />}</div>
+      >
+        {
+          fileUrl &&
+          <MediaItem src={fileUrl} className='mediaFile' />
+        }
+      </div>
     </div>
   );
 }

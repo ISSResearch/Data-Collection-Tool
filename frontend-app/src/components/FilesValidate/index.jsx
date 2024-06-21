@@ -119,7 +119,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
 
     if (!card.length) handleChange("card", ['v']);
 
-    // TODO: query collectors depend on uploads to project by users, REFACTOR!
+    // TODO: query collectors depend on uploads to project by users. REFACTOR!
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
         params: { card, attr, type, author, from: date?.from, to: date?.to, page, dateSort },

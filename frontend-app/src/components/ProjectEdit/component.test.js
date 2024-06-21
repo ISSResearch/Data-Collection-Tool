@@ -74,6 +74,5 @@ test("project edit component test", async () => {
   await tryDelete("some");
   expect(alertTrigger).toBeTruthy();
   expect(screen.queryByText(/Are you sure you want to delete/)).toBeNull();
-  // TODO: resolve warning
   await tryDelete("project name");
 });

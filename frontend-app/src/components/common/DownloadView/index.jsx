@@ -12,26 +12,14 @@ import "./styles.css";
 * @returns {ReactElement}
 */
 export default function DownloadView({ taskID }) {
-  const [intervalCheck, setIntervalCheck] = useState(false);
   const [message, setMessage] = useState("");
   const [download, setDownload] = useState(false);
   const [pageBlock] = useState(true);
   const dispatch = useDispatch();
   const componentRef = useRef(null);
+  const intervalCheck = useRef(null);
 
-  // TODO: couldnt clear interval the normal way.
-  // useref as store for handler might help
-  // consider ^ + dinf similar issues everywhere
-  const Helper = () => {
-    useEffect(() => {
-      var interval = setInterval(checkTaskStatus, 5000);
-      return () => {
-        clearInterval(interval);
-      };
-    }, []);
-  };
-
-  async function copyID({ clientX: X, clientY: Y }) {
+  const copyID = async ({ clientX: X, clientY: Y }) => {
     var clipboardTip = document.createElement("div");
 
     clipboardTip.className = "iss__downloadingView__clipboardTip";
@@ -63,7 +51,7 @@ export default function DownloadView({ taskID }) {
     componentRef.current.appendChild(clipboardTip);
 
     setTimeout(() => clipboardTip.parentNode.removeChild(clipboardTip), 500);
-  }
+  };
 
   const statusHandlers = {
     SUCCESS: (archiveID) => {
@@ -79,7 +67,7 @@ export default function DownloadView({ taskID }) {
     }
   };
 
-  async function getDataset(archiveId) {
+  const getDataset = async (archiveId) => {
     setDownload(true);
 
     try {
@@ -112,9 +100,9 @@ export default function DownloadView({ taskID }) {
         noSession: authFailed
       }));
     }
-  }
+  };
 
-  async function checkTaskStatus() {
+  const checkTaskStatus = async () => {
     try {
       var { data } = await fileApi.get(`/api/task/${taskID}/`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
@@ -123,7 +111,8 @@ export default function DownloadView({ taskID }) {
       var handler = statusHandlers[status];
 
       if (handler) {
-        setIntervalCheck(false);
+        clearInterval(intervalCheck.current);
+        intervalCheck.current = null;
         handler(archive_id);
       }
     }
@@ -138,7 +127,7 @@ export default function DownloadView({ taskID }) {
         noSession: authFailed
       }));
     }
-  }
+  };
 
   useBlocker(() => {
     return pageBlock
@@ -155,13 +144,13 @@ export default function DownloadView({ taskID }) {
   }, [pageBlock]);
 
   useEffect(() => {
-    setIntervalCheck(true);
     checkTaskStatus();
+    const interval = setInterval(checkTaskStatus, 5000);
+    intervalCheck.current = interval;
   }, []);
 
   return (
     <>
-      {intervalCheck && <Helper />}
       <div ref={componentRef} className="iss__downloadingView__title">
         <h2>Task id: </h2>
         <span
