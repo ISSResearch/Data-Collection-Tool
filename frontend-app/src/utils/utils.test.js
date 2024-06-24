@@ -10,6 +10,7 @@ import {
   formUID,
   traverseWithReplace,
   drawPaths,
+  sleep
 } from ".";
 import {
   object_with_inner_list,
@@ -445,4 +446,20 @@ test("draw path test", () => {
       order: 21,
     },
   ]);
+});
+
+test("sleep util test", async () => {
+  let val = 0;
+  sleep(100).then(() => {val += 1; expect(val).toBe(2);});
+  expect(val).toBe(0);
+  val += 1;
+  expect(val).toBe(1);
+});
+
+test("sleep util test", async () => {
+  let val = 0;
+  await sleep(100).then(() => val = 1);
+  expect(val).toBe(1);
+  val = 2;
+  expect(val).toBe(2);
 });

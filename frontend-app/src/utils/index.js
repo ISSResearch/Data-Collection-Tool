@@ -169,10 +169,17 @@ export function traverseWithReplace(
 * @param {number} parentOrder
 * @returns {void}
 */
-export function drawPaths(items, parentOrder=0) {
+export const drawPaths = (items, parentOrder=0) => {
   items.forEach((item, index) => {
     var { children } = item;
     item.order = (parentOrder * 10) + (index + 1);
     if (children) drawPaths(item.children, item.order);
   });
-}
+};
+
+
+/**
+* @param {number} ms
+* @returns {Promise<void>}
+*/
+export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
