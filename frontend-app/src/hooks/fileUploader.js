@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api, fileApi } from '../config/api';
+import { sleep } from "../utils";
 
 /**
 * @param {number} projectID
@@ -13,7 +14,7 @@ export default function useFileUploader(projectID) {
   * @param {object} file
   * @returns {Promise<string>}
   */
-  async function _writeFile(file) {
+  const _writeFile = async (file) => {
     var data = {
       file: file.file,
       file_meta: JSON.stringify({
@@ -45,14 +46,14 @@ export default function useFileUploader(projectID) {
     setFiles((prev) => [...prev]);
 
     return response.data.result;
-  }
+  };
 
   /**
   * @param {object} file
   * @param {string} fileID
   * @returns {Promise<{data: object}>}
   */
-  async function _writeObject(file, fileID) {
+  const _writeObject = async (file, fileID) => {
     var formData = new FormData();
     var { name, extension, type, atrsGroups } = file;
 
@@ -69,24 +70,24 @@ export default function useFileUploader(projectID) {
         "Authorization": "Bearer " + localStorage.getItem("dtcAccess"),
       }
     });
-  }
+  };
 
   /**
   * @param {string} fileID
   * @returns {Promise<object>}
   */
-  async function _deleteFile(fileID) {
+  const _deleteFile = async (fileID) => {
     await fileApi.delete(
       `/api/storage/project_${project}/${fileID}/`,
       { headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") } }
     );
-  }
+  };
 
   /**
   * @param {object} file
-  * @returns {Promise<undefined>}
+  * @returns {Promise<void>}
   */
-  async function _proceedFile(file) {
+  const _proceedFile = async (file) => {
     try {
       var fileID = await _writeFile(file);
       await _writeObject(file, fileID);
@@ -103,24 +104,42 @@ export default function useFileUploader(projectID) {
       file.error = response.data?.result || message;
       setFiles((prev) => [...prev]);
     }
-  }
+  };
 
-  // TODO: rework: rewrite pool
-  /**
-  * @returns {Promise<undefined>}
-  */
-  async function proceedUpload() {
-    const atOnce = 5;
-    var proceedFiles = files.filter(({ status }) => status !== "a");
+  // /** @returns {Promise<undefined>} */
+  // async function proceedUpload() {
+  //   const atOnce = 5;
+  //   var proceedFiles = files.filter(({ status }) => status !== "a");
 
-    for (var i = 0; i < Math.ceil(proceedFiles.length / atOnce); i++) {
-      await Promise.all(
-        proceedFiles
-          .slice(atOnce * i, atOnce * (i + 1))
-          .map((file) => _proceedFile(file))
-      );
+  //   for (var i = 0; i < Math.ceil(proceedFiles.length / atOnce); i++) {
+  //     await Promise.all(
+  //       proceedFiles
+  //         .slice(atOnce * i, atOnce * (i + 1))
+  //         .map((file) => _proceedFile(file))
+  //     );
+  //   }
+  // }
+
+  /** @returns {Promise<void>} */
+  const proceedUpload = async () => {
+    let pool = 20;
+
+    const proceedFiles = files.filter(({ status }) => status !== "a");
+
+    while (true) {
+      if (pool === 0) {
+        await sleep(100);
+        continue;
+      }
+
+      let file = proceedFiles.pop();
+
+      if (!file) break;
+
+      pool -= 1;
+      _proceedFile(file).finally(() => (pool += 1));
     }
-  }
+  };
 
   return { files, setFiles, proceedUpload };
 }

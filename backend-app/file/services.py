@@ -147,15 +147,17 @@ class ViewSetServices:
 
         paginator: Paginator = Paginator(files, per_page)
 
-        return {
-            "data": FileSerializer(
-                paginator.page(page).object_list,
-                many=True
-            ).data,
-            "page": page,
-            "per_page": paginator.per_page,
-            "total_pages": paginator.num_pages
-        }, HTTP_200_OK
+        try:
+            return {
+                "data": FileSerializer(
+                    paginator.page(page).object_list,
+                    many=True
+                ).data,
+                "page": page,
+                "per_page": paginator.per_page,
+                "total_pages": paginator.num_pages
+            }, HTTP_200_OK
+        except Exception: return {}, HTTP_404_NOT_FOUND
 
     def _create_file(
         self,

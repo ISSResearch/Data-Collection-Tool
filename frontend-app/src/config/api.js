@@ -24,10 +24,9 @@ const origin = process.env.REACT_APP_CASE === 'test'
 /** @type {string} */
 const storageOrigin = getOriginDomain();
 
-// TODO: fix env variables
 /** @type {Api} */
 export const api = axios.create({
-  baseURL: `${origin}:${backendPort || 8000}`,
+  baseURL: `${origin}:${backendPort}`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
   xsrfCookieName: "csrftoken",
@@ -36,7 +35,7 @@ export const api = axios.create({
 
 /** @type {Api} */
 export const fileApi = axios.create({
-  baseURL: `${storageOrigin}:${storagePort || 9000}`,
+  baseURL: `${storageOrigin}:${storagePort}`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
   xsrfCookieName: "csrftoken",

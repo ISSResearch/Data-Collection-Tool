@@ -93,7 +93,7 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     command: >
-      sh -c "npm run build && serve -s build"
+      sh -c "REACT_APP_STORAGE_PORT=${STORAGE_PORT:-9000} REACT_APP_BACKEND_PORT=${BACKEND_PORT:-8000} npm run build && serve -s build"
     networks:
       - iss_network
 

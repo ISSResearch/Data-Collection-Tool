@@ -17,7 +17,7 @@
   "scripts": {
     "start": "export REACT_APP_STORAGE_PORT=$STORAGE_PORT && export REACT_APP_BACKEND_PORT=$BACKEND_PORT && export REACT_APP_CASE=$CASE && react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts REACT_APP_STORAGE_PORT=$STORAGE_PORT && export REACT_APP_BACKEND_PORT=$BACKEND_PORT test",
     "eject": "react-scripts eject",
     "lint": "eslint src/*",
     "compile": "tsc"

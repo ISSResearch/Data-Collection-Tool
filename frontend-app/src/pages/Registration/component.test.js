@@ -24,5 +24,5 @@ test("login page test", () => {
 
   expect(nav.title).toBe("Registration");
   expect(nav.nav).toHaveLength(2);
-  // TODO: resolve same issue as in login
+  // TODO: resolve same issue as at login
 });

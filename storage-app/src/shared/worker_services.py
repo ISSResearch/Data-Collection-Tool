@@ -35,10 +35,7 @@ class Zipper:
         self.archive = f"{self.temp_prefix}/{ObjectId()}.{self.archive_extension}"
         json_data: Any = dumps(self.annotation, indent=4).encode('utf-8')
 
-        # TODO: check other compress types
         with ZipFile(self.archive, 'w', ZIP_DEFLATED) as zip:
-            # TODO: proper iterating had fetch_next but it returns int apparently
-            # can use db's io loop
             try:
                 while object := await self.object_set.next():
                     zip.writestr(self._get_object_name(object), object.read())

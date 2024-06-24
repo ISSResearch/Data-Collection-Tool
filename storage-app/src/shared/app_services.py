@@ -177,8 +177,9 @@ class BucketObject:
             {"metadata.hash": new_hash}
         )
 
-        # TODO: this fetch is gonna be depracated
-        if await cursor.fetch_next: raise AssertionError
+        try:
+            if await cursor.next(): raise AssertionError
+        except StopAsyncIteration: ...
 
         file_item["metadata"]["hash"] = new_hash
 
