@@ -17,6 +17,8 @@ from user.models import CustomUser
 from json import loads
 from typing import Any
 from datetime import datetime as dt
+from io import BytesIO
+from json import dumps
 from .serializers import File, FileSerializer
 
 
@@ -323,3 +325,32 @@ def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
         "annotated": annotated,
         "annotation": FileSerializer(annotation, many=True).data
     }, HTTP_202_ACCEPTED
+
+
+def form_export_file(query: dict[str, Any]) -> BytesIO:
+    query_set = {"type", "project_id", "choice"}
+    assert not (
+        no_ps := [p for p in query if not query.get(p)]
+    ), f"{', '.join(no_ps)} must be provided"
+
+    choice = query["choice"]
+    project_id = query["project_id"]
+    file_type = query["type"]
+
+    assert file_type == "json", f"{file_type} not implemented"
+
+    choice_map = {
+        "attribute": StatsServices.from_attribute,
+        "user": StatsServices.from_user
+    }
+
+    attributes = choice_map[choice](project_id)
+
+    file = BytesIO()
+
+    prepared_data = bytes(dumps(attributes), encoding="utf-8")
+
+    file.write(prepared_data)
+    file.seek(0)
+
+    return file
