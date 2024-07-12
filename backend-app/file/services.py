@@ -244,6 +244,25 @@ class StatsServices:
         "file_type"
     )
 
+    user_item = lambda row: (
+        row["author_id"],
+        row["author__username"],
+        row.get("count") or 0,
+        row.get("status") or "v",
+        row.get("file_type") or "no data",
+    )
+
+    attribute_item = lambda row: (
+        row["attribute__id"],
+        row.get("attribute__attributegroup__file__status") or "v",
+        row.get("attribute__name") or "no name",
+        row.get("attribute__attributegroup__file__file_type") or "no data",
+        row.get("attribute__parent"),
+        row["name"],
+        row.get("order") or 0,
+        row.get("count") or 0,
+    )
+
     @classmethod
     def from_attribute(cls, project_id: int) -> tuple[list[dict[str, Any]], int]:
         stats: list[dict[str, Any]] = list(
@@ -291,7 +310,7 @@ class StatsServices:
 
         if empty_stats: stats.extend(empty_stats)
 
-        return stats, HTTP_200_OK
+        return cls._attribute_stat_adapt(stats), HTTP_200_OK
 
     @classmethod
     def from_user(cls, project_id: int):
@@ -303,7 +322,71 @@ class StatsServices:
                 .annotate(count=Count("file_type"))
         )
 
-        return stats, HTTP_200_OK
+        return cls._user_stat_adapt(stats), HTTP_200_OK
+
+    @classmethod
+    def _attribute_stat_adapt(cls, stat_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        prepared_stats = {}
+
+        for row in stat_data:
+            a_id, \
+                a_status, \
+                a_name, \
+                a_type, \
+                a_parent, \
+                l_name, \
+                order, \
+                count = cls.attribute_item(row)
+
+            target = prepared_stats.get(a_id)
+
+            if not target: prepared_stats[a_id] = {
+                "id": a_id,
+                "levelName": l_name,
+                "name": a_name,
+                "parent": a_parent,
+                "order": order,
+                a_status: {a_type: count}
+            }
+            elif target.get(a_status):
+                prev_count = target[a_status].get(a_type, 0)
+                target[a_status][a_type] = prev_count + count
+            else: target[a_status] = {a_type: count}
+
+        for row in prepared_stats.values():
+            try:
+                parent = next((
+                    parent for parent in prepared_stats.values()
+                    if parent["id"] == row["parent"]
+                ))
+                parent["children"] = parent.get("children", []) + [row]
+            except Exception: continue
+
+        return sorted(
+            filter(lambda r: not r.get("parent"), prepared_stats.values()),
+            key=lambda r: r["order"]
+        )
+
+    @classmethod
+    def _user_stat_adapt(cls, stats_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        prepared_stats = {}
+
+        for row in stats_data:
+            a_id, name, count, status, f_type = cls.user_item(row)
+
+            target = prepared_stats.get(a_id)
+
+            if not target: prepared_stats[a_id] = {
+                "id": a_id,
+                "name": name,
+                status: {f_type: count}
+            }
+            elif target.get(status):
+                prev_count = target[status].get(f_type) or 0
+                target[status][f_type] = prev_count + count
+            else: target[status] = {f_type: count}
+
+        return prepared_stats.values()
 
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -330,7 +413,7 @@ def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
 def form_export_file(query: dict[str, Any]) -> BytesIO:
     query_set = {"type", "project_id", "choice"}
     assert not (
-        no_ps := [p for p in query if not query.get(p)]
+        no_ps := [p for p in query_set if not query.get(p)]
     ), f"{', '.join(no_ps)} must be provided"
 
     choice = query["choice"]

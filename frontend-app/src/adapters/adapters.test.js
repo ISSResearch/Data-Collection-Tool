@@ -2,17 +2,11 @@ import {
   inputFilesAdapter,
   attributeAdapter,
   attributeGroupsAdapter,
-  userStatsAdapter,
-  attributeStatsAdapter
 } from '.';
 import {
   raw_project,
   prepared_attributes,
   raw_file_attributes,
-  raw_user_stats,
-  prepared_user_stats,
-  raw_attribute_stats,
-  prepared_attribute_stats
 } from '../config/mock_data';
 
 test("input files adapter test", () => {
@@ -42,14 +36,4 @@ test("attribute groups adapter test", () => {
   expect(preparedGroups).toEqual({
     '5738e31f-c43a-4195-b1c2-ea513424a309': { 0: [249, 259, 260], 1: [271] }
   });
-});
-
-test("user stats adapter test", () => {
-  var preparedStats = userStatsAdapter(raw_user_stats);
-  expect(preparedStats).toEqual(prepared_user_stats);
-});
-
-test("attribute stats adapter test", () => {
-  var preparedStats = attributeStatsAdapter(raw_attribute_stats);
-  expect(preparedStats).toEqual(prepared_attribute_stats);
 });

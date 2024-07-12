@@ -57,14 +57,10 @@ def get_annotation(request: Request) -> Response:
 
 
 @api_view(("GET",))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ProjectStatsPermission))
 def export_stats(request: Request) -> Response | FileResponse:
     try:
         query = request.query_params
         response = form_export_file(query)
-        return FileResponse(
-            response,
-            filename="export." + query["type"],
-            as_attachment=True
-        )
+        return FileResponse(response)
     except Exception as err: return Response(str(err), HTTP_400_BAD_REQUEST)

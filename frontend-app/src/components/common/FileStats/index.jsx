@@ -1,6 +1,5 @@
 import { useEffect, useState, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { attributeStatsAdapter, userStatsAdapter } from "../../../adapters";
 import { api } from "../../../config/api";
 import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
@@ -8,11 +7,8 @@ import TableBodySet from "../TableBodySet";
 import Load from "../../ui/Load";
 import "./styles.css";
 
-/** @type {{[type: string]: Function}} */
-const ADAPTER_MAP = {
-  attribute: attributeStatsAdapter,
-  user: userStatsAdapter
-};
+/** @type {string[]} */
+const STAT_TYPES = ["attribute", "user"];
 
 /** @type {string[]} */
 const EXPORT_VARIANTS = ["cvs", "json", "xls"];
@@ -92,7 +88,7 @@ export default function FileStats({ pathID }) {
       headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
     })
       .then(({ data }) => {
-        setStats(ADAPTER_MAP[choice](data));
+        setStats(data);
         setLoading(false);
       })
       .catch(({ message, response }) => {
@@ -117,7 +113,7 @@ export default function FileStats({ pathID }) {
     >
       Stats by:
       {
-        Object.keys(ADAPTER_MAP).map((key) => (
+        STAT_TYPES.map((key) => (
           <label
             key={key}
             className={

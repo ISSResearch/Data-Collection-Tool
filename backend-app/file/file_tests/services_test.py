@@ -369,24 +369,21 @@ class StatsServiceTest(TestCase):
         res, code = StatsServices.from_attribute(self.case.project.id)
 
         check_against = {
-            'attribute__attributegroup__file__file_type': self.case.file_.file_type,
-            'attribute__attributegroup__file__status': self.case.file_.status,
-            'attribute__id': self.case.attribute.id,
-            'attribute__name': self.case.attribute.name,
-            'attribute__parent': self.case.attribute.parent,
-            'count': self.case.file_.attributegroup_set.first().attribute.count(),
-            'name': self.case.level.name,
-            'order': self.case.level.order
+            "id": self.case.attribute.id,
+            "levelName": self.case.level.name,
+            "order": self.case.level.order,
+            "name": self.case.attribute.name,
+            "parent": self.case.attribute.parent,
+            self.case.file_.status or "v": {
+                self.case.file_.file_type or "no data":
+                    self.case.file_.attributegroup_set.first().attribute.count()
+            },
         }
 
         self.assertTrue(empty_code == code == no_proj_code == 200)
         self.assertTrue(empty_res == no_proj_res == [])
 
         self.assertEqual(len(res), self.case.project.file_set.count())
-        self.assertEqual(
-            set(res[0].keys()),
-            set(StatsServices._ATTRIUBE_QUERY_VALUES).union(["count"])
-        )
         self.assertEqual(res[0], check_against)
 
     def test_from_user(self):
@@ -394,22 +391,23 @@ class StatsServiceTest(TestCase):
         no_proj_res, no_proj_code = StatsServices.from_user(9999)
         res, code = StatsServices.from_user(self.case.project.id)
 
+        empty_res = list(empty_res)
+        no_proj_res = list(no_proj_res)
+        res = list(res)
+
         check_against = {
-            "author_id": self.case.user.id,
-            "author__username": self.case.user.username,
-            "status": self.case.file_.status,
-            "file_type": self.case.file_.file_type,
-            "count": self.case.project.file_set.count()
+            "id": self.case.user.id,
+            "name": self.case.user.username,
+            self.case.file_.status or "v": {
+                self.case.file_.file_type or "no data":
+                    self.case.project.file_set.count()
+            },
         }
 
         self.assertTrue(empty_code == code == no_proj_code == 200)
         self.assertTrue(empty_res == no_proj_res == [])
 
         self.assertEqual(len(res), self.case.project.file_set.count())
-        self.assertEqual(
-            set(res[0].keys()),
-            set(StatsServices._USER_QUERY_VALUES).union(["count"])
-        )
         self.assertEqual(res[0], check_against)
 
 
