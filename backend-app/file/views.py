@@ -60,7 +60,6 @@ def get_annotation(request: Request) -> Response:
 @permission_classes((IsAuthenticated, ProjectStatsPermission))
 def export_stats(request: Request) -> Response | FileResponse:
     try:
-        query = request.query_params
-        response = form_export_file(query)
+        response = form_export_file(request.query_params)
         return FileResponse(response)
     except Exception as err: return Response(str(err), HTTP_400_BAD_REQUEST)

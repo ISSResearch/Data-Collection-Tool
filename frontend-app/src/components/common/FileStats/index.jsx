@@ -11,7 +11,7 @@ import "./styles.css";
 const STAT_TYPES = ["attribute", "user"];
 
 /** @type {string[]} */
-const EXPORT_VARIANTS = ["cvs", "json", "xls"];
+const EXPORT_VARIANTS = ["csv", "json", "xls"];
 
 /**
 * @param {{ image?: number, video?: number }} [a]
@@ -134,14 +134,14 @@ export default function FileStats({ pathID }) {
       }
     </fieldset>
     <fieldset className="iss__stats__radio">
-      Export stats as:
+      Export as:
       {
         EXPORT_VARIANTS.map((type) => (
           <button
             type="button"
             key={type}
             className="iss__stats__exportButton"
-            style={type !== "json" ? {opacity: 0.3, pointerEvents: "none"} : undefined}
+            style={type === "xls" ? {opacity: 0.3, pointerEvents: "none"} : undefined}
             onClick={() => exportStats(type)}
           >{type}</button>
         ))

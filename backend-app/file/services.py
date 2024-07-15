@@ -19,6 +19,7 @@ from typing import Any
 from datetime import datetime as dt
 from io import BytesIO
 from json import dumps
+from .export import IMPLEMENTED, JSON, CSV
 from .serializers import File, FileSerializer
 
 
@@ -420,20 +421,16 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     project_id = query["project_id"]
     file_type = query["type"]
 
-    assert file_type == "json", f"{file_type} not implemented"
+    assert file_type in IMPLEMENTED, f"{file_type} not implemented"
 
     choice_map = {
         "attribute": StatsServices.from_attribute,
         "user": StatsServices.from_user
     }
 
-    attributes = choice_map[choice](project_id)
+    export_map = {"json": JSON, "csv": CSV}
 
-    file = BytesIO()
+    stats, _ = choice_map[choice](project_id)
+    file = export_map[file_type](stats, choice)
 
-    prepared_data = bytes(dumps(attributes), encoding="utf-8")
-
-    file.write(prepared_data)
-    file.seek(0)
-
-    return file
+    return file.into_response()

@@ -28,6 +28,7 @@ test("files stats component test", async () => {
   expect(screen.getAllByRole("radio")[1].checked).toBeFalsy();
   expect(screen.getAllByRole("radio")[0].value).toBe("attribute");
   expect(screen.getAllByRole("radio")[1].value).toBe("user");
+  expect(screen.queryAllByRole("button")).toHaveLength(3);
   screen.getByText("Attribute");
 
   await act(async () => await fireEvent.click(screen.getAllByRole("radio")[1]));
