@@ -4,7 +4,8 @@ from file.services import (
     FileUploader,
     StatsServices,
     ViewSetServices,
-    _annotate_files
+    _annotate_files,
+    form_export_file
 )
 from json import dumps
 from attribute.models import AttributeGroup, Attribute
@@ -360,7 +361,6 @@ class StatsServiceTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.case = MockCase()
-        cls.case = MockCase()
         cls.empty_project = Project.objects.create(name="some")
 
     def test_from_attribute(self):
@@ -479,3 +479,39 @@ class FileUploaderTest(TestCase):
             set(groups[0].attribute.values_list("id", flat=True)),
             set(meta_groups[0])
         )
+
+
+class ExportServicesTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.case = MockCase()
+
+    def test_export(self):
+        self._assert_query_fail({})
+        self._assert_query_fail({"type": 1})
+        self._assert_query_fail({"type": 1, "project_id": 1,})
+        self._assert_query_fail({"type": "json", "project_id": 1, "choice": "user"}, True)
+
+        try:
+            form_export_file({"type": "asd", "project_id": 1, "choice": "zxc"})
+            self.assertTrue(False)
+        except Exception as e: self.assertEqual(str(e), "asd not implemented")
+
+        try:
+            form_export_file({"type": "json", "project_id": 1, "choice": "zxc"})
+            self.assertTrue(False)
+        except Exception as e: self.assertEqual(str(e), "export for zxc is not implemented")
+
+    def _assert_query_fail(self, data, intential=False):
+        queries = {"type", "project_id", "choice"}
+
+        string = " must be provided"
+        try:
+            form_export_file(data)
+            self.assertTrue(intential, "not suppose to go there")
+        except Exception as e:
+            self.assertEqual(
+                set(str(e)[:-len(string)].split(", ")),
+                queries - set(data)
+            )

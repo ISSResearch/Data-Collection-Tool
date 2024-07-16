@@ -11,7 +11,7 @@ import "./styles.css";
 const STAT_TYPES = ["attribute", "user"];
 
 /** @type {string[]} */
-const EXPORT_VARIANTS = ["csv", "json", "xls"];
+const EXPORT_VARIANTS = ["csv", "json", "xlsx"];
 
 /**
 * @param {{ image?: number, video?: number }} [a]
@@ -141,7 +141,6 @@ export default function FileStats({ pathID }) {
             type="button"
             key={type}
             className="iss__stats__exportButton"
-            style={type === "xls" ? {opacity: 0.3, pointerEvents: "none"} : undefined}
             onClick={() => exportStats(type)}
           >{type}</button>
         ))

@@ -18,8 +18,7 @@ from json import loads
 from typing import Any
 from datetime import datetime as dt
 from io import BytesIO
-from json import dumps
-from .export import IMPLEMENTED, JSON, CSV
+from .export import IMPLEMENTED, JSON, CSV, XLS
 from .serializers import File, FileSerializer
 
 
@@ -387,7 +386,7 @@ class StatsServices:
                 target[status][f_type] = prev_count + count
             else: target[status] = {f_type: count}
 
-        return prepared_stats.values()
+        return list(prepared_stats.values())
 
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -413,6 +412,12 @@ def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
 
 def form_export_file(query: dict[str, Any]) -> BytesIO:
     query_set = {"type", "project_id", "choice"}
+    choice_map = {
+        "attribute": StatsServices.from_attribute,
+        "user": StatsServices.from_user
+    }
+    export_map = {"json": JSON, "csv": CSV, "xlsx": XLS}
+
     assert not (
         no_ps := [p for p in query_set if not query.get(p)]
     ), f"{', '.join(no_ps)} must be provided"
@@ -422,13 +427,7 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     file_type = query["type"]
 
     assert file_type in IMPLEMENTED, f"{file_type} not implemented"
-
-    choice_map = {
-        "attribute": StatsServices.from_attribute,
-        "user": StatsServices.from_user
-    }
-
-    export_map = {"json": JSON, "csv": CSV}
+    assert choice in set(choice_map), f"export for {choice} is not implemented"
 
     stats, _ = choice_map[choice](project_id)
     file = export_map[file_type](stats, choice)
