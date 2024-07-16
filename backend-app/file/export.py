@@ -48,6 +48,7 @@ class CSV(Export):
     def _write_attribute(self, dest: BytesIO, data: ROW):
         name = data.get("name")
         level_name = data.get("levelName")
+        children = data.get("children", [])
 
         val = self.t_val(data.get("v", {}))
         acc = self.t_val(data.get("a", {}))
@@ -59,7 +60,7 @@ class CSV(Export):
             encoding=ENCODING
         ))
 
-        for child in (children := data.get("children", [])): self._write_attribute(dest, child)
+        for child in children: self._write_attribute(dest, child)
 
     def _write_user(self, dest: BytesIO, data: ROW):
         name = data.get("name")
@@ -106,6 +107,7 @@ class XLS(Export):
     def _write_attribute(self, dest: Worksheet, data: ROW):
         name = data.get("name")
         level_name = data.get("levelName")
+        children = data.get("children", [])
 
         val = self.t_val(data.get("v", {}))
         acc = self.t_val(data.get("a", {}))
@@ -117,7 +119,7 @@ class XLS(Export):
         for i, item in enumerate(row): dest.write(self._row_n, i, item)
         self._row_n += 1
 
-        for child in (children := data.get("children", [])): self._write_attribute(dest, child)
+        for child in children: self._write_attribute(dest, child)
 
     def _write_user(self, dest: Worksheet, data: ROW):
         name = data.get("name")

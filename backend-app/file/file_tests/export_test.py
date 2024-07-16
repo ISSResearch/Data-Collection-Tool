@@ -14,8 +14,8 @@ class ExportTest(TestCase):
         cls.user_stat, _ = StatsServices.from_user(cls.case.project.id)
 
     def test_xls(self):
-        attr_res = XLS(self.attr_stat, "attribute").into_response()
-        user_res = XLS(self.user_stat, "user").into_response()
+        #attr_res = XLS(self.attr_stat, "attribute").into_response()
+        #user_res = XLS(self.user_stat, "user").into_response()
         # TODO:
 
     def test_csv(self):

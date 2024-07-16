@@ -490,7 +490,7 @@ class ExportServicesTest(TestCase):
     def test_export(self):
         self._assert_query_fail({})
         self._assert_query_fail({"type": 1})
-        self._assert_query_fail({"type": 1, "project_id": 1,})
+        self._assert_query_fail({"type": 1, "project_id": 1})
         self._assert_query_fail({"type": "json", "project_id": 1, "choice": "user"}, True)
 
         try:
