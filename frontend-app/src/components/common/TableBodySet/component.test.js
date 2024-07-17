@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, getByTestId } from '@testing-library/react';
 import TableBodySet from '.';
-import { prepared_attribute_stats } from '../../../config/mock_data';
+import { attribute_stats } from '../../../config/mock_data';
 
 /**
 * @param {object} param0
@@ -47,7 +47,7 @@ function tester() {
 
     rows.forEach((el) => {
       var row = screen.getByRole('row', {name: formRowName(el)});
-      var expectedClass = prepared_attribute_stats.map(({id}) => id).includes(el.id)
+      var expectedClass = attribute_stats.map(({id}) => id).includes(el.id)
         ? 'iss__stats__table-row'
         : 'iss__stats__table-row child-row';
 
@@ -73,10 +73,10 @@ test("tablebodyset component test", () => {
   render(
     <table>
       <tbody>
-        <TableBodySet bodySet={prepared_attribute_stats} countCallback={countItem} parent/>
+        <TableBodySet bodySet={attribute_stats} countCallback={countItem} parent/>
       </tbody>
     </table>
   );
 
-  tester()(prepared_attribute_stats);
+  tester()(attribute_stats);
 });

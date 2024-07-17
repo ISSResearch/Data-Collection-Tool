@@ -7,7 +7,7 @@ import './styles.css';
 * @param {object[]} props.bodySet
 * @param {Function} props.countCallback
 * @param {boolean} [props.parent]
-* @param {number} props.depth
+* @param {number} [props.depth]
 * @returns {ReactElement}
 */
 export default function TableBodySet({ bodySet, countCallback, parent, depth }) {

@@ -12,7 +12,7 @@ afterEach(() => {
 test("uploading view component test", () => {
   const { result: hookItem } = renderHook(() => useFileInput());
   const component = () => <Provider store={createStore()}>
-    <UploadingView fileManager={hookItem.current} />
+    <UploadingView setUploading={() => {}} fileManager={hookItem.current} />
   </Provider>;
 
 

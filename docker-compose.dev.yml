@@ -2,10 +2,14 @@ version: "3.8"
 
 services:
   iss-back:
+    environment:
+      DEBUG: ${DEBUG:-true}
     volumes:
       - ./backend-app:/app
- 
+
   iss-storage:
+    environment:
+      DEBUG: ${DEBUG:-true}
     volumes:
       - ./storage-app/src:/app/src
 

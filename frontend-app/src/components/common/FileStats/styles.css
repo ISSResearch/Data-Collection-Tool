@@ -3,6 +3,9 @@
     display: flex;
     gap: 12px;
 }
+.iss__stats__radio:nth-of-type(2) {
+    margin-top: 20px;
+}
 .iss__stats__radioItem > input {
     display: none;
 }
@@ -58,13 +61,20 @@
 .iss__stats__table-footer td:last-child {
     text-align: center;
 }
+.iss__stats__exportButton {
+    background-color: unset;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
 @media (max-width: 600px) {
     .iss__stats__tableWrap {
         box-shadow: inset -4px 0px 3px var(--issBrand);
     }
 }
 @media (hover: hover) {
-    .iss__stats__radioItem:hover {
+    .iss__stats__radioItem:hover,
+    .iss__stats__exportButton:hover {
         color: var(--issBrand);
     }
 }

@@ -1,10 +1,10 @@
 import { useBlocker } from "react-router-dom";
-import { useState, useEffect, ReactElement } from 'react';
-import { useFileInput } from '../../hooks';
-import SelectorGroup from '../forms/SelectorGroup';
-import FileInput from '../forms/FileInput';
-import UploadView from '../common/UploadView';
-import './styles.css';
+import { useState, useEffect, ReactElement } from "react";
+import { useFileInput } from "../../hooks";
+import SelectorGroup from "../forms/SelectorGroup";
+import FileInput from "../forms/FileInput";
+import UploadView from "../common/UploadView";
+import "./styles.css";
 
 /**
 * @param {object} props
