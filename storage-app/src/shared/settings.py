@@ -48,4 +48,9 @@ UVICORN_CONF: dict[str, Any] = {
     "log_level": "debug" if DEBUG else "critical"
 }
 
-CELERY_CONFIG: list[str] = ["worker", "--loglevel=INFO"]
+CELERY_CONFIG: dict[str, Any] = {
+    "main": "worker",
+    "broker": BROKER_URL,
+    "backend": RESULT_URL,
+    "log": "info"
+}

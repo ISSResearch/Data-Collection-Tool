@@ -1,5 +1,6 @@
 from typing import Any, Pattern, Optional, AsyncGenerator
-from gridfs import NoFile, ObjectId
+from gridfs import NoFile
+from bson import ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match

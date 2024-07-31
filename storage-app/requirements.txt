@@ -50,3 +50,17 @@ requests==2.31.0
 urllib3==2.0.5
 httpcore==1.0.4
 httpx==0.27.0
+PyWavelets==1.6.0
+imagehash==4.3.1
+numpy==2.0.1
+pillow==10.4.0
+scipy==1.14.0
+brotli==1.1.0
+charset-normalizer==3.3.2
+imagedominantcolor==1.0.1
+mutagen==1.47.0
+pycryptodomex==3.20.0
+requests==2.32.3
+urllib3==2.2.2
+videohash==3.0.1
+yt-dlp==2024.7.25
