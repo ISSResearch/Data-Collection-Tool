@@ -3,10 +3,10 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from shared.models import UploadFile, Form, Annotated
 from shared.app_services import Bucket, ObjectStreaming
 
-router = APIRouter()
+router = APIRouter(prefix="/api/storage")
 
 
-@router.get("/api/storage/{bucket_name}/{file_id}/")
+@router.get("/{bucket_name}/{file_id}/")
 async def get_file(
     request: Request,
     bucket_name: str,
@@ -21,7 +21,7 @@ async def get_file(
     )
 
 
-@router.post("/api/storage/{bucket_name}/")
+@router.post("/{bucket_name}/")
 async def upload_file(
     bucket_name: str,
     file: UploadFile,
@@ -33,7 +33,7 @@ async def upload_file(
     return JSONResponse(status_code=status, content={"result": result})
 
 
-@router.delete("/api/storage/{bucket_name}/{file_id}/")
+@router.delete("/{bucket_name}/{file_id}/")
 async def delete_file(bucket_name: str, file_id: str) -> JSONResponse:
     project_bucket: Bucket = Bucket(bucket_name)
     result, message = await project_bucket.delete_object(file_id)

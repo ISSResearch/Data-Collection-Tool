@@ -1,7 +1,7 @@
 from unittest import TestCase
 from re import Match
 from ..app_services import FileMeta, ObjectStreaming, BucketObject, Bucket
-from ..db_manager import DataBase, get_db_uri
+from ..storage_db import DataBase, get_db_uri
 from ..settings import CHUNK_SIZE
 from json import dumps
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket

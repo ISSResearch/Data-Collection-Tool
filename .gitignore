@@ -11,6 +11,7 @@ file_store
 storage
 worker_tmp
 temp_zip
+*.db
 
 node_modules
 .pnp

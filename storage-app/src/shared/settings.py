@@ -1,5 +1,6 @@
 from multiprocessing import cpu_count
 from os import getenv
+from os.path import abspath, join, curdir
 from typing import Any, Optional
 
 max_workers: int = int(getenv("MAX_WORKER", 0))
@@ -24,11 +25,16 @@ SECRET_ALGO: str = getenv("SECRET_ALGO", "HS256")
 
 BUCKET_PREFIX: str = "project_"
 TEMP_BUCKET: str = "temp_storage"
+TEMP_HASH_PATH: str = join(abspath(curdir), "temp_hash")
+TEMP_ZIP: str = join(abspath(curdir), "temp_zip")
+EMBEDDING_STORAGE_PATH: str = join(abspath(curdir), "embedding_storage.db")
 
 BROKER_URL: str | None = getenv("CELERY_BROKER_URL")
 RESULT_URL: str | None = BROKER_URL
 
 CHUNK_SIZE: int = 1024 * 512
+
+HASH_SIZE: int = 64
 
 DB_STORAGE: str = "storage"
 
@@ -40,7 +46,7 @@ if RAW_ORIGIN:
     SELF_ORIGIN = [f"http://{origin}:{FRONTEND_PORT}" for origin in RAW_ORIGIN]
 
 UVICORN_CONF: dict[str, Any] = {
-    "app": "app:APP",
+    "app": "main:app",
     "workers": WORKERS,
     "host": '0.0.0.0',
     "port": int(STORAGE_PORT),

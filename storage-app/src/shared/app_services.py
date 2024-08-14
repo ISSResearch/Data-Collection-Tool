@@ -8,7 +8,7 @@ from json import loads
 from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
-from shared.db_manager import DataBase, AsyncIOMotorGridFSBucket
+from shared.storage_db import DataBase, AsyncIOMotorGridFSBucket
 from hashlib import md5
 from motor.motor_asyncio import (
     AsyncIOMotorGridOutCursor,

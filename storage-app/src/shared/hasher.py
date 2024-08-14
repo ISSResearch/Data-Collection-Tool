@@ -1,28 +1,57 @@
-from imagehash import whash, ImageHash
 from videohash import VideoHash
 from videohash.utils import (
     create_and_return_temporary_directory as mk_temp_dir,
     does_path_exists
 )
 from PIL import Image
+from PIL.ImageFile import ImageFile
 from os.path import join, sep
 from pathlib import Path
 from asyncio import get_event_loop
 from motor.motor_asyncio import AsyncIOMotorGridOut
+from shared.settings import HASH_SIZE, TEMP_HASH_PATH
+from numpy import asarray, float32, ndarray
+from io import BytesIO
 
 Image.ANTIALIAS = Image.Resampling.LANCZOS
 
 
-class VHashPatch(VideoHash):
-    hash: ImageHash
+def to_embedding(image: ImageFile) -> ndarray:
+    return asarray(
+        image
+        .convert("L")
+        .resize((HASH_SIZE, HASH_SIZE), Image.ANTIALIAS)
+    ).flatten().astype(float32)
+
+
+class IHash:
+    embedding: ndarray
     _file: AsyncIOMotorGridOut
 
-    def __init__(self, *args, **kwargs):
-        file, *_ = args
+    def __init__(self, file: AsyncIOMotorGridOut):
         self._file = file
-        super().__init__(*args, **kwargs)
+        self.embedding = self._get_hash()
 
-    def _calc_hash(self): self.hash = whash(self.image)
+    def _get_hash(self) -> ndarray:
+        get_event_loop().run_until_complete(self._get_buffer())
+        image = Image.open(self._buffer)
+        return to_embedding(image)
+
+    async def _get_buffer(self):
+        self._file.seek(0)
+        self._buffer = BytesIO(await self._file.read())
+
+
+class VHash(VideoHash):
+    embedding: ndarray
+    _file: AsyncIOMotorGridOut
+
+    def __init__(self, file: AsyncIOMotorGridOut):
+        self._file = file
+        super().__init__(storage_path=TEMP_HASH_PATH)
+        self.delete_storage_path()
+
+    def _calc_hash(self): self.embedding = to_embedding(self.image)
 
     def _create_required_dirs_and_check_for_errors(self):
         if not self.storage_path: self.storage_path = mk_temp_dir()

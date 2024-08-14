@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 from ..worker_services import Zipper
-from ..db_manager import DataBase, get_db_uri
+from ..storage_db import DataBase, get_db_uri
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 from os.path import exists

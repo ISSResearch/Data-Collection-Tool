@@ -7,7 +7,7 @@ from ..storage import router
 from asyncio import new_event_loop, set_event_loop, get_event_loop
 from os.path import abspath
 from sys import path
-from shared.db_manager import (
+from shared.storage_db import (
     DataBase,
     get_db_uri,
     AsyncIOMotorClient,
