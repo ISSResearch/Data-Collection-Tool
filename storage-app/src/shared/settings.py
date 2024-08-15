@@ -35,6 +35,7 @@ RESULT_URL: str | None = BROKER_URL
 CHUNK_SIZE: int = 1024 * 512
 
 HASH_SIZE: int = 64
+SIMILAR_THRESHOLD: float = 100.
 
 DB_STORAGE: str = "storage"
 

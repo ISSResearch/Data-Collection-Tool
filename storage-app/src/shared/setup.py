@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from typing_extensions import Optional, Any
 from shared.settings import DB_STORAGE
 from shared.storage_db import DataBase
-from shared.embedding_db import EmdeddingStorage
+from shared.embedding_db import EmbeddingStorage
 from shared.utils import (
     get_db_uri,
     parse_request_for_jwt,
@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
         database = DataBase(get_db_uri())
         database.set_db(DB_STORAGE)
 
-        with EmdeddingStorage() as storage: storage.migrate()
+        with EmbeddingStorage() as storage: storage.migrate()
 
     except Exception as e:
         print("Startup error: " + str(e))

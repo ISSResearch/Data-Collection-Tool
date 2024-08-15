@@ -3,28 +3,50 @@ from sqlite_vec import load as load_vec_module
 from typing_extensions import Any, Callable
 from numpy import ndarray
 from enum import Enum
-from .settings import HASH_SIZE, EMBEDDING_STORAGE_PATH
+from .settings import HASH_SIZE, EMBEDDING_STORAGE_PATH, SIMILAR_THRESHOLD
 
 
 class Query(Enum):
-    MIGRATE = "create table if not exists storage using vec0(embedding float[{}]);"
-    INSERT = "insert into storage (rowid, embedding) values (?, ?);"
+    MIGRATE_EMBEDDING = """
+        create virtual table
+        if not exists file_embedding
+        using vec0(embedding float[{}]);
+    """
+    MIGRATE_IDS = """
+        create table if not exists rowid_file  (
+            id integer primary key
+            file_id text,
+            foreign key (id) references file_embedding(rowid)
+        );
+    """
+    INSERT = """
+        with res as (
+            insert into file_embedding (rowid, embedding)
+            values ((select count(*) + 1 from storage), ?)
+            returning rowid
+        )
+        insert into rowid_file (id, file_id)
+        values ((select rowid from res), ?)
+        returning id;
+    """
     SELECT = """
         select rowid, distance
-        from storage
+        from file_embedding
         where embedding match ?
-        order by distance
-        limit ?;
+        and distance <= ?
+        and k = ?
+        order by distance;
     """
 
 
-class EmdeddingStorage:
-    __slots__ = ("conn", "corrupted", "reason")
+class EmbeddingStorage:
+    __slots__ = ("conn", "corrupted", "reason", "context")
     _k_nearest = 3
 
     def __init__(self):
         self.corrupted = False
         self.conn = Connection(EMBEDDING_STORAGE_PATH)
+        self.context = False
         self.load_module()
 
     def load_module(self):
@@ -32,7 +54,9 @@ class EmdeddingStorage:
         load_vec_module(self.conn)
         self.conn.enable_load_extension(False)
 
-    def  __enter__(self) -> "EmdeddingStorage": return self
+    def  __enter__(self) -> "EmbeddingStorage":
+        self.context = True
+        return self
 
     def __exit__(self, *args, **kwargs):
         try:
@@ -50,13 +74,21 @@ class EmdeddingStorage:
         def inner(self, *args, **kwargs) -> Any:
             if self.corrupted: return self.reason
 
-            cursor = self.connection.cursor()
+            cursor = self.conn.cursor()
 
             try:
                 assert not self.corrupted, "Transaction corrupted"
-                return callback(self, cursor, *args, **kwargs)
+                result = callback(self, cursor, *args, **kwargs)
+
+                if not self.context: self.conn.commit()
+
+                return result
 
             except Exception as e:
+                if not self.context:
+                    self.conn.rollback()
+                    raise e
+
                 self.reason = str(e)
                 self.corrupted = True
 
@@ -65,13 +97,22 @@ class EmdeddingStorage:
         return inner
 
     @with_transaction
-    def migrate(self, cur: Cursor): cur.execute(Query.MIGRATE.value.format(HASH_SIZE**2))
+    def migrate(self, cur: Cursor):
+        cur.execute(Query.MIGRATE_EMBEDDING.value.format(HASH_SIZE**2))
+        cur.execute(Query.MIGRATE_IDS.value)
 
     @with_transaction
-    def insert(self, cur: Cursor, file_id: str, embedding: ndarray):
-        cur.execute(Query.SELECT.value, [file_id, embedding])
+    def insert(self, cur: Cursor, file_id: str, embedding: ndarray) -> str:
+        row_id, *_ = cur.execute(Query.INSERT.value, [embedding]).fetchone()
+        return row_id
 
     @with_transaction
-    def select(self, cur: Cursor, embedding: ndarray):
-        result = cur.execute(Query.SELECT.value, [embedding, self._k_nearest]).fetchall()
-        return result
+    def select(
+        self,
+        cur: Cursor,
+        embedding: ndarray
+    ) -> list[tuple[int, float]]:
+        return cur.execute(
+            Query.SELECT.value,
+            [embedding, SIMILAR_THRESHOLD, self._k_nearest]
+        ).fetchall()
