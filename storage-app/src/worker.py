@@ -5,7 +5,10 @@ from asyncio import get_event_loop
 
 if not BROKER_URL or not RESULT_URL: raise ValueError("no broker environment")
 
-worker: Celery = Celery(**CELERY_CONFIG)
+worker: Celery = Celery()
+
+worker.conf.broker_url = BROKER_URL
+worker.conf.result_backend = RESULT_URL
 
 
 @worker.task(name="produce_download_task")
@@ -22,7 +25,7 @@ def produce_download_task(bucket_name: str, file_ids: list[str]) -> str | None:
     return task.archive_id
 
 
-worker.task(name="produce_handle_media_task")
+@worker.task(name="produce_handle_media_task")
 def produce_handle_media_task(bucket_name: str, uid: str) -> None:
     loop = get_event_loop()
     task: Hasher = Hasher(bucket_name, uid)
@@ -34,4 +37,4 @@ def produce_handle_media_task(bucket_name: str, uid: str) -> None:
     loop.run_until_complete(_inner())
 
 
-if __name__ == "__main__": worker.start()
+if __name__ == "__main__": worker.worker_main(argv=CELERY_CONFIG)

@@ -7,13 +7,22 @@ RUN addgroup --system iss && adduser --system --group iss
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
+				gcc \
+				libsqlite3-dev \
+				libffi-dev \
         python3-dev \
         musl-dev \
+				git \
+				make \
+				gettext \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY ./storage-app/requirements.txt ./
+COPY ./scripts/install_sql_vec.sh ./
+
+RUN chmod 744 install_sql_vec.sh && ./install_sql_vec.sh
 
 RUN pip install --no-cache-dir -r requirements.txt
 

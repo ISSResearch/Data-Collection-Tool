@@ -9,8 +9,10 @@ WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-        postgresql-client \
         gcc \
+				libffi-dev \
+        postgresql-client \
+				libpq-dev \
         python3-dev \
         musl-dev \
 	&& rm -rf /var/lib/apt/lists/*

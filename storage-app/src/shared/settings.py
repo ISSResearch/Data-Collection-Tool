@@ -1,5 +1,5 @@
 from multiprocessing import cpu_count
-from os import getenv
+from os import getenv, listdir
 from os.path import abspath, join, curdir
 from typing import Any, Optional
 
@@ -29,6 +29,9 @@ TEMP_HASH_PATH: str = join(abspath(curdir), "temp_hash")
 TEMP_ZIP: str = join(abspath(curdir), "temp_zip")
 EMBEDDING_STORAGE_PATH: str = join(abspath(curdir), "embedding_storage.db")
 
+sqlite_vector_shared, *_ = [name for name in listdir() if "vec0" in name]
+SQLITE_VECTOR_PATH = join(abspath(curdir), "sqlite_vector_shared")
+
 BROKER_URL: str | None = getenv("CELERY_BROKER_URL")
 RESULT_URL: str | None = BROKER_URL
 
@@ -55,9 +58,4 @@ UVICORN_CONF: dict[str, Any] = {
     "log_level": "debug" if DEBUG else "critical"
 }
 
-CELERY_CONFIG: dict[str, Any] = {
-    "main": "worker",
-    "broker": BROKER_URL,
-    "backend": RESULT_URL,
-    "log": "info"
-}
+CELERY_CONFIG: list[str] = ["worker", "--loglevel=INFO"]

@@ -1,9 +1,13 @@
 from sqlite3 import Connection, Cursor
-from sqlite_vec import load as load_vec_module
 from typing_extensions import Any, Callable
 from numpy import ndarray
 from enum import Enum
-from .settings import HASH_SIZE, EMBEDDING_STORAGE_PATH, SIMILAR_THRESHOLD
+from .settings import (
+    HASH_SIZE,
+    EMBEDDING_STORAGE_PATH,
+    SIMILAR_THRESHOLD,
+    SQLITE_VECTOR_PATH
+)
 
 
 class Query(Enum):
@@ -51,7 +55,7 @@ class EmbeddingStorage:
 
     def load_module(self):
         self.conn.enable_load_extension(True)
-        load_vec_module(self.conn)
+        self.conn.load_extension(SQLITE_VECTOR_PATH)
         self.conn.enable_load_extension(False)
 
     def  __enter__(self) -> "EmbeddingStorage":
