@@ -34,8 +34,10 @@ class Query(Enum):
         returning id;
     """
     SELECT = """
-        select rowid, distance
-        from file_embedding
+        select fe.rowid, rf.file_id, fe.distance
+        from file_embedding as fe
+        left join rowid_file as rf
+        on fe.rowid = rf.id
         where embedding match ?
         and distance <= ?
         and k = ?
@@ -111,11 +113,11 @@ class EmbeddingStorage:
         return row_id
 
     @with_transaction
-    def select(
+    def search(
         self,
         cur: Cursor,
         embedding: ndarray
-    ) -> list[tuple[int, float]]:
+    ) -> list[tuple[int, str, float]]:
         return cur.execute(
             Query.SELECT.value,
             [embedding, SIMILAR_THRESHOLD, self._k_nearest]

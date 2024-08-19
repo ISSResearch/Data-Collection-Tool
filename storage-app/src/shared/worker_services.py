@@ -1,3 +1,4 @@
+from enum import Enum
 from json import dumps
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
@@ -13,6 +14,7 @@ from shared.settings import (
 from shared.storage_db import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
+from shared.embedding_db import EmbeddingStorage
 from bson import ObjectId
 from typing import Any, Optional
 import requests
@@ -126,3 +128,24 @@ class Hasher:
             case "image": self.embedding = IHash(self.file.file).embedding
             case "video": self.embedding = VHash(self.file.file).embedding
             case _: raise ValueError("Unsupported file type")
+
+    def search_similar(self):
+        result: Optional[list[tuple[int, str, float]]] = None
+        new_status: Optional[str] = None
+
+        with EmbeddingStorage() as storage:
+            try:
+                result = storage.search(self.embedding)
+                assert not result
+
+                storage.insert(self.file_id, self.embedding)
+                new_status = "v"
+
+            except AssertionError:
+                new_status = "u"
+
+        assert new_status, "Invalid status"
+
+        self.update_status(new_status)
+
+    def update_status(self, status: str): ...
