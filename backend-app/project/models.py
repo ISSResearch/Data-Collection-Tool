@@ -4,7 +4,10 @@ from django.db.models import (
     TextField,
     DateTimeField,
     BooleanField,
-    ManyToManyField
+    ManyToManyField,
+    ForeignKey,
+    CASCADE,
+    IntegerField
 )
 from attribute.models import Level, Attribute
 from typing import Any
@@ -16,34 +19,13 @@ class Project(Model):
     created_at: DateTimeField = DateTimeField(auto_now_add=True)
     visible: BooleanField = BooleanField(default=True)
 
-    user_visible: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_visible"
-    )
-    user_upload: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_upload"
-    )
-    user_view: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_view"
-    )
-    user_validate: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_validate"
-    )
-    user_stats: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_stats"
-    )
-    user_download: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_download"
-    )
-    user_edit: ManyToManyField = ManyToManyField(
-        to="user.CustomUser",
-        related_name="project_edit"
-    )
+    user_visible = ManyToManyField(to="user.CustomUser", related_name="project_visible")
+    user_upload = ManyToManyField(to="user.CustomUser", related_name="project_upload")
+    user_view = ManyToManyField(to="user.CustomUser", related_name="project_view")
+    user_validate = ManyToManyField(to="user.CustomUser", related_name="project_validate")
+    user_stats = ManyToManyField(to="user.CustomUser", related_name="project_stats")
+    user_download = ManyToManyField(to="user.CustomUser", related_name="project_download")
+    user_edit = ManyToManyField(to="user.CustomUser", related_name="project_edit")
 
     class Meta:
         db_table = "project"
@@ -122,3 +104,13 @@ class Project(Model):
 
             if children: self._create_attributes(children, rest, ATTRIBUTE, LEVEL)
             elif rest: self._create_attributes([], rest, None, LEVEL)
+
+
+class ProjectGoals(Model):
+    amount = IntegerField(default=0)
+
+    attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)
+    project = ForeignKey("project.Project", on_delete=CASCADE)
+
+    class Meta:
+        db_table = "project_goal"

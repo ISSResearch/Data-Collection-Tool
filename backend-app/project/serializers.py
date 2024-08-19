@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.views import Request
 from typing import Any
 from attribute.serializers import LevelSerializer
-from .models import Project
+from .models import Project, ProjectGoals
 
 
 class ProjectsSerializer(ModelSerializer):
@@ -16,8 +16,8 @@ class ProjectsSerializer(ModelSerializer):
 
 
 class ProjectSerializer(ProjectsSerializer):
-    attributes: SerializerMethodField = SerializerMethodField()
-    permissions: SerializerMethodField = SerializerMethodField()
+    attributes= SerializerMethodField()
+    permissions= SerializerMethodField()
 
     class Meta(ProjectsSerializer.Meta):
         fields = ("id", "name", "description", "attributes", "permissions")
@@ -43,3 +43,20 @@ class ProjectSerializer(ProjectsSerializer):
             "download": user_id in {user.id for user in instance.user_download.all()},
             "edit": user_id in {user.id for user in instance.user_edit.all()},
         }
+
+
+class GoalSerializer(ModelSerializer):
+    project = SerializerMethodField()
+    attribute = SerializerMethodField()
+    complete = SerializerMethodField()
+
+    class Meta:
+        model = ProjectGoals
+        fields = "__all__"
+
+    def get_project(self, instance: ProjectGoals) -> int: return instance.project.id
+
+    def get_attribute(self, instance: ProjectGoals) -> str: return instance.attribute.name
+
+    def get_complete(self, instance: ProjectGoals) -> int:
+        return instance.attribute.attributegroup_set.count()

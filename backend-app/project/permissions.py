@@ -11,7 +11,7 @@ class ProjectPermission(BasePermission):
     def has_permission(self, request: Request, view: APIView) -> bool | None:
         if request.user.is_superuser or request.method == "GET": return True
 
-        if request.method in {"PATCH", "DELETE"}:
+        if request.method in {"PATCH", "DELETE", "POST"}:
             return bool(request.user.project_edit.filter(id=view.kwargs["pk"]))
 
 

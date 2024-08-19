@@ -1,7 +1,6 @@
 from rest_framework.views import Request
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
     HTTP_201_CREATED,
     HTTP_200_OK,
     HTTP_202_ACCEPTED
@@ -11,17 +10,10 @@ from django.db import transaction
 from typing import Any
 from user.models import CustomUser
 from .serializers import ProjectSerializer, Project, ProjectsSerializer
+from api.mixins import with_model_assertion
 
 
 class ViewSetServices:
-    project_prefetch = (
-        "user_upload",
-        "user_validate",
-        "user_stats",
-        "user_download",
-        "user_edit"
-    )
-
     def _get_available_projects(self, user: CustomUser) -> QuerySet:
         projects: QuerySet = Project.objects.order_by("id").filter(visible=True)
 
@@ -35,97 +27,81 @@ class ViewSetServices:
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
         new_project: ProjectsSerializer = ProjectsSerializer(data=request_data)
+        try:
+            assert new_project.is_valid(), new_project.errors
 
-        if valid := new_project.is_valid():
-            try:
-                with transaction.atomic():
-                    new_project.save()
-                    new_project.add_attributes()
-            except Exception: valid = False
+            with transaction.atomic():
+                new_project.save()
+                new_project.add_attributes()
 
-        response_data = {"ok": valid}
+            return {"ok": True}, HTTP_201_CREATED
 
-        if not valid: response_data["errors"] = new_project.errors or "Unexpected error"
+        except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST
 
+    @with_model_assertion(
+        Project,
+        "id",
+        filter={"visible": True},
+        prefetch=("user_upload", "user_validate", "user_stats", "user_download", "user_edit")
+    )
+    def _get_project(self, project, request: Request) -> tuple[dict[str, Any], int]:
         return (
-            response_data,
-            HTTP_201_CREATED if valid else HTTP_400_BAD_REQUEST
+            ProjectSerializer(project, context={"request": request}).data,
+            HTTP_200_OK
         )
 
-    def _get_project(
-        self,
-        pk: int,
-        request: Request
-    ) -> tuple[dict[str, Any], int]:
-        response: dict[str, Any] = {}
-        status: int = HTTP_200_OK
-
-        try:
-            project = Project.objects \
-                .prefetch_related(*self.project_prefetch) \
-                .filter(visible=True) \
-                .get(id=pk)
-            response = ProjectSerializer(project, context={"request": request}).data
-
-        except Project.DoesNotExist:
-            response["message"] = "query project does not exist"
-            status = HTTP_404_NOT_FOUND
-
-        return response, status
-
+    @with_model_assertion(Project, "id", filter={"visible": True}, prefetch=("attribute_set",))
     def _patch_project(
         self,
-        pk: int,
+        project: Project,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
-        project = Project.objects \
-            .prefetch_related("attribute_set") \
-            .get(id=pk)
-
-        updated = ProjectSerializer(
-            project,
-            data=request_data,
-            partial=True
-        )
-
-        if valid := updated.is_valid():
-            try:
-                with transaction.atomic():
-                    updated.save()
-                    updated.add_attributes()
-            except Exception: valid = False
-
-        response: dict[str, Any] = {'ok': valid}
-
-        if not valid: response['errors'] = updated.errors
-
-        return (
-            response,
-            HTTP_202_ACCEPTED if valid else HTTP_400_BAD_REQUEST
-        )
-
-    def _delete_project(
-        self,
-        pk: int,
-        request_data: dict[str, Any]
-    ) -> tuple[dict[str, Any], int]:
-        response: dict[str, Any] = {}
-        status: int = HTTP_200_OK
+        updated = ProjectSerializer(project, data=request_data, partial=True)
 
         try:
-            project: Project = Project.objects.filter(visible=True).get(id=pk)
+            assert updated.is_valid(), updated.errors
 
-            if request_data.get('approval') == project.name:
-                project.visible = False
-                project.save()
-                response["deleted"] = True
+            with transaction.atomic():
+                updated.save()
+                updated.add_attributes()
 
-            else:
-                response["message"] = 'approval text differs from the actual name'
-                status = HTTP_400_BAD_REQUEST
+            return {"ok": True}, HTTP_202_ACCEPTED
 
-        except Project.DoesNotExist:
-            response["message"] = 'query project does not exist'
-            status = HTTP_404_NOT_FOUND
+        except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST
 
-        return response, status
+    @with_model_assertion(Project, "id", filter={"visible": True})
+    def _delete_project(
+        self,
+        project: Project,
+        request_data: dict[str, Any]
+    ) -> tuple[dict[str, Any], int]:
+        try:
+            assert request_data.get("approval") == project.name
+            project.visible = False
+            project.save()
+
+            return {"deleted": True}, HTTP_200_OK
+
+        except AssertionError: return (
+            {"message": "approval text differs from the actual name"},
+            HTTP_400_BAD_REQUEST,
+        )
+
+
+class GoalViewServices:
+    @with_model_assertion(
+        Project,
+        "id",
+        filter={"visible": True},
+        prefetch=("projectgoals_set__attribute__attributegroup_set",)
+    )
+    def _get_goals(self, project: Project) -> tuple[list, int]: ...
+
+    @with_model_assertion(Project, "id", filter={"visible": True})
+    def _create_goal(self, project: Project, request_data: dict[str, Any]): ...
+
+    @with_model_assertion(Project, "id", filter={"visible": True})
+    def _update_goal(self, project: Project, goal_pk: int): ...
+
+    @with_model_assertion(Project, "id", filter={"visible": True})
+    def _delete_goal(self, project: Project, goal_pk: int): ...
