@@ -1,5 +1,5 @@
-import { useEffect, useState, ReactElement } from 'react';
-import './styles.css';
+import { useEffect, useState, ReactElement } from "react";
+import "./styles.css";
 
 /** @type {string} */
 const DEFAULT_STYLE = 'iss__fileCard';

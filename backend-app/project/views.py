@@ -34,10 +34,10 @@ class ProjectViewSet(APIView, ViewSetServices):
 
 
 class GoalViewSet(APIView, GoalViewServices):
-    http_method_names = ("get", "post", "patch", "delete")
+    http_method_names = ("get", "post", "delete")
     permission_classes = (IsAuthenticated, ProjectPermission, ProjectViewPermission)
 
-    def get(self, pk: int) -> Response:
+    def get(self, _, pk: int) -> Response:
         response, status = self._get_goals(pk)
         return Response(response, status=status)
 
@@ -45,10 +45,6 @@ class GoalViewSet(APIView, GoalViewServices):
         response, status = self._create_goal(pk, request.data)
         return Response(response, status=status)
 
-    def patch(self, request: Request, pk: int, goal_pk: int) -> Response:
-        response, status = self._update_goal(pk, goal_pk)
-        return Response(response, status=status)
-
-    def delete(self, pk: int, goal_pk: int) -> Response:
-        response, status = self._delete_goal(pk, goal_pk)
+    def delete(self, _, pk: int) -> Response:
+        response, status = self._delete_goal(pk)
         return Response(response, status=status)

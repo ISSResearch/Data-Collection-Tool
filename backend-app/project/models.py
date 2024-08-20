@@ -106,7 +106,7 @@ class Project(Model):
             elif rest: self._create_attributes([], rest, None, LEVEL)
 
 
-class ProjectGoals(Model):
+class ProjectGoal(Model):
     amount = IntegerField(default=0)
 
     attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)

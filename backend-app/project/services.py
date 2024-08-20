@@ -9,7 +9,13 @@ from django.db.models import QuerySet
 from django.db import transaction
 from typing import Any
 from user.models import CustomUser
-from .serializers import ProjectSerializer, Project, ProjectsSerializer
+from .serializers import (
+    ProjectSerializer,
+    Project,
+    ProjectsSerializer,
+    GoalSerializer,
+    ProjectGoal
+)
 from api.mixins import with_model_assertion
 
 
@@ -93,15 +99,31 @@ class GoalViewServices:
         Project,
         "id",
         filter={"visible": True},
-        prefetch=("projectgoals_set__attribute__attributegroup_set",)
+        prefetch=(
+            "projectgoal_set__attribute__level",
+            "projectgoal_set__attribute__attributegroup_set",
+        )
     )
-    def _get_goals(self, project: Project) -> tuple[list, int]: ...
+    def _get_goals(self, project: Project) -> tuple[list[dict[str, Any]], int]:
+        data = GoalSerializer(project.projectgoal_set.all(), many=True)
+        return data.data, HTTP_200_OK
 
     @with_model_assertion(Project, "id", filter={"visible": True})
-    def _create_goal(self, project: Project, request_data: dict[str, Any]): ...
+    def _create_goal(self, project: Project, request_data: dict[str, Any]):
+        try:
+            attribute = project.attribute_set.get(id=request_data["attribute_id"])
+            project.projectgoal_set.create(
+                attribute=attribute,
+                amount=int(request_data["amount"])
+            )
+            return {"ok": True}, HTTP_201_CREATED
 
-    @with_model_assertion(Project, "id", filter={"visible": True})
-    def _update_goal(self, project: Project, goal_pk: int): ...
+        except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST
 
-    @with_model_assertion(Project, "id", filter={"visible": True})
-    def _delete_goal(self, project: Project, goal_pk: int): ...
+    @with_model_assertion(ProjectGoal, "id")
+    def _delete_goal(self, goal: ProjectGoal):
+        try:
+            goal.delete()
+            return {"ok": True}, HTTP_202_ACCEPTED
+
+        except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST

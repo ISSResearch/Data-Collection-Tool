@@ -1,0 +1,69 @@
+.goals__inlineCreate {
+    background-color: unset;
+    border: none;
+    margin-left: 8px;
+    color: var(--issBrand);
+    cursor: pointer;
+}
+
+.goals__cardWrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.goals__load {
+    width: 100%;
+    display: flex;
+    place-content: center;
+}
+
+.goal__button,
+.goal__creteButton {
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid;
+    border-color: var(--issGreen);
+    background-color: rgb(153, 255, 98, 0.2);
+    color: var(--issGreen);
+    margin-bottom: 20px;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.goal__createFrom {
+    display: flex;
+    place-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.goal__createFrom > input,
+.goal__createFrom > select {
+    border-radius: 4px;
+    padding: 4px 8px;
+    background-color: white;
+    border: 1px solid var(--issBrand);
+}
+.goal__creteButton {
+    margin-bottom: 0;
+}
+.goal__errors {
+    color: var(--issRed);
+    width: 100%;
+}
+
+@media (hover: hover) {
+    .goal__button:hover {
+        color: white;
+        background-color: var(--issGreen);
+    }
+}
