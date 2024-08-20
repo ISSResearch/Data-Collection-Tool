@@ -22,10 +22,11 @@ afterEach(() => {
 test("project page test", async () => {
   var nav;
   const options = [
-    { name: 'upload data', value: 'upload' },
-    { name: 'validate data', value: 'validate' },
-    { name: 'download data', value: 'download' },
-    { name: 'statistics', value: 'stats' },
+    { name: "upload data", value: "upload" },
+    { name: "validate data", value: "validate" },
+    { name: "download data", value: "download" },
+    { name: "goals", value: "goals" },
+    { name: "statistics", value: "stats" },
   ];
   const component = (admin) => {
     const Inner = () => {

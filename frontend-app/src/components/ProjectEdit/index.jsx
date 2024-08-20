@@ -190,7 +190,7 @@ export default function ProjectEdit({
             </div>
             : <button
               onClick={() => setDeleteAccept(true)}
-              className='iss__projectEdit__deleteButton'
+              className="iss__projectEdit__deleteButton"
             >DELETE PROJECT</button>
         }
       </fieldset>

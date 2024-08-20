@@ -17,16 +17,23 @@
   "scripts": {
     "start": "export REACT_APP_STORAGE_PORT=$STORAGE_PORT && export REACT_APP_BACKEND_PORT=$BACKEND_PORT && export REACT_APP_CASE=$CASE && react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts REACT_APP_STORAGE_PORT=$STORAGE_PORT && export REACT_APP_BACKEND_PORT=$BACKEND_PORT test",
+    "test": "REACT_APP_STORAGE_PORT=$STORAGE_PORT && REACT_APP_BACKEND_PORT=$BACKEND_PORT react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/*",
     "compile": "tsc"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
