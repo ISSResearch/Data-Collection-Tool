@@ -87,7 +87,7 @@ export default function ProjectEdit({ pathID, attributes }) {
       var { data } = await api.get(`/api/projects/goals/${pathID}/`, {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
-      setGoals(data);
+      setGoals(data.sort((a, b) => Number(a.complete >= b.complete) || -1));
     }
     catch ({ message, response }) {
       var authFailed = response?.status === 401 || response?.status === 403;
