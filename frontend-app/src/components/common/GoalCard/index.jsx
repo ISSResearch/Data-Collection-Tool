@@ -9,7 +9,7 @@ import "./styles.css";
 */
 export default function GoalCard({ goalItem, onDelete }) {
   const { attribute, amount, complete, id } = goalItem;
-  const progress = Math.min(Math.ceil(complete / amount * 100));
+  const progress = Math.min(100, Math.ceil(complete / amount * 100));
 
   return <article className="goal__card">
     <h3>{attribute}</h3>
