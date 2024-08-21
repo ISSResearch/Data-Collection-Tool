@@ -57,8 +57,12 @@ class GoalSerializer(ModelSerializer):
     def get_project(self, instance: ProjectGoal) -> int: return instance.project.id
 
     def get_attribute(self, instance: ProjectGoal) -> str:
-        level_name = instance.attribute.level.name
-        return f"{level_name}: {instance.attribute.name}"
+        make_name = lambda a: f"{a.name}({a.level.name})"
+
+        attribute = instance.attribute
+        parent = attribute.parent
+
+        return (f"{make_name(parent)}: " if parent else "") + make_name(attribute)
 
     def get_complete(self, instance: ProjectGoal) -> int:
         return instance.attribute.attributegroup_set.count()
