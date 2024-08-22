@@ -11,7 +11,6 @@ from bson import ObjectId
 from typing import Any, Optional
 import requests
 from os import mkdir, path, remove
-from motor.motor_asyncio import AsyncIOMotorGridOutCursor
 
 
 class Zipper:
@@ -20,8 +19,7 @@ class Zipper:
     temp_prefix = "./temp_zip"
 
     def __init__(self, bucket_name: str, file_ids: list[str]) -> None:
-        self.object_set: AsyncIOMotorGridOutCursor = Bucket(bucket_name) \
-            .get_download_objects(file_ids)
+        self.object_set = Bucket(bucket_name).get_download_objects(file_ids)
 
         self._get_annotation(bucket_name, file_ids)
 
@@ -64,12 +62,12 @@ class Zipper:
     def delete_temp_zip(self) -> None: remove(self.archive)
 
     def _get_object_name(self, object: GridOut) -> str:
-        prepared_name: str = object.name
-        extension: str = object.metadata.get("file_extension", "")
+        name = str(object._id)
+        extension = object.metadata.get("file_extension", "")
 
-        if extension: prepared_name += f".{extension}"
+        if extension: name += f".{extension}"
 
-        return prepared_name
+        return name
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"

@@ -94,7 +94,7 @@ class ZipperTest(TestCase):
 
     def _test_object_name(self, zipper, obj):
         name = zipper._get_object_name(obj)
-        self.assertEqual(name, "test_bucket_dataset")
+        self.assertEqual(name, str(obj._id))
 
     @staticmethod
     @patch(

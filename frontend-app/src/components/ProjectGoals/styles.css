@@ -31,7 +31,7 @@
     height: fit-content;
     border: 1px solid;
     border-color: var(--issGreen);
-    background-color: rgb(153, 255, 98, 0.2);
+    background-color: rgb(235 255 226);
     color: var(--issGreen);
     margin-bottom: 20px;
     transition:
@@ -40,11 +40,25 @@
 }
 
 .goal__createFrom {
+    background-color: var(--issBrand);
+    padding: 20px;
+    border-radius: 4px;
     display: flex;
     place-items: center;
     gap: 8px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+}
+.goal__createFrom > .iss__selectorWrap {
+    flex-direction: row;
+    width: 100%;
+}
+.goal__createFrom > .iss__selectorWrap > label:last-of-type:not(:only-of-type) {
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+.goal__createFrom .iss__selector__name {
+    color: white;
 }
 .goal__createFrom > input,
 .goal__createFrom > select {
@@ -60,10 +74,34 @@
     color: var(--issRed);
     width: 100%;
 }
+.goal__table {
+    background-color: white;
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px;
+}
+.goal__table th,
+.goal__table td {
+    border: 1px solid var(--issBrand);
+    padding: 4px;
+}
+.goal__table th:not(:first-of-type) {
+    width: 1px;
+}
+.goal__table__progress {
+    width: 15% !important;
+}
+
+.goal__table td {
+    text-align: center;
+}
 
 @media (hover: hover) {
     .goal__button:hover {
         color: white;
         background-color: var(--issGreen);
+    }
+    .goal__createFrom > .iss__selectorWrap > label:last-of-type:hover {
+        opacity: 1;
     }
 }
