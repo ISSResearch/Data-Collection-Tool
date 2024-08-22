@@ -1,18 +1,11 @@
-.goal__card {
-    display: flex;
-    gap: 20px;
-    place-items: center;
-}
-.goal__progressWrap {
+.goal__row__progress {
+    padding: 0 !important;
     position: relative;
     font-size: 12px;
     border-radius: 4px;
-    width: 200px;
-    height: 20px;
-    border: 1px solid var(--issBrand);
     background-color: var(--issLightBrand);
 }
-.goal__progressWrap > mark {
+.goal__row__progress > mark {
     position: absolute;
     background-color: unset;
     top: 50%;
@@ -20,19 +13,20 @@
     transform: translate(-50%, -50%);
     color: white;
     text-shadow: 0px 0px 1px black;
+    z-index: 2;
 }
 
 .goal__progressBar {
+    z-index: 1;
+    top: 0;
+    left: 0;
+    position: absolute;
     height: 100%;
     background-color: var(--issBrand);
     transition: width 1s ease;
 }
 
 .goal--complete {
-    border: 1px solid var(--issGreen);
-}
-
-.goal--complete > .goal__progressBar {
     background-color: var(--issGreen);
 }
 

@@ -57,7 +57,7 @@ class GoalSerializer(ModelSerializer):
     def get_project(self, instance: ProjectGoal) -> int: return instance.project.id
 
     def get_attribute(self, instance: ProjectGoal) -> str:
-        make_name = lambda a: f"{a.name}({a.level.name})"
+        make_name = lambda a: f"{a.name} ({a.level.name})"
 
         attribute = instance.attribute
         parent = attribute.parent

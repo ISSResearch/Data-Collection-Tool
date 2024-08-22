@@ -49,7 +49,6 @@ def _get_collectors(
             "project_download",
             "project_edit"
         ) \
-        .filter(is_superuser=False) \
         .order_by("id")
 
     return (

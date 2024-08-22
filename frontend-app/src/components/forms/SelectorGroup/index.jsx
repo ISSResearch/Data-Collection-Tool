@@ -23,29 +23,29 @@ export default function SelectorGroup({
 }) {
   const [groups, setGroups] = useState({ [formUID()]: {} });
 
-  function addGroup() {
+  const addGroup = () => {
     if (handleGroupChange) handleGroupChange({ fileID, type: "add" });
     else setGroups((prev) => {
       return { ...prev, [formUID()]: {} };
     });
-  }
+  };
 
-  function deleteGroup(key) {
+  const deleteGroup = (key) => {
     if (handleGroupChange) handleGroupChange({ fileID, key, type: "delete" });
     else setGroups((prev) => {
       delete prev[key];
       return { ...prev };
     });
-  }
+  };
 
-  function copyGroup(key) {
+  const copyGroup = (key) => {
     if (handleGroupChange) handleGroupChange({ fileID, key, type: "copy" });
     else setGroups((prev) => {
       return { ...prev, [formUID()]: deepCopy(prev[key]) };
     });
-  }
+  };
 
-  function setOption(key, payload, selInd) {
+  const setOption = (key, payload, selInd) => {
     if (handleGroupChange) handleGroupChange({
       fileID,
       key,
@@ -66,7 +66,7 @@ export default function SelectorGroup({
 
       return newGroups;
     });
-  }
+  };
 
   return (
     <fieldset className={`iss__selectGroup${fileID ? ' style--min' : ''}`}>

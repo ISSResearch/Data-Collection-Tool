@@ -1,14 +1,14 @@
-import { useState, ReactElement, useEffect } from "react";
+import { useState, ReactElement, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch  } from "react-redux";
 import { api } from "../../config/api";
 import { addAlert } from "../../slices/alerts";
-import { spreadChildren } from "../../utils";
+import { deepCopy } from "../../utils";
 import Load from "../ui/Load";
-import GoalCard from "../common/GoalCard";
+import GoalRow from "../common/GoalRow";
+import SelectorWrap from "../common/SelectorWrap";
 import "./styles.css";
 
-// TODO: dont forget to refactor this
 /**
 * @param {object} props
 * @param {number} props.pathID
@@ -16,24 +16,30 @@ import "./styles.css";
 * @returns {ReactElement}
 */
 export default function ProjectEdit({ pathID, attributes }) {
-  const user = useSelector((state) => state.user.user);
   const [goals, setGoals] = useState(null);
-  const [options, setOptions] = useState([]);
   const [errors, setErrors] = useState("");
+  const [apply, setApply] = useState(null);
+  const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const options = useRef(null);
+  const selected = useRef(null);
 
   const handleCreate = async (event) => {
     event.preventDefault();
-    var { attribute, amount } = event.target;
-
-    const data = { attribute_id: attribute.value, amount: amount.value };
 
     try {
+      let attribute_id = selected.current;
+
+      if (!attribute_id) throw new Error("Select attribute");
+
+      console.log({ attribute_id, amount: event.target.amount.value });
+      if (attribute_id) return;
+
       await api.request(`/api/projects/goals/${pathID}/`,
         {
           method: "post",
-          data,
+          data: { attribute_id, amount: event.target.amount.value },
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
@@ -42,20 +48,23 @@ export default function ProjectEdit({ pathID, attributes }) {
       );
       await fetchGoals();
 
-      attribute.value = "";
-      amount.value = "";
+      selected.current = null;
+      event.target.amount.value = "";
     }
     catch ({ message, response }) {
-      var authFailed = response.status === 401 || response.status === 403;
+      if (response) {
+        var authFailed = response.status === 401 || response.status === 403;
 
-      dispatch(addAlert({
-        message: "Creating project goal error: " + message,
-        type: "error",
-        noSession: authFailed
-      }));
+        dispatch(addAlert({
+          message: "Creating project goal error: " + message,
+          type: "error",
+          noSession: authFailed
+        }));
 
-      if (authFailed) navigate("/login");
+        if (authFailed) navigate("/login");
+      }
       setErrors(message);
+      if (!errors) setTimeout(() => setErrors(""), 3000);
     }
   };
 
@@ -103,16 +112,23 @@ export default function ProjectEdit({ pathID, attributes }) {
     }
   };
 
+  const handleSelect = (data) => {
+    if (!apply) {
+      const level = deepCopy(attributes.find((lev) => lev.id === data.selected[0]));
+      level.attributes.forEach((attr) => attr.parent = level.id);
+      options.current = { ...options.current, children: [level] };
+      setApply(data.selected);
+    }
+    else selected.current = data.selected[0];
+  };
+
   useEffect(() => {
     fetchGoals();
-    var preparedOptions = spreadChildren(attributes, false)
-      .sort((a, b) => Number(a.order >= b.order) || -1)
-      .reduce((acc, item) => {
-        let { name, attributes } = item;
-        acc.push(...attributes.map((a) => [`${name}: ${a.name}`, a.id]));
-        return acc;
-      }, []);
-    setOptions(preparedOptions);
+
+    options.current = {
+      attributes: attributes.map(({ name, id, }) => ({ name, id })),
+      name: "attribute group",
+    };
   }, []);
 
   return <>
@@ -120,14 +136,10 @@ export default function ProjectEdit({ pathID, attributes }) {
       user.is_superuser &&
       <>
         <form onSubmit={handleCreate} className="goal__createFrom">
-          <select name="attribute" required>
-            <option value="">Select attribute</option>
-            {
-              options.map(([name, value]) => (
-                <option key={value} value={value}>{name}</option>
-              ))
-            }
-          </select>
+          {
+            options.current &&
+            <SelectorWrap item={options.current} onChange={handleSelect} applyGroups={apply} />
+          }
           <input name="amount" type="number" required min={0} placeholder="amount" />
           <button className="goal__creteButton">create</button>
           { errors && <p className="goal__errors">{errors}</p> }
@@ -136,23 +148,34 @@ export default function ProjectEdit({ pathID, attributes }) {
     }
     {
       goals
-      ? <>
+      ? <table className="goal__table">
+        <thead>
+          <tr>
+            <th>Attribute name</th>
+            <th>completed</th>
+            <th>amount</th>
+            <th className="goal__table__progress">progress</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
         {
           goals.length
-          ? <section className="goals__cardWrap" >
+          ? <>
             {
               goals.map((item) => (
-                <GoalCard
+                <GoalRow
                   key={item.id}
                   onDelete={user.is_superuser ? handleDelete : null}
                   goalItem={item}
                 />
               ))
             }
-          </section>
-          : "No project goals yet. Create one!"
+          </>
+          : <tr><td colSpan={5}>No project goals yet. Create one!</td></tr>
         }
-      </>
+      </table>
       : <div className="goals__load"><Load /></div>
     }
   </>;
