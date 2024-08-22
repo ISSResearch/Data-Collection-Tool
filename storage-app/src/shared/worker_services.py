@@ -11,7 +11,6 @@ from bson import ObjectId
 from typing import Any, Optional
 import requests
 from os import mkdir, path, remove
-from motor.motor_asyncio import AsyncIOMotorGridOutCursor
 
 
 class Zipper:
