@@ -33,9 +33,6 @@ export default function ProjectEdit({ pathID, attributes }) {
 
       if (!attribute_id) throw new Error("Select attribute");
 
-      console.log({ attribute_id, amount: event.target.amount.value });
-      if (attribute_id) return;
-
       await api.request(`/api/projects/goals/${pathID}/`,
         {
           method: "post",
