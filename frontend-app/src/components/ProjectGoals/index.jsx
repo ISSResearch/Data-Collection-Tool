@@ -147,6 +147,12 @@ export default function ProjectEdit({ pathID, attributes }) {
       </>
     }
     {
+      goals?.length &&
+      <span style={{ margin: "12px 0"}}>
+        Completed: {goals.filter((g) => g.complete >= g.amount).length}/{goals.length}
+      </span>
+    }
+    {
       goals
       ? <table className="goal__table">
         <thead>
@@ -159,22 +165,22 @@ export default function ProjectEdit({ pathID, attributes }) {
           </tr>
         </thead>
         <tbody>
+          {
+            goals.length
+            ? <>
+              {
+                goals.map((item) => (
+                  <GoalRow
+                    key={item.id}
+                    onDelete={user.is_superuser ? handleDelete : null}
+                    goalItem={item}
+                  />
+                ))
+              }
+            </>
+            : <tr><td colSpan={5}>No project goals yet. Create one!</td></tr>
+          }
         </tbody>
-        {
-          goals.length
-          ? <>
-            {
-              goals.map((item) => (
-                <GoalRow
-                  key={item.id}
-                  onDelete={user.is_superuser ? handleDelete : null}
-                  goalItem={item}
-                />
-              ))
-            }
-          </>
-          : <tr><td colSpan={5}>No project goals yet. Create one!</td></tr>
-        }
       </table>
       : <div className="goals__load"><Load /></div>
     }

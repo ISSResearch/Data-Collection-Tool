@@ -1,6 +1,11 @@
 from rest_framework.views import Response, APIView, Request
 from rest_framework.permissions import IsAuthenticated
-from .permissions import ProjectsPermission, ProjectPermission, ProjectViewPermission
+from .permissions import (
+    ProjectsPermission,
+    ProjectPermission,
+    ProjectViewPermission,
+    ProjectGoalPermission
+)
 from .services import ViewSetServices, GoalViewServices
 
 
@@ -35,7 +40,7 @@ class ProjectViewSet(APIView, ViewSetServices):
 
 class GoalViewSet(APIView, GoalViewServices):
     http_method_names = ("get", "post", "delete")
-    permission_classes = (IsAuthenticated, ProjectPermission, ProjectViewPermission)
+    permission_classes = (IsAuthenticated, ProjectPermission, ProjectGoalPermission)
 
     def get(self, _, pk: int) -> Response:
         response, status = self._get_goals(pk)

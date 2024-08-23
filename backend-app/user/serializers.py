@@ -13,7 +13,7 @@ class CollectorSerializer(ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "permissions")
+        fields = ("id", "username", "permissions", "is_superuser")
 
     def get_permissions(self, instance: CustomUser) -> dict[str, bool]:
         project_id: int = self.context.get("project_id")
