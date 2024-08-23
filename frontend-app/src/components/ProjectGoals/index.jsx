@@ -5,8 +5,8 @@ import { api } from "../../config/api";
 import { addAlert } from "../../slices/alerts";
 import { deepCopy } from "../../utils";
 import Load from "../ui/Load";
-import GoalRow from "../common/GoalRow";
 import SelectorWrap from "../common/SelectorWrap";
+import GoalTable from "./GoalTable";
 import "./styles.css";
 
 /**
@@ -19,19 +19,25 @@ export default function ProjectEdit({ pathID, attributes }) {
   const [goals, setGoals] = useState(null);
   const [errors, setErrors] = useState("");
   const [apply, setApply] = useState(null);
+  const [formLoad, setFormLoad] = useState(false);
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const options = useRef(null);
   const selected = useRef(null);
+  const completed = goals?.filter((g) => g.complete >= g.amount).length;
 
   const handleCreate = async (event) => {
     event.preventDefault();
+
+    if (formLoad) return;
 
     try {
       let attribute_id = selected.current;
 
       if (!attribute_id) throw new Error("Select attribute");
+
+      setFormLoad(true);
 
       await api.request(`/api/projects/goals/${pathID}/`,
         {
@@ -45,6 +51,7 @@ export default function ProjectEdit({ pathID, attributes }) {
       );
       await fetchGoals();
 
+      setApply([]);
       selected.current = null;
       event.target.amount.value = "";
     }
@@ -63,6 +70,7 @@ export default function ProjectEdit({ pathID, attributes }) {
       setErrors(message);
       if (!errors) setTimeout(() => setErrors(""), 3000);
     }
+    finally { setFormLoad(false); }
   };
 
   const handleDelete = async (id) => {
@@ -110,13 +118,16 @@ export default function ProjectEdit({ pathID, attributes }) {
   };
 
   const handleSelect = (data) => {
-    if (!apply) {
-      const level = deepCopy(attributes.find((lev) => lev.id === data.selected[0]));
+    var { index, selected: selOpt } = data;
+
+    if (index === 0) {
+      const level = deepCopy(attributes.find((lev) => lev.id === selOpt[0]));
+      level.multiple = false;
       level.attributes.forEach((attr) => attr.parent = level.id);
       options.current = { ...options.current, children: [level] };
-      setApply(data.selected);
+      setApply(selOpt);
     }
-    else selected.current = data.selected[0];
+    else selected.current = selOpt[0];
   };
 
   useEffect(() => {
@@ -131,55 +142,23 @@ export default function ProjectEdit({ pathID, attributes }) {
   return <>
     {
       user.is_superuser &&
-      <>
-        <form onSubmit={handleCreate} className="goal__createFrom">
-          {
-            options.current &&
-            <SelectorWrap item={options.current} onChange={handleSelect} applyGroups={apply} />
-          }
-          <input name="amount" type="number" required min={0} placeholder="amount" />
-          <button className="goal__creteButton">create</button>
-          { errors && <p className="goal__errors">{errors}</p> }
-        </form>
-      </>
+      <form onSubmit={handleCreate} className="goal__createFrom">
+        {
+          options.current &&
+          <SelectorWrap item={options.current} onChange={handleSelect} applyGroups={apply} />
+        }
+        <input name="amount" type="number" required min={0} placeholder="amount" />
+        <button className="goal__creteButton">
+          { formLoad ? <Load isInline/ > : "create" }
+        </button>
+        { errors && <p className="goal__errors">{errors}</p> }
+      </form>
     }
-    {
-      goals?.length &&
-      <span style={{ margin: "12px 0"}}>
-        Completed: {goals.filter((g) => g.complete >= g.amount).length}/{goals.length}
-      </span>
-    }
+    { Number.isInteger(completed) && <span>Completed: {completed}/{goals.length}</span> }
     {
       goals
-      ? <table className="goal__table">
-        <thead>
-          <tr>
-            <th>Attribute name</th>
-            <th>completed</th>
-            <th>amount</th>
-            <th className="goal__table__progress">progress</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            goals.length
-            ? <>
-              {
-                goals.map((item) => (
-                  <GoalRow
-                    key={item.id}
-                    onDelete={user.is_superuser ? handleDelete : null}
-                    goalItem={item}
-                  />
-                ))
-              }
-            </>
-            : <tr><td colSpan={5}>No project goals yet. Create one!</td></tr>
-          }
-        </tbody>
-      </table>
-      : <div className="goals__load"><Load /></div>
+        ? <GoalTable goals={goals} onDelete={user.is_superuser ? handleDelete : null} />
+        : <div className="goals__load"><Load /></div>
     }
   </>;
 }
