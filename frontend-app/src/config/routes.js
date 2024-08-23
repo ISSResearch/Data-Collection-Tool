@@ -28,14 +28,7 @@ export const routes = [
     children: [
       { path: "upload", element: <ProjectPage />, exact: true },
       { path: "validate", element: <ProjectPage />, exact: true },
-      {
-        path: "goals",
-        element: <ProjectPage />,
-        exact: true,
-        children: [
-          { path: "edit", element: <ProjectPage />, exact: true },
-        ]
-      },
+      { path: "goals", element: <ProjectPage />, exact: true, },
       {
         path: "stats",
         element: <ProjectPage />,

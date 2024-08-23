@@ -17,16 +17,16 @@ export default function useCollectors() {
   * @param {object[]} originCollectors
   * @returns {void}
   */
-  function initData(originCollectors) {
+  const initData = (originCollectors) => {
     var preparedCollectors = originCollectors.reduce((acc, collector) => {
-      var { id, username, permissions } = collector;
-      acc[id] = { user_id: id, username, permissions };
+      var { id, username, permissions, is_superuser } = collector;
+      if (!is_superuser) acc[id] = { user_id: id, username, permissions };
       return acc;
     }, {});
 
     setOrigin(preparedCollectors);
     setCollectors(deepCopy(preparedCollectors));
-  }
+  };
 
   /**
   * @param {number} id
@@ -35,16 +35,14 @@ export default function useCollectors() {
   * @param {boolean} target.checked
   * @returns {void}
   */
-  function changeCollector(id, name, { checked }) {
+  const changeCollector = (id, name, { checked }) => {
     var newCollectors = { ...collectors };
     newCollectors[id].permissions[name] = checked;
     setCollectors(newCollectors);
-  }
+  };
 
-  /**
-  * @returns {object[]}
-  */
-  function gatherData() {
+  /** @returns {object[]} */
+  const gatherData = () => {
     return Object.values(collectors).reduce((acc, collector) => {
       var originCollector = origin[collector.user_id];
 
@@ -64,7 +62,7 @@ export default function useCollectors() {
       }
       return acc;
     }, []);
-  }
+  };
 
   return { collectors, changeCollector, initData, gatherData };
 }

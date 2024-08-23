@@ -92,7 +92,7 @@
     width: 15% !important;
 }
 
-.goal__table td {
+.goal__table td:not(:first-of-type) {
     text-align: center;
 }
 

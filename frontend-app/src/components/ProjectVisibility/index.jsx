@@ -30,7 +30,7 @@ export default function ProjectVisibility({ pathID }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  async function sendForm(event) {
+  const sendForm = async (event) => {
     event.preventDefault();
 
     setLoading({ ...loading, submit: true });
@@ -38,7 +38,7 @@ export default function ProjectVisibility({ pathID }) {
     try {
       var formData = { project: pathID, users: gatherData() };
 
-      var { data }  = await api.request(`/api/users/collectors/${pathID}/`, {
+      var { data } = await api.request(`/api/users/collectors/${pathID}/`, {
         method: 'patch',
         data: formData,
         headers: {
@@ -51,7 +51,7 @@ export default function ProjectVisibility({ pathID }) {
       dispatch(addAlert({ message: "Visibility for project changed", type: "success" }));
       setLoading({ ...loading, submit: false });
     }
-    catch({ message, response }) {
+    catch ({ message, response }) {
       var authFailed = response?.status === 401 || response?.status === 403;
 
       dispatch(addAlert({
@@ -62,7 +62,7 @@ export default function ProjectVisibility({ pathID }) {
 
       if (authFailed) navigate("/login");
     }
-  }
+  };
 
   useEffect(() => {
     api.get(`api/users/collectors/${pathID}/`, {

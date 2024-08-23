@@ -18,12 +18,12 @@ import './styles.css';
 
 /** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
-  { name: 'upload data', link: 'upload', permission: 'upload' },
-  { name: 'validate data', link: 'validate', permission: 'view' },
-  { name: 'goals', link: 'goals', permission: 'stats' },
-  { name: 'statistics', link: 'stats', permission: 'stats' },
-  { name: 'download data', link: 'download', permission: 'download' },
-  { name: 'edit', link: 'edit', permission: 'edit' }
+  { name: "upload data", link: "upload", permission: "upload" },
+  { name: "validate data", link: "validate", permission: "view" },
+  { name: "goals", link: "goals", permission: "upload" },
+  { name: "statistics", link: "stats", permission: "stats" },
+  { name: "download data", link: "download", permission: "download" },
+  { name: "edit", link: "edit", permission: "edit" }
 ];
 
 /** @type {{[variant: string]: ReactElement}} */
