@@ -12,6 +12,7 @@ export default function GoalRow({ goalItem, onDelete }) {
   const progress = Math.min(100, Math.ceil(complete / amount * 100));
 
   return <tr>
+    <td>{id}</td>
     <td>{attribute}</td>
     <td>{complete}</td>
     <td>{amount}</td>
