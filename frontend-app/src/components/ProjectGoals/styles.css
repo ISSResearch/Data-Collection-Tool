@@ -142,14 +142,14 @@
     border: 1px solid var(--issBrand);
     padding: 4px;
 }
-.goal__table th:not(:first-of-type) {
+.goal__table th:not(:nth-of-type(2)) {
     width: 1px;
 }
 .goal__table__progress {
     width: 15% !important;
 }
 
-.goal__table td:not(:first-of-type) {
+.goal__table td:not(:nth-of-type(2)) {
     text-align: center;
 }
 

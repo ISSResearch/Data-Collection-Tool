@@ -11,6 +11,7 @@ export default function GoalTable({ goals, onDelete }) {
   return <table className="goal__table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Attribute name</th>
         <th>completed</th>
         <th>amount</th>
