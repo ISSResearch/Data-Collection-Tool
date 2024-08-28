@@ -10,11 +10,11 @@ import ProjectCreate from '../../components/ProjectCreate';
 import './styles.css';
 
 /** @type {{name: string, link: string}[]} */
-const ROUTE_LINKS = [{ name: 'all projects', link: '' }];
+const ROUTE_LINKS = [{ name: "all projects", link: "" }];
 
 /** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
-  { name: 'create project', link: 'create', permission: 'hidden' }
+  { name: "create project", link: "create", permission: "hidden" }
 ];
 
 /** @type {{[variant: string]: ReactElement}} */

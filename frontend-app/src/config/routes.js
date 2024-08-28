@@ -20,7 +20,11 @@ export const routes = [
   { path: "/", element: <Home />, exact: true },
   { path: "/login", element: <Login />, exact: true, },
   { path: "/registration", element: <Registration />, exact: true },
-  { path: "/projects", element: <Projects />, exact: true, },
+  {
+    path: "/projects", element: <Projects />,
+    exact: true,
+    children: [ { path: "create", element: <ProjectPage />, exact: true }, ]
+  },
   {
     path: "/projects/:projectID",
     element: <ProjectPage />,
