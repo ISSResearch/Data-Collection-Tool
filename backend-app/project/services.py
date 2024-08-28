@@ -119,8 +119,8 @@ class GoalViewServices:
                 f"{name} ({level_name})"
                 for name, level_name in
                 attribute
-                    .ancestors(include_self=True)
-                    .values_list("name", "level__name")
+                .ancestors(include_self=True)
+                .values_list("name", "level__name")
             ]
 
             project.projectgoal_set.create(
