@@ -48,22 +48,13 @@ class ProjectSerializer(ProjectsSerializer):
 
 class GoalSerializer(ModelSerializer):
     project = SerializerMethodField()
-    attribute = SerializerMethodField()
     complete = SerializerMethodField()
 
     class Meta:
         model = ProjectGoal
-        fields = "__all__"
+        exclude = ("attribute",)
 
     def get_project(self, instance: ProjectGoal) -> int: return instance.project.id
-
-    def get_attribute(self, instance: ProjectGoal) -> str:
-        make_name = lambda a: f"{a.name} ({a.level.name})"
-
-        attribute = instance.attribute
-        parent = attribute.parent
-
-        return (f"{make_name(parent)}: " if parent else "") + make_name(attribute)
 
     def get_complete(self, instance: ProjectGoal) -> int:
         return instance.attribute.attributegroup_set.count()

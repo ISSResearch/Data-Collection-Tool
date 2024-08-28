@@ -107,6 +107,7 @@ class Project(Model):
 
 
 class ProjectGoal(Model):
+    name = TextField()
     amount = IntegerField(default=0)
 
     attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)

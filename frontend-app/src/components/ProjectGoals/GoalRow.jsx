@@ -8,12 +8,12 @@ import "./styles.css";
 * @returns {ReactElement}
 */
 export default function GoalRow({ goalItem, onDelete }) {
-  const { attribute, amount, complete, id } = goalItem;
+  const { name, amount, complete, id } = goalItem;
   const progress = Math.min(100, Math.ceil(complete / amount * 100));
 
   return <tr>
     <td>{id}</td>
-    <td>{attribute}</td>
+    <td>{name}</td>
     <td>{complete}</td>
     <td>{amount}</td>
     <td className="goal__row__progress">
