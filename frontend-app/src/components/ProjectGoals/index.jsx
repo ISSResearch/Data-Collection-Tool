@@ -59,15 +59,17 @@ export default function ProjectEdit({ pathID, attributes }) {
       if (response) {
         var authFailed = response.status === 401 || response.status === 403;
 
+        var errMessage = response.data?.errors || message;
+
         dispatch(addAlert({
-          message: "Creating project goal error: " + message,
+          message: "Creating project goal error: " + errMessage,
           type: "error",
           noSession: authFailed
         }));
 
         if (authFailed) navigate("/login");
       }
-      setErrors(message);
+      setErrors(errMessage);
       if (!errors) setTimeout(() => setErrors(""), 3000);
     }
     finally { setFormLoad(false); }
@@ -101,7 +103,7 @@ export default function ProjectEdit({ pathID, attributes }) {
       var { data } = await api.get(`/api/projects/goals/${pathID}/`, {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
-      setGoals(data.sort((a, b) => Number(a.complete >= b.complete) || -1));
+      setGoals(data);
     }
     catch ({ message, response }) {
       var authFailed = response?.status === 401 || response?.status === 403;

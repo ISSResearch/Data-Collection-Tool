@@ -105,17 +105,30 @@ class GoalViewServices:
         )
     )
     def _get_goals(self, project: Project) -> tuple[list[dict[str, Any]], int]:
-        data = GoalSerializer(project.projectgoal_set.all(), many=True)
+        data = GoalSerializer(project.projectgoal_set.order_by("id").all(), many=True)
         return data.data, HTTP_200_OK
 
     @with_model_assertion(Project, "id", filter={"visible": True})
     def _create_goal(self, project: Project, request_data: dict[str, Any]):
         try:
             attribute = project.attribute_set.get(id=request_data["attribute_id"])
+
+            assert not attribute.projectgoal_set.count(), "Goal for Attribute already exists"
+
+            goal_attribute_names = [
+                f"{name} ({level_name})"
+                for name, level_name in
+                attribute
+                .ancestors(include_self=True)
+                .values_list("name", "level__name")
+            ]
+
             project.projectgoal_set.create(
                 attribute=attribute,
-                amount=int(request_data["amount"])
+                amount=int(request_data["amount"]),
+                name=" > ".join(goal_attribute_names)
             )
+
             return {"ok": True}, HTTP_201_CREATED
 
         except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST

@@ -16,7 +16,7 @@ export default function ProjectCreate() {
   const attributeManager = useAttributeManager();
   const navigate = useNavigate();
 
-  function getFormData({ target }) {
+  const getFormData = ({ target }) => {
     var name = target.project_name?.value;
     var description = target.project_description.value || "";
 
@@ -26,9 +26,9 @@ export default function ProjectCreate() {
     var attributes = attributeManager.formHook.gatherAttributes();
 
     return { name, description, attributes };
-  }
+  };
 
-  async function sendForm(event) {
+  const sendForm = async (event) => {
     event.preventDefault();
     if (loading) return;
 
@@ -49,7 +49,7 @@ export default function ProjectCreate() {
       dispatch(addAlert({ message: "Project created", type: "success" }));
       navigate("/projects/");
     }
-    catch({ message, response }) {
+    catch ({ message, response }) {
       var authFailed = response && (response.status === 401 || response.status === 403);
 
       dispatch(addAlert({
@@ -62,7 +62,7 @@ export default function ProjectCreate() {
 
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className='iss__projectCreate'>

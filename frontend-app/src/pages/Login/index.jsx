@@ -35,7 +35,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  async function sendForm(event) {
+  const sendForm = async (event) => {
     event.preventDefault();
     setLoading(true);
     var [name, pass] = event.target;
@@ -63,7 +63,7 @@ export default function Login() {
       setLoading(false);
       setTimeout(() => setErrors(null), 5000);
     }
-  }
+  };
 
   useEffect(() => {
     localStorage.removeItem("dtcAccess");
