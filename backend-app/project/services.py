@@ -5,7 +5,10 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_202_ACCEPTED
 )
-from django.db.models import QuerySet
+from django.core.paginator import Paginator
+from django.db.models import QuerySet, F, Value
+from django.db.models.functions import Coalesce
+from django.db.models.aggregates import Count
 from django.db import transaction
 from typing import Any
 from user.models import CustomUser
@@ -99,14 +102,31 @@ class GoalViewServices:
         Project,
         "id",
         filter={"visible": True},
-        prefetch=(
-            "projectgoal_set__attribute__level",
-            "projectgoal_set__attribute__attributegroup_set",
-        )
+        prefetch=("projectgoal_set__attribute__attributegroup_set",)
     )
-    def _get_goals(self, project: Project) -> tuple[list[dict[str, Any]], int]:
-        data = GoalSerializer(project.projectgoal_set.order_by("id").all(), many=True)
-        return data.data, HTTP_200_OK
+    def _get_goals(self, project: Project, request_query) -> tuple[dict[str, Any], int]:
+        page = request_query.get("page", 1)
+        per_page = 50
+
+        query = project.projectgoal_set \
+            .annotate(complete=Coalesce(
+                Count("attribute__attributegroup"),
+                Value(0)
+            )) \
+            .order_by("id", "complete")
+
+        if request_query.get("all") != "1": query = query.filter(complete__lt=F("amount"))
+
+        paginator = Paginator(query, per_page)
+
+        return {
+            "data": GoalSerializer(
+                paginator.page(page).object_list,
+                many=True
+            ).data,
+            "page": page,
+            "total_pages": paginator.num_pages
+        }, HTTP_200_OK
 
     @with_model_assertion(Project, "id", filter={"visible": True})
     def _create_goal(self, project: Project, request_data: dict[str, Any]):

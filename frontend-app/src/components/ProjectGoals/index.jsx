@@ -1,5 +1,5 @@
 import { useState, ReactElement, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch  } from "react-redux";
 import { api } from "../../config/api";
 import { addAlert } from "../../slices/alerts";
@@ -20,12 +20,13 @@ export default function ProjectEdit({ pathID, attributes }) {
   const [errors, setErrors] = useState("");
   const [apply, setApply] = useState(null);
   const [formLoad, setFormLoad] = useState(false);
+  const [query, setQuery] = useSearchParams();
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const options = useRef(null);
   const selected = useRef(null);
-  const completed = goals?.filter((g) => g.complete >= g.amount).length;
+  const completed = goals?.data.filter((g) => g.complete >= g.amount).length;
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -98,9 +99,27 @@ export default function ProjectEdit({ pathID, attributes }) {
     }
   };
 
+  const handleSelect = (data) => {
+    var { index, selected: selOpt } = data;
+
+    if (index === 0) {
+      const level = deepCopy(attributes.find((lev) => lev.id === selOpt[0]));
+      level.multiple = false;
+      level.attributes.forEach((attr) => attr.parent = level.id);
+      options.current = { ...options.current, children: [level] };
+      setApply(selOpt);
+    }
+    else selected.current = selOpt[0];
+  };
+
+  const getQuery = () => ({ page: query.get("page") || 1, all: query.get("all") });
+
+  const handleQueryChange = (type, val) => setQuery({ ...getQuery(), [type]: val});
+
   const fetchGoals = async () => {
     try {
       var { data } = await api.get(`/api/projects/goals/${pathID}/`, {
+        params: getQuery(),
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
       setGoals(data);
@@ -115,21 +134,8 @@ export default function ProjectEdit({ pathID, attributes }) {
       }));
 
       if (authFailed) navigate("/login");
-      setGoals([]);
+      setGoals(null);
     }
-  };
-
-  const handleSelect = (data) => {
-    var { index, selected: selOpt } = data;
-
-    if (index === 0) {
-      const level = deepCopy(attributes.find((lev) => lev.id === selOpt[0]));
-      level.multiple = false;
-      level.attributes.forEach((attr) => attr.parent = level.id);
-      options.current = { ...options.current, children: [level] };
-      setApply(selOpt);
-    }
-    else selected.current = selOpt[0];
   };
 
   useEffect(() => {
@@ -156,10 +162,27 @@ export default function ProjectEdit({ pathID, attributes }) {
         { errors && <p className="goal__errors">{errors}</p> }
       </form>
     }
-    { Number.isInteger(completed) && <span>Completed: {completed}/{goals.length}</span> }
+    {
+      Number.isInteger(completed) &&
+      <div className="goal__annotation">
+        <span>Completed: {completed}/{goals.data.length}</span>
+        <label>
+          <input
+            type="checkbox"
+            defaultChecked={query.get("all") === "1"}
+            onChange={({ target }) => handleQueryChange("all", Number(target.checked))}
+          />
+          show all
+        </label>
+      </div>
+    }
     {
       goals
-        ? <GoalTable goals={goals} onDelete={user.is_superuser ? handleDelete : null} />
+        ? <GoalTable
+          goals={goals}
+          onDelete={user.is_superuser ? handleDelete : null}
+          onPagination={handleQueryChange}
+        />
         : <div className="goals__load"><Load /></div>
     }
   </>;

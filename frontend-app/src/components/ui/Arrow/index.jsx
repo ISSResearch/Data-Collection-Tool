@@ -1,6 +1,8 @@
 import { ReactElement } from "react";
 import "./styles.css";
 
+const POINT = { "right": "270deg", "left": "90deg", "top": "180deg", "bot": "0deg", };
+
 /**
 * @param {object} props
 * @param {number} [props.size]
@@ -10,20 +12,13 @@ import "./styles.css";
 * @returns {ReactElement}
 */
 export default function DateSelector({ size, point, color, classes, ...props }) {
-  var pointMap = {
-    "right": "270deg",
-    "left": "90deg",
-    "top": "180deg",
-    "bot": "0deg",
-  };
-
   return (
     <svg
       width={size || 12}
       height={size || 12}
       viewBox="0 0 14 8"
       style={{
-        rotate: pointMap[point || "bot"],
+        rotate: POINT[point || "bot"],
         fill: color || "#62abff"
       }}
       className={["iss__arrowIcon", ...(classes || [])].join(" ")}
