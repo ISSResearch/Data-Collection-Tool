@@ -109,6 +109,8 @@ class Project(Model):
 class ProjectGoal(Model):
     name = TextField()
     amount = IntegerField(default=0)
+    image_mod = IntegerField(default=1)
+    video_mod = IntegerField(default=1)
 
     attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)
     project = ForeignKey("project.Project", on_delete=CASCADE)

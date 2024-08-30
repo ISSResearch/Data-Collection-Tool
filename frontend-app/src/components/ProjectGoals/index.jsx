@@ -39,11 +39,17 @@ export default function ProjectEdit({ pathID, attributes }) {
       if (!attribute_id) throw new Error("Select attribute");
 
       setFormLoad(true);
+      var { amount, image_mod, video_mod } = event.target;
 
       await api.request(`/api/projects/goals/${pathID}/`,
         {
           method: "post",
-          data: { attribute_id, amount: event.target.amount.value },
+          data: {
+            attribute_id,
+            amount: amount.value,
+            image_mod: image_mod.value || 1,
+            video_mod: video_mod.value || 1
+          },
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
@@ -53,8 +59,11 @@ export default function ProjectEdit({ pathID, attributes }) {
       await fetchGoals();
 
       setApply([]);
+
       selected.current = null;
-      event.target.amount.value = "";
+      amount.value = "";
+      image_mod.value = "";
+      video_mod.value = "";
     }
     catch ({ message, response }) {
       if (response) {
@@ -116,6 +125,20 @@ export default function ProjectEdit({ pathID, attributes }) {
 
   const handleQueryChange = (type, val) => setQuery({ ...getQuery(), [type]: val});
 
+  const rearrange = (data) => {
+    const _data = data.data;
+    const lookUp = ({ progress }) => progress === 100;
+
+    let start = _data.findIndex(lookUp);
+    let end = 1 + _data.findLastIndex(lookUp);
+
+    if (start >= 0 && (end < _data.length))
+      data.data = _data
+        .slice(0, start)
+        .concat(_data.slice(end))
+        .concat(_data.slice(start, end));
+  };
+
   const fetchGoals = async () => {
     try {
       var { data } = await api.get(`/api/projects/goals/${pathID}/`, {
@@ -123,7 +146,8 @@ export default function ProjectEdit({ pathID, attributes }) {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
 
-      data.data = data.data.sort((a, b) => Number(a.progress >= b.progress) || -1);
+      if (query.get("all") === "1") rearrange(data);
+
       setGoals(data);
     }
     catch ({ message, response }) {
@@ -157,7 +181,9 @@ export default function ProjectEdit({ pathID, attributes }) {
           options.current &&
           <SelectorWrap item={options.current} onChange={handleSelect} applyGroups={apply} />
         }
-        <input name="amount" type="number" required min={0} placeholder="amount" />
+        <input name="amount" type="number" required min={0} placeholder="amount*" />
+        <input name="image_mod" type="number" min={1} placeholder="image weight" />
+        <input name="video_mod" type="number" min={1} placeholder="video weight" />
         <button className="goal__creteButton">
           { formLoad ? <Load isInline/ > : "create" }
         </button>
