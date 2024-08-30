@@ -132,6 +132,7 @@ def fn():
     query = project.prefetched_goals
     return query
 
+
 class GoalViewServices:
     @with_model_assertion(
         Project,
