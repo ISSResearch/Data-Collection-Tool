@@ -48,6 +48,7 @@ class ProjectSerializer(ProjectsSerializer):
 
 class GoalSerializer(ModelSerializer):
     project = SerializerMethodField()
+    on_validation = IntegerField(read_only=True)
     complete = IntegerField(read_only=True)
     progress = IntegerField(read_only=True)
 

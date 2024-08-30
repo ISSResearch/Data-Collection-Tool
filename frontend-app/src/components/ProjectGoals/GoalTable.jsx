@@ -22,6 +22,7 @@ export default function GoalTable({ goals, onDelete, onPagination }) {
       <tr>
         <th>ID</th>
         <th>Attribute name</th>
+        <th>on validation</th>
         <th>completed</th>
         <th>amount</th>
         <th className="goal__table__progress">progress</th>
@@ -33,7 +34,7 @@ export default function GoalTable({ goals, onDelete, onPagination }) {
     </tbody>
     <tfoot>
       <tr>
-        <td colSpan={6}>
+        <td colSpan={7}>
           {
             data.length
             ? <div className="goal__table__pagination">

@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.db.models import (
     QuerySet,
     F,
+    Q,
     Value,
     ExpressionWrapper,
     IntegerField,
@@ -105,51 +106,44 @@ class ViewSetServices:
         )
 
 
-def fn():
-    from django.db.models import Prefetch
-    project = Project.objects.prefetch_related(
-        Prefetch(
-            'projectgoal_set',
-            queryset=ProjectGoal.objects.annotate(
-                complete=Coalesce(
-                    Count('attribute__attributegroup'),
-                    Value(0)
-                ),
-                _progress=ExpressionWrapper(
-                    F('complete') * 100 / F('amount'),
-                    output_field=IntegerField()
-                ),
-                progress=Case(
-                    When(_progress__gt=100, then=Value(100)),
-                    default=F('_progress'),
-                    output_field=IntegerField()
-                )
-            ).order_by('id', 'progress'),
-            to_attr='prefetched_goals'
-        )
-    ).get(id=1)
-
-    query = project.prefetched_goals
-    return query
-
-
 class GoalViewServices:
     @with_model_assertion(
         Project,
         "id",
         filter={"visible": True},
-        prefetch=("projectgoal_set__attribute__attributegroup_set",)
+        prefetch=(
+            "projectgoal_set__attribute__attributegroup_set",
+            "projectgoal_set__attribute__attributegroup_set__file",
+        )
     )
     def _get_goals(self, project: Project, request_query) -> tuple[dict[str, Any], int]:
         page = int(request_query.get("page", 1))
         per_page = 50
 
+        file_count = lambda _type, status: Coalesce(
+            Count(
+                "attribute__attributegroup__file",
+                filter=Q(
+                    attribute__attributegroup__file__status=status,
+                    attribute__attributegroup__file__file_type=_type
+                )
+            ),
+            Value(0),
+            output_field=IntegerField()
+        )
+        complete_calc = lambda _type: ExpressionWrapper(
+            F(f"video_{_type}_count") * F("video_mod") + F(f"image_{_type}_count") * F("image_mod"),
+            output_field=IntegerField()
+        )
+
         query = project.projectgoal_set \
             .annotate(
-                complete=Coalesce(
-                    Count("attribute__attributegroup"),
-                    Value(0)
-                ),
+                image_v_count=file_count("image", "v"),
+                video_v_count=file_count("video", "v"),
+                image_a_count=file_count("image", "a"),
+                video_a_count=file_count("video", "a"),
+                on_validation=complete_calc("v"),
+                complete=complete_calc("a"),
                 _progress=ExpressionWrapper(
                     F("complete") * 100 / F("amount"),
                     output_field=IntegerField()
@@ -160,7 +154,7 @@ class GoalViewServices:
                     output_field=IntegerField()
                 )
             ) \
-            .order_by("id", "progress")
+            .order_by(F("on_validation"), F("progress"), "id")
 
         if request_query.get("all") != "1": query = query.filter(complete__lt=F("amount"))
 
@@ -193,7 +187,9 @@ class GoalViewServices:
             project.projectgoal_set.create(
                 attribute=attribute,
                 amount=int(request_data["amount"]),
-                name=" > ".join(goal_attribute_names)
+                name=" > ".join(goal_attribute_names),
+                image_mod=int(request_data.get("image_mod", 1)),
+                video_mod=int(request_data.get("video_mod", 1)),
             )
 
             return {"ok": True}, HTTP_201_CREATED
