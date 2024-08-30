@@ -26,7 +26,7 @@ export default function ProjectEdit({ pathID, attributes }) {
   const navigate = useNavigate();
   const options = useRef(null);
   const selected = useRef(null);
-  const completed = goals?.data.filter((g) => g.complete >= g.amount).length;
+  const queryByAll = query.get("all") === "1";
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -122,6 +122,8 @@ export default function ProjectEdit({ pathID, attributes }) {
         params: getQuery(),
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
+
+      data.data = data.data.sort((a, b) => Number(a.progress >= b.progress) || -1);
       setGoals(data);
     }
     catch ({ message, response }) {
@@ -134,7 +136,7 @@ export default function ProjectEdit({ pathID, attributes }) {
       }));
 
       if (authFailed) navigate("/login");
-      setGoals(null);
+      setGoals([]);
     }
   };
 
@@ -162,20 +164,22 @@ export default function ProjectEdit({ pathID, attributes }) {
         { errors && <p className="goal__errors">{errors}</p> }
       </form>
     }
-    {
-      Number.isInteger(completed) &&
-      <div className="goal__annotation">
-        <span>Completed: {completed}/{goals.data.length}</span>
-        <label>
-          <input
-            type="checkbox"
-            defaultChecked={query.get("all") === "1"}
-            onChange={({ target }) => handleQueryChange("all", Number(target.checked))}
-          />
-          show all
-        </label>
-      </div>
-    }
+    <div className="goal__annotation">
+      <label>
+        <input
+          type="checkbox"
+          defaultChecked={queryByAll}
+          onChange={({ target }) => handleQueryChange("all", Number(target.checked))}
+        />
+        show all
+      </label>
+      {
+        (queryByAll && goals?.data) &&
+        <span>
+          Completed: {goals.data.filter((g) => g.complete >= g.amount).length}/{goals.data.length}
+        </span>
+      }
+    </div>
     {
       goals
         ? <GoalTable

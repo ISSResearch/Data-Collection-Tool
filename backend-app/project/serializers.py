@@ -49,6 +49,7 @@ class ProjectSerializer(ProjectsSerializer):
 class GoalSerializer(ModelSerializer):
     project = SerializerMethodField()
     complete = IntegerField(read_only=True)
+    progress = IntegerField(read_only=True)
 
     class Meta:
         model = ProjectGoal
