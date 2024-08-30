@@ -6,7 +6,15 @@ from rest_framework.status import (
     HTTP_202_ACCEPTED
 )
 from django.core.paginator import Paginator
-from django.db.models import QuerySet, F, Value
+from django.db.models import (
+    QuerySet,
+    F,
+    Value,
+    ExpressionWrapper,
+    IntegerField,
+    Case,
+    When
+)
 from django.db.models.functions import Coalesce
 from django.db.models.aggregates import Count
 from django.db import transaction
@@ -97,6 +105,33 @@ class ViewSetServices:
         )
 
 
+def fn():
+    from django.db.models import Prefetch
+    project = Project.objects.prefetch_related(
+        Prefetch(
+            'projectgoal_set',
+            queryset=ProjectGoal.objects.annotate(
+                complete=Coalesce(
+                    Count('attribute__attributegroup'),
+                    Value(0)
+                ),
+                _progress=ExpressionWrapper(
+                    F('complete') * 100 / F('amount'),
+                    output_field=IntegerField()
+                ),
+                progress=Case(
+                    When(_progress__gt=100, then=Value(100)),
+                    default=F('_progress'),
+                    output_field=IntegerField()
+                )
+            ).order_by('id', 'progress'),
+            to_attr='prefetched_goals'
+        )
+    ).get(id=1)
+
+    query = project.prefetched_goals
+    return query
+
 class GoalViewServices:
     @with_model_assertion(
         Project,
@@ -105,15 +140,26 @@ class GoalViewServices:
         prefetch=("projectgoal_set__attribute__attributegroup_set",)
     )
     def _get_goals(self, project: Project, request_query) -> tuple[dict[str, Any], int]:
-        page = request_query.get("page", 1)
+        page = int(request_query.get("page", 1))
         per_page = 50
 
         query = project.projectgoal_set \
-            .annotate(complete=Coalesce(
-                Count("attribute__attributegroup"),
-                Value(0)
-            )) \
-            .order_by("id", "complete")
+            .annotate(
+                complete=Coalesce(
+                    Count("attribute__attributegroup"),
+                    Value(0)
+                ),
+                _progress=ExpressionWrapper(
+                    F("complete") * 100 / F("amount"),
+                    output_field=IntegerField()
+                ),
+                progress=Case(
+                    When(_progress__gt=100, then=Value(100)),
+                    default=F('_progress'),
+                    output_field=IntegerField()
+                )
+            ) \
+            .order_by("id", "progress")
 
         if request_query.get("all") != "1": query = query.filter(complete__lt=F("amount"))
 
