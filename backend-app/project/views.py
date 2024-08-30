@@ -42,8 +42,8 @@ class GoalViewSet(APIView, GoalViewServices):
     http_method_names = ("get", "post", "delete")
     permission_classes = (IsAuthenticated, ProjectPermission, ProjectGoalPermission)
 
-    def get(self, _, pk: int) -> Response:
-        response, status = self._get_goals(pk)
+    def get(self, request: Request, pk: int) -> Response:
+        response, status = self._get_goals(pk, request.query_params)
         return Response(response, status=status)
 
     def post(self, request: Request, pk: int) -> Response:

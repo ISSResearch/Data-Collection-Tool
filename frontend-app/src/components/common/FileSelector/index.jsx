@@ -14,13 +14,13 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
   const { files } = fileManager;
   const { slide, setSlide, pagination } = sliderManager;
 
-  function handleChange(newPage) {
+  const handleChange = (newPage) => {
     if (
       newPage !== pagination.page
       && newPage >= 1
       && newPage <= pagination.totalPages
     ) onChange("page", newPage);
-  }
+  };
 
   const renderPage = () => `${pagination.page} of ${pagination.totalPages}`;
 

@@ -13,7 +13,7 @@ import './styles.css';
 export default function TableBodySet({ bodySet, countCallback, parent, depth }) {
   const [childWrap, setWrap] = useState([]);
 
-  function handleWrap(index) {
+  const handleWrap = (index) => {
     var newWraps = [...childWrap];
 
     if (newWraps.includes(index)) {
@@ -23,12 +23,12 @@ export default function TableBodySet({ bodySet, countCallback, parent, depth }) 
     else newWraps.push(index);
 
     setWrap(newWraps);
-  }
+  };
 
-  function getColor() {
+  const getColor = () => {
     var modifier = 10 * (depth || 0);
     return `rgb(${216 - modifier}, ${234 - modifier}, ${255 - modifier}, 0.${2 + depth || 0})`;
-  }
+  };
 
   return (
     <>

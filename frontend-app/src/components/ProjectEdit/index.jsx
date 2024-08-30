@@ -36,15 +36,15 @@ export default function ProjectEdit({
     return !window.confirm(msg);
   });
 
-  function validateNewAttributes() {
+  const validateNewAttributes = () => {
     var newAttirbutes = Object.values(attributeManagerNew.attributeHook.attributes);
     for (let attributes of newAttirbutes) {
       if (!attributes.length) return false;
     }
     return true;
-  }
+  };
 
-  function getFormData({ target }) {
+  const getFormData = ({ target }) => {
     var name = target.project_name.value;
     var description = target.project_description.value || "";
 
@@ -58,9 +58,9 @@ export default function ProjectEdit({
     ];
 
     return { name, description, attributes };
-  }
+  };
 
-  async function performOriginalItemsDelete(idSet, endpoint) {
+  const performOriginalItemsDelete = async (idSet, endpoint) => {
     return api.request(`/api/attributes/${endpoint}/`,
       {
         method: 'delete',
@@ -71,9 +71,9 @@ export default function ProjectEdit({
         }
       }
     );
-  }
+  };
 
-  async function sendForm(event) {
+  const sendForm = async (event) => {
     event.preventDefault();
     if (loading) return;
 
@@ -118,10 +118,10 @@ export default function ProjectEdit({
 
       setLoading(false);
     }
-  }
+  };
 
-  async function deleteProject() {
-      if (deleteInput.current.value !== projectName) {
+  const deleteProject = async () => {
+    if (deleteInput.current.value !== projectName) {
       dispatch(addAlert({
         message: "Entered name differs from the actual Project name.",
         type: "error"
@@ -147,7 +147,7 @@ export default function ProjectEdit({
       }));
       navigate('/');
     }
-    catch({ message, response }) {
+    catch ({ message, response }) {
       var authFailed = response.status === 401 || response.status === 403;
 
       dispatch(addAlert({
@@ -160,7 +160,7 @@ export default function ProjectEdit({
 
       setLoading(false);
     }
-  }
+  };
 
   return (
     <>

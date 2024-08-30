@@ -1,13 +1,22 @@
 import { ReactElement } from "react";
 import GoalRow from "./GoalRow";
+import Arrow from "../ui/Arrow";
 
 /**
 * @param {object} props
-* @param {object[]} props.goals
+* @param {{ data: object[], page: number, total_pages: number }} props.goals
 * @param {Function?} props.onDelete
+* @param {Function} props.onPagination
 * @returns {ReactElement}
 */
-export default function GoalTable({ goals, onDelete }) {
+export default function GoalTable({ goals, onDelete, onPagination }) {
+  const { data, page, total_pages } = goals;
+
+  const handlePage = (newPage) => {
+    if (newPage <= 1 || page >= total_pages) return;
+    onPagination("page", newPage);
+  };
+
   return <table className="goal__table">
     <thead>
       <tr>
@@ -20,17 +29,32 @@ export default function GoalTable({ goals, onDelete }) {
       </tr>
     </thead>
     <tbody>
-      {
-        goals.length
-          ? <>
-            {
-              goals.map((item) => (
-                <GoalRow key={item.id} onDelete={onDelete} goalItem={item} />
-              ))
-            }
-          </>
-          : <tr><td colSpan={5}>No project goals yet. Create one!</td></tr>
-      }
+      { data.map((row) => <GoalRow key={row.id} onDelete={onDelete} goalItem={row} />) }
     </tbody>
+    <tfoot>
+      <tr>
+        <td colSpan={6}>
+          {
+            data.length
+            ? <div className="goal__table__pagination">
+              <Arrow
+                size={14}
+                point="left"
+                onClick={() => handlePage(page - 1)}
+                classes={[page <= 1 ? "pag--block" : ""]}
+              />
+              <span>{page} / {total_pages}</span>
+              <Arrow
+                size={14}
+                point="right"
+                onClick={() => handlePage(page + 1)}
+                classes={[page >= total_pages ? "pag--block" : ""]}
+              />
+            </div>
+            : "No project goals yet. Create one!"
+          }
+        </td>
+      </tr>
+    </tfoot>
   </table>;
 }

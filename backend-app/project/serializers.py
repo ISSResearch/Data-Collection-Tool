@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, IntegerField
 from rest_framework.views import Request
 from typing import Any
 from attribute.serializers import LevelSerializer
@@ -48,13 +48,10 @@ class ProjectSerializer(ProjectsSerializer):
 
 class GoalSerializer(ModelSerializer):
     project = SerializerMethodField()
-    complete = SerializerMethodField()
+    complete = IntegerField(read_only=True)
 
     class Meta:
         model = ProjectGoal
-        exclude = ("attribute",)
+        exclude = ("attribute", )
 
     def get_project(self, instance: ProjectGoal) -> int: return instance.project.id
-
-    def get_complete(self, instance: ProjectGoal) -> int:
-        return instance.attribute.attributegroup_set.count()
