@@ -6,7 +6,7 @@ test("arrow component test", () => {
 
   const { rerender, container } = render(<Arrow />);
   const arrow = () => container.querySelector("svg");
-  expect(arrow().style.rotate).toBe("0deg");
+  expect(arrow().style.rotate).toBe("90deg");
   expect(arrow().style.fill).toBe("#62abff");
   expect(container.querySelector(".iss__arrowIcon.a.b")).toBeNull();
 
@@ -18,7 +18,7 @@ test("arrow component test", () => {
       onClick={() => triggered = true}
     />
   );
-  expect(arrow().style.rotate).toBe("180deg");
+  expect(arrow().style.rotate).toBe("270deg");
   expect(arrow().style.fill).toBe("red");
   expect(container.querySelector(".iss__arrowIcon.a.b")).not.toBeNull();
   expect(triggered).toBeFalsy();
