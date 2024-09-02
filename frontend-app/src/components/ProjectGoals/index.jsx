@@ -60,10 +60,10 @@ export default function ProjectEdit({ pathID, attributes }) {
 
       setApply([]);
 
-      selected.current = null;
-      amount.value = "";
-      image_mod.value = "";
-      video_mod.value = "";
+      // selected.current = null;
+      // amount.value = "";
+      // image_mod.value = "";
+      // video_mod.value = "";
     }
     catch ({ message, response }) {
       if (response) {
@@ -125,19 +125,19 @@ export default function ProjectEdit({ pathID, attributes }) {
 
   const handleQueryChange = (type, val) => setQuery({ ...getQuery(), [type]: val});
 
-  const rearrange = (data) => {
-    const _data = data.data;
-    const lookUp = ({ progress }) => progress === 100;
+  // const rearrange = (data) => {
+  //   const _data = data.data;
+  //   const lookUp = ({ progress }) => progress === 100;
 
-    let start = _data.findIndex(lookUp);
-    let end = 1 + _data.findLastIndex(lookUp);
+  //   let start = _data.findIndex(lookUp);
+  //   let end = 1 + _data.findLastIndex(lookUp);
 
-    if (start >= 0 && (end < _data.length))
-      data.data = _data
-        .slice(0, start)
-        .concat(_data.slice(end))
-        .concat(_data.slice(start, end));
-  };
+  //   if (start >= 0 && (end < _data.length))
+  //     data.data = _data
+  //       .slice(0, start)
+  //       .concat(_data.slice(end))
+  //       .concat(_data.slice(start, end));
+  // };
 
   const fetchGoals = async () => {
     try {
@@ -146,7 +146,7 @@ export default function ProjectEdit({ pathID, attributes }) {
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       });
 
-      if (query.get("all") === "1") rearrange(data);
+      // if (query.get("all") === "1") rearrange(data);
 
       setGoals(data);
     }

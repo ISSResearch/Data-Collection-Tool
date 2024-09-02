@@ -154,7 +154,7 @@ class GoalViewServices:
                     output_field=IntegerField()
                 )
             ) \
-            .order_by(F("on_validation"), F("progress"), "id")
+            .order_by(F("progress"), "id")
 
         if request_query.get("all") != "1": query = query.filter(complete__lt=F("amount"))
 
