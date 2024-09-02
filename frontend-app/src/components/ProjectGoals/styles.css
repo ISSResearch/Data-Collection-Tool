@@ -176,6 +176,19 @@
     gap: 4px;
     place-items: center;
 }
+.goal__row__nameCell {
+    position: relative;
+}
+.goal__row__nameCell > mark {
+    background-color: unset;
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: black;
+    opacity: 0.3;
+}
 
 @media (hover: hover) {
     .goal__delete:hover {
