@@ -13,7 +13,11 @@ export default function GoalTable({ goals, onDelete, onPagination }) {
   const { data, page, total_pages } = goals;
 
   const handlePage = (newPage) => {
-    if (newPage >= 1 && newPage <= total_pages) onPagination("page", newPage);
+    if (
+      newPage != page
+      && newPage >= 1
+      && newPage <= total_pages
+    ) onPagination("page", newPage);
   };
 
   return <table className="goal__table">
@@ -50,7 +54,18 @@ export default function GoalTable({ goals, onDelete, onPagination }) {
                 onClick={() => handlePage(page - 1)}
                 classes={[page <= 1 ? "pag--block" : ""]}
               />
-              <span>{page} / {total_pages}</span>
+              <label>
+                <input
+                  type="number"
+                  defaultValue={page}
+                  min={1}
+                  max={total_pages}
+                  disabled={total_pages <= 0}
+                  onBlur={({ target }) => handlePage(target.value)}
+                  onKeyDown={({ target, key }) => key === "Enter" && handlePage(target.value)}
+                />
+                / {total_pages}
+              </label>
               <Arrow
                 size={14}
                 point="right"

@@ -170,7 +170,14 @@ class GoalViewServices:
         }, HTTP_200_OK
 
     @with_model_assertion(Project, "id", filter={"visible": True})
-    def _create_goal(self, project: Project, request_data: dict[str, Any]):
+    def _create_goal(
+        self,
+        project: Project,
+        request_data: dict[str, Any]
+    ) -> tuple[dict[str, Any], int]:
+        response: dict[str, Any]
+        status: int
+
         try:
             attribute = project.attribute_set.get(id=request_data["attribute_id"])
 
@@ -192,9 +199,23 @@ class GoalViewServices:
                 video_mod=int(request_data.get("video_mod", 1)),
             )
 
-            return {"ok": True}, HTTP_201_CREATED
+            response, status = {"ok": True}, HTTP_201_CREATED
 
-        except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST
+        except AssertionError as e:
+            if int(request_data.get("update", 0)) == 1:
+                goal = attribute.projectgoal_set.first()
+                goal.amount = int(request_data["amount"])
+                goal.image_mod=int(request_data.get("image_mod", 1))
+                goal.video_mod=int(request_data.get("video_mod", 1))
+                goal.save()
+
+                response, status = {"ok": True}, HTTP_202_ACCEPTED
+
+            else: response, status = {"errors": str(e)}, HTTP_400_BAD_REQUEST
+
+        except Exception as e: response, status = {"errors": str(e)}, HTTP_400_BAD_REQUEST
+
+        return response, status
 
     @with_model_assertion(ProjectGoal, "id")
     def _delete_goal(self, goal: ProjectGoal):
