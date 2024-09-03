@@ -205,8 +205,8 @@ class GoalViewServices:
             if int(request_data.get("update", 0)) == 1:
                 goal = attribute.projectgoal_set.first()
                 goal.amount = int(request_data["amount"])
-                goal.image_mod=int(request_data.get("image_mod", 1))
-                goal.video_mod=int(request_data.get("video_mod", 1))
+                goal.image_mod = int(request_data.get("image_mod", 1))
+                goal.video_mod = int(request_data.get("video_mod", 1))
                 goal.save()
 
                 response, status = {"ok": True}, HTTP_202_ACCEPTED
