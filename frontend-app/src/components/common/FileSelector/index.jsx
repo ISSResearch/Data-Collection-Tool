@@ -52,15 +52,6 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
             classes={[pagination.page <= 1 ? "nav--block" : ""]}
           />
           <div className="iss_fileSelector__pagination__input">
-            {/* <input
-              type="number"
-              defaultValue={pagination.page}
-              onBlur={({target}) => handleChange(target.value)}
-              min={1}
-              max={pagination.totalPages}
-              onKeyDown={({ target, key }) => key === "Enter" && handleChange(target.value)}
-              disabled={pagination.totalPages <= 1}
-            /> */}
             { renderPage() }
           </div>
           <Arrow

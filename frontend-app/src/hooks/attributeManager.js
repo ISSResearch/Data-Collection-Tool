@@ -15,37 +15,37 @@ export default function useAttributeManager() {
   * @param {{levels?: object, attributes?: object}} data
   * @returns {void}
   */
-  function addForm(data) {
+  const addForm = (data) => {
     var formId = formUID();
     setForms((prev) => {
       return { ...prev, [formId]: { levels: null, attributes: null } };
     });
     levelHook.initLevel(formId, data?.levels || []);
     attributeHook.initAttribute(formId, data?.attributes || []);
-  }
+  };
 
   /**
   * @param {number} formId
   * @returns {void}
   */
-  function deleteForm(formId) {
+  const deleteForm = (formId) => {
     const newForms = { ...forms };
     delete newForms[formId];
     levelHook.destroyLevel(formId);
     attributeHook.destroyAttribute(formId);
     setForms(newForms);
-  }
+  };
 
   /**
   * @returns {void}
   */
-  function clearForms() { setForms({}); }
+  const clearForms = () => { setForms({}); };
 
   /**
   * @param {number} initLen
   * @returns {{levels: object[], attributes: object[]}[]}
   */
-  function gatherAttributes(initLen = 0) {
+  const gatherAttributes = (initLen = 0) => {
     return Object.keys(forms).map((key, index) => {
       const preparedLevels = levelHook.levels[key].map((el) => {
         el.order = index + initLen;
@@ -56,13 +56,13 @@ export default function useAttributeManager() {
         attributes: attributeHook.gather(key),
       };
     });
-  }
+  };
 
   /**
   * @param {object[]} boundAttributes
   * @returns {void}
   */
-  function boundAttributes(boundAttributes) {
+  const boundAttributes = (boundAttributes) => {
     const preparedData = deepCopy(boundAttributes).reduce((acc, item) => {
       const boundForm = { levels: [], attributes: [] };
       const attributes = [];
@@ -91,7 +91,7 @@ export default function useAttributeManager() {
     }, []);
 
     preparedData.forEach((item) => addForm(item));
-  }
+  };
 
   return {
     formHook: {

@@ -99,7 +99,7 @@
     padding: 20px;
     border-radius: 4px;
     display: flex;
-    place-items: center;
+    place-items: flex-end;
     gap: 8px;
     margin-bottom: 20px;
     flex-wrap: wrap;
@@ -117,7 +117,16 @@
 .goal__createFrom .iss__selector__name {
     color: white;
 }
-.goal__createFrom > input,
+.goal__createItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.goal__createItem > span {
+    color: white;
+    font-size: 14px;
+}
+.goal__createItem > input,
 .goal__createFrom > select {
     border-radius: 4px;
     padding: 4px 8px;
@@ -159,7 +168,11 @@
     gap: 12px;
     place-items: center;
 }
-
+.goal__table__pagination > label > input {
+    border: 1px solid var(--issBrand);
+    padding: 2px 4px;
+    margin-right: 4px;
+}
 .pag--block {
     opacity: 0.3;
     pointer-events: none;
@@ -188,6 +201,15 @@
     font-size: 10px;
     color: black;
     opacity: 0.3;
+}
+.goal__createReplace {
+    cursor: pointer;
+    color: white;
+    width: 100%;
+    place-items: center;
+    display: flex;
+    margin-bottom: 12px;
+    gap: 12px;
 }
 
 @media (hover: hover) {
