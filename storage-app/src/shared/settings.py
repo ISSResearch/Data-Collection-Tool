@@ -29,8 +29,8 @@ TEMP_HASH_PATH: str = join(abspath(curdir), "temp_hash")
 TEMP_ZIP: str = join(abspath(curdir), "temp_zip")
 EMBEDDING_STORAGE_PATH: str = join(abspath(curdir), "embedding_storage.db")
 
-sqlite_vector_shared, *_ = [name for name in listdir() if "vec0" in name]
-SQLITE_VECTOR_PATH = join(abspath(curdir), "sqlite_vector_shared")
+sqlite_vector_shared, *_ = [name for name in listdir() if "vec0" in name] + [""]
+SQLITE_VECTOR_PATH = join(abspath(curdir), sqlite_vector_shared)
 
 BROKER_URL: str | None = getenv("CELERY_BROKER_URL")
 RESULT_URL: str | None = BROKER_URL

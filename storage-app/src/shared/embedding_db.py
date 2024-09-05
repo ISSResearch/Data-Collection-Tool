@@ -16,38 +16,47 @@ class Query(Enum):
         if not exists file_embedding
         using vec0(embedding float[{}]);
     """
-    MIGRATE_IDS = """
-        create table if not exists rowid_file  (
-            id integer primary key
+    MIGRATE_META = """
+        create table if not exists file_meta  (
+            id integer primary key,
             file_id text,
+            file_size integer,
+            shadowed integer default 0 check (shadowed in (0, 1))
             foreign key (id) references file_embedding(rowid)
         );
     """
     INSERT = """
-        with res as (
+        with R as (
             insert into file_embedding (rowid, embedding)
-            values ((select count(*) + 1 from storage), ?)
+            values ((select count(*) + 1 from file_embedding), ?)
             returning rowid
         )
-        insert into rowid_file (id, file_id)
-        values ((select rowid from res), ?)
+        insert into file_meta (id, file_id, file_size)
+        values ((select rowid from R), ?, ?)
         returning id;
     """
+    UPDATE = """
+        update file_meta
+        set shadowed = 1
+        where file_id = ?;
+    """
     SELECT = """
-        select fe.rowid, rf.file_id, fe.distance
-        from file_embedding as fe
-        left join rowid_file as rf
-        on fe.rowid = rf.id
-        where embedding match ?
-        and distance <= ?
-        and k = ?
-        order by distance;
+        select M.file_id, M.file_size
+        from file_embedding as E
+        left join file_meta as M
+        on E.rowid = M.id
+        where
+        M.shadowed = 0
+        and E.embedding match ?
+        and E.distance <= ?
+        and E.k = ?
+        order by E.distance;
     """
 
 
 class EmbeddingStorage:
     __slots__ = ("conn", "corrupted", "reason", "context")
-    _k_nearest = 3
+    K = 1
 
     def __init__(self):
         self.corrupted = False
@@ -105,20 +114,25 @@ class EmbeddingStorage:
     @with_transaction
     def migrate(self, cur: Cursor):
         cur.execute(Query.MIGRATE_EMBEDDING.value.format(HASH_SIZE**2))
-        cur.execute(Query.MIGRATE_IDS.value)
+        cur.execute(Query.MIGRATE_META.value)
 
     @with_transaction
-    def insert(self, cur: Cursor, file_id: str, embedding: ndarray) -> str:
-        row_id, *_ = cur.execute(Query.INSERT.value, [embedding]).fetchone()
+    def insert(
+        self,
+        cur: Cursor,
+        file_id: str,
+        embedding: ndarray,
+        file_size: int
+    ) -> str:
+        row_id, *_ = cur.execute(
+            Query.INSERT.value,
+            [embedding, file_id, file_size],
+        ).fetchone()
         return row_id
 
     @with_transaction
-    def search(
-        self,
-        cur: Cursor,
-        embedding: ndarray
-    ) -> list[tuple[int, str, float]]:
+    def search(self, cur: Cursor, embedding: ndarray) -> tuple[str, int]:
         return cur.execute(
             Query.SELECT.value,
-            [embedding, SIMILAR_THRESHOLD, self._k_nearest]
-        ).fetchall()
+            [embedding, SIMILAR_THRESHOLD, self.K]
+        ).fetchone()

@@ -22,6 +22,12 @@ from os import mkdir, path, remove
 from .hasher import VHash, IHash
 
 
+class EmbeddingStatus(Enum):
+    DUPLICATE = "u"
+    VALIDATION = "v"
+    REBOUND = "r"
+
+
 class Zipper:
     written: bool = False
     archive_extension: str = "zip"
@@ -83,11 +89,7 @@ class Zipper:
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"
-        payload_token: str = emit_token(
-            {"minutes": 1},
-            SECRET_KEY,
-            SECRET_ALGO,
-        )
+        payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
 
         try: _, project_id = bucket_name.split("_")
         except Exception: project_id = ""
@@ -113,7 +115,14 @@ class Zipper:
 
 
 class Hasher:
-    __slots__: tuple[str, ...] = ("bucket_name", "file_id", "file", "embedding")
+    __slots__: tuple[str, ...] = (
+        "bucket_name",
+        "file_id",
+        "file",
+        "embedding",
+        "result",
+        "status"
+    )
 
     def __init__(self, bucket_name: str, uid: str):
         self.bucket_name = bucket_name
@@ -123,29 +132,60 @@ class Hasher:
         file = await Bucket(self.bucket_name).get_object(self.file_id)
         assert file, "No file found"
 
-    async def hash(self):
+    def hash(self):
         match self.file.metadata.get("file_type"):
             case "image": self.embedding = IHash(self.file.file).embedding
             case "video": self.embedding = VHash(self.file.file).embedding
             case _: raise ValueError("Unsupported file type")
 
     def search_similar(self):
-        result: Optional[list[tuple[int, str, float]]] = None
-        new_status: Optional[str] = None
-
         with EmbeddingStorage() as storage:
             try:
                 result = storage.search(self.embedding)
                 assert not result
 
-                storage.insert(self.file_id, self.embedding)
-                new_status = "v"
+                storage.insert(self.file_id, self.embedding, self.file.file.length)
+                self.status = EmbeddingStatus.VALIDATION
 
-            except AssertionError:
-                new_status = "u"
+            except AssertionError: self.status = EmbeddingStatus.DUPLICATE
 
-        assert new_status, "Invalid status"
+    def process_result(self):
+        assert (
+            (status := getattr(self, "status"))
+            and
+            (result := getattr(self, "result"))
+        )
 
-        self.update_status(new_status)
+        if status == EmbeddingStatus.VALIDATION: return
 
-    def update_status(self, status: str): ...
+        uid, size = result
+
+        if self.file.file.length > size:
+            ...
+            # means that new file is the same but has more quality
+            # delete old embedding (maybe just flag it)
+            # insert new embedding
+            # rebound old file to new one
+            # send to new one status duplicated
+
+    @staticmethod
+    def update_status(
+        file_id: str,
+        status: EmbeddingStatus,
+        new_file: Optional[str]=None
+    ):
+        payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
+        payload = {"status": status.value}
+
+        if new_file: payload["rebound"] = new_file
+
+        response = requests.patch(
+            APP_BACKEND_URL + f"/api/files/{file_id}/",
+            headers={
+                "Authorization": "Internal " + payload_token,
+                "Content-Type": "application/json",
+            },
+            json=payload
+        )
+
+        assert response.status_code == 202, "File update was not accepted"

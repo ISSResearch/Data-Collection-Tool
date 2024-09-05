@@ -57,18 +57,15 @@ class ViewSetServices:
             context={"validator": request.user}
         )
 
-        if update_valid := updated_file.is_valid():
+        if valid := updated_file.is_valid():
             try: updated_file.update_file()
-            except Exception: update_valid = False
+            except Exception: valid = False
 
-        response = {"ok": update_valid}
+        response = {"ok": valid}
 
-        if not update_valid: response["errors"] = updated_file.errors
+        if not valid: response["errors"] = updated_file.errors
 
-        return (
-            response,
-            HTTP_202_ACCEPTED if update_valid else HTTP_400_BAD_REQUEST
-        )
+        return response, HTTP_202_ACCEPTED if valid else HTTP_400_BAD_REQUEST
 
     def _delete_file(self, file_id: str) -> tuple[dict[str, Any], int]:
         try:

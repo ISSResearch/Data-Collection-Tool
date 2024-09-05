@@ -17,12 +17,12 @@ from motor.motor_asyncio import (
 
 
 class FileMeta:
-    __slots__ = ("_meta", "_prepared_meta")
+    __slots__ = ("_meta", "_prepared")
     META_FIELDS = ("file_name", "file_extension", "file_type")
 
     def __init__(self, data: str) -> None:
         self._meta: str = data
-        self._prepared_meta: Optional[Any] = None
+        self._prepared: Optional[Any] = None
 
     def get(self) -> dict:
         return {
@@ -32,10 +32,8 @@ class FileMeta:
 
     @property
     def prepared_meta(self) -> Any:
-        if not self._prepared_meta:
-            self._prepared_meta = loads(self._meta)
-
-        return self._prepared_meta
+        if not self._prepared: self._prepared = loads(self._meta)
+        return self._prepared
 
 
 class ObjectStreaming:

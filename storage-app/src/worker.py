@@ -13,7 +13,7 @@ worker.conf.result_backend = RESULT_URL
 
 @worker.task(name="produce_download_task")
 def produce_download_task(bucket_name: str, file_ids: list[str]) -> str | None:
-    task: Zipper = Zipper(bucket_name, file_ids)
+    task = Zipper(bucket_name, file_ids)
     loop = get_event_loop()
 
     async def _inner():
@@ -28,11 +28,13 @@ def produce_download_task(bucket_name: str, file_ids: list[str]) -> str | None:
 @worker.task(name="produce_handle_media_task")
 def produce_handle_media_task(bucket_name: str, uid: str) -> None:
     loop = get_event_loop()
-    task: Hasher = Hasher(bucket_name, uid)
+    task = Hasher(bucket_name, uid)
 
     async def _inner():
         await task.get_file()
-        await task.hash()
+        task.hash()
+        task.search_similar()
+        task.process_result()
 
     loop.run_until_complete(_inner())
 
