@@ -31,9 +31,14 @@ class FileSerializer(ModelSerializer):
         self.validated_data["update_date"] = timezone.now()
         self.validated_data["validator"] = self.context.get("validator")
 
-        with transaction.atomic():
-            super().update(self.instance, self.validated_data)
-            self.instance.update_attributes(self.initial_data.get("attribute", {}))
+        if self.validated_data["status"] == "r":
+            self.instance.rebound = self.initial_data["rebound"]
+            self.instance.save()
+
+        else:
+            with transaction.atomic():
+                super().update(self.instance, self.validated_data)
+                self.instance.update_attributes(self.initial_data.get("attribute", {}))
 
         return self.instance
 

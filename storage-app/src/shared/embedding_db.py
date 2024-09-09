@@ -35,13 +35,13 @@ class Query(Enum):
         values ((select rowid from R), ?, ?)
         returning id;
     """
-    UPDATE = """
+    SHADOW = """
         update file_meta
         set shadowed = 1
         where file_id = ?;
     """
     SELECT = """
-        select M.file_id, M.file_size
+        select M.file_id, M.file_size, E.distance
         from file_embedding as E
         left join file_meta as M
         on E.rowid = M.id
@@ -131,8 +131,11 @@ class EmbeddingStorage:
         return row_id
 
     @with_transaction
-    def search(self, cur: Cursor, embedding: ndarray) -> tuple[str, int]:
+    def shadow(self, cur, file_id: str): cur.execute(Query.SHADOW.value, [file_id])
+
+    @with_transaction
+    def search(self, cur: Cursor, embedding: ndarray) -> list[tuple[str, int, float]]:
         return cur.execute(
             Query.SELECT.value,
             [embedding, SIMILAR_THRESHOLD, self.K]
-        ).fetchone()
+        ).fetchall()

@@ -124,6 +124,9 @@ class Hasher:
         "status"
     )
 
+    status: EmbeddingStatus
+    result: list[tuple[str, int, float]]
+
     def __init__(self, bucket_name: str, uid: str):
         self.bucket_name = bucket_name
         self.file_id = uid
@@ -140,36 +143,46 @@ class Hasher:
 
     def search_similar(self):
         with EmbeddingStorage() as storage:
-            try:
-                result = storage.search(self.embedding)
-                assert not result
+            self.result = storage.search(self.embedding)
+            self.status = (
+                EmbeddingStatus.VALIDATION
+                if not self.result else
+                EmbeddingStatus.DUPLICATE
+            )
 
-                storage.insert(self.file_id, self.embedding, self.file.file.length)
-                self.status = EmbeddingStatus.VALIDATION
+    def handle_search_result(self):
+        assert all([
+            getattr(self, "status"),
+            getattr(self, "result")
+        ]), "Search must be completed first"
 
-            except AssertionError: self.status = EmbeddingStatus.DUPLICATE
+        update_list: list[tuple[str, EmbeddingStatus, Optional[str]]] = []
 
-    def process_result(self):
-        assert (
-            (status := getattr(self, "status"))
-            and
-            (result := getattr(self, "result"))
-        )
+        with EmbeddingStorage() as storage:
+            storage.insert(self.file_id, self.embedding, self.file.file.length)
 
-        if status == EmbeddingStatus.VALIDATION: return
+            if self.status == EmbeddingStatus.DUPLICATE:
+                # todo: since im shadowing similar photos will be treated as one
+                # with better Q so having over 2 items means 2 not bounded before
+                # is that legit to compare them there ?
+                rmi, rms, rmd  = max(self.result, key=lambda x: x[1])
 
-        uid, size = result
+                if self.file.file.length > rms:
+                    for uid, *_ in self.result:
+                        storage.shadow(uid)
+                        update_list.append((uid, EmbeddingStatus.REBOUND, self.file_id))
 
-        if self.file.file.length > size:
-            ...
-            # means that new file is the same but has more quality
-            # delete old embedding (maybe just flag it)
-            # insert new embedding
-            # rebound old file to new one
-            # send to new one status duplicated
+                else:
+                    # todo: do i need duplicated status here? we can just update to better res and set rebound
+                    update_list.append((self.file_id, self.status, rmi))
+                    storage.shadow(self.file_id)
+
+            else: update_list.append((self.file_id, self.status, None))
+
+        [self.send_update(*payload) for payload in update_list]
 
     @staticmethod
-    def update_status(
+    def send_update(
         file_id: str,
         status: EmbeddingStatus,
         new_file: Optional[str]=None

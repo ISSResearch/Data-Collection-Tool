@@ -34,7 +34,8 @@ def produce_handle_media_task(bucket_name: str, uid: str) -> None:
         await task.get_file()
         task.hash()
         task.search_similar()
-        task.process_result()
+        task.handle_search_result()
+        task.send_update(task.file_id, task.status)
 
     loop.run_until_complete(_inner())
 

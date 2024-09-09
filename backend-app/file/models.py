@@ -27,6 +27,7 @@ class File(Model):
     is_downloaded: BooleanField = BooleanField(default=False)
     upload_date: DateTimeField = DateTimeField(auto_now_add=True)
     update_date: DateTimeField = DateTimeField(auto_now_add=True, null=True)
+    rebound = CharField(max_length=24, null=True)
 
     project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
     author: ForeignKey = ForeignKey("user.CustomUser", on_delete=DO_NOTHING)
