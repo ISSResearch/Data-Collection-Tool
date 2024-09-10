@@ -24,7 +24,9 @@ async def lifespan(app: FastAPI):
         database = DataBase(get_db_uri())
         database.set_db(DB_STORAGE)
 
-        # with EmbeddingStorage() as storage: storage.migrate()
+        with EmbeddingStorage() as storage:
+            storage.migrate()
+            storage.check_embedding()
 
     except Exception as e:
         print("Startup error: " + str(e))

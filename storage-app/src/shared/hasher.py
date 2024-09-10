@@ -9,20 +9,34 @@ from os.path import join, sep
 from pathlib import Path
 from asyncio import get_event_loop
 from motor.motor_asyncio import AsyncIOMotorGridOut
-from shared.settings import HASH_SIZE, TEMP_HASH_PATH
+from shared.settings import HASH_SIZE, TEMP_HASH_PATH, MEDIA_SIZE
 from numpy import asarray, float32, ndarray
 from io import BytesIO
+from scipy.fftpack import dct
 
 Image.ANTIALIAS = Image.Resampling.LANCZOS
 
 
-def to_embedding(image: ImageFile) -> ndarray:
-    return asarray(
+def to_embedding(
+    image: ImageFile,
+    embedding_type="dctlowfreq",
+    item_resize=MEDIA_SIZE,
+) -> ndarray:
+    raw_emdedding = asarray(
         image
         .convert("L")
-        .resize((HASH_SIZE, HASH_SIZE), Image.ANTIALIAS)
+        .resize((item_resize, item_resize), Image.ANTIALIAS)
     ).flatten().astype(float32)
 
+    _dct = lambda: dct(dct(raw_emdedding, axis=0), axis=1)
+
+    match embedding_type:
+        case "dct": return _dct()
+        case "dctlowfreq": return _dct()[:HASH_SIZE, :HASH_SIZE]
+        case "raw":
+            assert MEDIA_SIZE == HASH_SIZE, "item_resize must be equal to HASH_SIZE setting"
+            return raw_emdedding
+        case _: raise ValueError("Unsupported embedding type")
 
 class IHash:
     embedding: ndarray

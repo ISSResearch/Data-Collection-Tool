@@ -11,6 +11,7 @@ from .settings import (
 
 
 class Query(Enum):
+    GET_EMBEDDING_SQL = "select sql from sqlite_master where type='table' and name='file_embedding'"
     MIGRATE_EMBEDDING = """
         create virtual table
         if not exists file_embedding
@@ -21,7 +22,7 @@ class Query(Enum):
             id integer primary key,
             file_id text,
             file_size integer,
-            shadowed integer default 0 check (shadowed in (0, 1))
+            shadowed integer default 0 check (shadowed in (0, 1)),
             foreign key (id) references file_embedding(rowid)
         );
     """
@@ -56,7 +57,7 @@ class Query(Enum):
 
 class EmbeddingStorage:
     __slots__ = ("conn", "corrupted", "reason", "context")
-    K = 1
+    K = 5
 
     def __init__(self):
         self.corrupted = False
@@ -115,6 +116,16 @@ class EmbeddingStorage:
     def migrate(self, cur: Cursor):
         cur.execute(Query.MIGRATE_EMBEDDING.value.format(HASH_SIZE**2))
         cur.execute(Query.MIGRATE_META.value)
+
+    def check_embedding(self):
+        sql, *_ = self.conn.execute(Query.GET_EMBEDDING_SQL.value).fetchone()
+        find_by = "float["
+
+        start = sql.index(find_by)
+        end = sql.index("]", start)
+
+        embedding_size = int(sql[start + len(find_by):end])
+        assert (HASH_SIZE ** 2) == embedding_size, "Embeddings size dont match with settings"
 
     @with_transaction
     def insert(

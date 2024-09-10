@@ -162,18 +162,18 @@ class Hasher:
             storage.insert(self.file_id, self.embedding, self.file.file.length)
 
             if self.status == EmbeddingStatus.DUPLICATE:
-                # todo: since im shadowing similar photos will be treated as one
-                # with better Q so having over 2 items means 2 not bounded before
-                # is that legit to compare them there ?
-                rmi, rms, rmd  = max(self.result, key=lambda x: x[1])
+                file_size = self.file.file.length
+                rmi: Optional[str] = None
+                rmd: float = float("inf")
 
-                if self.file.file.length > rms:
-                    for uid, *_ in self.result:
+                for uid, size, distance in self.result:
+                    if file_size > size:
                         storage.shadow(uid)
                         update_list.append((uid, EmbeddingStatus.REBOUND, self.file_id))
 
-                else:
-                    # todo: do i need duplicated status here? we can just update to better res and set rebound
+                    if file_size < size and distance < rmd: rmi, rmd = uid, distance
+
+                if rmi:
                     update_list.append((self.file_id, self.status, rmi))
                     storage.shadow(self.file_id)
 

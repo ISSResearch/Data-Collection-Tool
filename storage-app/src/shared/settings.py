@@ -37,8 +37,26 @@ RESULT_URL: str | None = BROKER_URL
 
 CHUNK_SIZE: int = 1024 * 512
 
-HASH_SIZE: int = 64
-SIMILAR_THRESHOLD: float = 100.
+MEDIA_SIZE: int = 64
+HASH_SIZE: int = 16
+
+# Tuned for i16 dct low freq
+# other options:
+#     i32 raw pixels: 10.
+#     i64 raw pixels: 100.
+# so far dct fow freq i16 showed the most optimal results
+# on 8.5k dataset of static videos (filming static objects over ~5secs)
+# i64 raw had most similarities found but with completely different video included
+# i32 raw had 1 more item compared to dct but overall its identical
+# since i32 takes x3 memory i'll stick with dct
+# RESULTS (n is the number of similarities found for some embedding):
+# raw i64 (t=100) | raw i32 (t=10) | dctlowfreq (t=1000) | comment
+# 11              |  11            | 11                  | same objects
+# 1               |  1             | x                   | same objects
+# 2               |  x             | x                   | same objects
+# 5               |  x             | x                   | same scene but content differs (moving grass, shadows etc)
+# 2               |  x             | x                   | completely different objects
+SIMILAR_THRESHOLD: float = 1000.
 
 DB_STORAGE: str = "storage"
 

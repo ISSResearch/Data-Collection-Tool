@@ -118,11 +118,12 @@ function FileMedia({ files, slide, pathID }, ref) {
     var setFile = (token) => {
       resetZoom();
       if (!files[slide]) return;
-      var { id, file_type } = files[slide];
+      var { id, file_type, rebound } = files[slide];
       setTypeVideo(file_type === 'video');
-      setFileUrl(
-        `${getOriginDomain()}:9000/api/storage/project_${pathID}/${id}/?access=${token || tempFileToken}`
-      );
+
+      var baseUrl = `${getOriginDomain()}:9000/api/storage`;
+      var queryUrl = `project_${pathID}/${rebound || id}/`;
+      setFileUrl(`${baseUrl}/${queryUrl}?access=${token || tempFileToken}`);
     };
 
     if (!tempFileToken) {
