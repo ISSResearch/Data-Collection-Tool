@@ -186,8 +186,7 @@ class BucketObject:
 class Bucket(BucketObject):
     __slots__ = ("_fs",)
 
-    def __init__(self, bucket_name: str) -> None:
-        self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
+    def __init__(self, bucket_name: str): self._fs = DataBase.get_fs_bucket(bucket_name)
 
     async def get_object(self, object_id: str) -> Optional[ObjectStreaming]:
         file: Optional[AsyncIOMotorGridOut] = None

@@ -2,6 +2,7 @@
 .idea
 .vscode
 db
+embedding_db
 broker-db
 
 venv

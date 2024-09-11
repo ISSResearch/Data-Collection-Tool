@@ -11,6 +11,7 @@ from shared.settings import (
     APP_BACKEND_URL,
     TEMP_ZIP,
 )
+from asyncio import get_event_loop
 from shared.storage_db import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
@@ -131,14 +132,19 @@ class Hasher:
         self.bucket_name = bucket_name
         self.file_id = uid
 
-    async def get_file(self):
-        file = await Bucket(self.bucket_name).get_object(self.file_id)
+    def get_file(self):
+        file = get_event_loop().run_until_complete(
+            Bucket(self.bucket_name)
+            .get_object(self.file_id)
+        )
         assert file, "No file found"
+
+        self.file = file.file
 
     def hash(self):
         match self.file.metadata.get("file_type"):
-            case "image": self.embedding = IHash(self.file.file).embedding
-            case "video": self.embedding = VHash(self.file.file).embedding
+            case "image": self.embedding = IHash(self.file).embedding
+            case "video": self.embedding = VHash(self.file).embedding
             case _: raise ValueError("Unsupported file type")
 
     def search_similar(self):
@@ -151,18 +157,15 @@ class Hasher:
             )
 
     def handle_search_result(self):
-        assert all([
-            getattr(self, "status"),
-            getattr(self, "result")
-        ]), "Search must be completed first"
+        assert getattr(self, "status"), "Search must be completed first"
 
         update_list: list[tuple[str, EmbeddingStatus, Optional[str]]] = []
 
         with EmbeddingStorage() as storage:
-            storage.insert(self.file_id, self.embedding, self.file.file.length)
+            storage.insert(self.file_id, self.embedding, self.file.length)
 
             if self.status == EmbeddingStatus.DUPLICATE:
-                file_size = self.file.file.length
+                file_size = self.file.length
                 rmi: Optional[str] = None
                 rmd: float = float("inf")
 

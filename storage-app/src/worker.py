@@ -27,17 +27,12 @@ def produce_download_task(bucket_name: str, file_ids: list[str]) -> str | None:
 
 @worker.task(name="produce_handle_media_task")
 def produce_handle_media_task(bucket_name: str, uid: str) -> None:
-    loop = get_event_loop()
     task = Hasher(bucket_name, uid)
 
-    async def _inner():
-        await task.get_file()
-        task.hash()
-        task.search_similar()
-        task.handle_search_result()
-        task.send_update(task.file_id, task.status)
-
-    loop.run_until_complete(_inner())
+    task.get_file()
+    task.hash()
+    task.search_similar()
+    task.handle_search_result()
 
 
 if __name__ == "__main__": worker.worker_main(argv=CELERY_CONFIG)

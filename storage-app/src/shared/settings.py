@@ -27,7 +27,7 @@ BUCKET_PREFIX: str = "project_"
 TEMP_BUCKET: str = "temp_storage"
 TEMP_HASH_PATH: str = join(abspath(curdir), "temp_hash")
 TEMP_ZIP: str = join(abspath(curdir), "temp_zip")
-EMBEDDING_STORAGE_PATH: str = join(abspath(curdir), "embedding_storage.db")
+EMBEDDING_STORAGE_PATH: str = join(abspath(curdir), "embedding_db", "db")
 
 sqlite_vector_shared, *_ = [name for name in listdir() if "vec0" in name] + [""]
 SQLITE_VECTOR_PATH = join(abspath(curdir), sqlite_vector_shared)
@@ -51,11 +51,11 @@ HASH_SIZE: int = 16
 # since i32 takes x3 memory i'll stick with dct
 # RESULTS (n is the number of similarities found for some embedding):
 # raw i64 (t=100) | raw i32 (t=10) | dctlowfreq (t=1000) | comment
-# 11              |  11            | 11                  | same objects
-# 1               |  1             | x                   | same objects
-# 2               |  x             | x                   | same objects
-# 5               |  x             | x                   | same scene but content differs (moving grass, shadows etc)
-# 2               |  x             | x                   | completely different objects
+# 11              | 11            | 11                   | same objects
+# 1               | 1             | x                    | same objects
+# 2               | x             | x                    | same objects
+# 5               | x             | x                    | same scene but content differs (moving grass, shadows etc)
+# 2               | x             | x                    | completely different objects
 SIMILAR_THRESHOLD: float = 1000.
 
 DB_STORAGE: str = "storage"

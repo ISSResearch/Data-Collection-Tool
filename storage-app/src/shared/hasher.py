@@ -1,3 +1,5 @@
+from asyncio.events import new_event_loop
+from typing_extensions import Coroutine
 from videohash import VideoHash
 from videohash.utils import (
     create_and_return_temporary_directory as mk_temp_dir,
@@ -5,38 +7,50 @@ from videohash.utils import (
 )
 from PIL import Image
 from PIL.ImageFile import ImageFile
-from os.path import join, sep
+from os.path import join, sep, exists
 from pathlib import Path
-from asyncio import get_event_loop
+from asyncio import get_event_loop, set_event_loop
 from motor.motor_asyncio import AsyncIOMotorGridOut
 from shared.settings import HASH_SIZE, TEMP_HASH_PATH, MEDIA_SIZE
 from numpy import asarray, float32, ndarray
 from io import BytesIO
 from scipy.fftpack import dct
+from typing import Any
 
 Image.ANTIALIAS = Image.Resampling.LANCZOS
+
+
+def run_with_loop(f: Coroutine) -> Any:
+    current_loop = get_event_loop()
+    new_loop = new_event_loop()
+
+    try:
+        set_event_loop(new_loop)
+        return new_loop.run_until_complete(f)
+    finally:
+        new_loop.close()
+        set_event_loop(current_loop)
 
 
 def to_embedding(
     image: ImageFile,
     embedding_type="dctlowfreq",
-    item_resize=MEDIA_SIZE,
+    size=MEDIA_SIZE,
 ) -> ndarray:
-    raw_emdedding = asarray(
-        image
-        .convert("L")
-        .resize((item_resize, item_resize), Image.ANTIALIAS)
-    ).flatten().astype(float32)
+    prep_image = image.convert("L").resize((size, size), Image.ANTIALIAS)
+    raw_emdedding = asarray(prep_image)
 
     _dct = lambda: dct(dct(raw_emdedding, axis=0), axis=1)
+    _as_result = lambda arr: arr.flatten().astype(float32)
 
     match embedding_type:
-        case "dct": return _dct()
-        case "dctlowfreq": return _dct()[:HASH_SIZE, :HASH_SIZE]
+        case "dct": return _as_result(_dct())
+        case "dctlowfreq": return _as_result(_dct()[:HASH_SIZE, :HASH_SIZE])
         case "raw":
-            assert MEDIA_SIZE == HASH_SIZE, "item_resize must be equal to HASH_SIZE setting"
-            return raw_emdedding
+            assert MEDIA_SIZE == HASH_SIZE, "item_resize must be equal to 'HASH_SIZE' setting"
+            return _as_result(raw_emdedding)
         case _: raise ValueError("Unsupported embedding type")
+
 
 class IHash:
     embedding: ndarray
@@ -68,7 +82,7 @@ class VHash(VideoHash):
     def _calc_hash(self): self.embedding = to_embedding(self.image)
 
     def _create_required_dirs_and_check_for_errors(self):
-        if not self.storage_path: self.storage_path = mk_temp_dir()
+        if not exists(self.storage_path): self.storage_path = mk_temp_dir()
 
         assert does_path_exists(self.storage_path), f"Storage path '{self.storage_path}' does not exist."
 

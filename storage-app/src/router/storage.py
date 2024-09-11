@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from shared.models import UploadFile, Form, Annotated
 from shared.app_services import Bucket, ObjectStreaming
+from worker import produce_handle_media_task
 
 router = APIRouter(prefix="/api/storage")
 
@@ -28,9 +29,12 @@ async def upload_file(
     file_meta: Annotated[str, Form()]
 ) -> JSONResponse:
     project_bucket: Bucket = Bucket(bucket_name)
-    result, status = await project_bucket.put_object(file, file_meta)
+    file_id, _status = await project_bucket.put_object(file, file_meta)
 
-    return JSONResponse(status_code=status, content={"result": result})
+    if _status == status.HTTP_201_CREATED:
+        produce_handle_media_task.delay(bucket_name, file_id)
+
+    return JSONResponse(status_code=_status, content={"result": file_id})
 
 
 @router.delete("/{bucket_name}/{file_id}/")
