@@ -26,14 +26,14 @@ class Query(Enum):
             foreign key (id) references file_embedding(rowid)
         );
     """
-    INSERT = """
-        with R as (
-            insert into file_embedding (rowid, embedding)
-            values ((select count(*) + 1 from file_embedding), ?)
-            returning rowid
-        )
+    INSERT_EMBEDDING = """
+        insert into file_embedding (rowid, embedding)
+        values ((select count(*) + 1 from file_embedding), ?)
+        returning rowid;
+    """
+    INSERT_META = """
         insert into file_meta (id, file_id, file_size)
-        values ((select rowid from R), ?, ?)
+        values (?, ?, ?)
         returning id;
     """
     SHADOW = """
@@ -105,7 +105,7 @@ class EmbeddingStorage:
                     self.conn.rollback()
                     raise e
 
-                self.reason = str(e)
+                self.reason = callback.__name__ + str(e)
                 self.corrupted = True
 
             finally: cursor.close()
@@ -128,18 +128,18 @@ class EmbeddingStorage:
         assert (HASH_SIZE ** 2) == embedding_size, "Embeddings size dont match with settings"
 
     @with_transaction
-    def insert(
+    def insert_embedding(self, cur: Cursor, embedding: ndarray) -> int:
+        return cur.execute(Query.INSERT_EMBEDDING.value, [embedding]).fetchone()[0]
+
+    @with_transaction
+    def insert_meta(
         self,
         cur: Cursor,
+        emb_id: int,
         file_id: str,
-        embedding: ndarray,
         file_size: int
-    ) -> str:
-        row_id, *_ = cur.execute(
-            Query.INSERT.value,
-            [embedding, file_id, file_size],
-        ).fetchone()
-        return row_id
+    ) -> int:
+        return cur.execute(Query.INSERT_META.value, [emb_id, file_id, file_size]).fetchone()[0]
 
     @with_transaction
     def shadow(self, cur, file_id: str): cur.execute(Query.SHADOW.value, [file_id])

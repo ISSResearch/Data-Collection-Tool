@@ -7,15 +7,16 @@ RUN addgroup --system iss && adduser --system --group iss
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-				gcc \
-				libsqlite3-dev \
-				libffi-dev \
+        gcc \
+        libsqlite3-dev \
+        libffi-dev \
         python3-dev \
         musl-dev \
-				git \
-				make \
-				gettext \
-	&& rm -rf /var/lib/apt/lists/*
+        git \
+        make \
+        gettext \
+        ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

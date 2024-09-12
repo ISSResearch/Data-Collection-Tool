@@ -163,7 +163,7 @@ class BucketObject:
             "metadata": meta
         }
 
-        await self._set_hash(new_item)
+        # await self._set_hash(new_item)
 
         file_id: ObjectId = await self._fs.upload_from_stream(**new_item)
 
@@ -172,9 +172,7 @@ class BucketObject:
     async def _set_hash(self, file_item: dict[str, Any]) -> None:
         new_hash: bytes = md5(file_item["source"]).digest()
 
-        cursor: AsyncIOMotorGridOutCursor = self._fs.find(
-            {"metadata.hash": new_hash}
-        )
+        cursor = self._fs.find({"metadata.hash": new_hash})
 
         try:
             if await cursor.next(): raise AssertionError

@@ -159,22 +159,21 @@ class Hasher:
     def handle_search_result(self):
         assert getattr(self, "status"), "Search must be completed first"
 
-        update_list: list[tuple[str, EmbeddingStatus, Optional[str]]] = []
+        update_list: list[tuple[str, Optional[EmbeddingStatus], Optional[str]]] = []
+
+        self._save_embedding()
 
         with EmbeddingStorage() as storage:
-            storage.insert(self.file_id, self.embedding, self.file.length)
-
             if self.status == EmbeddingStatus.DUPLICATE:
-                file_size = self.file.length
                 rmi: Optional[str] = None
                 rmd: float = float("inf")
 
                 for uid, size, distance in self.result:
-                    if file_size > size:
+                    if self.file.length > size:
                         storage.shadow(uid)
-                        update_list.append((uid, EmbeddingStatus.REBOUND, self.file_id))
+                        update_list.append((uid, None, self.file_id))
 
-                    if file_size < size and distance < rmd: rmi, rmd = uid, distance
+                    elif distance < rmd: rmi, rmd = uid, distance
 
                 if rmi:
                     update_list.append((self.file_id, self.status, rmi))
@@ -184,16 +183,28 @@ class Hasher:
 
         [self.send_update(*payload) for payload in update_list]
 
+    #todo: i'd like to recurse only embedding insertion
+    def _save_embedding(self):
+        try:
+            emb_id = EmbeddingStorage().insert_embedding(self.embedding)
+            EmbeddingStorage().insert_meta(emb_id, self.file_id, self.file.length)
+        except Exception: self._save_embedding()
+
     @staticmethod
     def send_update(
         file_id: str,
-        status: EmbeddingStatus,
-        new_file: Optional[str]=None
+        status: Optional[EmbeddingStatus]=None,
+        rebound: Optional[str]=None
     ):
         payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
-        payload = {"status": status.value}
+        payload = {}
 
-        if new_file: payload["rebound"] = new_file
+        if status: payload["status"] = status.value
+        if rebound: payload["rebound"] = rebound
+
+        if not status and not rebound: return
+
+        print(f"\nid: {file_id}, status: {status}, rebound: {rebound}\n")
 
         response = requests.patch(
             APP_BACKEND_URL + f"/api/files/{file_id}/",
