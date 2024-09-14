@@ -28,6 +28,8 @@ class EmbeddingStatus(Enum):
     VALIDATION = "v"
     REBOUND = "r"
 
+    def __json__(self, *args, **kwargs): return self.name
+
 
 class Zipper:
     written: bool = False
@@ -122,7 +124,8 @@ class Hasher:
         "file",
         "embedding",
         "result",
-        "status"
+        "status",
+        "process_result"
     )
 
     status: EmbeddingStatus
@@ -176,10 +179,12 @@ class Hasher:
                     elif distance < rmd: rmi, rmd = uid, distance
 
                 if rmi:
-                    update_list.append((self.file_id, self.status, rmi))
+                    self.process_result = (self.file_id, self.status, rmi)
                     storage.shadow(self.file_id)
 
-            else: update_list.append((self.file_id, self.status, None))
+            else: self.process_result = (self.file_id, self.status, None)
+
+        update_list.append(self.process_result)
 
         [self.send_update(*payload) for payload in update_list]
 

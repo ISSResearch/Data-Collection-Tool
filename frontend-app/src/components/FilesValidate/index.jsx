@@ -1,31 +1,31 @@
-import { useEffect, useState, ReactElement } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSwiper, useFiles } from '../../hooks';
-import { api } from '../../config/api';
-import { addAlert } from '../../slices/alerts';
+import { useEffect, useState, ReactElement } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSwiper, useFiles } from "../../hooks";
+import { api } from "../../config/api";
+import { addAlert } from "../../slices/alerts";
 import { useDispatch } from "react-redux";
-import ValidationFilterGroup from '../forms/ValidationFilterGroup';
-import FileSelector from '../common/FileSelector';
-import FileSwiper from '../common/FileSwiper';
-import FileModification from '../common/FileModification';
-import Load from '../ui/Load';
-import './styles.css';
+import ValidationFilterGroup from "../forms/ValidationFilterGroup";
+import FileSelector from "../common/FileSelector";
+import FileSwiper from "../common/FileSwiper";
+import FileModification from "../common/FileModification";
+import Load from "../ui/Load";
+import "./styles.css";
 
 /** @type {{name: string, id: string}[]} */
 const CARD_FILTERS = [
-  { name: 'on validation', id: 'v' },
-  { name: 'accepted', id: 'a' },
-  { name: 'declined', id: 'd' },
+  { name: "on validation", id: "v" },
+  { name: "accepted", id: "a" },
+  { name: "declined", id: "d" },
 ];
 /** @type {{name: string, id: string}[]} */
 const TYPE_FILTER = [
-  { name: 'images', id: 'image' },
-  { name: 'videos', id: 'video' },
+  { name: "images", id: "image" },
+  { name: "videos", id: "video" },
 ];
 /** @type {{name: string, id: string}[]} */
 const DATE_SORT = [
-  { name: 'descending', id: 'desc' },
-  { name: 'ascending', id: 'asc' },
+  { name: "descending", id: "desc" },
+  { name: "ascending", id: "asc" },
 ];
 
 /**
@@ -86,10 +86,10 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     var { card, attr, type, author, date, page, dateSort } = getPageQuery();
 
     var preparedQuery = {
-      'card[]': filterType === 'card' ? query : card,
-      'attr[]': filterType === 'attr' ? query : attr,
-      'type[]': filterType === 'type' ? query : type,
-      'author[]': filterType === 'author' ? query : author,
+      "card[]": filterType === "card" ? query : card,
+      "attr[]": filterType === "attr" ? query : attr,
+      "type[]": filterType === "type" ? query : type,
+      "author[]": filterType === "author" ? query : author,
     };
 
     if (filterType === "date" || date?.from) {
@@ -117,7 +117,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
 
     var { card, attr, type, author, date, page, dateSort } = getPageQuery();
 
-    if (!card.length) handleChange("card", ['v']);
+    if (!card.length) handleChange("card", ["v"]);
 
     // TODO: query collectors depend on uploads to project by users. REFACTOR!
     Promise.allSettled([

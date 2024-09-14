@@ -93,7 +93,7 @@ class ViewSetServices:
             bool(request_user.project_validate.filter(id=project_id)),
         ])
 
-        query = {"project_id": project_id}
+        query: dict[str, Any] = {"project_id": project_id}
 
         if only_self_files: query["author_id"] = request_user.id
 
@@ -104,10 +104,13 @@ class ViewSetServices:
                 else request_query.get(param)
             ): query[filter_name] = self._get_param(filter_name, query_param)
 
+        if "v" in query.get("status__in", []): query["status__in"].append("u")
+
         return query
 
     def _get_param(self, filter_name: str, query_param: Any) -> Any:
         date_from_str = lambda d: tz.make_aware(dt.strptime(d, "%Y-%m-%d"))
+
         match filter_name:
             case "is_downloaded": return False
             case "upload_date__gte": return date_from_str(query_param)
