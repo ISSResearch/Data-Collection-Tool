@@ -22,6 +22,7 @@ class Query(Enum):
             id integer primary key,
             file_id text,
             file_size integer,
+            project_id integer,
             shadowed integer default 0 check (shadowed in (0, 1)),
             foreign key (id) references file_embedding(rowid)
         );
@@ -32,8 +33,8 @@ class Query(Enum):
         returning rowid;
     """
     INSERT_META = """
-        insert into file_meta (id, file_id, file_size)
-        values (?, ?, ?)
+        insert into file_meta (id, file_id, file_size, project_id)
+        values (?, ?, ?, ?)
         returning id;
     """
     SHADOW = """
@@ -47,17 +48,16 @@ class Query(Enum):
         left join file_meta as M
         on E.rowid = M.id
         where
+        M.project_id = ?
         M.shadowed = 0
         and E.embedding match ?
         and E.distance <= ?
-        and E.k = ?
         order by E.distance;
     """
 
 
 class EmbeddingStorage:
     __slots__ = ("conn", "corrupted", "reason", "context")
-    K = 5
 
     def __init__(self):
         self.corrupted = False
@@ -70,7 +70,7 @@ class EmbeddingStorage:
         self.conn.load_extension(SQLITE_VECTOR_PATH)
         self.conn.enable_load_extension(False)
 
-    def  __enter__(self) -> "EmbeddingStorage":
+    def __enter__(self) -> "EmbeddingStorage":
         self.context = True
         return self
 
@@ -137,16 +137,25 @@ class EmbeddingStorage:
         cur: Cursor,
         emb_id: int,
         file_id: str,
-        file_size: int
+        file_size: int,
+        project_id: int
     ) -> int:
-        return cur.execute(Query.INSERT_META.value, [emb_id, file_id, file_size]).fetchone()[0]
+        return cur.execute(
+            Query.INSERT_META.value,
+            [emb_id, file_id, file_size, project_id]
+        ).fetchone()[0]
 
     @with_transaction
     def shadow(self, cur, file_id: str): cur.execute(Query.SHADOW.value, [file_id])
 
     @with_transaction
-    def search(self, cur: Cursor, embedding: ndarray) -> list[tuple[str, int, float]]:
+    def search(
+        self,
+        cur: Cursor,
+        embedding: ndarray,
+        project_id: int
+    ) -> list[tuple[str, int, float]]:
         return cur.execute(
             Query.SELECT.value,
-            [embedding, SIMILAR_THRESHOLD, self.K]
+            [project_id, embedding, SIMILAR_THRESHOLD]
         ).fetchall()

@@ -1,8 +1,8 @@
-import { useEffect, useState, ReactElement } from 'react';
-import './styles.css';
+import { useEffect, useState, ReactElement } from "react";
+import "./styles.css";
 
 /** @type {string} */
-const DEFAULT_STYLE = 'iss__fileCard';
+const DEFAULT_STYLE = "iss__fileCard";
 
 /**
 * @param {object} props
@@ -29,16 +29,14 @@ export default function FileCard({
   useEffect(() => {
     var newStyles = [DEFAULT_STYLE];
 
-    if (active) newStyles.push('card--active');
-    if (status && status !== 'v') newStyles.push(
-      `card--${status === 'a' ? 'accepted' : 'rejected'}`
-    );
+    if (active) newStyles.push("card--active");
+    newStyles.push("card--" + status);
 
     setStyles(newStyles);
   }, [active, status]);
 
   return (
-    <div onClick={() => handleCLick(cardIndex)} className={styles.join(' ')}>
+    <div onClick={() => handleCLick(cardIndex)} className={styles.join(" ")}>
       <h3>{name}</h3>
       <p>uploaded by <i>{author_name}</i></p>
       <time>{date}</time>

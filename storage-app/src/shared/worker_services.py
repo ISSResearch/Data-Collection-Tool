@@ -24,7 +24,7 @@ from .hasher import VHash, IHash
 
 
 class EmbeddingStatus(Enum):
-    DUPLICATE = "u"
+    DUPLICATE = "v"
     VALIDATION = "v"
     REBOUND = "r"
 
@@ -72,13 +72,14 @@ class Zipper:
 
         if not self.archive: raise FileExistsError
 
-        with open(self.archive, "rb") as archive: self._archive_id = await DataBase \
-            .get_fs_bucket(TEMP_BUCKET) \
-            .upload_from_stream(
-                filename=f"{self.bucket_name}_dataset",
-                source=archive,
-                metadata={"created_at": datetime.now().isoformat()},
-            )
+        with open(self.archive, "rb") as archive:
+            self._archive_id = await DataBase \
+                .get_fs_bucket(TEMP_BUCKET) \
+                .upload_from_stream(
+                    filename=f"{self.bucket_name}_dataset",
+                    source=archive,
+                    metadata={"created_at": datetime.now().isoformat()}
+                )
 
     def delete_temp_zip(self): remove(self.archive)
 
@@ -125,7 +126,8 @@ class Hasher:
         "embedding",
         "result",
         "status",
-        "process_result"
+        "process_result",
+        "project_id"
     )
 
     status: EmbeddingStatus
@@ -134,6 +136,9 @@ class Hasher:
     def __init__(self, bucket_name: str, uid: str):
         self.bucket_name = bucket_name
         self.file_id = uid
+
+        try: self.project_id = int(bucket_name.split("_")[1])
+        except Exception: self.project_id = 0
 
     def get_file(self):
         file = get_event_loop().run_until_complete(
@@ -152,7 +157,7 @@ class Hasher:
 
     def search_similar(self):
         with EmbeddingStorage() as storage:
-            self.result = storage.search(self.embedding)
+            self.result = storage.search(self.embedding, self.project_id)
             self.status = (
                 EmbeddingStatus.VALIDATION
                 if not self.result else
@@ -188,18 +193,23 @@ class Hasher:
 
         [self.send_update(*payload) for payload in update_list]
 
-    #todo: i'd like to recurse only embedding insertion
+    # todo: i'd like to recurse only embedding insertion
     def _save_embedding(self):
         try:
             emb_id = EmbeddingStorage().insert_embedding(self.embedding)
-            EmbeddingStorage().insert_meta(emb_id, self.file_id, self.file.length)
+            EmbeddingStorage().insert_meta(
+                emb_id,
+                self.file_id,
+                self.file.length,
+                self.project_id
+            )
         except Exception: self._save_embedding()
 
     @staticmethod
     def send_update(
         file_id: str,
-        status: Optional[EmbeddingStatus]=None,
-        rebound: Optional[str]=None
+        status: Optional[EmbeddingStatus] = None,
+        rebound: Optional[str] = None
     ):
         payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
         payload = {}

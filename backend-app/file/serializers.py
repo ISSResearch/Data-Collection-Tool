@@ -31,7 +31,7 @@ class FileSerializer(ModelSerializer):
         self.validated_data["update_date"] = timezone.now()
 
         if (validator := self.context.get("validator")) and validator.id:
-           self.validated_data["validator"] = validator
+            self.validated_data["validator"] = validator
 
         with transaction.atomic():
             super().update(self.instance, self.validated_data)

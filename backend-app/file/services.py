@@ -104,8 +104,6 @@ class ViewSetServices:
                 else request_query.get(param)
             ): query[filter_name] = self._get_param(filter_name, query_param)
 
-        if "v" in query.get("status__in", []): query["status__in"].append("u")
-
         return query
 
     def _get_param(self, filter_name: str, query_param: Any) -> Any:
@@ -129,6 +127,7 @@ class ViewSetServices:
         files = File.objects \
             .select_related("author") \
             .prefetch_related(*self.FILES_PREFETCH_FIELDS) \
+            .select_related("rebound") \
             .order_by(*orders) \
             .filter(**filters)
 
