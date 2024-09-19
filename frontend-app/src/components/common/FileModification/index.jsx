@@ -1,11 +1,11 @@
-import { useEffect, useRef, ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useFile } from '../../../hooks';
-import { api } from '../../../config/api';
-import { addAlert } from '../../../slices/alerts';
+import { useEffect, useRef, ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFile } from "../../../hooks";
+import { api } from "../../../config/api";
+import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
-import SelectorGroup from '../../forms/SelectorGroup';
-import './styles.css';
+import SelectorGroup from "../../forms/SelectorGroup";
+import "./styles.css";
 
 /**
 * @param {object} props
@@ -23,17 +23,17 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
   const acceptRef = useRef(null);
   const declineRef = useRef(null);
 
-  function handleKey({ key }) {
-    var buttonMap = {
+  const handleKey = ({ key }) => {
+    const buttonMap = {
       'a': acceptRef,
       'd': declineRef,
       'ф': acceptRef,
       'в': declineRef,
     };
     buttonMap[key]?.current.click();
-  }
+  };
 
-  async function fetchUpdateFile(status, newAttributes) {
+  const fetchUpdateFile = async (status, newAttributes) => {
     await api.request(`/api/files/${file.id}/`,
       {
         method: 'patch',
@@ -44,9 +44,9 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
         },
       }
     );
-  }
+  };
 
-  async function updateFile(status) {
+  const updateFile = async (status) => {
     try {
       var { isValid, message } = validate(attributes);
 
@@ -57,14 +57,14 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
       await fetchUpdateFile(status, preparedAtrs);
 
       setFiles((prev) => {
-        var newFiles =  [ ...prev ];
+        var newFiles = [...prev];
         newFiles[slide] = { ...file, status, attributes: preparedAtrs };
         return newFiles;
       });
 
       slideInc(true);
     }
-    catch({ message, response }) {
+    catch ({ message, response }) {
       var authFailed = response && (
         response.status === 401 || response.status === 403
       );
@@ -75,7 +75,7 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
       }));
       if (authFailed) navigate("/login");
     }
-  }
+  };
 
   useEffect(() => {
     initFile(files[slide] || {});
@@ -95,6 +95,10 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
           <span>validated by: <b>{file.validator_name}</b></span>
           <span>{file.update_date}</span>
         </div>
+      }
+      {
+        (file.rebound || !!file.related_duplicates) &&
+        <button className="button--duplicates">show duplicates</button>
       }
       <SelectorGroup
         fileID={file.id}

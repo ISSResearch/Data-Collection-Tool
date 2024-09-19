@@ -1,4 +1,5 @@
 .zoomWrap {
+    position: relative;
     border-radius: 4px;
     max-width: 100%;
     height: 100%;
@@ -22,4 +23,19 @@
 .mediaFile {
     max-height: 100%;
     max-width: 100%;
+}
+.zoomWrap > mark {
+    position: absolute;
+    background-color: rgba(179, 98, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(84, 0, 178);
+    color: rgb(84, 0, 178);
+    font-size: 24px;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    border-radius: 4px;
+    padding: 24px;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
 }

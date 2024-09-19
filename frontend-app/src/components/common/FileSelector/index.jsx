@@ -28,14 +28,11 @@ export default function FileSelector({ fileManager, sliderManager, onChange }) {
     <section className="iss__fileSelector">
       <div className='iss__fileSelector__inner'>
         {
-          files.map(({id, file_name, upload_date, status, author_name, rebound}, index) => (
+          files.map((file, index) => (
             <FileCard
-              key={id}
+              key={file.id}
               cardIndex={index}
-              name={file_name}
-              author_name={author_name}
-              date={upload_date}
-              status={rebound ? "r" : status }
+              file={file}
               active={slide === index}
               handleCLick={(index) => setSlide(index)}
             />

@@ -24,9 +24,11 @@ from .serializers import File, FileSerializer
 
 class ViewSetServices:
     FILES_PREFETCH_FIELDS = (
+        "file_set",
+        "rebound__file_set",
         "attributegroup_set",
         "attributegroup_set__attribute",
-        "attributegroup_set__attribute__level"
+        "attributegroup_set__attribute__level",
     )
     FILES_QUERIES = (
         ("status__in", "card[]", True),

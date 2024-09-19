@@ -10,13 +10,18 @@ from django.db import transaction
 
 
 class FileSerializer(ModelSerializer):
-    attributes: SerializerMethodField = SerializerMethodField()
-    author_name: SerializerMethodField = SerializerMethodField()
-    validator_name: SerializerMethodField = SerializerMethodField()
+    attributes = SerializerMethodField()
+    author_name = SerializerMethodField()
+    validator_name = SerializerMethodField()
+    related_duplicates  = SerializerMethodField()
 
     class Meta:
         model = File
         exclude = ("project", "author", "validator")
+
+    def get_related_duplicates(self, instance: File) -> int:
+        if rebound := instance.rebound: return rebound.file_set.count()
+        return instance.file_set.count()
 
     def get_attributes(self, instance: File) -> list[OrderedDict[str, Any]]:
         return AttributeGroupSerializer(instance.attributegroup_set.all(), many=True).data

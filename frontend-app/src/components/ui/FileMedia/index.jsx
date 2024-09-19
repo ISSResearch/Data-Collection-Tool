@@ -40,6 +40,7 @@ const handleMediaFallback = ({ target }) => {
 */
 function FileMedia({ files, slide, pathID }, ref) {
   const [fileUrl, setFileUrl] = useState(null);
+  const [markText, setMark] = useState("");
   const [typeVideo, setTypeVideo] = useState(false);
   const [tempFileToken, setTempFileToken] = useState("");
   const dispatch = useDispatch();
@@ -108,22 +109,23 @@ function FileMedia({ files, slide, pathID }, ref) {
 
   useEffect(() => {
     var media = mediaRef.current;
-    media.addEventListener('wheel', (event) => event.preventDefault());
+    media.addEventListener("wheel", (event) => event.preventDefault());
     return () => {
-      media.removeEventListener('wheel', (event) => event.preventDefault());
+      media.removeEventListener("wheel", (event) => event.preventDefault());
     };
   }, []);
 
   useEffect(() => {
-    var setFile = (token) => {
+    const setFile = (token) => {
       resetZoom();
       if (!files[slide]) return;
-      var { id, file_type, rebound } = files[slide];
+      var { id, file_type, rebound, related_duplicates } = files[slide];
       setTypeVideo(file_type === 'video');
 
       var baseUrl = `${getOriginDomain()}:9000/api/storage`;
       var queryUrl = `project_${pathID}/${rebound || id}/`;
       setFileUrl(`${baseUrl}/${queryUrl}?access=${token || tempFileToken}`);
+      setMark((rebound && "DUPLICATE") || (!!related_duplicates && "HAS DUPLICATES") || "");
     };
 
     if (!tempFileToken) {
@@ -161,12 +163,8 @@ function FileMedia({ files, slide, pathID }, ref) {
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
         className="mediaItem"
-      >
-        {
-          fileUrl &&
-          <MediaItem src={fileUrl} className='mediaFile' />
-        }
-      </div>
+      >{ fileUrl && <MediaItem src={fileUrl} className="mediaFile" /> }</div>
+      { markText && <mark>{markText}</mark> }
     </div>
   );
 }

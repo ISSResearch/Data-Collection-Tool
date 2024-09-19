@@ -20,7 +20,8 @@
     place-self: center;
     margin-top: auto;
 }
-.iss__fileInfo__buttonsWrap button {
+.iss__fileInfo__buttonsWrap button,
+.button--duplicates {
     border-radius: 4px;
     padding: 4px 8px;
     font-size: 14px;
@@ -38,6 +39,12 @@
     background-color: rgb(153, 255, 98, 0.2);
     border: 1px solid var(--issGreen);
     color: var(--issGreen);
+}
+.button--duplicates {
+    width: 100%;
+    background-color: rgba(179, 98, 255, 0.2);
+    border: 1px solid rgb(84, 0, 178);
+    color: rgb(84, 0, 178);
 }
 .button--block {
     filter: grayscale(1);
@@ -59,5 +66,9 @@
 @media (hover: hover) {
     .iss__fileInfo__buttonsWrap button:hover {
         scale: 1.1;
+    }
+    .button--duplicates:hover {
+        color: white;
+        background-color: rgb(84, 0, 178);
     }
 }
