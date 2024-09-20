@@ -434,3 +434,10 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     file = export_map[file_type](stats, choice)
 
     return file.into_response()
+
+
+def _get_duplicates(file_id: str) -> tuple[Any, int]:
+    try:
+        _file = File.objects.prefetch_related("file_set").get(id=file_id)
+        return FileSerializer([_file, *_file.file_set.all()], many=True).data, HTTP_200_OK
+    except Exception: return {}, HTTP_404_NOT_FOUND

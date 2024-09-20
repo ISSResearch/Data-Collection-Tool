@@ -1,0 +1,56 @@
+.duplicateDialog {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    top: 0;
+    left: 0;
+    border: none;
+    padding: 6% 10%;
+    background-color: unset;
+}
+
+.duplicateDialog__inner {
+    position: relative;
+    width: 100%;
+    border-radius: 4px;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 12px 20px;
+    overflow-y: scroll;
+}
+
+.duplicatedialog__innerCard {
+    border: 1px solid var(--issBrand);
+    max-width: 30%;
+    height: fit-content;
+}
+.duplicatedialog__innerCard > span {
+    font-size: 12px;
+    padding: 4px 8px;
+    display: block;
+}
+.duplicatedialog__innerCard > span > mark {
+    background-color: unset;
+    opacity: 0.3;
+}
+.duplicatedialog__innerCard > video,
+.duplicatedialog__innerCard > img {
+    width: 100%;
+}
+
+.duplicatedialog__innerCard > .iss__fileInfo__buttonsWrap {
+    margin: 8px auto;
+}
+
+.inncerCard--a {
+    background-color: #1a770033;
+}
+
+.inncerCard--d {
+    background-color: #77000033;
+}

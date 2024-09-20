@@ -231,6 +231,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
             {
               canValidate &&
               <FileModification
+                pathID={pathID}
                 fileManager={fileManager}
                 attributes={attributes}
                 slide={sliderManager.slide}

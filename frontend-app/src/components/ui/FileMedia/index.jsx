@@ -119,13 +119,14 @@ function FileMedia({ files, slide, pathID }, ref) {
     const setFile = (token) => {
       resetZoom();
       if (!files[slide]) return;
-      var { id, file_type, rebound, related_duplicates } = files[slide];
+      var { id, file_type, rebound } = files[slide];
       setTypeVideo(file_type === 'video');
 
       var baseUrl = `${getOriginDomain()}:9000/api/storage`;
       var queryUrl = `project_${pathID}/${rebound || id}/`;
+
       setFileUrl(`${baseUrl}/${queryUrl}?access=${token || tempFileToken}`);
-      setMark((rebound && "DUPLICATE") || (!!related_duplicates && "HAS DUPLICATES") || "");
+      setMark(rebound ? "DUPLICATE" : "");
     };
 
     if (!tempFileToken) {

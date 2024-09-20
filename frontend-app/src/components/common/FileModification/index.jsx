@@ -1,23 +1,26 @@
-import { useEffect, useRef, ReactElement } from "react";
+import { useEffect, useRef, ReactElement, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFile } from "../../../hooks";
 import { api } from "../../../config/api";
 import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
 import SelectorGroup from "../../forms/SelectorGroup";
+import DuplicateModal from "../../DuplicateModal";
 import "./styles.css";
 
 /**
 * @param {object} props
+* @param {number} props.pathID
 * @param {object} props.fileManager
 * @param {number} props.slide
 * @param {Function} props.slideInc
 * @param {object[]} props.attributes
 * @returns {ReactElement}
 */
-export default function FileModification({ fileManager, slide, slideInc, attributes }) {
+export default function FileModification({ pathID, fileManager, slide, slideInc, attributes }) {
   const { files, setFiles } = fileManager;
   const { file, initFile, handleGroupChange, validate, prepareAttributes } = useFile();
+  const [duplicates, setDuplicates] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const acceptRef = useRef(null);
@@ -86,7 +89,16 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
     };
   }, [slide, files]);
 
-  return (
+  return <>
+    {
+      duplicates &&
+      <DuplicateModal
+        pathID={pathID}
+        fileID={duplicates}
+        onClose={() => setDuplicates(null)}
+        onUpdate={updateFile}
+      />
+    }
     <div className='iss__fileInfo'>
       <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
       {
@@ -98,7 +110,10 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
       }
       {
         (file.rebound || !!file.related_duplicates) &&
-        <button className="button--duplicates">show duplicates</button>
+        <button
+          onClick={() => setDuplicates(file.rebound || file.id)}
+          className="button--duplicates"
+        >show duplicates</button>
       }
       <SelectorGroup
         fileID={file.id}
@@ -124,5 +139,5 @@ export default function FileModification({ fileManager, slide, slideInc, attribu
         </div>
       }
     </div>
-  );
+  </>;
 }
