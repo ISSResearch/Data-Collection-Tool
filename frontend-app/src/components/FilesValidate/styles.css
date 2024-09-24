@@ -10,3 +10,9 @@
     display: flex;
     gap: 12px;
 }
+
+.iss_validation__duplicates {
+    display: flex;
+    gap: 8px;
+    place-tems: center;
+}

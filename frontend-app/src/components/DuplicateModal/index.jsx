@@ -7,6 +7,26 @@ import { getOriginDomain } from "../../utils/";
 import CloseCross from "../ui/CloseCross";
 import "./styles.css";
 
+/** @type {Record<string, string>} */
+const STATUS_MAP = { v: "on validatin", a: "accepted", d: "declined", };
+
+/**
+* @param {object} file
+* @param {object} file.attributes
+* @returns {string[]}
+*/
+const formAttrs = ({ attributes }) => attributes
+  .reduce((acc, attr) => {
+    var group = acc[attr[1]];
+    if (group) group.push(attr[2]);
+    else acc[attr[1]] = [attr[2]];
+    return acc;
+  }, [])
+  .reduce((acc, group) => {
+    if (group?.length) acc.push(group.join(" > "));
+    return acc;
+  }, []);
+
 /**
 * @param {object} props
 * @param {number} props.pathID
@@ -40,7 +60,7 @@ export default function DuplicateModal({ pathID, fileID, onUpdate, onClose }) {
       });
 
       files.forEach((file) => {
-        var queryUrl = `project_${pathID}/${file.rebound || file.id}/`;
+        var queryUrl = `project_${pathID}/${file.id}/`;
         file.url = `${baseUrl}/${queryUrl}?access=${token}`;
       });
 
@@ -71,10 +91,21 @@ export default function DuplicateModal({ pathID, fileID, onUpdate, onClose }) {
     <section className="duplicateDialog__inner">
       <CloseCross action={onClose} />
       {
-        duplicates.map(({ id, url, file_name, file_type, rebound, status }) => (
+        duplicates.map(({ id, attributes, url, file_name, file_type, rebound, status }) => (
           <div key={id} className={"duplicatedialog__innerCard" + (" inncerCard--" + status)}>
-            <span>{file_name} { !rebound && <mark><b>original</b> (top size)</mark> }</span>
+            <span>{file_name} { !rebound && <mark><b>best quality</b></mark> }</span>
             { file_type === "image" ? <img src={url} /> : <video src={url} muted controls /> }
+            <div className="duplicatedialog__cardAttributes">
+              Attributes:
+              <ul>
+                {
+                  attributes
+                    .reduce((a, b) => { a.push(...formAttrs(b)); return a; }, [])
+                    .map((item, index) => <li key={"i" + index}>{item}</li>)
+                }
+              </ul>
+            </div>
+            <span>Status: {STATUS_MAP[status]}</span>
             <div className="iss__fileInfo__buttonsWrap">
               <button
                 type="button"

@@ -148,21 +148,21 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         */
         var _filterData = [
           {
-            prettyName: 'Card Filter:',
-            name: 'card',
+            prettyName: "Card Filter:",
+            name: "card",
             data: CARD_FILTERS,
             selected: card,
           },
           {
-            prettyName: 'Attribute Filter:',
-            name: 'attr',
+            prettyName: "Attribute Filter:",
+            name: "attr",
             data: attributes,
             selected: attr,
             type: "attr"
           },
           {
-            prettyName: 'Filetype Filter:',
-            name: 'type',
+            prettyName: "Filetype Filter:",
+            name: "type",
             data: TYPE_FILTER,
             selected: type,
           },
@@ -186,8 +186,8 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         setFilterData(_filterData);
         setSortData([
           {
-            prettyName: 'Date sort:',
-            name: 'dateSort',
+            prettyName: "Date sort:",
+            name: "dateSort",
             data: DATE_SORT,
             selected: [dateSort || "desc"],
           },
@@ -213,6 +213,13 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     <>
       <ValidationFilterGroup filterData={filterData} onChange={handleChange}/>
       <ValidationFilterGroup filterData={sortData} onChange={handleChange}/>
+      {
+        false &&
+        <label className="iss_validation__duplicates">
+          Show Duplicates
+          <input type="checkbox" />
+        </label>
+      }
       {
         fileManager.files.length
           ? <div className='iss__validation'>

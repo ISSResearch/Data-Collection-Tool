@@ -34,10 +34,6 @@
     padding: 4px 8px;
     display: block;
 }
-.duplicatedialog__innerCard > span > mark {
-    background-color: unset;
-    opacity: 0.3;
-}
 .duplicatedialog__innerCard > video,
 .duplicatedialog__innerCard > img {
     width: 100%;
@@ -53,4 +49,15 @@
 
 .inncerCard--d {
     background-color: #77000033;
+}
+
+.duplicatedialog__cardAttributes {
+    padding: 4px 8px;
+}
+.duplicatedialog__cardAttributes {
+    font-size: 12px;
+}
+
+.duplicatedialog__cardAttributes > ul {
+    list-style: none;
 }

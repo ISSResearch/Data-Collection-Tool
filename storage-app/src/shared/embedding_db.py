@@ -49,15 +49,17 @@ class Query(Enum):
         on E.rowid = M.id
         where
         M.project_id = ?
-        M.shadowed = 0
+        and M.shadowed = 0
         and E.embedding match ?
         and E.distance <= ?
+        and k = ?
         order by E.distance;
     """
 
 
 class EmbeddingStorage:
     __slots__ = ("conn", "corrupted", "reason", "context")
+    K = 1_000
 
     def __init__(self):
         self.corrupted = False
@@ -157,5 +159,5 @@ class EmbeddingStorage:
     ) -> list[tuple[str, int, float]]:
         return cur.execute(
             Query.SELECT.value,
-            [project_id, embedding, SIMILAR_THRESHOLD]
+            [project_id, embedding, SIMILAR_THRESHOLD, self.K]
         ).fetchall()

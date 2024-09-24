@@ -40,7 +40,9 @@ class FileSerializer(ModelSerializer):
 
         with transaction.atomic():
             super().update(self.instance, self.validated_data)
-            self.instance.update_attributes(self.initial_data.get("attribute", {}))
+
+            if attributes := self.initial_data.get("attribute"):
+                self.instance.update_attributes(attributes)
 
         return self.instance
 

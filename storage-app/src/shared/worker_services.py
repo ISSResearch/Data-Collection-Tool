@@ -132,6 +132,7 @@ class Hasher:
 
     status: EmbeddingStatus
     result: list[tuple[str, int, float]]
+    process_result: tuple[str, EmbeddingStatus, Optional[str]]
 
     def __init__(self, bucket_name: str, uid: str):
         self.bucket_name = bucket_name
@@ -187,7 +188,8 @@ class Hasher:
                     self.process_result = (self.file_id, self.status, rmi)
                     storage.shadow(self.file_id)
 
-            else: self.process_result = (self.file_id, self.status, None)
+        if not hasattr(self, "process_result"):
+            self.process_result = (self.file_id, self.status, None)
 
         update_list.append(self.process_result)
 
