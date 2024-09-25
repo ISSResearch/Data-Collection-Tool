@@ -4,7 +4,7 @@ from os.path import abspath, join, curdir
 from typing import Any, Optional
 
 max_workers: int = int(getenv("MAX_WORKER", 0))
-available_workers: int = cpu_count() * 2 + 1
+available_workers: int = (cpu_count() << 1) + 1
 
 WORKERS: int = (
     max_workers

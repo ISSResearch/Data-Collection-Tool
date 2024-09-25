@@ -36,16 +36,20 @@ function FilterSwitch ({ filter, onChange }) {
 * @param {object} props
 * @param {object[]} props.filterData
 * @param {Function} props.onChange
+* @param {boolean} props.disabled
 * @returns {ReactElement}
 */
-export default function ValidationFilterGroup({ filterData, onChange }) {
+export default function ValidationFilterGroup({ filterData, onChange, disabled }) {
   return (
     <fieldset className='iss__validation__filters'>
       {
         filterData.map((filter) => (
-          <div key={filter.name} className="iss__validation__filters__item">
+          <div
+            key={filter.name}
+            className={"iss__validation__filters__item" + (disabled ? " item--disable" : "")}
+          >
             <label>{filter.prettyName}</label>
-            <FilterSwitch filter={filter} onChange={onChange}/>
+            <FilterSwitch filter={filter} onChange={disabled ? () => { } : onChange}/>
           </div>
         ))
       }

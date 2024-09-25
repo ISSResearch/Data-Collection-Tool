@@ -57,4 +57,4 @@ def produce_handle_media_task(
     return task.process_result
 
 
-if __name__ == "__main__": worker.worker_main(argv=CELERY_CONFIG)
+if __name__ == "__main__": worker.worker_main(CELERY_CONFIG)
