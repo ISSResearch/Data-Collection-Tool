@@ -13,7 +13,7 @@ class FileSerializer(ModelSerializer):
     attributes = SerializerMethodField()
     author_name = SerializerMethodField()
     validator_name = SerializerMethodField()
-    related_duplicates  = SerializerMethodField()
+    related_duplicates = SerializerMethodField()
 
     class Meta:
         model = File
@@ -41,7 +41,7 @@ class FileSerializer(ModelSerializer):
         with transaction.atomic():
             super().update(self.instance, self.validated_data)
 
-            if attributes := self.initial_data.get("attribute"):
+            if isinstance(attributes := self.initial_data.get("attribute"), dict):
                 self.instance.update_attributes(attributes)
 
         return self.instance

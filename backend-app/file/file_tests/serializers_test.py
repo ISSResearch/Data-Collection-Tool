@@ -33,6 +33,8 @@ class FileSerializerTest(TestCase):
         self.assertEqual(
             set(data.keys()),
             data_keys.union({
+                "rebound",
+                "related_duplicates",
                 'upload_date',
                 "update_date",
                 'attributes',
@@ -50,7 +52,7 @@ class FileSerializerTest(TestCase):
     def test_update_file_serializer(self):
         data = FileSerializer(
             self.case.file_,
-            {'status': 'a'},
+            {"status": "a", "attribute": dict()},
             partial=True,
             context={"validator": self.case.user}
         )
@@ -62,8 +64,8 @@ class FileSerializerTest(TestCase):
 
         updated_data = FileSerializer(self.case.file_).data
 
-        self.assertEqual(updated_data['status'], 'a')
-        self.assertFalse(bool(updated_data['attributes']))
+        self.assertEqual(updated_data["status"], "a")
+        self.assertFalse(bool(updated_data["attributes"]))
         self.assertIsNotNone(updated_data.get("validator_name"))
         self.assertNotEqual(updated_data.get("update_date"), init_date)
 
