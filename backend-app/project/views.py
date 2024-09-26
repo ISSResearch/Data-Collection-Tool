@@ -1,7 +1,12 @@
 from rest_framework.views import Response, APIView, Request
 from rest_framework.permissions import IsAuthenticated
-from .permissions import ProjectsPermission, ProjectPermission, ProjectViewPermission
-from .services import ViewSetServices
+from .permissions import (
+    ProjectsPermission,
+    ProjectPermission,
+    ProjectViewPermission,
+    ProjectGoalPermission
+)
+from .services import ViewSetServices, GoalViewServices
 
 
 class ProjectsViewSet(APIView, ViewSetServices):
@@ -30,4 +35,21 @@ class ProjectViewSet(APIView, ViewSetServices):
 
     def delete(self, request: Request, pk: int) -> Response:
         response, status = self._delete_project(pk, request.data)
+        return Response(response, status=status)
+
+
+class GoalViewSet(APIView, GoalViewServices):
+    http_method_names = ("get", "post", "delete")
+    permission_classes = (IsAuthenticated, ProjectPermission, ProjectGoalPermission)
+
+    def get(self, request: Request, pk: int) -> Response:
+        response, status = self._get_goals(pk, request.query_params)
+        return Response(response, status=status)
+
+    def post(self, request: Request, pk: int) -> Response:
+        response, status = self._create_goal(pk, request.data)
+        return Response(response, status=status)
+
+    def delete(self, _, pk: int) -> Response:
+        response, status = self._delete_goal(pk)
         return Response(response, status=status)

@@ -1,8 +1,8 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, IntegerField
 from rest_framework.views import Request
 from typing import Any
 from attribute.serializers import LevelSerializer
-from .models import Project
+from .models import Project, ProjectGoal
 
 
 class ProjectsSerializer(ModelSerializer):
@@ -16,8 +16,8 @@ class ProjectsSerializer(ModelSerializer):
 
 
 class ProjectSerializer(ProjectsSerializer):
-    attributes: SerializerMethodField = SerializerMethodField()
-    permissions: SerializerMethodField = SerializerMethodField()
+    attributes = SerializerMethodField()
+    permissions = SerializerMethodField()
 
     class Meta(ProjectsSerializer.Meta):
         fields = ("id", "name", "description", "attributes", "permissions")
@@ -38,8 +38,22 @@ class ProjectSerializer(ProjectsSerializer):
         return {
             "upload": user_id in {user.id for user in instance.user_upload.all()},
             "view": user_id in {user.id for user in instance.user_view.all()},
+            "goals": user_id in {user.id for user in instance.user_upload.all()},
             "validate": user_id in {user.id for user in instance.user_validate.all()},
             "stats": user_id in {user.id for user in instance.user_stats.all()},
             "download": user_id in {user.id for user in instance.user_download.all()},
             "edit": user_id in {user.id for user in instance.user_edit.all()},
         }
+
+
+class GoalSerializer(ModelSerializer):
+    project = SerializerMethodField()
+    on_validation = IntegerField(read_only=True)
+    complete = IntegerField(read_only=True)
+    progress = IntegerField(read_only=True)
+
+    class Meta:
+        model = ProjectGoal
+        exclude = ("attribute", )
+
+    def get_project(self, instance: ProjectGoal) -> int: return instance.project.id

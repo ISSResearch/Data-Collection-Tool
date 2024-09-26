@@ -84,12 +84,12 @@ class Zipper:
     def delete_temp_zip(self): remove(self.archive)
 
     def _get_object_name(self, object: GridOut) -> str:
-        prepared_name: str = object.name
-        extension: str = object.metadata.get("file_extension", "")
+        name = str(object._id)
+        extension = object.metadata.get("file_extension", "")
 
-        if extension: prepared_name += f".{extension}"
+        if extension: name += f".{extension}"
 
-        return prepared_name
+        return name
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"

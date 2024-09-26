@@ -17,10 +17,10 @@ export default function AttributeCreatorForm({ attributeManager, withBoundAttrib
   const { formHook, levelHook, attributeHook } = attributeManager;
   const { forms, addForm, deleteForm, boundAttributes } = formHook;
 
-  function handleReplace(replaceTo, replaceWith) {
+  const handleReplace = (replaceTo, replaceWith) => {
     levelHook.findAndReplace(replaceTo, replaceWith);
     attributeHook.findAndReplace(replaceTo, replaceWith);
-  }
+  };
 
   useEffect(() => {
     if (withBoundAttributes?.length) boundAttributes(withBoundAttributes);

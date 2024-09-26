@@ -1,10 +1,10 @@
-import { useEffect, useState, ReactElemment } from 'react';
-import { useAuthModal, useFileUploader } from '../../../hooks';
-import { addAlert } from '../../../slices/alerts';
+import { useEffect, useState, ReactElemment } from "react";
+import { useAuthModal, useFileUploader } from "../../../hooks";
+import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
-import Load from '../../ui/Load';
-import Form from '../../forms/Form';
-import './styles.css';
+import Load from "../../ui/Load";
+import Form from "../../forms/Form";
+import "./styles.css";
 
 /**
 * @param {object} props

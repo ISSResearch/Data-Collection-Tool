@@ -13,7 +13,7 @@ export default function SelectorWrap({ item, onChange, applyGroups }) {
   const [options, setOptions] = useState([]);
   const [valueIds, setValuesIds] = useState([]);
 
-  function handleSelect(selected, children, index) {
+  const handleSelect = (selected, children, index) => {
     selected = Number(selected);
 
     var clear = !selected;
@@ -36,9 +36,9 @@ export default function SelectorWrap({ item, onChange, applyGroups }) {
 
     setOptions(newOptions);
     onChange({ selected: !clear ? [selected] : [], index });
-  }
+  };
 
-  function addSelected(group) {
+  const addSelected = (group) => {
     setValuesIds(group);
 
     var newOptions = group.reduce((acc, id) => {
@@ -52,7 +52,7 @@ export default function SelectorWrap({ item, onChange, applyGroups }) {
     }, [item]);
 
     setOptions(newOptions);
-  }
+  };
 
   useEffect(() => {
     if (applyGroups) addSelected(applyGroups);
@@ -60,11 +60,11 @@ export default function SelectorWrap({ item, onChange, applyGroups }) {
   }, [applyGroups]);
 
   return (
-    <div className='iss__selectorWrap'>
+    <div className="iss__selectorWrap">
       {
         options.map(({ id, name, children, attributes, multiple }, index) => (
           <label key={`${id}_${index}`}>
-            <span className='iss__selector__name'>{name}</span>
+            <span className="iss__selector__name">{name}</span>
             {
               multiple
                 ? <MultiSelector

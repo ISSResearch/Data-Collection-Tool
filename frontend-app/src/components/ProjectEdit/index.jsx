@@ -25,6 +25,7 @@ export default function ProjectEdit({
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
   const [preview, setPreview] = useState(projectDescription);
+  const [mightChange, setMightChange] = useState(false);
   const attributeManager = useAttributeManager();
   const attributeManagerNew = useAttributeManager();
   const dispatch = useDispatch();
@@ -33,18 +34,18 @@ export default function ProjectEdit({
 
   useBlocker(() => {
     var msg = "Are you sure you wanna leave the editing? All unsaved data will be lost";
-    return !window.confirm(msg);
+    return mightChange && !window.confirm(msg);
   });
 
-  function validateNewAttributes() {
+  const validateNewAttributes = () => {
     var newAttirbutes = Object.values(attributeManagerNew.attributeHook.attributes);
     for (let attributes of newAttirbutes) {
       if (!attributes.length) return false;
     }
     return true;
-  }
+  };
 
-  function getFormData({ target }) {
+  const getFormData = ({ target }) => {
     var name = target.project_name.value;
     var description = target.project_description.value || "";
 
@@ -58,9 +59,9 @@ export default function ProjectEdit({
     ];
 
     return { name, description, attributes };
-  }
+  };
 
-  async function performOriginalItemsDelete(idSet, endpoint) {
+  const performOriginalItemsDelete = async (idSet, endpoint) => {
     return api.request(`/api/attributes/${endpoint}/`,
       {
         method: 'delete',
@@ -71,9 +72,9 @@ export default function ProjectEdit({
         }
       }
     );
-  }
+  };
 
-  async function sendForm(event) {
+  const sendForm = async (event) => {
     event.preventDefault();
     if (loading) return;
 
@@ -118,10 +119,10 @@ export default function ProjectEdit({
 
       setLoading(false);
     }
-  }
+  };
 
-  async function deleteProject() {
-      if (deleteInput.current.value !== projectName) {
+  const deleteProject = async () => {
+    if (deleteInput.current.value !== projectName) {
       dispatch(addAlert({
         message: "Entered name differs from the actual Project name.",
         type: "error"
@@ -147,7 +148,7 @@ export default function ProjectEdit({
       }));
       navigate('/');
     }
-    catch({ message, response }) {
+    catch ({ message, response }) {
       var authFailed = response.status === 401 || response.status === 403;
 
       dispatch(addAlert({
@@ -160,7 +161,7 @@ export default function ProjectEdit({
 
       setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -190,27 +191,31 @@ export default function ProjectEdit({
             </div>
             : <button
               onClick={() => setDeleteAccept(true)}
-              className='iss__projectEdit__deleteButton'
+              className="iss__projectEdit__deleteButton"
             >DELETE PROJECT</button>
         }
       </fieldset>
-      <form onSubmit={sendForm} className='iss__projectEdit__form'>
-        <fieldset className='iss__projectEdit__form__set'>
-          <label className='iss__projectEdit__form__input'>
+      <form
+        onSubmit={sendForm}
+        onClick={() => { !mightChange && setMightChange(true); }}
+        className="iss__projectEdit__form"
+      >
+        <fieldset className="iss__projectEdit__form__set">
+          <label className="iss__projectEdit__form__input">
             Name of project:
             <input
               name="project_name"
-              placeholder='Enter project name'
+              placeholder="Enter project name"
               defaultValue={projectName}
               required
             />
           </label>
-          <label className='iss__projectEdit__form__input'>
+          <label className="iss__projectEdit__form__input">
             Project description (raw):
             <textarea
               name="project_description"
-              autoComplete='off'
-              placeholder='Enter project description'
+              autoComplete="off"
+              placeholder="Enter project description"
               defaultValue={projectDescription}
               onChange={({ target }) => setPreview(target.value)}
             />
@@ -219,12 +224,12 @@ export default function ProjectEdit({
             preview &&
             <p
               dangerouslySetInnerHTML={{ __html: preview }}
-              className='iss__projectEdit__preview'
+              className="iss__projectEdit__preview"
             />
           }
         </fieldset>
-        <div className='iss__projectEdit__form__border' />
-        <div className='iss__projectEdit__attributes'>
+        <div className="iss__projectEdit__form__border" />
+        <div className="iss__projectEdit__attributes">
           <AttributeCreatorForm attributeManager={attributeManagerNew} />
           {
             Object.keys(attributeManagerNew.formHook.forms).length > 0 &&

@@ -15,7 +15,7 @@ export default function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  async function logOutUser() {
+  const logOutUser = async () => {
     api.request('/api/users/logout/', {
       method: 'post',
       headers: {
@@ -26,7 +26,7 @@ export default function Header() {
     dispatch(setUser(null));
     dispatch(addAlert({ message: "User logged out", type: "success" }));
     navigate("/login");
-  }
+  };
 
   return (
     <header className='iss__header'>

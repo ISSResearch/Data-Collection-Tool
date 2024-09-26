@@ -34,28 +34,28 @@ export default function useAttributes() {
   * @param {number[]} initData
   * @returns {void}
   */
-  function initAttribute(formId, initData = []) {
+  const initAttribute = (formId, initData = []) => {
     setAttributes((prev) => {
       return { ...prev, [formId]: initData };
     });
-  }
+  };
 
   /**
   * @param {number} formId
   * @returns {void}
   */
-  function destroyAttribute(formId) {
+  const destroyAttribute = (formId) => {
     var newAttributes = { ...attributes };
     delete newAttributes[formId];
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
   * @param {string} position
   * @returns {void}
   */
-  function addAttribute(formId, position = null) {
+  const addAttribute = (formId, position = null) => {
     let path;
     var id = formUID();
     var newAttributes = { ...attributes };
@@ -74,7 +74,7 @@ export default function useAttributes() {
     }
 
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
@@ -82,7 +82,7 @@ export default function useAttributes() {
   * @param {boolean} isChild
   * @returns {void}
   */
-  function delAttribute(formId, position, isChild=false) {
+  const delAttribute = (formId, position, isChild = false) => {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
     var path = position.split('_');
@@ -95,14 +95,14 @@ export default function useAttributes() {
 
     refreshPath(targetNode, null, Number(path[path.length - 1]));
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
   * @param {number} levelIndex
   * @returns {void}
   */
-  function handleLevelRemove(formId, levelIndex) {
+  const handleLevelRemove = (formId, levelIndex) => {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
 
@@ -110,7 +110,7 @@ export default function useAttributes() {
       if (el.path.split('_').length === levelIndex) el.children.splice(0);
     });
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
@@ -120,7 +120,7 @@ export default function useAttributes() {
   * @param {boolean} isChild
   * @returns {void}
   */
-  function handleChange(formId, { value }, position, isChild=false) {
+  const handleChange = (formId, { value }, position, isChild = false) => {
     setAttributes((prevAttributes) => {
       var newAttributes = { ...prevAttributes };
       var path = position.split('_');
@@ -131,14 +131,14 @@ export default function useAttributes() {
       target.name = value;
       return newAttributes;
     });
-  }
+  };
 
   /**
   * @param {string} replaceTo
   * @param {string} replaceWith
   * @returns {void}
   */
-  function findAndReplace(replaceTo="", replaceWith="") {
+  const findAndReplace = (replaceTo = "", replaceWith = "") => {
     var newAttributes = { ...attributes };
 
     Object.values(newAttributes).forEach((items) => {
@@ -146,7 +146,7 @@ export default function useAttributes() {
     });
 
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
@@ -154,7 +154,7 @@ export default function useAttributes() {
   * @param {number} index
   * @returns {void}
   */
-  function moveUp(formId, position, index)  {
+  const moveUp = (formId, position, index) => {
     if (index <= 0) return;
 
     var newAttributes = { ...attributes };
@@ -172,7 +172,7 @@ export default function useAttributes() {
     refreshPath(targetNode, null, index - 1);
 
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formId
@@ -180,7 +180,7 @@ export default function useAttributes() {
   * @param {number} index
   * @returns {void}
   */
-  function moveDown(formId, position, index)  {
+  const moveDown = (formId, position, index) => {
     var newAttributes = { ...attributes };
     var target = newAttributes[formId];
     var path = position.split('_');
@@ -198,17 +198,17 @@ export default function useAttributes() {
     refreshPath(targetNode, null, index);
 
     setAttributes(newAttributes);
-  }
+  };
 
   /**
   * @param {number} formID
   * @returns {object}
   */
-  function gather(formID) {
+  const gather = (formID) => {
     var target = attributes[formID];
     drawPaths(target);
     return target;
-  }
+  };
 
   return {
     attributes,

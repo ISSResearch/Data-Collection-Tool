@@ -11,23 +11,26 @@ import FilesUpload from "../../components/FilesUpload";
 import FilesDownload from "../../components/FilesDownload";
 import FileStats from "../../components/common/FileStats";
 import ProjectEdit from "../../components/ProjectEdit";
+import ProjectGoals from "../../components/ProjectGoals";
 import Load from "../../components/ui/Load";
 import Arrow from "../../components/ui/Arrow";
 import './styles.css';
 
 /** @type {{name: string, link: string, permission: string}[]} */
 const PROTECTED_ROUTE_LINKS = [
-  { name: 'upload data', link: 'upload', permission: 'upload' },
-  { name: 'validate data', link: 'validate', permission: 'view' },
-  { name: 'statistics', link: 'stats', permission: 'stats' },
-  { name: 'download data', link: 'download', permission: 'download' },
-  { name: 'edit', link: 'edit', permission: 'edit' }
+  { name: "upload data", link: "upload", permission: "upload" },
+  { name: "validate data", link: "validate", permission: "view" },
+  { name: "goals", link: "goals", permission: "upload" },
+  { name: "statistics", link: "stats", permission: "stats" },
+  { name: "download data", link: "download", permission: "download" },
+  { name: "edit", link: "edit", permission: "edit" }
 ];
 
 /** @type {{[variant: string]: ReactElement}} */
 const VARIANTS = {
   upload: FilesUpload,
   validate: FilesValidate,
+  goals: ProjectGoals,
   stats: FileStats,
   download: FilesDownload,
   edit: ProjectEdit,

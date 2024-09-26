@@ -1,35 +1,42 @@
 import { ReactElement } from "react";
 import "./styles.css";
 
+const POINT = { "right": "0deg", "left": "180deg", "top": "270deg", "bot": "90deg", };
+
 /**
 * @param {object} props
 * @param {number} [props.size]
 * @param {string} [props.point]
 * @param {string} [props.color]
+* @param {boolean} [props.double]
 * @param {Array} [props.classes]
 * @returns {ReactElement}
 */
-export default function DateSelector({ size, point, color, classes, ...props }) {
-  var pointMap = {
-    "right": "270deg",
-    "left": "90deg",
-    "top": "180deg",
-    "bot": "0deg",
-  };
-
+export default function DateSelector({
+  size,
+  point,
+  color,
+  classes,
+  double,
+  ...props
+}) {
   return (
     <svg
       width={size || 12}
       height={size || 12}
-      viewBox="0 0 14 8"
+      viewBox="0 0 240 240"
       style={{
-        rotate: pointMap[point || "bot"],
+        rotate: POINT[point || "bot"],
         fill: color || "#62abff"
       }}
       className={["iss__arrowIcon", ...(classes || [])].join(" ")}
       {...props}
     >
-      <path d="M12.9199 0.796875L12.3633 0.210938C12.2168 0.0644531 11.9824 0.0644531 11.8652 0.210938L6.5625 5.51367L1.23047 0.210938C1.11328 0.0644531 0.878906 0.0644531 0.732422 0.210938L0.175781 0.796875C0.0292969 0.914062 0.0292969 1.14844 0.175781 1.29492L6.29883 7.41797C6.44531 7.56445 6.65039 7.56445 6.79688 7.41797L12.9199 1.29492C13.0664 1.14844 13.0664 0.914062 12.9199 0.796875Z" />
+      <path d="M45.136,3.597c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.415,0,17.155l98.564,99.515l-98.564,99.515 c-4.704,4.74-4.704,12.415,0,17.155c4.704,4.74,12.319,4.74,17.011,0l107.058-108.092c2.587-2.587,3.621-5.919,3.356-9.468 c-0.205-2.755-1.383-5.714-3.356-7.699L45.136,3.597z"/>
+      {
+        double &&
+        <path d="M203.864,0c-6.641,0-12.03,5.39-12.03,12.03v216.173c0,6.641,5.39,12.03,12.03,12.03c6.641,0,12.03-5.39,12.03-12.03 V12.03C215.894,5.39,210.505,0,203.864,0z"/>
+      }
     </svg>
   );
 }
