@@ -40,6 +40,7 @@ services:
       SERVER_ORIGINS: "iss-test-front,iss-test-back"
       SECRET_KEY: test-secret-key
       BACKEND_PORT: 8000
+      MAX_WORKER: 1
     command: >
       sh -c "python manage.py makemigrations user &&
              python manage.py makemigrations project &&
