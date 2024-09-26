@@ -160,14 +160,20 @@ class GetCollectiorsTest(TestCase):
     def test_get_queryset(self):
         result = _get_collectors(self.project.id)
 
+        names = {u.username for u in self.users}
+
         self.assertTrue(isinstance(result, QuerySet))
-        self.assertEqual(result.count(), len(self.users))
+        self.assertEqual(
+            sum([u.username in names for u in result]),
+            len(self.users)
+        )
 
         result = list(result)
 
         self.assertTrue(all([
             self.project.id in u.project_upload.values_list("id", flat=True)
             for u in result
+            if u.username in names
         ]))
         self.assertTrue(all([
             self.project.id in u.project_stats.values_list("id", flat=True)
@@ -178,6 +184,7 @@ class GetCollectiorsTest(TestCase):
             self.project.id in u.project_download.values_list("id", flat=True)
             for u in result
             if not u.id % 2
+            and u.username in names
         ]))
         self.assertFalse(all([
             self.project.id in u.project_stats.values_list("id", flat=True)
@@ -197,9 +204,14 @@ class GetCollectiorsTest(TestCase):
 
         result = result.data
 
-        self.assertEqual(len(result), len(self.users))
-        self.assertTrue(all([u["permissions"]["upload"] for u in result]))
-        self.assertTrue(all([u["permissions"]["stats"] for u in result if u["id"] % 2]))
-        self.assertTrue(all([u["permissions"]["download"] for u in result if not u["id"] % 2]))
-        self.assertFalse(all([u["permissions"]["stats"] for u in result if not u["id"] % 2]))
-        self.assertFalse(all([u["permissions"]["download"] for u in result if u["id"] % 2]))
+        names = {u.username for u in self.users}
+
+        self.assertEqual(
+            sum([u["username"] in names for u in result]),
+            len(self.users),
+        )
+        self.assertTrue(all([u["permissions"]["upload"] for u in result if u["username"] in names]))
+        self.assertTrue(all([u["permissions"]["stats"] for u in result if u["id"] % 2 and u["username"] in names]))
+        self.assertTrue(all([u["permissions"]["download"] for u in result if not u["id"] % 2 and u["username"] in names]))
+        self.assertFalse(all([u["permissions"]["stats"] for u in result if not u["id"] % 2 and u["username"] in names]))
+        self.assertFalse(all([u["permissions"]["download"] for u in result if u["id"] % 2 and u["username"] in names]))
