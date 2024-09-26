@@ -7,7 +7,7 @@ from ..storage import router
 from asyncio import new_event_loop, set_event_loop, get_event_loop
 from os.path import abspath
 from sys import path
-from shared.db_manager import (
+from shared.storage_db import (
     DataBase,
     get_db_uri,
     AsyncIOMotorClient,
@@ -110,25 +110,9 @@ class StorageRouterTest(TestCase):
                 }
             }
         )
-        same_file_res = self._request(
-            f"/api/storage/{self.bucket_name}/",
-            "post",
-            {
-                "file": test_file,
-                "data": {
-                    "file_meta": dumps({
-                        "file_name": "name",
-                        "file_type": "type",
-                        "file_extension": "ext"
-                    })
-                }
-            }
-        )
         self.assertEqual(invalid_res.status_code, 422)
         self.assertEqual(res.status_code, 201)
         self.assertIsNotNone(res.json().get("result"))
-        self.assertEqual(same_file_res.status_code, 400)
-        self.assertEqual(same_file_res.json()["result"], "Such file already exists")
 
     def _request(self, url, method="get", data={}):
         DataBase.close_connection()

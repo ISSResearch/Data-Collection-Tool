@@ -6,7 +6,13 @@ from project.permissions import ProjectStatsPermission
 from user.permissions import InternalPermission
 from django.http.response import FileResponse
 from .permissions import FilePermission
-from .services import ViewSetServices, StatsServices, _annotate_files, form_export_file
+from .services import (
+    ViewSetServices,
+    StatsServices,
+    _annotate_files,
+    form_export_file,
+    _get_duplicates
+)
 
 
 class FileViewSet(APIView, ViewSetServices):
@@ -63,3 +69,10 @@ def export_stats(request: Request) -> Response | FileResponse:
         response = form_export_file(request.query_params)
         return FileResponse(response)
     except Exception as err: return Response(str(err), HTTP_400_BAD_REQUEST)
+
+
+@api_view(("GET",))
+@permission_classes((IsAuthenticated, FilePermission))
+def get_duplicates(request: Request, fileID: str) -> Response:
+    response, status = _get_duplicates(fileID)
+    return Response(response, status=status)

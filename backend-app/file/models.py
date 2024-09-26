@@ -12,18 +12,25 @@ from attribute.models import AttributeGroup
 
 
 class File(Model):
-    STATUSES: tuple = (('d', "declined"), ('a', "accepted"), ('v', "validation"))
+    STATUSES: tuple = (
+        ("p", "processing"),
+        ('v', "validation"),
+        ('a', "accepted"),
+        ('d', "declined"),
+        ("u", "duplicated"),
+    )
 
     id: CharField = CharField(max_length=24, primary_key=True, unique=True)
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)
-    status: CharField = CharField(max_length=1, choices=STATUSES, default='v')
+    status: CharField = CharField(max_length=1, choices=STATUSES, default='p')
     is_downloaded: BooleanField = BooleanField(default=False)
     upload_date: DateTimeField = DateTimeField(auto_now_add=True)
     update_date: DateTimeField = DateTimeField(auto_now_add=True, null=True)
 
     project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
     author: ForeignKey = ForeignKey("user.CustomUser", on_delete=DO_NOTHING)
+    rebound: ForeignKey = ForeignKey("self", on_delete=DO_NOTHING, null=True)
     validator: ForeignKey = ForeignKey(
         "user.CustomUser",
         null=True,

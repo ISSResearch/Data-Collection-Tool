@@ -1,22 +1,26 @@
 .iss__validation__filters {
-  border: none;
-  margin-bottom: 20px;
-  display: flex;
-  gap: 8px;
+    border: none;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 8px;
 }
 .iss__validation__filters__item {
-  max-width: 180px;
-  width: 100%;
+    max-width: 180px;
+    width: 100%;
 }
 .iss__validation__filters__item .iss__customSelector__selected {
-  max-height: 56px;
-  overflow-y: scroll;
+    max-height: 56px;
+    overflow-y: scroll;
 }
 .iss__validation__filters__item__attributes__wrap {
-  position: relative;
-  width: 100%;
-  padding: 4px 8px;
-  background-color: white;
-  border: 1px solid var(--issBrand);
-  height: fit-content;
+    position: relative;
+    width: 100%;
+    padding: 4px 8px;
+    background-color: white;
+    border: 1px solid var(--issBrand);
+    height: fit-content;
+}
+.item--disable {
+    opacity: 0.2;
+    pointer-events: none;
 }

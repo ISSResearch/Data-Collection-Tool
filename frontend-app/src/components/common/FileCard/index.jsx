@@ -1,47 +1,30 @@
-import { useEffect, useState, ReactElement } from "react";
+import { ReactElement } from "react";
 import "./styles.css";
-
-/** @type {string} */
-const DEFAULT_STYLE = 'iss__fileCard';
 
 /**
 * @param {object} props
 * @param {number} props.cardIndex
-* @param {string} props.name
-* @param {string} props.author_name
-* @param {string} props.date
 * @param {boolean} props.active
-* @param {string} props.status
 * @param {Function} props.handleCLick
+* @param {object} props.file
 * @returns {ReactElement}
 */
-export default function FileCard({
-  cardIndex,
-  name,
-  author_name,
-  date,
-  active,
-  status,
-  handleCLick
-}) {
-  const [styles, setStyles] = useState([DEFAULT_STYLE]);
+export default function FileCard({ cardIndex, active, handleCLick, file }) {
+  const { related_duplicates, file_name, upload_date, status, author_name, rebound } = file;
 
-  useEffect(() => {
-    var newStyles = [DEFAULT_STYLE];
-
-    if (active) newStyles.push('card--active');
-    if (status && status !== 'v') newStyles.push(
-      `card--${status === 'a' ? 'accepted' : 'rejected'}`
-    );
-
-    setStyles(newStyles);
-  }, [active, status]);
-
-  return (
-    <div onClick={() => handleCLick(cardIndex)} className={styles.join(' ')}>
-      <h3>{name}</h3>
-      <p>uploaded by <i>{author_name}</i></p>
-      <time>{date}</time>
-    </div>
-  );
+  return <div
+    onClick={() => handleCLick(cardIndex)}
+    className={[
+      "iss__fileCard",
+      "card--" + (rebound ? "u" : status),
+      active ? "card--active" : ""
+      ].join(" ")
+    }
+  >
+    <h3>{file_name}</h3>
+    <p>uploaded by <i>{author_name}</i></p>
+    <time>{upload_date}</time>
+    { !!rebound && <mark><b>DUPLICATE</b></mark> }
+    { !!related_duplicates && <mark> related duplicates: { related_duplicates }</mark> }
+  </div>;
 }

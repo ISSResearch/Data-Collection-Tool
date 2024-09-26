@@ -1,6 +1,6 @@
-import { useEffect, useRef, ReactElement } from 'react';
-import FileMedia from '../../ui/FileMedia';
-import './styles.css';
+import { useEffect, useRef, ReactElement } from "react";
+import FileMedia from "../../ui/FileMedia";
+import "./styles.css";
 
 /**
 * @param {object} props

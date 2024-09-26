@@ -6,10 +6,12 @@ test("file card component test, active status 0", () => {
     <FileCard
       key={0}
       cardIndex={0}
-      name={'file_name'}
-      author_name={'author_name'}
-      date={'11-11-200'}
-      status={''}
+      file={{
+        file_name: "file_name",
+        upload_date: "11-11-200",
+        author_name: "author_name",
+        status: "v",
+      }}
       active={false}
       handleCLick={() => {}}
     />
@@ -20,64 +22,72 @@ test("file card component test, active status 0", () => {
 
   const parent = screen.getByRole('heading').parentNode;
 
-  expect(parent.className).toBe('iss__fileCard');
+  expect(parent.className).toBe("iss__fileCard card--v ");
 
   rerender(
     <FileCard
       key={0}
       cardIndex={0}
-      name={'file_name'}
-      author_name={'author_name'}
-      date={'11-11-200'}
-      status={'a'}
+      file={{
+        file_name: "file_name",
+        upload_date: "11-11-200",
+        author_name: "author_name",
+        status: "a",
+      }}
       active={false}
       handleCLick={() => {}}
     />
   );
-  expect(parent.className).toBe('iss__fileCard card--accepted');
+  expect(parent.className).toBe('iss__fileCard card--a ');
 
   rerender(
     <FileCard
       key={0}
       cardIndex={0}
-      name={'file_name'}
-      author_name={'author_name'}
-      date={'11-11-200'}
-      status={'d'}
+      file={{
+        file_name: "file_name",
+        upload_date: "11-11-200",
+        author_name: "author_name",
+        status: "d",
+      }}
       active={false}
       handleCLick={() => {}}
     />
   );
-  expect(parent.className).toBe('iss__fileCard card--rejected');
+  expect(parent.className).toBe('iss__fileCard card--d ');
 
   rerender(
     <FileCard
       key={0}
       cardIndex={0}
-      name={'file_name'}
-      author_name={'author_name'}
-      date={'11-11-200'}
-      status={''}
+      file={{
+        file_name: "file_name",
+        upload_date: "11-11-200",
+        author_name: "author_name",
+        status: "v",
+      }}
       active={true}
       handleCLick={() => {}}
     />
   );
-  expect(parent.className).toBe('iss__fileCard card--active');
+  expect(parent.className).toBe('iss__fileCard card--v card--active');
 
   var clicked = false;
   rerender(
     <FileCard
       key={0}
       cardIndex={0}
-      name={'file_name'}
-      author_name={'author_name'}
-      date={'11-11-200'}
-      status={'a'}
+      file={{
+        file_name: "file_name",
+        upload_date: "11-11-200",
+        author_name: "author_name",
+        status: "a",
+      }}
       active={true}
       handleCLick={() => clicked = true}
     />
   );
-  expect(parent.className).toBe('iss__fileCard card--active card--accepted');
+  expect(parent.className).toBe('iss__fileCard card--a card--active');
   fireEvent.click(parent);
   expect(clicked).toBeTruthy();
 });

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 from ..worker_services import Zipper
-from ..db_manager import DataBase, get_db_uri
+from ..storage_db import DataBase, get_db_uri
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 from os.path import exists
@@ -57,7 +57,7 @@ class ZipperTest(TestCase):
             self.assertEqual(zipper.archive, "")
             self.assertTrue(await zipper.archive_objects())
             self.assertTrue(zipper.written)
-            self.assertRegex(zipper.archive, r'\./temp_zip/([a-zA-Z0-9]+)\.zip')
+            self.assertRegex(zipper.archive, r'\/app/temp_zip/([a-zA-Z0-9]+)\.zip')
             self.assertTrue(exists(zipper.archive))
             self.assertIsNone(zipper.archive_id)
 

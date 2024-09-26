@@ -1,5 +1,6 @@
 from typing import Any, Pattern, Optional, AsyncGenerator
-from gridfs import NoFile, ObjectId
+from gridfs import NoFile
+from bson import ObjectId
 from fastapi import Request, status
 from fastapi.responses import StreamingResponse
 from re import compile, I, Match
@@ -7,7 +8,7 @@ from json import loads
 from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
-from shared.db_manager import DataBase, AsyncIOMotorGridFSBucket
+from shared.storage_db import DataBase, AsyncIOMotorGridFSBucket
 from hashlib import md5
 from motor.motor_asyncio import (
     AsyncIOMotorGridOutCursor,
@@ -16,12 +17,12 @@ from motor.motor_asyncio import (
 
 
 class FileMeta:
-    __slots__ = ("_meta", "_prepared_meta")
+    __slots__ = ("_meta", "_prepared")
     META_FIELDS = ("file_name", "file_extension", "file_type")
 
     def __init__(self, data: str) -> None:
         self._meta: str = data
-        self._prepared_meta: Optional[Any] = None
+        self._prepared: Optional[Any] = None
 
     def get(self) -> dict:
         return {
@@ -31,10 +32,8 @@ class FileMeta:
 
     @property
     def prepared_meta(self) -> Any:
-        if not self._prepared_meta:
-            self._prepared_meta = loads(self._meta)
-
-        return self._prepared_meta
+        if not self._prepared: self._prepared = loads(self._meta)
+        return self._prepared
 
 
 class ObjectStreaming:
@@ -164,7 +163,7 @@ class BucketObject:
             "metadata": meta
         }
 
-        await self._set_hash(new_item)
+        # await self._set_hash(new_item)
 
         file_id: ObjectId = await self._fs.upload_from_stream(**new_item)
 
@@ -173,9 +172,7 @@ class BucketObject:
     async def _set_hash(self, file_item: dict[str, Any]) -> None:
         new_hash: bytes = md5(file_item["source"]).digest()
 
-        cursor: AsyncIOMotorGridOutCursor = self._fs.find(
-            {"metadata.hash": new_hash}
-        )
+        cursor = self._fs.find({"metadata.hash": new_hash})
 
         try:
             if await cursor.next(): raise AssertionError
@@ -187,8 +184,7 @@ class BucketObject:
 class Bucket(BucketObject):
     __slots__ = ("_fs",)
 
-    def __init__(self, bucket_name: str) -> None:
-        self._fs: AsyncIOMotorGridFSBucket = DataBase.get_fs_bucket(bucket_name)
+    def __init__(self, bucket_name: str): self._fs = DataBase.get_fs_bucket(bucket_name)
 
     async def get_object(self, object_id: str) -> Optional[ObjectStreaming]:
         file: Optional[AsyncIOMotorGridOut] = None

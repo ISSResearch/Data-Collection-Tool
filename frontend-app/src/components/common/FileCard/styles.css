@@ -13,14 +13,19 @@
 .iss__fileCard > h3 {
     word-break: break-all;
 }
-.card--accepted {
+.card--a {
     background-color: rgb(153, 255, 98, 0.2);
     border: 1px solid var(--issGreen);
     color: var(--issGreen);
 }
-.card--rejected {
+.card--d {
     background-color: rgba(255, 98, 98, 0.2);
     border: 1px solid var(--issRed);
+    color: var(--issRed);
+}
+.card--u {
+    background-color: rgba(179, 98, 255, 0.2);
+    border: 1px solid rgb(84, 0, 178);
     color: var(--issRed);
 }
 .card--active {
@@ -29,11 +34,15 @@
     background-color: rgb(98, 171, 255, 0.2);
 }
 .iss__fileCard p {
-    margin: 6px 0 12px;
+    margin: 4px 0;
 }
 .iss__fileCard time {
     font-size: 8px;
-    place-self: flex-end;
+}
+.iss__fileCard mark {
+    margin-top: 8px;
+    background-color: unset;
+    font-size: 12px;
 }
 @media (hover: hover) {
     .iss__fileCard:hover {

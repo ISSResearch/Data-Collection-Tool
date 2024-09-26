@@ -10,3 +10,18 @@
     display: flex;
     gap: 12px;
 }
+
+.iss_validation__duplicates {
+    display: flex;
+    gap: 8px;
+    place-tems: center;
+    flex-shrink: 1;
+    cursor: pointer;
+}
+
+.iss__validation__filterWrap {
+    width: 100%;
+    display: flex;
+    place-items: center;
+    gap: 20px;
+}

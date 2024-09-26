@@ -1,4 +1,4 @@
-from ..db_manager import DataBase
+from ..storage_db import DataBase
 from ..utils import get_db_uri
 from unittest import TestCase
 from motor.motor_asyncio import (

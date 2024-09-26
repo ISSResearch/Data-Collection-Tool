@@ -3,7 +3,7 @@ from urllib.parse import unquote
 from math import ceil
 from typing import Any
 from threading import Thread, Lock
-from shared.db_manager import DataBase, GridFSBucket
+from shared.storage_db import DataBase, GridFSBucket
 from shared.utils import (
     APP_BACKEND_URL,
     SECRET_KEY,

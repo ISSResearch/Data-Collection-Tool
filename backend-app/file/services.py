@@ -9,7 +9,7 @@ from rest_framework.status import (
 from rest_framework.request import QueryDict
 from rest_framework.views import Request
 from django.db import connection, transaction
-from django.db.models import Count, Subquery, QuerySet
+from django.db.models import Count, Subquery, QuerySet, Q
 from django.utils import timezone as tz
 from django.core.paginator import Paginator
 from attribute.models import Level, AttributeGroup
@@ -24,9 +24,11 @@ from .serializers import File, FileSerializer
 
 class ViewSetServices:
     FILES_PREFETCH_FIELDS = (
+        "file_set",
+        "rebound__file_set",
         "attributegroup_set",
         "attributegroup_set__attribute",
-        "attributegroup_set__attribute__level"
+        "attributegroup_set__attribute__level",
     )
     FILES_QUERIES = (
         ("status__in", "card[]", True),
@@ -57,18 +59,15 @@ class ViewSetServices:
             context={"validator": request.user}
         )
 
-        if update_valid := updated_file.is_valid():
+        if valid := updated_file.is_valid():
             try: updated_file.update_file()
-            except Exception: update_valid = False
+            except Exception: valid = False
 
-        response = {"ok": update_valid}
+        response = {"ok": valid}
 
-        if not update_valid: response["errors"] = updated_file.errors
+        if not valid: response["errors"] = updated_file.errors
 
-        return (
-            response,
-            HTTP_202_ACCEPTED if update_valid else HTTP_400_BAD_REQUEST
-        )
+        return response, HTTP_202_ACCEPTED if valid else HTTP_400_BAD_REQUEST
 
     def _delete_file(self, file_id: str) -> tuple[dict[str, Any], int]:
         try:
@@ -90,13 +89,16 @@ class ViewSetServices:
         project_id: int,
         request_user: CustomUser,
         request_query: QueryDict
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | Q:
+        if request_query.get("only_duplicates") == "t":
+            return Q(file__isnull=False) | Q(rebound__isnull=False)
+
         only_self_files: bool = not any([
             request_user.is_superuser,
             bool(request_user.project_validate.filter(id=project_id)),
         ])
 
-        query = {"project_id": project_id}
+        query: dict[str, Any] = {"project_id": project_id}
 
         if only_self_files: query["author_id"] = request_user.id
 
@@ -111,6 +113,7 @@ class ViewSetServices:
 
     def _get_param(self, filter_name: str, query_param: Any) -> Any:
         date_from_str = lambda d: tz.make_aware(dt.strptime(d, "%Y-%m-%d"))
+
         match filter_name:
             case "is_downloaded": return False
             case "upload_date__gte": return date_from_str(query_param)
@@ -129,8 +132,11 @@ class ViewSetServices:
         files = File.objects \
             .select_related("author") \
             .prefetch_related(*self.FILES_PREFETCH_FIELDS) \
-            .order_by(*orders) \
-            .filter(**filters)
+            .select_related("rebound") \
+            .order_by(*orders)
+
+        if isinstance(filters, Q): files = files.filter(filters, project_id=project_id)
+        else: files = files.filter(**filters)
 
         attribute_query = request_query.getlist("attr[]")
 
@@ -149,16 +155,15 @@ class ViewSetServices:
 
         paginator: Paginator = Paginator(files, per_page)
 
-        try:
-            return {
-                "data": FileSerializer(
-                    paginator.page(page).object_list,
-                    many=True
-                ).data,
-                "page": page,
-                "per_page": paginator.per_page,
-                "total_pages": paginator.num_pages
-            }, HTTP_200_OK
+        try: return {
+            "data": FileSerializer(
+                paginator.page(page).object_list,
+                many=True
+            ).data,
+            "page": page,
+            "per_page": paginator.per_page,
+            "total_pages": paginator.num_pages
+        }, HTTP_200_OK
         except Exception: return {}, HTTP_404_NOT_FOUND
 
     def _create_file(
@@ -433,3 +438,10 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     file = export_map[file_type](stats, choice)
 
     return file.into_response()
+
+
+def _get_duplicates(file_id: str) -> tuple[Any, int]:
+    try:
+        _file = File.objects.prefetch_related("file_set").get(id=file_id)
+        return FileSerializer([_file, *_file.file_set.all()], many=True).data, HTTP_200_OK
+    except Exception: return {}, HTTP_404_NOT_FOUND

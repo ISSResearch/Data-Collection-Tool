@@ -1,31 +1,31 @@
-import { useEffect, useState, ReactElement } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSwiper, useFiles } from '../../hooks';
-import { api } from '../../config/api';
-import { addAlert } from '../../slices/alerts';
+import { useEffect, useState, ReactElement } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSwiper, useFiles } from "../../hooks";
+import { api } from "../../config/api";
+import { addAlert } from "../../slices/alerts";
 import { useDispatch } from "react-redux";
-import ValidationFilterGroup from '../forms/ValidationFilterGroup';
-import FileSelector from '../common/FileSelector';
-import FileSwiper from '../common/FileSwiper';
-import FileModification from '../common/FileModification';
-import Load from '../ui/Load';
-import './styles.css';
+import ValidationFilterGroup from "../forms/ValidationFilterGroup";
+import FileSelector from "../common/FileSelector";
+import FileSwiper from "../common/FileSwiper";
+import FileModification from "../common/FileModification";
+import Load from "../ui/Load";
+import "./styles.css";
 
 /** @type {{name: string, id: string}[]} */
 const CARD_FILTERS = [
-  { name: 'on validation', id: 'v' },
-  { name: 'accepted', id: 'a' },
-  { name: 'declined', id: 'd' },
+  { name: "on validation", id: "v" },
+  { name: "accepted", id: "a" },
+  { name: "declined", id: "d" },
 ];
 /** @type {{name: string, id: string}[]} */
 const TYPE_FILTER = [
-  { name: 'images', id: 'image' },
-  { name: 'videos', id: 'video' },
+  { name: "images", id: "image" },
+  { name: "videos", id: "video" },
 ];
 /** @type {{name: string, id: string}[]} */
 const DATE_SORT = [
-  { name: 'descending', id: 'desc' },
-  { name: 'ascending', id: 'asc' },
+  { name: "descending", id: "desc" },
+  { name: "ascending", id: "asc" },
 ];
 
 /**
@@ -35,6 +35,10 @@ const DATE_SORT = [
 * @param {boolean} props.canValidate
 * @returns {ReactElement}
 */
+// TODO: there is an issues when whole component rerenders on filter change:
+// find why and fix (maybe only on duplicates)
+// i cannot store duplicate change other than just call query every time
+// and i cant save previous query due to that
 export default function FilesValidation({ pathID, attributes, canValidate }) {
   const [loading, setLoading] = useState(true);
   const [pageQuery, setPageQuery] = useSearchParams();
@@ -77,7 +81,8 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
       author: pageQuery.getAll('author[]'),
       date: (from || to) && { from, to },
       page: pageQuery.get("page"),
-      dateSort: pageQuery.get("dateSort")
+      dateSort: pageQuery.get("dateSort"),
+      only_duplicates: pageQuery.get("only_duplicates") === "t",
     };
   };
 
@@ -86,10 +91,10 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     var { card, attr, type, author, date, page, dateSort } = getPageQuery();
 
     var preparedQuery = {
-      'card[]': filterType === 'card' ? query : card,
-      'attr[]': filterType === 'attr' ? query : attr,
-      'type[]': filterType === 'type' ? query : type,
-      'author[]': filterType === 'author' ? query : author,
+      "card[]": filterType === "card" ? query : card,
+      "attr[]": filterType === "attr" ? query : attr,
+      "type[]": filterType === "type" ? query : type,
+      "author[]": filterType === "author" ? query : author,
     };
 
     if (filterType === "date" || date?.from) {
@@ -112,17 +117,26 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
     setPageQuery(preparedQuery);
   };
 
+  const handleDuplicates = ({ target }) => {
+    if (target.checked) setPageQuery({ only_duplicates: "t" });
+    else setPageQuery({});
+  };
+
   useEffect(() => {
     setUpdated(false);
 
-    var { card, attr, type, author, date, page, dateSort } = getPageQuery();
+    var { card, attr, type, author, date, page, dateSort, only_duplicates } = getPageQuery();
 
-    if (!card.length) handleChange("card", ['v']);
+    if (!card.length && !only_duplicates) handleChange("card", ["v"]);
+
+    const params = only_duplicates
+      ? { only_duplicates: "t", per_page: "max" }
+      : { card, attr, type, author, from: date?.from, to: date?.to, page, dateSort };
 
     // TODO: query collectors depend on uploads to project by users. REFACTOR!
     Promise.allSettled([
       api.get(`/api/files/project/${pathID}/`, {
-        params: { card, attr, type, author, from: date?.from, to: date?.to, page, dateSort },
+        params,
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
       }),
       canValidate && api.get(`api/users/collectors/${pathID}/`, {
@@ -148,21 +162,21 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         */
         var _filterData = [
           {
-            prettyName: 'Card Filter:',
-            name: 'card',
+            prettyName: "Card Filter:",
+            name: "card",
             data: CARD_FILTERS,
             selected: card,
           },
           {
-            prettyName: 'Attribute Filter:',
-            name: 'attr',
+            prettyName: "Attribute Filter:",
+            name: "attr",
             data: attributes,
             selected: attr,
             type: "attr"
           },
           {
-            prettyName: 'Filetype Filter:',
-            name: 'type',
+            prettyName: "Filetype Filter:",
+            name: "type",
             data: TYPE_FILTER,
             selected: type,
           },
@@ -186,8 +200,8 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
         setFilterData(_filterData);
         setSortData([
           {
-            prettyName: 'Date sort:',
-            name: 'dateSort',
+            prettyName: "Date sort:",
+            name: "dateSort",
             data: DATE_SORT,
             selected: [dateSort || "desc"],
           },
@@ -211,8 +225,26 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
 
   return (
     <>
-      <ValidationFilterGroup filterData={filterData} onChange={handleChange}/>
-      <ValidationFilterGroup filterData={sortData} onChange={handleChange}/>
+      <ValidationFilterGroup
+        disabled={getPageQuery().only_duplicates}
+        filterData={filterData}
+        onChange={handleChange}
+      />
+      <div className="iss__validation__filterWrap">
+        <ValidationFilterGroup
+          disabled={getPageQuery().only_duplicates}
+          filterData={sortData}
+          onChange={handleChange}
+        />
+        <label className="iss_validation__duplicates">
+          Duplicates only
+          <input
+            defaultChecked={getPageQuery().only_duplicates}
+            onChange={handleDuplicates}
+            type="checkbox"
+          />
+        </label>
+      </div>
       {
         fileManager.files.length
           ? <div className='iss__validation'>
@@ -231,6 +263,7 @@ export default function FilesValidation({ pathID, attributes, canValidate }) {
             {
               canValidate &&
               <FileModification
+                pathID={pathID}
                 fileManager={fileManager}
                 attributes={attributes}
                 slide={sliderManager.slide}
