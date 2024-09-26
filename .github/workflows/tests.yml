@@ -34,7 +34,7 @@ jobs:
           docker exec iss-tests flake8
 
           echo Running back tests...
-          docker exec iss-test-back
+          docker logs iss-test-back
           docker exec iss-test-back ./manage.py test
 
           echo Running storage tests...
