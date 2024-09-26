@@ -69,11 +69,12 @@ class ProjectSerializerTest(TestCase, MOCK_PROJECT):
         self.assertEqual(
             serialized_project.data['permissions'],
             {
-                'upload': False,
-                'view': False,
-                'validate': False,
-                'stats': False,
-                'download': False,
-                'edit': True
+                "goals": False,
+                "upload": False,
+                "view": False,
+                "validate": False,
+                "stats": False,
+                "download": False,
+                "edit": True
             }
         )
