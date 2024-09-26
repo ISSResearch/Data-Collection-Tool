@@ -5,9 +5,6 @@ from django.db.models import (
     DateTimeField,
     BooleanField,
     ManyToManyField,
-    ForeignKey,
-    CASCADE,
-    IntegerField
 )
 from attribute.models import Level, Attribute
 from typing import Any
@@ -104,16 +101,3 @@ class Project(Model):
 
             if children: self._create_attributes(children, rest, ATTRIBUTE, LEVEL)
             elif rest: self._create_attributes([], rest, None, LEVEL)
-
-
-class ProjectGoal(Model):
-    name = TextField()
-    amount = IntegerField(default=0)
-    image_mod = IntegerField(default=1)
-    video_mod = IntegerField(default=1)
-
-    attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)
-    project = ForeignKey("project.Project", on_delete=CASCADE)
-
-    class Meta:
-        db_table = "project_goal"

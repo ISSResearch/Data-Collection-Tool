@@ -6,7 +6,10 @@ from django.db.models import (
     Model,
     ManyToManyField,
     UUIDField,
-    BooleanField
+    BooleanField,
+    TextField,
+    CASCADE,
+    IntegerField
 )
 from tree_queries.models import TreeNode
 from uuid import uuid4
@@ -51,3 +54,16 @@ class AttributeGroup(Model):
         db_table = "attribute_group"
 
     def __str__(self) -> str: return str(self.uid)
+
+
+class ProjectGoal(Model):
+    name = TextField()
+    amount = IntegerField(default=0)
+    image_mod = IntegerField(default=1)
+    video_mod = IntegerField(default=1)
+
+    attribute = ForeignKey("attribute.Attribute", on_delete=CASCADE)
+    project = ForeignKey("project.Project", on_delete=CASCADE)
+
+    class Meta:
+        db_table = "project_goal"

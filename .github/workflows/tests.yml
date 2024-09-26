@@ -29,12 +29,11 @@ jobs:
           docker exec iss-test-front npm run test
 
           # docker exec iss-test-front npm run compile
-          
+
           echo Running back/storage lint...
           docker exec iss-tests flake8
 
           echo Running back tests...
-          docker logs iss-test-back
           docker exec iss-test-back ./manage.py test
 
           echo Running storage tests...

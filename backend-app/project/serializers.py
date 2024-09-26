@@ -2,7 +2,8 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField, I
 from rest_framework.views import Request
 from typing import Any
 from attribute.serializers import LevelSerializer
-from .models import Project, ProjectGoal
+from attribute.models import ProjectGoal
+from .models import Project
 
 
 class ProjectsSerializer(ModelSerializer):

@@ -21,6 +21,7 @@ from django.db.models.aggregates import Count
 from django.db import transaction
 from typing import Any
 from user.models import CustomUser
+from api.mixins import with_model_assertion
 from .serializers import (
     ProjectSerializer,
     Project,
@@ -28,7 +29,6 @@ from .serializers import (
     GoalSerializer,
     ProjectGoal
 )
-from api.mixins import with_model_assertion
 
 
 class ViewSetServices:
