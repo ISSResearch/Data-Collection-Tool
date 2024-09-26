@@ -57,7 +57,7 @@ class ZipperTest(TestCase):
             self.assertEqual(zipper.archive, "")
             self.assertTrue(await zipper.archive_objects())
             self.assertTrue(zipper.written)
-            self.assertRegex(zipper.archive, r'\./temp_zip/([a-zA-Z0-9]+)\.zip')
+            self.assertRegex(zipper.archive, r'\/app/temp_zip/([a-zA-Z0-9]+)\.zip')
             self.assertTrue(exists(zipper.archive))
             self.assertIsNone(zipper.archive_id)
 

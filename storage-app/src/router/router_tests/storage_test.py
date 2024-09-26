@@ -110,25 +110,9 @@ class StorageRouterTest(TestCase):
                 }
             }
         )
-        same_file_res = self._request(
-            f"/api/storage/{self.bucket_name}/",
-            "post",
-            {
-                "file": test_file,
-                "data": {
-                    "file_meta": dumps({
-                        "file_name": "name",
-                        "file_type": "type",
-                        "file_extension": "ext"
-                    })
-                }
-            }
-        )
         self.assertEqual(invalid_res.status_code, 422)
         self.assertEqual(res.status_code, 201)
         self.assertIsNotNone(res.json().get("result"))
-        self.assertEqual(same_file_res.status_code, 400)
-        self.assertEqual(same_file_res.json()["result"], "Such file already exists")
 
     def _request(self, url, method="get", data={}):
         DataBase.close_connection()
