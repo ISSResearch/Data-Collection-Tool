@@ -162,7 +162,6 @@ class GetCollectiorsTest(TestCase):
 
         names = {u.username for u in self.users}
 
-
         self.assertTrue(isinstance(result, QuerySet))
         self.assertEqual(
             sum([u.username in names for u in result]),
