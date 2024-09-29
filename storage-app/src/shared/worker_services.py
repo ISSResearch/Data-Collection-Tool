@@ -24,11 +24,16 @@ from .hasher import VHash, IHash
 
 
 class EmbeddingStatus(Enum):
-    DUPLICATE = "v"
+    DUPLICATE = "u"
     VALIDATION = "v"
     REBOUND = "r"
 
     def __json__(self, *args, **kwargs): return self.name
+
+    def to_value(self):
+        match self.value:
+            case "u": return "v"
+            case _: return self.value
 
 
 class Zipper:
@@ -160,9 +165,9 @@ class Hasher:
         with EmbeddingStorage() as storage:
             self.result = storage.search(self.embedding, self.project_id)
             self.status = (
-                EmbeddingStatus.VALIDATION
-                if not self.result else
                 EmbeddingStatus.DUPLICATE
+                if len(self.result)
+                else EmbeddingStatus.VALIDATION
             )
 
     def handle_search_result(self):
@@ -174,6 +179,7 @@ class Hasher:
 
         with EmbeddingStorage() as storage:
             if self.status == EmbeddingStatus.DUPLICATE:
+                print("HERE")
                 rmi: Optional[str] = None
                 rmd: float = float("inf")
 
@@ -216,7 +222,7 @@ class Hasher:
         payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
         payload = {}
 
-        if status: payload["status"] = status.value
+        if status: payload["status"] = status.to_value()
         if rebound: payload["rebound"] = rebound
 
         if not status and not rebound: return
