@@ -32,7 +32,7 @@ async def upload_file(
     file_id, _status = await project_bucket.put_object(file, file_meta)
 
     if _status == status.HTTP_201_CREATED:
-        produce_handle_media_task.delay(bucket_name, file_id)
+        produce_handle_media_task.apply_async((bucket_name, file_id), countdown=10)
 
     return JSONResponse(status_code=_status, content={"result": file_id})
 
