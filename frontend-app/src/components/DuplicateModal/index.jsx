@@ -77,6 +77,13 @@ export default function DuplicateModal({ pathID, fileID, onUpdate, onClose }) {
     }
   };
 
+  const hanleUpdate = async (file_id, status) => {
+    await onUpdate(file_id, status);
+
+    var data = await getDuplicates();
+    setDuplicates(data);
+  };
+
   useEffect(() => {
     getDuplicates().then((data) => setDuplicates(data));
     window.addEventListener("keydown", handleKey);
@@ -109,12 +116,12 @@ export default function DuplicateModal({ pathID, fileID, onUpdate, onClose }) {
             <div className="iss__fileInfo__buttonsWrap">
               <button
                 type="button"
-                onClick={() => onUpdate("d")}
+                onClick={() => hanleUpdate(id, "d")}
                 className="button--reject"
               >Decline</button>
               <button
                 type="button"
-                onClick={() => onUpdate("a")}
+                onClick={() => hanleUpdate(id, "a")}
                 className="button--accept"
               >Accept</button>
             </div>
