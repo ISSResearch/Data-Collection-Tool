@@ -36,11 +36,14 @@ export default function FileModification({ pathID, fileManager, slide, slideInc,
     buttonMap[key]?.current.click();
   };
 
-  const fetchUpdateFile = async (status, newAttributes) => {
-    await api.request(`/api/files/${file.id}/`,
+  const fetchUpdateFile = async (fileId, status, newAttributes) => {
+    var data = { status };
+    if (newAttributes) data.attribute = newAttributes;
+
+    await api.request(`/api/files/${fileId}/`,
       {
         method: 'patch',
-        data: { status, attribute: newAttributes },
+        data,
         headers: {
           'Content-Type': 'application/json',
           "Authorization": "Bearer " + localStorage.getItem("dtcAccess")
@@ -57,7 +60,7 @@ export default function FileModification({ pathID, fileManager, slide, slideInc,
 
       var preparedAtrs = prepareAttributes();
 
-      await fetchUpdateFile(status, preparedAtrs);
+      await fetchUpdateFile(file.id, status, preparedAtrs);
 
       setFiles((prev) => {
         var newFiles = [...prev];
@@ -96,7 +99,7 @@ export default function FileModification({ pathID, fileManager, slide, slideInc,
         pathID={pathID}
         fileID={duplicates}
         onClose={() => setDuplicates(null)}
-        onUpdate={updateFile}
+        onUpdate={fetchUpdateFile}
       />
     }
     <div className='iss__fileInfo'>

@@ -179,7 +179,6 @@ class Hasher:
 
         with EmbeddingStorage() as storage:
             if self.status == EmbeddingStatus.DUPLICATE:
-                print("HERE")
                 rmi: Optional[str] = None
                 rmd: float = float("inf")
 
