@@ -38,12 +38,13 @@
     left: 4px;
     top: 50%;
     margin-right: 8px;
-    transform: translateY(-50%);
+    translate: 0 -50%;
 }
 .icon--flip {
     top: initial;
     bottom: 50%;
     stroke: var(--issBrand);
+    translate: 0 50%;
 }
 .iss__stats__table__levelName {
     opacity: 0.3;

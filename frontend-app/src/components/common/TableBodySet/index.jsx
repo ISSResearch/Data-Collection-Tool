@@ -1,6 +1,6 @@
 import { Fragment, useState, ReactElement } from 'react';
 import Arrow from "../../ui/Arrow";
-import './styles.css';
+import "./styles.css";
 
 /**
 * @param {object} props

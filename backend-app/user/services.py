@@ -49,7 +49,7 @@ def _get_collectors(
             "project_download",
             "project_edit"
         ) \
-        .order_by("id")
+        .order_by("username")
 
     return (
         collectors if not serialized
