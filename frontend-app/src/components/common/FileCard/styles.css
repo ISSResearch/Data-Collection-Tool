@@ -12,6 +12,7 @@
 }
 .iss__fileCard > h3 {
     word-break: break-all;
+    font-size: 18px;
 }
 .card--a {
     background-color: rgb(153, 255, 98, 0.2);
