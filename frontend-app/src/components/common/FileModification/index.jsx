@@ -102,8 +102,8 @@ export default function FileModification({ pathID, fileManager, slide, slideInc,
         onUpdate={fetchUpdateFile}
       />
     }
-    <div className='iss__fileInfo'>
-      <h3 className='iss__fileInfo__title'>{file.file_name}</h3>
+    <div className="iss__fileInfo">
+      <h3 className="iss__fileInfo__title">{file.id}</h3>
       {
         file.status !== "v" &&
         <div className="iss__fileInfo__validator">
