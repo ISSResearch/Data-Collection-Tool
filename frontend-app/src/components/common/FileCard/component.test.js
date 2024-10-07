@@ -7,7 +7,7 @@ test("file card component test, active status 0", () => {
       key={0}
       cardIndex={0}
       file={{
-        file_name: "file_name",
+        id: "file_name",
         upload_date: "11-11-200",
         author_name: "author_name",
         status: "v",
@@ -45,7 +45,7 @@ test("file card component test, active status 0", () => {
       key={0}
       cardIndex={0}
       file={{
-        file_name: "file_name",
+        id: "file_name",
         upload_date: "11-11-200",
         author_name: "author_name",
         status: "d",

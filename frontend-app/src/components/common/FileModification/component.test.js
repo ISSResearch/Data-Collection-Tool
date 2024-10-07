@@ -41,7 +41,7 @@ test("file info component test", async () => {
 
   expect(swiperHook.current.slide).toBe(0);
   expect(screen.getByRole('heading').innerHTML)
-    .toBe(filesHook.current.files[swiperHook.current.slide].file_name);
+    .toBe(filesHook.current.files[swiperHook.current.slide].id.toString());
   expect(container.querySelector(".iss__fileInfo__validator")).toBeNull();
   expect(screen.getByRole('button', { name: /Decline/})).not.toBeNull();
   expect(screen.getByRole('button', { name: /Accept/})).not.toBeNull();
@@ -56,5 +56,5 @@ test("file info component test", async () => {
   rerender(component());
   expect(container.querySelector(".iss__fileInfo__validator")).not.toBeNull();
   expect(screen.getByRole('heading').innerHTML)
-    .toBe(filesHook.current.files[swiperHook.current.slide].file_name);
+    .toBe(filesHook.current.files[swiperHook.current.slide].id.toString());
 });

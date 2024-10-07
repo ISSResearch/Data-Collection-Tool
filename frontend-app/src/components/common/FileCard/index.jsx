@@ -10,9 +10,10 @@ import "./styles.css";
 * @returns {ReactElement}
 */
 export default function FileCard({ cardIndex, active, handleCLick, file }) {
-  const { id, related_duplicates, upload_date, status, author_name, rebound } = file;
+  const { related_duplicates, upload_date, status, author_name, rebound } = file;
 
-  const cardId = id.slice(0, 6) + " ... " + id.slice(id.length - 4);
+  const id = file.id?.toString() || "";
+  const preparedId = id.length > 12 && id.slice(0, 5) + " ... " + id.slice(id.length - 4);
 
   return <div
     onClick={() => handleCLick(cardIndex)}
@@ -23,7 +24,7 @@ export default function FileCard({ cardIndex, active, handleCLick, file }) {
       ].join(" ")
     }
   >
-    <h3>{cardId}</h3>
+    <h3>{preparedId || id}</h3>
     <p>uploaded by <i>{author_name}</i></p>
     <time>{upload_date}</time>
     { !!rebound && <mark><b>DUPLICATE</b></mark> }
