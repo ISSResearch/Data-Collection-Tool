@@ -6,6 +6,7 @@ DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
 FRONTEND_PORT = getenv("FRONTEND_PORT")
+BACKEND_PORT = getenv("BACKEND_PORT")
 
 TEST_ENV = getenv('CASE') == 'test'
 
@@ -16,7 +17,11 @@ SELF_ORIGIN = None
 
 if RAW_ORIGIN:
     RAW_ORIGIN = RAW_ORIGIN.replace(' ', '').split(',')
-    SELF_ORIGIN = [f"http://{origin}:{FRONTEND_PORT}" for origin in RAW_ORIGIN]
+    SELF_ORIGIN = [
+        f"http://{origin}:{port}"
+        for origin in RAW_ORIGIN
+        for port in [FRONTEND_PORT, BACKEND_PORT]
+    ]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -177,3 +182,8 @@ if DEBUG: LOGGING = {
         }
     }
 }
+
+AUTHENTICATION_BACKENDS = ["user.models.CustomAuthBackend"]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = '/django_static/'

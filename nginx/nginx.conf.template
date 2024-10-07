@@ -1,8 +1,16 @@
 upstream iss-back {
   server iss-back:${BACKEND_PORT};
 }
+
 server {
   listen ${BACKEND_PORT};
+
+  location /static/ {
+    alias /django_static/;
+    access_log off;
+    add_header Cache-Control "public";
+  }
+
   location / {
     proxy_pass http://iss-back;
     proxy_set_header X-Forwarded-Host $server_name;

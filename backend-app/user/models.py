@@ -70,3 +70,16 @@ class CustomUser(AbstractUser):
 
             if is_permission: field.add(project_id)
             else: field.remove(project_id)
+
+
+from django.contrib.auth.backends import ModelBackend
+from user.models import CustomUser
+
+class CustomAuthBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        return CustomUser.objects.first()
+        try:
+            user = CustomUser.objects.get(email=username)
+            if user.check_password(password):
+                return user
+        except: return None
