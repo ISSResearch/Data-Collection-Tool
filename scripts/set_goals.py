@@ -32,7 +32,11 @@ def set_goals(
 
     attributes = project.attribute_set \
         .prefetch_related("level") \
-        .filter(level__order__in=level_filter, children__isnull=True) \
+        .filter(
+            level__order__in=level_filter,
+            children__isnull=True,
+            projectgoal__isnull=True
+        ) \
         .all()
 
     new_goals = [
