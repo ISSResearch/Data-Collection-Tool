@@ -10,7 +10,7 @@ def set_goals(
     video_mod=1,
     filter_by_name: Optional[list[str]]=None,
     filter_by_group: Optional[list[int]]=None,
-):
+) -> list[ProjectGoal]:
     form_name = lambda a: " > ".join([
         f"{name} ({level_name})"
         for name, level_name in
@@ -47,6 +47,6 @@ def set_goals(
         for attr in attributes
     ]
 
-    return new_goals
+    ProjectGoal.objects.bulk_create(new_goals)
 
-    # ProjectGoal.objects.bulk_create(new_goals)
+    return new_goals
