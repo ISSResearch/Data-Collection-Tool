@@ -164,7 +164,12 @@ class ViewSetServices:
             "per_page": paginator.per_page,
             "total_pages": paginator.num_pages
         }, HTTP_200_OK
-        except Exception: return {}, HTTP_404_NOT_FOUND
+        except Exception: return {
+            "data": [],
+            "page": page,
+            "per_page": paginator.per_page,
+            "total_pages": 1
+        }, HTTP_200_OK
 
     def _create_file(
         self,

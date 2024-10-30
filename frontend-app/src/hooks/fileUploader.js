@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api, fileApi } from '../config/api';
+import { api, fileApi } from "../config/api";
 import { sleep } from "../utils";
 
 /**
@@ -94,31 +94,20 @@ export default function useFileUploader(projectID) {
     }
     catch ({ message, response }) {
       var authFailed = response && (response.status == 401 || response.status == 403);
+
       if (authFailed) {
         var error = new Error(message);
         error.authFailed = authFailed;
         throw error;
       }
+
       if (fileID) _deleteFile(fileID);
-      file.status = 'f';
+
+      file.status = "f";
       file.error = response.data?.result || message;
       setFiles((prev) => [...prev]);
     }
   };
-
-  // /** @returns {Promise<undefined>} */
-  // async function proceedUpload() {
-  //   const atOnce = 5;
-  //   var proceedFiles = files.filter(({ status }) => status !== "a");
-
-  //   for (var i = 0; i < Math.ceil(proceedFiles.length / atOnce); i++) {
-  //     await Promise.all(
-  //       proceedFiles
-  //         .slice(atOnce * i, atOnce * (i + 1))
-  //         .map((file) => _proceedFile(file))
-  //     );
-  //   }
-  // }
 
   /** @returns {Promise<void>} */
   const proceedUpload = async () => {
