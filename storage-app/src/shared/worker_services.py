@@ -62,7 +62,8 @@ class Zipper:
                     self._get_object_name(object),
                     object.read()
                 )
-            except StopAsyncIteration: ...
+            except StopAsyncIteration: pass
+            finally: await self.object_set.close()
 
             with BytesIO(json_data) as annotation: zip.writestr(
                 "annotation.json",
