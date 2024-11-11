@@ -15,7 +15,9 @@ workers: int = (
     else available_workers
 )
 
-timeout: int = 60
+keepalive: int = 5
+timeout: int = 180
+graceful_timeout: int = 180
 limit_request_fields: int = 32000
 limit_request_field_size: int = 0
 user: str = "root"

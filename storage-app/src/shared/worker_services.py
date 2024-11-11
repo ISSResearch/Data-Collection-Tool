@@ -238,4 +238,4 @@ class Hasher:
             json=payload
         )
 
-        assert response.status_code == 202, "File update was not accepted"
+        assert response.status_code == 202, "File update was not accepted: " + response.text

@@ -6,13 +6,22 @@ from rest_framework.status import (
     HTTP_202_ACCEPTED,
     HTTP_404_NOT_FOUND
 )
+from django.db.models import (
+    Count,
+    Subquery,
+    QuerySet,
+    Q,
+    When,
+    IntegerField,
+    Case,
+    Prefetch
+)
 from rest_framework.request import QueryDict
 from rest_framework.views import Request
 from django.db import connection, transaction
-from django.db.models import Count, Subquery, QuerySet, Q
 from django.utils import timezone as tz
 from django.core.paginator import Paginator
-from attribute.models import Level, AttributeGroup
+from attribute.models import Level, AttributeGroup, Attribute
 from user.models import CustomUser
 from json import loads
 from typing import Any
@@ -23,13 +32,6 @@ from .serializers import File, FileSerializer
 
 
 class ViewSetServices:
-    FILES_PREFETCH_FIELDS = (
-        "file_set",
-        "rebound__file_set",
-        "attributegroup_set",
-        "attributegroup_set__attribute",
-        "attributegroup_set__attribute__level",
-    )
     FILES_QUERIES = (
         ("status__in", "card[]", True),
         ("file_type__in", "type[]", True),
@@ -130,9 +132,22 @@ class ViewSetServices:
         orders = self._form_orders(request_query)
 
         files = File.objects \
-            .select_related("author") \
-            .prefetch_related(*self.FILES_PREFETCH_FIELDS) \
-            .select_related("rebound") \
+            .select_related("author", "rebound", "validator") \
+            .prefetch_related(
+                Prefetch(
+                    "attributegroup_set__attribute",
+                    queryset=Attribute.objects.select_related("level")
+                    .order_by("level__order", "level_id")
+                    .only("id", "name", "level__order")
+                )
+            ) \
+            .annotate(
+                related_count=Case(
+                    When(rebound__isnull=False, then=Count("rebound__file")),
+                    default=Count("file"),
+                    output_field=IntegerField(),
+                )
+            ) \
             .order_by(*orders)
 
         if isinstance(filters, Q): files = files.filter(filters, project_id=project_id)
@@ -401,15 +416,25 @@ class StatsServices:
 
 def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
     annotation: QuerySet = File.objects \
-        .select_related("author", "project") \
+        .select_related("author", "project", "validator") \
         .prefetch_related(
-            "attributegroup_set",
-            "attributegroup_set__attribute",
-            "attributegroup_set__attribute__level"
+            Prefetch(
+                "attributegroup_set__attribute",
+                queryset=Attribute.objects.select_related("level")
+                .order_by("level__order", "level_id")
+                .only("id", "name", "level__order")
+            )
         ) \
         .filter(
             project_id=request_data.get("project_id"),
             id__in=request_data.get("file_ids")
+        ) \
+        .annotate(
+            related_count=Case(
+                When(rebound__isnull=False, then=Count("rebound__file")),
+                default=Count("file"),
+                output_field=IntegerField(),
+            )
         )
 
     annotated: int = annotation.update(is_downloaded=True)
