@@ -21,6 +21,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
     volumes:
       - ./storage:/data/db
+    ports:
+      - 27017:27017
     restart: always
     networks:
       - iss_network

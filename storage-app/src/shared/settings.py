@@ -19,6 +19,8 @@ STORAGE_PORT: Optional[str] = getenv("STORAGE_PORT")
 
 assert STORAGE_PORT
 
+ASYNC_PRODUCER_MAX_CONCURRENT: int = 1_000
+ASYNC_PRODUCER_GC_FREQ: int = 100
 APP_BACKEND_URL: str = "http://" + getenv("APP_BACKEND_URL", "127.0.0.1")
 SECRET_KEY: str = getenv("SECRET_KEY", "")
 SECRET_ALGO: str = getenv("SECRET_ALGO", "HS256")

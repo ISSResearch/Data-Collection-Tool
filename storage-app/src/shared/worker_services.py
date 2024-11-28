@@ -1,7 +1,6 @@
 from enum import Enum
 from json import dumps
-from zipfile import ZipFile, ZIP_DEFLATED
-from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
 from datetime import datetime
 from gridfs import GridOut
 from shared.settings import (
@@ -10,6 +9,7 @@ from shared.settings import (
     SECRET_ALGO,
     APP_BACKEND_URL,
     TEMP_ZIP,
+    ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
 from asyncio import get_event_loop
 from shared.storage_db import DataBase
@@ -21,6 +21,8 @@ from typing import Any, Optional
 import requests
 from os import mkdir, path, remove
 from .hasher import VHash, IHash
+from queue import Queue
+from .archive_helpers import FileProducer, ZipConsumer
 
 
 class EmbeddingStatus(Enum):
@@ -49,14 +51,33 @@ class Zipper:
         self.bucket_name = bucket_name
 
     async def archive_objects(self) -> Optional[bool]:
-        if not self.annotated or self.written: return
+        if not path.exists(TEMP_ZIP): mkdir(TEMP_ZIP)
 
+        self.archive = f"{TEMP_ZIP}/{ObjectId()}.{self.archive_extension}"
+        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+
+        queue = Queue()
+
+        producer = FileProducer(self.object_set, queue, MAX_CONCURENT)
+        consumer = ZipConsumer(self.archive, queue, [json_data])
+
+        consumer.start()
+
+        await producer.produce()
+        await self.object_set.close()
+
+        consumer.join()
+
+        self.written = True
+        return self.written
+
+    async def _archive_objects(self) -> Optional[bool]:
         if not path.exists(TEMP_ZIP): mkdir(TEMP_ZIP)
 
         self.archive = f"{TEMP_ZIP}/{ObjectId()}.{self.archive_extension}"
         json_data: Any = dumps(self.annotation, indent=4).encode("utf-8")
 
-        with ZipFile(self.archive, "w", ZIP_DEFLATED) as zip:
+        with ZipFile(self.archive, "w", ZIP_STORED) as zip:
             try:
                 while object := await self.object_set.next(): zip.writestr(
                     self._get_object_name(object),
@@ -65,10 +86,7 @@ class Zipper:
             except StopAsyncIteration: pass
             finally: await self.object_set.close()
 
-            with BytesIO(json_data) as annotation: zip.writestr(
-                "annotation.json",
-                annotation.read()
-            )
+            zip.writestr("annotation.json", json_data)
 
         self.written = True
         return self.written

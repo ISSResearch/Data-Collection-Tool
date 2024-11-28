@@ -199,7 +199,6 @@ class Bucket(BucketObject):
             get_object_id(str(object_id))
             for object_id in file_ids
         ]
+        filter = {"_id": {"$in": prepared_ids}}
 
-        return self._fs \
-            .find({"_id": {"$in": prepared_ids}}, no_cursor_timeout=True) \
-            .batch_size(200)
+        return self._fs.find(filter, no_cursor_timeout=True).batch_size(200)
