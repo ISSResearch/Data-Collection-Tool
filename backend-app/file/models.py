@@ -2,6 +2,7 @@ from django.db.models import (
     Model,
     CharField,
     DateTimeField,
+    IntegerField,
     BooleanField,
     ForeignKey,
     DO_NOTHING,
@@ -31,6 +32,8 @@ class File(Model):
     project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
     author: ForeignKey = ForeignKey("user.CustomUser", on_delete=DO_NOTHING)
     rebound: ForeignKey = ForeignKey("self", on_delete=DO_NOTHING, null=True)
+    # todo: temp to remap storge bucket on file migration from project to projcet
+    rebound_project = IntegerField(null=True)
     validator: ForeignKey = ForeignKey(
         "user.CustomUser",
         null=True,
