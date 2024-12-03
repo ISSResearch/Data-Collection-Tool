@@ -35,27 +35,36 @@ class ZipConsumer(Thread):
         self.file_list = []
 
     def _dump_buffer(self, dest: BufferedWriter, buffer: BytesIO, zip_buffer: ZipFile):
-        self.file_list += zip_buffer.filelist
+        dest_offset = dest.tell()
+
+        new_list = zip_buffer.filelist
+        for zinfo in new_list: zinfo.header_offset += dest_offset
+
+        self.file_list += new_list
 
         dest.write(buffer.getvalue())
+        zip_buffer.close()
         buffer.seek(0)
         buffer.truncate(0)
         dest.flush()
 
     def _finalize(self, dest: BufferedWriter):
         buffer = BytesIO()
+        start_dir = dest.tell()
 
-        with ZipFile(buffer, "w") as zip_buffer:
-            zip_buffer.start_dir = dest.tell()
-            zip_buffer.filelist = self.file_list
-            zip_buffer._write_end_record()
+        self._write_end_record(buffer)
+        dest.write(buffer.getvalue())
 
-            dest.write(buffer.getvalue())
+        buffer.seek(0)
+        buffer.truncate(0)
+
+        self._write_cent_dir(dest.tell(), start_dir, len(self.file_list), buffer)
+        dest.write(buffer.getvalue())
 
         dest.close()
         buffer.close()
 
-    def _write_end_record(self, buffer):
+    def _write_end_record(self, buffer: BytesIO):
         for zinfo in self.file_list:
             dt = zinfo.date_time
 
@@ -112,14 +121,18 @@ class ZipConsumer(Thread):
 
             buffer.write(centdir, filename, extra_data, zinfo.comment)
 
-    def _write_cent_dir(self, f_size, d_size, buffer):
-        if d_size > ZIP_FILECOUNT_LIMIT or f_size > ZIP64_LIMIT:
-            pack = (END_64_STRUCT, END_64_STRING, 44, 45, 45, 0, 0, d_size, d_size, 0, f_size)
+    def _write_cent_dir(self, pos: int, start_dir: int, d_size: int, buffer: BytesIO):
+        cent_dir = pos - start_dir
+
+        if d_size > ZIP_FILECOUNT_LIMIT or pos > ZIP64_LIMIT:
+            pack = (END_64_STRUCT, END_64_STRING, 44, 45, 45, 0, 0, d_size, d_size, 0, pos)
             buffer.write(pack_data(*pack))
-            buffer.write(pack_data(END_64_STRUCT_LOC, END_64_STRING_LOC, 0, f_size, 1))
+            buffer.write(pack_data(END_64_STRUCT_LOC, END_64_STRING_LOC, 0, pos, 1))
+            cent_dir = min(cent_dir, 0xFFFFFFFF)
+            start_dir = min(start_dir, 0xFFFFFFFF)
             d_size = min(d_size, 0xFFFF)
 
-        buffer.write(pack_data(END_STRUCT, END_STRING, 0, 0, d_size, d_size, 0, f_size, 0))
+        buffer.write(pack_data(END_STRUCT, END_STRING, 0, 0, d_size, d_size, cent_dir, start_dir, 0))
 
     def run(self):
         buffer = BytesIO()
@@ -165,7 +178,7 @@ class FileProducer:
 
         while await self.object_set.fetch_next:
             file = self.object_set.next_object()
-            tasks.append(create_task(self.next(file, iter_count)))
+            tasks.append(create_task(self.next(file)))
 
             if len(tasks) >= self.max_concurrent:
                 await wait(tasks, return_when=FIRST_COMPLETED)
@@ -176,13 +189,10 @@ class FileProducer:
 
         await gather(*tasks)
         self.queue.put(None)
-        print("produced last")
         self.count = iter_count
 
-    async def next(self, file, iter_count):
-        try:
-            self.queue.put((self._get_file_name(file), await file.read()))
-            if iter_count == 0: print("produced first")
+    async def next(self, file: GridOut):
+        try: self.queue.put((self._get_file_name(file), await file.read()))
         except Exception as e: print(f"next err {str(e)}")
 
     def _get_file_name(self, file: GridOut) -> str:
