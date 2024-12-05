@@ -1,10 +1,6 @@
 from enum import Enum
 from json import dumps
-from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
-from datetime import datetime
-from gridfs import GridOut
 from shared.settings import (
-    TEMP_BUCKET,
     SECRET_KEY,
     SECRET_ALGO,
     APP_BACKEND_URL,
@@ -12,17 +8,15 @@ from shared.settings import (
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
 from asyncio import get_event_loop
-from shared.storage_db import DataBase
 from shared.app_services import Bucket
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
-from bson import ObjectId
 from typing import Any, Optional
 import requests
-from os import mkdir, path, remove
+from os import mkdir, path
 from .hasher import VHash, IHash
 from queue import Queue
-from .archive_helpers import FileProducer, ZipConsumer
+from .archive_helpers import FileProducer, ZipConsumer, ZipWriter
 
 
 class EmbeddingStatus(Enum):
@@ -47,73 +41,34 @@ class Zipper:
 
         self._get_annotation(bucket_name, file_ids)
 
-        self.archive: str = ""
         self.bucket_name = bucket_name
 
     async def archive_objects(self) -> Optional[bool]:
         if not path.exists(TEMP_ZIP): mkdir(TEMP_ZIP)
 
-        self.archive = f"{TEMP_ZIP}/{ObjectId()}.{self.archive_extension}"
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
 
         queue = Queue()
 
         producer = FileProducer(self.object_set, queue, MAX_CONCURENT)
-        consumer = ZipConsumer(self.archive, queue, [json_data])
+        writer = ZipWriter(f"{self.bucket_name}_dataset")
+        consumer = ZipConsumer(queue, [json_data], writer)
 
         consumer.start()
+        writer.start()
 
         await producer.produce()
         await self.object_set.close()
 
         consumer.join()
+        writer.join()
 
         self.written = True
+
+        assert (result_id := writer.result()), "Archive was not written"
+        self._archive_id  = result_id
+
         return self.written
-
-    async def _archive_objects(self) -> Optional[bool]:
-        if not path.exists(TEMP_ZIP): mkdir(TEMP_ZIP)
-
-        self.archive = f"{TEMP_ZIP}/{ObjectId()}.{self.archive_extension}"
-        json_data: Any = dumps(self.annotation, indent=4).encode("utf-8")
-
-        with ZipFile(self.archive, "w", ZIP_STORED) as zip:
-            try:
-                while object := await self.object_set.next(): zip.writestr(
-                    self._get_object_name(object),
-                    object.read()
-                )
-            except StopAsyncIteration: pass
-            finally: await self.object_set.close()
-
-            zip.writestr("annotation.json", json_data)
-
-        self.written = True
-        return self.written
-
-    async def write_archive(self) -> Optional[str]:
-        if self.archive_id: return self.archive_id
-
-        if not self.archive: raise FileExistsError
-
-        with open(self.archive, "rb") as archive:
-            self._archive_id = await DataBase \
-                .get_fs_bucket(TEMP_BUCKET) \
-                .upload_from_stream(
-                    filename=f"{self.bucket_name}_dataset",
-                    source=archive,
-                    metadata={"created_at": datetime.now().isoformat()}
-                )
-
-    def delete_temp_zip(self): remove(self.archive)
-
-    def _get_object_name(self, object: GridOut) -> str:
-        name = str(object._id)
-        extension = object.metadata.get("file_extension", "")
-
-        if extension: name += f".{extension}"
-
-        return name
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"

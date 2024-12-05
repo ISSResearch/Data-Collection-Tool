@@ -1,5 +1,5 @@
 from shared.app_services import Bucket
-from shared.archive_helpers import FileProducer, ZipConsumer, ZipFile, ZIP_DEFLATED
+from shared.archive_helpers import FileProducer, ZipConsumer, ZipFile, ZIP_DEFLATED, ZipWriter
 from queue import Queue
 from asyncio import get_event_loop
 from time import perf_counter
@@ -10,13 +10,11 @@ async def seq_write():
     c = 0
     object_set = Bucket("project_10")._fs.find({})
 
-    with ZipFile("test_arch.zip", "w", ZIP_DEFLATED) as zip:
+    with ZipFile("seq_arch.zip", "w", ZIP_DEFLATED) as zip:
         try:
             while object := await object_set.next():
                 c+= 1
-                d = object.read()
-                print(len(d))
-                # zip.writestr(str(c), object.read())
+                zip.writestr(str(c), object.read())
         except StopAsyncIteration: pass
         finally: await object_set.close()
     return perf_counter() - t0, c
@@ -28,15 +26,18 @@ async def async_write():
     object_set = Bucket("project_10")._fs.find({})
 
     producer = FileProducer(object_set, queue, 1_000)
-    consumer = ZipConsumer("test_arch.zip", queue, [])
+    writer = ZipWriter("async_arch.zip", True)
+    consumer = ZipConsumer(queue, [], writer)
 
+    writer.start()
     consumer.start()
 
     await producer.produce()
     await object_set.close()
 
     consumer.join()
-    return perf_counter() - t0, producer.count
+    writer.join()
+    return perf_counter() - t0, 0
 
 
 run = lambda fn: get_event_loop().run_until_complete(fn())

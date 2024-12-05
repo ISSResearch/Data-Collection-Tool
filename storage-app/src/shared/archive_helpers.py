@@ -1,14 +1,22 @@
 from asyncio import create_task, wait, FIRST_COMPLETED, gather
-from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Optional
 from threading import Thread
 from queue import Queue
-from gridfs import GridOut
+from gridfs import GridOut, GridIn
+from shared.storage_db import SyncDataBase
 from motor.core import AgnosticBaseCursor
 from gc import collect as gc_collect
-from .settings import ASYNC_PRODUCER_GC_FREQ as GC_FREQ
+from .settings import ASYNC_PRODUCER_GC_FREQ as GC_FREQ, TEMP_BUCKET
 from io import BufferedWriter, BytesIO
 from struct import pack as pack_data
-from zipfile import _Extra, ZIP64_LIMIT, ZIP_FILECOUNT_LIMIT
+from datetime import datetime
+from zipfile import (
+    _Extra,
+    ZIP64_LIMIT,
+    ZIP_FILECOUNT_LIMIT,
+    ZipFile,
+    ZIP_DEFLATED,
+)
 
 CENTRAL_STRUCT = "<4s4B4HL2L5H2L"
 CENTRAL_STRING = b"PK\001\002"
@@ -21,48 +29,97 @@ END_STRUCT = b"<4s4H2LH"
 END_STRING = b"PK\005\006"
 
 
+class ZipWriter(Thread):
+    def __init__(self, file_name: str, as_file: bool = False):
+        super().__init__()
+        self.file_name = file_name
+        self.queue = Queue()
+        self._archive_id = None
+        self._as_file = as_file
+
+    def stop(self): self.queue.put(None)
+
+    def write(self, task: tuple[BytesIO, int]): self.queue.put(task)
+
+    def result(self) -> Optional[str]: return self._archive_id
+
+    def _get_write_in(self):
+        return (
+            open(self.file_name, "wb")
+            if self._as_file
+            else SyncDataBase \
+                .get_fs_bucket(TEMP_BUCKET) \
+                .open_upload_stream(
+                    self.file_name,
+                    metadata={"created_at": datetime.now().isoformat()}
+                )
+        )
+
+    def run(self):
+        dest: GridIn | BufferedWriter = self._get_write_in()
+
+        while True:
+            if (task := self.queue.get()) is None: break
+
+            buffer, read_size = task
+            buffer.seek(0)
+            v = buffer.read(read_size)
+
+            dest.write(v)
+
+            del buffer
+
+        dest.close()
+
+        if not self._as_file:
+            self._archive_id = dest._id
+            SyncDataBase.close_connection()
+
+
 class ZipConsumer(Thread):
+    DUMP_THRESHOLD: int = 10 << 20
+
     def __init__(
         self,
-        path: str,
         queue: Queue,
-        additional: list[tuple[str, bytes]]
+        additional: list[tuple[str, bytes]],
+        writer: ZipWriter
     ):
         super().__init__()
         self.queue = queue
-        self.path = path
         self.additional = additional
         self.file_list = []
+        self.writer = writer
+        self._local_dir_end = 0
 
-    def _dump_buffer(self, dest: BufferedWriter, buffer: BytesIO, zip_buffer: ZipFile):
-        dest_offset = dest.tell()
+    def tell(self) -> int: return self._local_dir_end
+
+    def _dump_buffer(self, buffer: BytesIO, zip_buffer: ZipFile):
+        dest_offset = self.tell()
 
         new_list = zip_buffer.filelist
         for zinfo in new_list: zinfo.header_offset += dest_offset
 
         self.file_list += new_list
+        self._local_dir_end += buffer.tell()
 
-        dest.write(buffer.getvalue())
+        self.writer.write((buffer, buffer.tell()))
+
         zip_buffer.close()
-        buffer.seek(0)
-        buffer.truncate(0)
-        dest.flush()
 
-    def _finalize(self, dest: BufferedWriter):
-        buffer = BytesIO()
-        start_dir = dest.tell()
+    def _finalize(self):
+        self._write_end_record(end_buffer := BytesIO())
+        self.writer.write((end_buffer, end_buffer.tell()))
 
-        self._write_end_record(buffer)
-        dest.write(buffer.getvalue())
+        self._write_cent_dir(
+            self.tell() + end_buffer.tell(),
+            self.tell(),
+            len(self.file_list),
+            cent_dir_buffer := BytesIO()
+        )
+        self.writer.write((cent_dir_buffer, cent_dir_buffer.tell()))
 
-        buffer.seek(0)
-        buffer.truncate(0)
-
-        self._write_cent_dir(dest.tell(), start_dir, len(self.file_list), buffer)
-        dest.write(buffer.getvalue())
-
-        dest.close()
-        buffer.close()
+        self.writer.stop()
 
     def _write_end_record(self, buffer: BytesIO):
         for zinfo in self.file_list:
@@ -119,7 +176,7 @@ class ZipConsumer(Thread):
                 header_offset
             )
 
-            buffer.write(centdir, filename, extra_data, zinfo.comment)
+            buffer.write(centdir + filename + extra_data + zinfo.comment)
 
     def _write_cent_dir(self, pos: int, start_dir: int, d_size: int, buffer: BytesIO):
         cent_dir = pos - start_dir
@@ -137,7 +194,6 @@ class ZipConsumer(Thread):
     def run(self):
         buffer = BytesIO()
         zip_buffer: ZipFile = ZipFile(buffer, "w", ZIP_DEFLATED)
-        zip_file = open(self.path, "wb")
 
         while True:
             if (task := self.queue.get()) is None: break
@@ -147,18 +203,16 @@ class ZipConsumer(Thread):
 
             del f_data
 
-            if buffer.tell() > (100 << 20):
-                self._dump_buffer(zip_file, buffer, zip_buffer)
+            if buffer.tell() > self.DUMP_THRESHOLD:
+                self._dump_buffer(buffer, zip_buffer)
+                buffer = BytesIO()
                 zip_buffer = ZipFile(buffer, "w", ZIP_DEFLATED)
 
         for f_name, f_data in self.additional: zip_buffer.writestr(f_name, f_data)
 
-        if buffer.tell(): self._dump_buffer(zip_file, buffer, zip_buffer)
+        if buffer.tell(): self._dump_buffer(buffer, zip_buffer)
 
-        zip_buffer.close()
-        buffer.close()
-
-        self._finalize(zip_file)
+        self._finalize()
 
 
 class FileProducer:
@@ -189,7 +243,6 @@ class FileProducer:
 
         await gather(*tasks)
         self.queue.put(None)
-        self.count = iter_count
 
     async def next(self, file: GridOut):
         try: self.queue.put((self._get_file_name(file), await file.read()))
