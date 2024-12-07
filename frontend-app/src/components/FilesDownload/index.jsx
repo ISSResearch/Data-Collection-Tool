@@ -56,19 +56,19 @@ export default function FilesDownload({ pathID, attributes }) {
     },
   ];
 
-  function handleChange(type, data) {
+  const handleChange = (type, data) => {
     setFilterData((prev) => ({ ...prev, [type]: data }));
-  }
+  };
 
-  function handleTaskInput({ value }) {
+  const handleTaskInput = ({ value }) => {
     var className = "set--hidden";
     var hideElement = document.querySelector(".iss__filesDownload__mainSet");
 
     if (!value) return hideElement.classList.remove(className);
     if (!hideElement.classList.contains(className)) hideElement.classList.add(className);
-  }
+  };
 
-  async function getFiles() {
+  const getFiles = async () => {
     var file_ids;
 
     if (manual) file_ids = fileManager.files
@@ -83,18 +83,19 @@ export default function FilesDownload({ pathID, attributes }) {
         params,
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
       });
-      file_ids = (isNew
-        ? data.data.filter(({ is_downloaded }) => !is_downloaded)
-        : data.data
+      file_ids = (
+        isNew
+          ? data.data.filter(({ is_downloaded }) => !is_downloaded)
+          : data.data
       ).map(({ id }) => id);
     }
 
     if (!file_ids.length) throw new Error("No content");
 
     return file_ids;
-  }
+  };
 
-  async function downloadSelected(event) {
+  const downloadSelected = async (event) => {
     event.preventDefault();
 
     var taskInput = event.target.taskID;
@@ -134,7 +135,7 @@ export default function FilesDownload({ pathID, attributes }) {
     }
 
     setLoading(false);
-  }
+  };
 
   if (task) return <DownloadView taskID={task} />;
 

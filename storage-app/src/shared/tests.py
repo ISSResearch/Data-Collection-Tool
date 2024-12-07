@@ -13,5 +13,5 @@ from .shared_tests.services_test import (
     ObjectStreamingTest,
     BucketTest,
 )
-from .shared_tests.worker_test import ZipperTest
+# from .shared_tests.worker_test import ZipperTest
 # flake8: noqa

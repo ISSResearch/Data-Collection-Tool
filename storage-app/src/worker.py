@@ -29,14 +29,7 @@ register(
 @worker.task(name="produce_download_task")
 def produce_download_task(bucket_name: str, file_ids: list[str]) -> str | None:
     task = Zipper(bucket_name, file_ids)
-    loop = get_event_loop()
-
-    async def _inner():
-        await task.archive_objects()
-        await task.write_archive()
-        task.delete_temp_zip()
-
-    loop.run_until_complete(_inner())
+    get_event_loop().run_until_complete(task.archive_objects())
     return task.archive_id
 
 
@@ -51,8 +44,6 @@ def produce_handle_media_task(
     task.hash()
     task.search_similar()
     task.handle_search_result()
-
-    assert task.process_result, "No search result"
 
     return task.process_result
 

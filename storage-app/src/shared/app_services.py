@@ -10,7 +10,6 @@ from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.storage_db import DataBase, AsyncIOMotorGridFSBucket
-from hashlib import md5
 from motor.motor_asyncio import AsyncIOMotorGridOut
 
 
@@ -161,22 +160,9 @@ class BucketObject:
             "metadata": meta
         }
 
-        # await self._set_hash(new_item)
-
         file_id: ObjectId = await self._fs.upload_from_stream(**new_item)
 
         return str(file_id)
-
-    async def _set_hash(self, file_item: dict[str, Any]) -> None:
-        new_hash: bytes = md5(file_item["source"]).digest()
-
-        cursor = self._fs.find({"metadata.hash": new_hash})
-
-        try:
-            if await cursor.next(): raise AssertionError
-        except StopAsyncIteration: ...
-
-        file_item["metadata"]["hash"] = new_hash
 
 
 class Bucket(BucketObject):
@@ -199,7 +185,6 @@ class Bucket(BucketObject):
             get_object_id(str(object_id))
             for object_id in file_ids
         ]
+        filter = {"_id": {"$in": prepared_ids}}
 
-        return self._fs \
-            .find({"_id": {"$in": prepared_ids}}, no_cursor_timeout=True) \
-            .batch_size(200)
+        return self._fs.find(filter, no_cursor_timeout=True).batch_size(200)

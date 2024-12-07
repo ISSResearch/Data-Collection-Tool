@@ -274,9 +274,8 @@ class BucketTest(TestCase):
                 dumps({"file_name": "test_file", "file_extension": "png", "file_type": "image"})
             )
 
-            self.assertEqual(
-                len([file async for file in bucket.get_download_objects([f_id])]),
-                1
-            )
+            cursor = bucket.get_download_objects([f_id])
+
+            self.assertEqual(len([file async for file in cursor]), 1)
 
         run(self.client, _h)
