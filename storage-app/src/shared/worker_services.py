@@ -66,7 +66,7 @@ class Zipper:
         self.written = True
 
         assert (result_id := writer.result()), "Archive was not written"
-        self._archive_id  = result_id
+        self._archive_id = result_id
 
         return self.written
 

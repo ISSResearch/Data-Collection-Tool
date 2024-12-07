@@ -47,12 +47,12 @@ class ZipWriter(Thread):
         return (
             open(self.file_name, "wb")
             if self._as_file
-            else SyncDataBase \
-                .get_fs_bucket(TEMP_BUCKET) \
-                .open_upload_stream(
-                    self.file_name,
-                    metadata={"created_at": datetime.now().isoformat()}
-                )
+            else SyncDataBase
+            .get_fs_bucket(TEMP_BUCKET)
+            .open_upload_stream(
+                self.file_name,
+                metadata={"created_at": datetime.now().isoformat()}
+            )
         )
 
     def run(self):
@@ -144,7 +144,7 @@ class ZipConsumer(Thread):
 
             if extra:
                 extra_data = _Extra.strip(extra_data, (1,))
-                extra_data = pack_data('<HH' + 'Q'*len(extra), 1, 8*len(extra), *extra) + extra_data
+                extra_data = pack_data("<HH" + "Q" * len(extra), 1, 8 * len(extra), *extra) + extra_data
 
                 min_version = ZIP64_VERSION
 

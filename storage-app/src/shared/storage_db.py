@@ -11,7 +11,7 @@ from shared.utils import get_db_uri
 from typing import Optional
 
 
-#todo: temp duplicate, refactor
+# todo: temp duplicate, refactor
 class SyncDataBase:
     __client: Optional[MongoClient] = None
     __current_db: Optional[Database] = None

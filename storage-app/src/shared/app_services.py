@@ -10,7 +10,6 @@ from shared.settings import CHUNK_SIZE
 from shared.utils import get_object_id
 from shared.models import UploadFile
 from shared.storage_db import DataBase, AsyncIOMotorGridFSBucket
-from hashlib import md5
 from motor.motor_asyncio import AsyncIOMotorGridOut
 
 
