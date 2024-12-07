@@ -39,7 +39,6 @@ class ZipperTest(TestCase):
         zipper = self._get_zipper()
 
         self.assertEqual(zipper.bucket_name, "test_bucket")
-        self.assertEqual(zipper.archive, "")
         self.assertEqual(zipper.annotated, 1)
         self.assertEqual(zipper.annotation, {"some": 123})
         self.assertIsNone(zipper.archive_id)
@@ -54,11 +53,8 @@ class ZipperTest(TestCase):
             zipper.annotated = 1
             self.assertIsNone(await zipper.archive_objects())
             zipper.written = False
-            self.assertEqual(zipper.archive, "")
             self.assertTrue(await zipper.archive_objects())
             self.assertTrue(zipper.written)
-            self.assertRegex(zipper.archive, r'\/app/temp_zip/([a-zA-Z0-9]+)\.zip')
-            self.assertTrue(exists(zipper.archive))
             self.assertIsNone(zipper.archive_id)
 
         run(self.client, _h)
@@ -68,9 +64,6 @@ class ZipperTest(TestCase):
 
         async def _h():
             self.assertTrue(await zipper.archive_objects())
-            self.assertTrue(exists(zipper.archive))
-
-            await zipper.write_archive()
             self.assertIsInstance(zipper.archive_id, str)
 
             bucket = DataBase.get_fs_bucket("temp_storage")
