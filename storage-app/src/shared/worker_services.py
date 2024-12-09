@@ -4,16 +4,14 @@ from shared.settings import (
     SECRET_KEY,
     SECRET_ALGO,
     APP_BACKEND_URL,
-    TEMP_ZIP,
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
-from asyncio import get_event_loop
+from asyncio import get_event_loop, sleep as async_stall_for, create_task
 from shared.app_services import Bucket
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
 from typing import Any, Optional
 import requests
-from os import mkdir, path
 from .hasher import VHash, IHash
 from queue import Queue
 from .archive_helpers import FileProducer, ZipConsumer, ZipWriter
@@ -44,8 +42,6 @@ class Zipper:
         self.bucket_name = bucket_name
 
     async def archive_objects(self) -> Optional[bool]:
-        if not path.exists(TEMP_ZIP): mkdir(TEMP_ZIP)
-
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
 
         queue = Queue()
@@ -54,12 +50,21 @@ class Zipper:
         writer = ZipWriter(f"{self.bucket_name}_dataset")
         consumer = ZipConsumer(queue, [json_data], writer)
 
+        producer_task = create_task(producer.produce())
         consumer.start()
         writer.start()
 
-        await producer.produce()
-        await self.object_set.close()
+        wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
+        wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
 
+        while wait_list:
+            if wait_list.task.ready:
+                wait_list = wait_list.next
+                continue
+            await async_stall_for(1)
+
+        await producer_task
+        await self.object_set.close()
         consumer.join()
         writer.join()
 
