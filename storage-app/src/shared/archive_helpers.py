@@ -36,12 +36,16 @@ class ZipWriter(Thread):
         self.queue = Queue()
         self._archive_id = None
         self._as_file = as_file
+        self._done = False
 
     def stop(self): self.queue.put(None)
 
     def write(self, task: tuple[BytesIO, int]): self.queue.put(task)
 
     def result(self) -> Optional[str]: return self._archive_id
+
+    @property
+    def ready(self) -> bool: return self._done
 
     def _get_write_in(self):
         return (
@@ -75,6 +79,7 @@ class ZipWriter(Thread):
             self._archive_id = dest._id
             SyncDataBase.close_connection()
 
+        self._done = True
 
 class ZipConsumer(Thread):
     DUMP_THRESHOLD: int = 10 << 20
@@ -91,8 +96,12 @@ class ZipConsumer(Thread):
         self.file_list = []
         self.writer = writer
         self._local_dir_end = 0
+        self._done = False
 
     def tell(self) -> int: return self._local_dir_end
+
+    @property
+    def ready(self) -> bool: return self._done
 
     def _dump_buffer(self, buffer: BytesIO, zip_buffer: ZipFile):
         dest_offset = self.tell()
@@ -214,6 +223,8 @@ class ZipConsumer(Thread):
 
         self._finalize()
 
+        self._done = True
+
 
 class FileProducer:
     def __init__(
@@ -225,6 +236,10 @@ class FileProducer:
         self.object_set = object_set
         self.queue = queue
         self.max_concurrent = max_concurrent
+        self._done = False
+
+    @property
+    def ready(self) -> bool: return self._done
 
     async def produce(self):
         tasks = []
@@ -243,6 +258,8 @@ class FileProducer:
 
         await gather(*tasks)
         self.queue.put(None)
+
+        self._done = True
 
     async def next(self, file: GridOut):
         try: self.queue.put((self._get_file_name(file), await file.read()))
