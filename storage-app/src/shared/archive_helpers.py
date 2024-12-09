@@ -81,6 +81,7 @@ class ZipWriter(Thread):
 
         self._done = True
 
+
 class ZipConsumer(Thread):
     DUMP_THRESHOLD: int = 10 << 20
 
