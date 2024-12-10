@@ -144,7 +144,11 @@ export default function FilesDownload({ pathID, attributes }) {
       <h2 className="iss__filesDownload__caption">
         Choose files to download or enter existing taskID
       </h2>
-      <ValidationFilterGroup filterData={FILTER_FIELDS} onChange={handleChange} />
+      <ValidationFilterGroup
+        disabled={false}
+        filterData={FILTER_FIELDS}
+        onChange={handleChange}
+      />
       <form
         onSubmit={(event) => downloadSelected(event)}
         className="iss__filesDownload__form"

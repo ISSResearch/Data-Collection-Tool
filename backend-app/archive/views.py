@@ -1,0 +1,32 @@
+from rest_framework.views import Response, APIView, Request
+from rest_framework.permissions import IsAuthenticated
+from .permissions import ArchivePermission, ArchivesPermission
+from .services import _get_archives, _make_archive
+
+
+class ArchivesViewSet(APIView):
+    http_method_names = ("post", "get")
+    permission_classes = (IsAuthenticated, ArchivesPermission)
+
+    def get(self, request: Request, p_pk: int) -> Response:
+        response, status = _get_archives(p_pk)
+        return Response(response, status=status)
+
+    def post(self, request: Request, p_pk: int) -> Response:
+        response, status = _make_archive(p_pk, request.data)
+        return Response(response, status=status)
+
+
+class ArchiveViewSet(APIView):
+    http_method_names = ("get", "patch")
+    permission_classes = (IsAuthenticated, ArchivePermission)
+
+    def get(self, request: Request, pk: int) -> Response:
+        ...
+        # response, status = _get_project(pk, request)
+        # return Response(response, status=status)
+
+    def patch(self, request: Request, pk: int) -> Response:
+        ...
+        # response, status = _patch_project(pk, request.data)
+        # return Response(response, status=status)

@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'api',
     'project',
     'attribute',
-    'file'
+    'file',
+    "archive"
 ]
 
 MIDDLEWARE = [
