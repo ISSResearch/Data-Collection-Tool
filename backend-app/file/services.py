@@ -9,7 +9,6 @@ from rest_framework.status import (
 from django.db.models import (
     Count,
     Subquery,
-    QuerySet,
     Q,
     When,
     IntegerField,
@@ -126,7 +125,8 @@ class ViewSetServices:
         self,
         project_id: int,
         request_user: CustomUser,
-        request_query: QueryDict
+        request_query: QueryDict,
+        as_query: bool = False
     ) -> tuple[dict[str, Any], int]:
         filters = self._form_filters(project_id, request_user, request_query)
         orders = self._form_orders(request_query)
@@ -163,6 +163,8 @@ class ViewSetServices:
                 .values("uid")
             files = files.filter(attributegroup__in=Subquery(sub_query))
         else: files = files.distinct()
+
+        if as_query: return files, 0
 
         page = int(request_query.get("page", 1))
         per_page = request_query.get("per_page")
@@ -355,13 +357,13 @@ class StatsServices:
 
         for row in stat_data:
             a_id, \
-                a_status, \
-                a_name, \
-                a_type, \
-                a_parent, \
-                l_name, \
-                order, \
-                count = cls.attribute_item(row)
+            a_status, \
+            a_name, \
+            a_type, \
+            a_parent, \
+            l_name, \
+            order, \
+            count = cls.attribute_item(row)
 
             target = prepared_stats.get(a_id)
 
@@ -412,37 +414,6 @@ class StatsServices:
             else: target[status] = {f_type: count}
 
         return list(prepared_stats.values())
-
-
-def _annotate_files(request_data: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    annotation: QuerySet = File.objects \
-        .select_related("author", "project", "validator") \
-        .prefetch_related(
-            Prefetch(
-                "attributegroup_set__attribute",
-                queryset=Attribute.objects.select_related("level")
-                .order_by("level__order", "level_id")
-                .only("id", "name", "level__order")
-            )
-        ) \
-        .filter(
-            project_id=request_data.get("project_id"),
-            id__in=request_data.get("file_ids")
-        ) \
-        .annotate(
-            related_count=Case(
-                When(rebound__isnull=False, then=Count("rebound__file")),
-                default=Count("file"),
-                output_field=IntegerField(),
-            )
-        )
-
-    annotated: int = annotation.update(is_downloaded=True)
-
-    return {
-        "annotated": annotated,
-        "annotation": FileSerializer(annotation, many=True).data
-    }, HTTP_202_ACCEPTED
 
 
 def form_export_file(query: dict[str, Any]) -> BytesIO:

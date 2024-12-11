@@ -1,6 +1,7 @@
 from rest_framework.views import Response, APIView, Request
 from rest_framework.permissions import IsAuthenticated
 from .permissions import ArchivePermission, ArchivesPermission
+from user.permissions import InternalPermission
 from .services import _get_archives, _make_archive
 
 
@@ -13,7 +14,7 @@ class ArchivesViewSet(APIView):
         return Response(response, status=status)
 
     def post(self, request: Request, p_pk: int) -> Response:
-        response, status = _make_archive(p_pk, request.data)
+        response, status = _make_archive(p_pk, request)
         return Response(response, status=status)
 
 

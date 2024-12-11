@@ -103,7 +103,6 @@ class Zipper:
         response_data: Any = response.json()
 
         self.annotation: dict[str, Any] = response_data["annotation"]
-        self.annotated: int = response_data["annotated"]
 
     @property
     def archive_id(self) -> Optional[str]:

@@ -19,3 +19,4 @@ python-jose==3.3.0
 rsa==4.9
 six==1.16.0
 XlsxWriter==3.2.0
+requests==2.32.3

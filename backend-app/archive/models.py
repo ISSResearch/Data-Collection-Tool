@@ -5,19 +5,19 @@ from django.db.models import (
     ManyToManyField,
     DO_NOTHING,
     DateTimeField,
+    IntegerField,
+    JSONField
 )
 
 
 class Archive(Model):
-    STATUSES: tuple = (
-        ("s", "SUCCESS"),
-        ("f", "FAILURE"),
-        ("p", "PENGING"),
-    )
+    STATUSES = (("s", "SUCCESS"), ("f", "FAILURE"), ("p", "PENDING"),)
 
-    id = CharField(max_length=24, primary_key=True, unique=True)
-    result_id = CharField(max_length=24, unique=True)
+    id = CharField(max_length=36, primary_key=True)
+    result_id = CharField(max_length=24, null=True)
+    result_size = IntegerField(null=True)
     status = CharField(max_length=1, choices=STATUSES, default="p")
+    filters = JSONField()
     create_date = DateTimeField(auto_now_add=True)
 
     project = ForeignKey("project.Project", on_delete=DO_NOTHING)

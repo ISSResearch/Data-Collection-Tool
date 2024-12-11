@@ -5,6 +5,10 @@
     gap: 20px;
 }
 
+.iss__filesDownload > .iss__validation__filters {
+    margin: 0;
+}
+
 .iss__filesDownload__caption {
     font-size: 20px;
 }

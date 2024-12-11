@@ -4,11 +4,16 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_202_ACCEPTED
 )
+from rest_framework.views import Request
 from django.db.models.aggregates import Count
 from typing import Any
 from project.models import Project
 from api.mixins import with_model_assertion
+from requests import post
 from .serializers import ArchiveSerializer
+from file.serializers import FileSerializer
+from file.services import ViewSetServices as FileService
+from django.db import transaction
 
 
 @with_model_assertion(Project, "id", filter={"visible": True},)
@@ -19,58 +24,45 @@ def _get_archives(project: Project) -> tuple[dict[str, Any], int]:
     return ArchiveSerializer(query, many=True).data, HTTP_200_OK
 
 
-@with_model_assertion(Project, "id", filter={"visible": True})
-def _make_archive(
-    project: Project,
-    request_data: dict[str, Any]
-) -> tuple[dict[str, Any], int]:
-    ...
-#     response: dict[str, Any]
-#     status: int
+@with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)
+def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], int]:
+    request_data: dict[str, Any] = request.data
 
-#     try:
-#         attribute = project.attribute_set.get(id=request_data["attribute_id"])
+    attributes = project.attribute_set \
+        .filter(id__in=request_data.get("attr", [])) \
+        .order_by("level__order", "id") \
+        .values("name") \
+        .values_list("name", flat=True)
 
-#         assert not attribute.projectgoal_set.count(), "Goal for Attribute already exists"
+    filter_data = {
+        "status": request_data.get("card", []),
+        "only_new": request_data.get("downloaded", False),
+        "type": request_data.get("type", []),
+        "attributes": list(attributes)
+    }
 
-#         goal_attribute_names = [
-#             f"{name} ({level_name})"
-#             for name, level_name in
-#             attribute
-#             .ancestors(include_self=True)
-#             .values_list("name", "level__name")
-#         ]
+    files, _ = FileService()._get_files(project.id, request.user, request_data, True)
 
-#         project.projectgoal_set.create(
-#             attribute=attribute,
-#             amount=int(request_data["amount"]),
-#             name=" > ".join(goal_attribute_names),
-#             image_mod=int(request_data.get("image_mod", 1)),
-#             video_mod=int(request_data.get("video_mod", 1)),
-#         )
+    response = post(
+        "url",
+        headers={
+            "Authorization": "Bearer " + request.user._make_token(),
+            "Content-Type": "application/json",
+        },
+        json=FileSerializer(files, many=True).data
+    )
 
-#         response, status = {"ok": True}, HTTP_201_CREATED
+    assert response.status_code == 201
+    assert (task_id := response.json().get("task_id"))
 
-#     except AssertionError as e:
-#         if int(request_data.get("update", 0)) == 1:
-#             goal = attribute.projectgoal_set.first()
-#             goal.amount = int(request_data["amount"])
-#             goal.image_mod = int(request_data.get("image_mod", 1))
-#             goal.video_mod = int(request_data.get("video_mod", 1))
-#             goal.save()
+    with transaction.atomic():
+        archive = project.archive_set.create(
+            id=task_id,
+            filters=filter_data,
+            author=request.user
+        )
 
-#             response, status = {"ok": True}, HTTP_202_ACCEPTED
+        files.update(is_downloaded=True)
+        archive.add(*files)
 
-#         else: response, status = {"errors": str(e)}, HTTP_400_BAD_REQUEST
-
-#     except Exception as e: response, status = {"errors": str(e)}, HTTP_400_BAD_REQUEST
-
-#     return response, status
-
-# @with_model_assertion(ProjectGoal, "id")
-# def _delete_goal(self, goal: ProjectGoal):
-#     try:
-#         goal.delete()
-#         return {"ok": True}, HTTP_202_ACCEPTED
-
-#     except Exception as e: return {"errors": str(e)}, HTTP_400_BAD_REQUEST
+    return ArchiveSerializer(archive).data, 201
