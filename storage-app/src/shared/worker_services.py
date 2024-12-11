@@ -15,6 +15,7 @@ import requests
 from .hasher import VHash, IHash
 from queue import Queue
 from .archive_helpers import FileProducer, ZipConsumer, ZipWriter
+from celery import Task
 
 
 class EmbeddingStatus(Enum):
@@ -34,12 +35,17 @@ class Zipper:
     written: bool = False
     archive_extension: str = "zip"
 
-    def __init__(self, bucket_name: str, file_ids: list[str]) -> None:
+    def __init__(
+        self,
+        bucket_name: str,
+        file_ids: list[str],
+        task: Task
+    ) -> None:
         self.object_set = Bucket(bucket_name).get_download_objects(file_ids)
+        self.bucket_name = bucket_name
+        self._task = task
 
         self._get_annotation(bucket_name, file_ids)
-
-        self.bucket_name = bucket_name
 
     async def archive_objects(self) -> Optional[bool]:
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
@@ -61,7 +67,9 @@ class Zipper:
             if wait_list.task.ready:
                 wait_list = wait_list.next
                 continue
-            await async_stall_for(1)
+
+            self._task.update_state(state="PROGRESS")
+            await async_stall_for(5)
 
         await producer_task
         await self.object_set.close()

@@ -238,13 +238,13 @@ class FileProducer:
         self.queue = queue
         self.max_concurrent = max_concurrent
         self._done = False
+        self.iter_count = 0
 
     @property
     def ready(self) -> bool: return self._done
 
     async def produce(self):
         tasks = []
-        iter_count = 0
 
         while await self.object_set.fetch_next:
             file = self.object_set.next_object()
@@ -254,8 +254,8 @@ class FileProducer:
                 await wait(tasks, return_when=FIRST_COMPLETED)
                 tasks = [task for task in tasks if not task.done()]
 
-            iter_count += 1
-            if not iter_count % GC_FREQ: gc_collect()
+            self.iter_count += 1
+            if not self.iter_count % GC_FREQ: gc_collect()
 
         await gather(*tasks)
         self.queue.put(None)
