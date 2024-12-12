@@ -6,7 +6,7 @@ from shared.settings import (
     APP_BACKEND_URL,
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
-from asyncio import get_event_loop
+from asyncio import run
 from time import sleep as stall_for
 from shared.app_services import Bucket
 from shared.utils import emit_token
@@ -137,10 +137,7 @@ class Hasher:
         except Exception: self.project_id = 0
 
     def get_file(self):
-        file = get_event_loop().run_until_complete(
-            Bucket(self.bucket_name)
-            .get_object(self.file_id)
-        )
+        file = run(Bucket(self.bucket_name).get_object(self.file_id))
         assert file, "No file found"
 
         self.file = file.file

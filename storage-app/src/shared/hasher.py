@@ -1,4 +1,3 @@
-from asyncio.events import new_event_loop
 from typing_extensions import Coroutine
 from videohash import VideoHash
 from videohash.utils import (
@@ -9,7 +8,7 @@ from PIL import Image
 from PIL.ImageFile import ImageFile
 from os.path import join, sep, exists
 from pathlib import Path
-from asyncio import get_event_loop, set_event_loop
+from asyncio import run
 from motor.motor_asyncio import AsyncIOMotorGridOut
 from shared.settings import HASH_SIZE, TEMP_HASH_PATH, MEDIA_SIZE
 from numpy import asarray, float32, ndarray
@@ -18,18 +17,6 @@ from scipy.fftpack import dct
 from typing import Any
 
 Image.ANTIALIAS = Image.Resampling.LANCZOS
-
-
-def run_with_loop(f: Coroutine) -> Any:
-    current_loop = get_event_loop()
-    new_loop = new_event_loop()
-
-    try:
-        set_event_loop(new_loop)
-        return new_loop.run_until_complete(f)
-    finally:
-        new_loop.close()
-        set_event_loop(current_loop)
 
 
 def to_embedding(
@@ -61,7 +48,7 @@ class IHash:
         self.embedding = self._get_hash()
 
     def _get_hash(self) -> ndarray:
-        get_event_loop().run_until_complete(self._get_buffer())
+        run(self._get_buffer())
         image = Image.open(self._buffer)
         return to_embedding(image)
 
@@ -118,7 +105,7 @@ class VHash(VideoHash):
         extension = self._file.metadata.get("file_extension")
         self.video_path = join(self.video_dir, f"video.{extension}")
 
-        get_event_loop().run_until_complete(self._write_file())
+        run(self._write_file())
 
     async def _write_file(self):
         with open(self.video_path, "wb") as file:
