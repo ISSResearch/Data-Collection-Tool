@@ -6,7 +6,8 @@ from shared.settings import (
     APP_BACKEND_URL,
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
-from asyncio import get_event_loop, sleep as async_stall_for, create_task
+from asyncio import get_event_loop
+from time import sleep as stall_for
 from shared.app_services import Bucket
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
@@ -57,12 +58,13 @@ class Zipper:
         writer = ZipWriter(f"{self.bucket_name}_dataset")
         consumer = ZipConsumer(queue, [json_data], writer)
 
-        producer_task = create_task(producer.produce())
         consumer.start()
         writer.start()
 
         wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
-        wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
+        wait_list = wait_item(consumer, wait_item(writer, None))
+
+        await producer.produce()
 
         while wait_list:
             if wait_list.task.ready:
@@ -71,9 +73,8 @@ class Zipper:
 
             print(f"ZIP WORK STALL, {producer.iter_count}")
             self._task.update_state(state="PROGRESS")
-            await async_stall_for(5)
+            stall_for(5)
 
-        await producer_task
         await object_set.close()
         consumer.join()
         writer.join()

@@ -18,6 +18,9 @@ worker: Celery = Celery()
 worker.conf.broker_url = BROKER_URL
 worker.conf.result_backend = RESULT_URL
 worker.conf.broker_transport_options = {"visibility_timeout": 1 * 60 * 60 * 24}
+worker.conf.task_time_limit = None
+worker.conf.task_soft_time_limit = None
+worker.conf.worker_lost_wait = None
 
 register(
     "custom_encoder",
@@ -29,10 +32,22 @@ register(
 
 @worker.task(
     bind=True,
-    name="produce_download_task",
+    name="test",
     time_limit=None,
     soft_time_limit=None
 )
+def test(self):
+    from subprocess import PIPE, Popen
+    from time import sleep
+
+    pc = Popen(["sleep", "40"], stdout=PIPE)
+    while not pc.poll() == 0:
+        sleep(5)
+        print("tick")
+    return pc.stdout.read()
+
+
+@worker.task(bind=True, name="produce_download_task",)
 def produce_download_task(self, bucket_name: str, file_ids: list[str]) -> str | None:
     task = Zipper(bucket_name, file_ids, self)
     run(task.archive_objects())
