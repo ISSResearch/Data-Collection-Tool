@@ -41,7 +41,7 @@ class Zipper:
         file_ids: list[str],
         task: Task
     ) -> None:
-        self.object_set = Bucket(bucket_name).get_download_objects(file_ids)
+        self.file_ids = file_ids
         self.bucket_name = bucket_name
         self._task = task
 
@@ -49,10 +49,11 @@ class Zipper:
 
     async def archive_objects(self) -> Optional[bool]:
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+        object_set = Bucket(self.bucket_name).get_download_objects(self.file_ids)
 
         queue = Queue()
 
-        producer = FileProducer(self.object_set, queue, MAX_CONCURENT)
+        producer = FileProducer(object_set, queue, MAX_CONCURENT)
         writer = ZipWriter(f"{self.bucket_name}_dataset")
         consumer = ZipConsumer(queue, [json_data], writer)
 
@@ -68,11 +69,12 @@ class Zipper:
                 wait_list = wait_list.next
                 continue
 
+            print(f"ZIP WORK STALL, {producer.iter_count}")
             self._task.update_state(state="PROGRESS")
             await async_stall_for(5)
 
         await producer_task
-        await self.object_set.close()
+        await object_set.close()
         consumer.join()
         writer.join()
 
