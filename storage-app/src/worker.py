@@ -17,6 +17,7 @@ worker: Celery = Celery()
 
 worker.conf.broker_url = BROKER_URL
 worker.conf.result_backend = RESULT_URL
+worker.conf.broker_transport_options = {"visibility_timeout": 1 * 60 * 60 * 24}
 
 register(
     "custom_encoder",
@@ -26,7 +27,12 @@ register(
 )
 
 
-@worker.task(bind=True, name="produce_download_task")
+@worker.task(
+    bind=True,
+    name="produce_download_task",
+    time_limit=None,
+    soft_time_limit=None
+)
 def produce_download_task(self, bucket_name: str, file_ids: list[str]) -> str | None:
     task = Zipper(bucket_name, file_ids, self)
     get_event_loop().run_until_complete(task.archive_objects())
