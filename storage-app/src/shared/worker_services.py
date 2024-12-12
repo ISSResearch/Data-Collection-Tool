@@ -78,9 +78,8 @@ class Zipper:
                 wait_list = wait_list.next
                 continue
 
-            print(f"ZIP WORK STALL")
             self._task.update_state(state="PROGRESS")
-            stall_for(5)
+            stall_for(3)
 
         object_set.close()
         consumer.join()
