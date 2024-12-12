@@ -7,7 +7,6 @@ from PIL import Image
 from PIL.ImageFile import ImageFile
 from os.path import join, sep, exists
 from pathlib import Path
-from asyncio import run
 from motor.motor_asyncio import AsyncIOMotorGridOut
 from shared.settings import HASH_SIZE, TEMP_HASH_PATH, MEDIA_SIZE
 from numpy import asarray, float32, ndarray
@@ -46,13 +45,10 @@ class IHash:
         self.embedding = self._get_hash()
 
     def _get_hash(self) -> ndarray:
-        run(self._get_buffer())
-        image = Image.open(self._buffer)
-        return to_embedding(image)
-
-    async def _get_buffer(self):
         self._file.seek(0)
-        self._buffer = BytesIO(await self._file.read())
+        buffer = BytesIO(self._file.read())
+        image = Image.open(buffer)
+        return to_embedding(image)
 
 
 class VHash(VideoHash):
@@ -103,9 +99,6 @@ class VHash(VideoHash):
         extension = self._file.metadata.get("file_extension")
         self.video_path = join(self.video_dir, f"video.{extension}")
 
-        run(self._write_file())
-
-    async def _write_file(self):
         with open(self.video_path, "wb") as file:
             self._file.seek(0)
-            file.write(await self._file.read())
+            file.write(self._file.read())

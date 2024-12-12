@@ -6,11 +6,11 @@ from shared.settings import (
     APP_BACKEND_URL,
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
-from asyncio import run
+from shared.storage_db import SyncDataBase
 from time import sleep as stall_for
-from shared.app_services import Bucket
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
+from shared.utils import get_object_id
 from typing import Any, Optional
 import requests
 from .hasher import VHash, IHash
@@ -48,9 +48,16 @@ class Zipper:
 
         self._get_annotation(bucket_name, file_ids)
 
-    async def archive_objects(self) -> Optional[bool]:
+    def archive_objects(self) -> Optional[bool]:
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-        object_set = Bucket(self.bucket_name).get_download_objects(self.file_ids)
+        # object_set = Bucket(self.bucket_name).get_download_objects(self.file_ids)
+        object_set = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .find(
+                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
+                no_cursor_timeout=True
+            ) \
+            .batch_size(200)
 
         queue = Queue()
 
@@ -61,21 +68,21 @@ class Zipper:
         consumer.start()
         writer.start()
 
-        wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
-        wait_list = wait_item(consumer, wait_item(writer, None))
+        producer.produce_sync()
 
-        await producer.produce()
+        wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
+        wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
 
         while wait_list:
             if wait_list.task.ready:
                 wait_list = wait_list.next
                 continue
 
-            print(f"ZIP WORK STALL, {producer.iter_count}")
+            print("zip task stall")
             self._task.update_state(state="PROGRESS")
-            stall_for(5)
+            stall_for(3)
 
-        await object_set.close()
+        object_set.close()
         consumer.join()
         writer.join()
 
@@ -137,10 +144,9 @@ class Hasher:
         except Exception: self.project_id = 0
 
     def get_file(self):
-        file = run(Bucket(self.bucket_name).get_object(self.file_id))
-        assert file, "No file found"
-
-        self.file = file.file
+        self.file = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .open_download_stream(get_object_id(self.file_id))
 
     def hash(self):
         match self.file.metadata.get("file_type"):

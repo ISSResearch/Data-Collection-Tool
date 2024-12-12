@@ -1,8 +1,9 @@
-from asyncio import create_task, wait, FIRST_COMPLETED
+from asyncio import FIRST_COMPLETED, create_task, wait
 from typing import Optional
 from threading import Thread
 from queue import Queue
 from gridfs import GridOut, GridIn
+from gridfs.synchronous.grid_file import Cursor
 from shared.storage_db import SyncDataBase
 from motor.core import AgnosticBaseCursor
 from gc import collect as gc_collect
@@ -230,7 +231,7 @@ class ZipConsumer(Thread):
 class FileProducer:
     def __init__(
         self,
-        object_set: AgnosticBaseCursor,
+        object_set: AgnosticBaseCursor | Cursor,
         queue: Queue,
         max_concurrent: int
     ):
@@ -242,6 +243,15 @@ class FileProducer:
 
     @property
     def ready(self) -> bool: return self._done
+
+    def produce_sync(self):
+        for file in self.object_set:
+            self.queue.put((self._get_file_name(file), file.read()))
+            self.iter_count += 1
+            if not self.iter_count % GC_FREQ: gc_collect()
+
+        self.queue.put(None)
+        self._done = True
 
     async def produce(self):
         tasks = []
