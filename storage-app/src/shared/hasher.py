@@ -1,4 +1,3 @@
-from typing_extensions import Coroutine
 from videohash import VideoHash
 from videohash.utils import (
     create_and_return_temporary_directory as mk_temp_dir,
@@ -14,7 +13,6 @@ from shared.settings import HASH_SIZE, TEMP_HASH_PATH, MEDIA_SIZE
 from numpy import asarray, float32, ndarray
 from io import BytesIO
 from scipy.fftpack import dct
-from typing import Any
 
 Image.ANTIALIAS = Image.Resampling.LANCZOS
 
