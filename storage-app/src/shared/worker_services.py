@@ -78,6 +78,7 @@ class Zipper:
                 wait_list = wait_list.next
                 continue
 
+            print("zip task stall")
             self._task.update_state(state="PROGRESS")
             stall_for(3)
 
