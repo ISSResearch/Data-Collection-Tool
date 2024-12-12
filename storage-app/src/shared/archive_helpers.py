@@ -1,4 +1,4 @@
-from asyncio import create_task, wait, FIRST_COMPLETED, gather
+from asyncio import create_task, wait, FIRST_COMPLETED
 from typing import Optional
 from threading import Thread
 from queue import Queue
@@ -257,7 +257,7 @@ class FileProducer:
             self.iter_count += 1
             if not self.iter_count % GC_FREQ: gc_collect()
 
-        await gather(*tasks)
+        for task in tasks: await task
         self.queue.put(None)
 
         self._done = True
