@@ -1,7 +1,6 @@
 from celery import Celery
 from shared.settings import BROKER_URL, RESULT_URL, CELERY_CONFIG
 from shared.worker_services import Zipper, Hasher, EmbeddingStatus
-from asyncio import run
 from typing import Optional, Any
 from json import JSONEncoder, loads, dumps
 from kombu.serialization import register
@@ -30,27 +29,10 @@ register(
 )
 
 
-@worker.task(
-    bind=True,
-    name="test",
-    time_limit=None,
-    soft_time_limit=None
-)
-def test(self):
-    from subprocess import PIPE, Popen
-    from time import sleep
-
-    pc = Popen(["sleep", "40"], stdout=PIPE)
-    while not pc.poll() == 0:
-        sleep(5)
-        print("tick")
-    return pc.stdout.read()
-
-
 @worker.task(bind=True, name="produce_download_task",)
 def produce_download_task(self, bucket_name: str, file_ids: list[str]) -> str | None:
     task = Zipper(bucket_name, file_ids, self)
-    run(task.archive_objects())
+    task.archive_objects()
     return task.archive_id
 
 
