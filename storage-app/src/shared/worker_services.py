@@ -63,7 +63,6 @@ class Zipper:
         assert (result_id := zipper.result()), "Archive was not written"
         self._archive_id = result_id
 
-
     def _archive_objects(self):
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
         object_set = SyncDataBase \
@@ -242,3 +241,4 @@ class Hasher:
         )
 
         assert response.status_code == 202, "File update was not accepted: " + response.text
+
