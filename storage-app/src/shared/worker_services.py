@@ -241,4 +241,3 @@ class Hasher:
         )
 
         assert response.status_code == 202, "File update was not accepted: " + response.text
-
