@@ -1,6 +1,52 @@
 import { deepCopy, extractFileMeta, formUID } from "../utils";
 
 /**
+* @param {object} data
+* @returns {string}
+*/
+export const formatFilterJSON = (data) => {
+  var res = "";
+
+  for (let key in data) {
+    var val = data[key];
+    var skipKey = false;
+    var addValue;
+
+    switch (typeof val) {
+      case "boolean": {
+        skipKey = !val;
+        break;
+      }
+      case "object": {
+        if (Array.isArray(val)) {
+          if (val.length) {
+            addValue = "[";
+            for (let v of val) { addValue += v; addValue += ", "; }
+            addValue = addValue.slice(0, addValue.length - 2);
+            addValue += "]";
+          }
+          else addValue = "all";
+        }
+        else addValue = formatFilterJSON(val);
+        break;
+      }
+      default: addValue = val;
+    }
+
+    if (!skipKey) {
+      res += key;
+      res += ": ";
+      if (addValue) {
+        res += addValue;
+        res += ", ";
+      }
+    }
+  }
+
+  return res.slice(0, res.length - 2);
+};
+
+/**
 * @param {File[]} files
 * @param {object} groups
 * @returns {object}

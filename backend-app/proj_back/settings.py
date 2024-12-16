@@ -136,6 +136,7 @@ AUTH_USER_MODEL = 'user.CustomUser'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 REST_FRAMEWORK = {
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),

@@ -16,7 +16,7 @@ from file.services import ViewSetServices as FileService
 from django.db import transaction
 
 
-@with_model_assertion(Project, "id", filter={"visible": True},)
+@with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)
 def _get_archives(project: Project) -> tuple[dict[str, Any], int]:
     query = project.archive_set \
         .annotate(file_count=Count("file")) \
@@ -26,34 +26,43 @@ def _get_archives(project: Project) -> tuple[dict[str, Any], int]:
 
 @with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)
 def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], int]:
-    request_data: dict[str, Any] = request.data
+    request_query = type(
+        "query",
+        (object,),
+        {
+            "get": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else None),
+            "getlist": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else []),
+        }
+    )
 
     attributes = project.attribute_set \
-        .filter(id__in=request_data.get("attr", [])) \
+        .filter(id__in=request_query.get("attr", [])) \
         .order_by("level__order", "id") \
         .values("name") \
         .values_list("name", flat=True)
 
     filter_data = {
-        "status": request_data.get("card", []),
-        "only_new": request_data.get("downloaded", False),
-        "type": request_data.get("type", []),
+        "status": request_query.get("card", []),
+        "only_new": request_query.get("downloaded", False),
+        "type": request_query.get("type", []),
         "attributes": list(attributes)
     }
 
-    files, _ = FileService()._get_files(project.id, request.user, request_data, True)
+    files, _ = FileService()._get_files(project.id, request.user, request_query, True)
 
-    response = post(
-        "url",
-        headers={
-            "Authorization": "Bearer " + request.user._make_token(),
-            "Content-Type": "application/json",
-        },
-        json=FileSerializer(files, many=True).data
-    )
+    # response = post(
+    #     "url",
+    #     headers={
+    #         "Authorization": "Bearer " + request.user._make_token(),
+    #         "Content-Type": "application/json",
+    #     },
+    #     json=FileSerializer(files, many=True).data
+    # )
 
-    assert response.status_code == 201
-    assert (task_id := response.json().get("task_id"))
+    # assert response.status_code == 201
+    # assert (task_id := response.json().get("task_id"))
+    from secrets import token_hex
+    task_id = token_hex(16)
 
     with transaction.atomic():
         archive = project.archive_set.create(
@@ -63,6 +72,6 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
         )
 
         files.update(is_downloaded=True)
-        archive.add(*files)
+        archive.file.add(*files)
 
     return ArchiveSerializer(archive).data, 201

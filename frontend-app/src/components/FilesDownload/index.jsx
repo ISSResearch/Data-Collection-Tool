@@ -1,10 +1,11 @@
-import { useState, ReactElement, useMemo } from "react";
+import { useState, ReactElement, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../config/api";
 import { useDispatch } from "react-redux";
 import { addAlert } from "../../slices/alerts";
 import Load from "../ui/Load";
 import ValidationFilterGroup from '../forms/ValidationFilterGroup';
+import DownloadTable from "./DownloadTable";
 import "./styles.css";
 
 /** @type {{name: string, id: string}[]} */
@@ -27,6 +28,8 @@ const TYPE_FILTER = [
 export default function FilesDownload({ pathID, attributes }) {
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [downloads, setDownloads] = useState([]);
+  const newCheckBox = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const filterFields = useMemo(() => [
@@ -51,15 +54,12 @@ export default function FilesDownload({ pathID, attributes }) {
   const handleChange = (type, data) =>
     setFilterData((prev) => ({ ...prev, [type]: data }));
 
-  const createTask = async (event) => {
-    event.preventDefault();
-    var isNew = event.target.newFiles.checked;
-
+  const createTask = async () => {
     setLoading(true);
 
     try {
       var payload = { ...filterData };
-      if (isNew) payload.downloaded = false;
+      if (newCheckBox.current.checked) payload.downloaded = false;
 
       await api.post(`/api/projects/archive/${pathID}/`, payload, {
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
@@ -82,29 +82,60 @@ export default function FilesDownload({ pathID, attributes }) {
     setLoading(false);
   };
 
-  return (
-    <div className="iss__filesDownload">
-      <h2 className="iss__filesDownload__caption">
-        Choose files to download or enter existing taskID
-      </h2>
+  const getDownloads = async () => {
+    try {
+      const { data } = await api.get(`/api/projects/archive/${pathID}/`, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
+      });
+
+      setDownloads(data);
+    }
+    catch ({ message, response }) {
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
+
+      dispatch(addAlert({
+        message: "Getting files data error:" + message,
+        type: "error",
+        noSession: authFailed
+      }));
+
+      if (authFailed) navigate("/login");
+    }
+  };
+
+  useEffect(() => {
+    getDownloads();
+  }, []);
+
+  return <>
+    {/* todo: supposed to be a form element but val filter group has it inside */}
+    <div className="downloads">
       <ValidationFilterGroup
         disabled={false}
         filterData={filterFields}
         onChange={handleChange}
       />
-      <form onSubmit={createTask} className="iss__filesDownload__form">
-        <fieldset className="iss__filesDownload__mainSet">
-          <label className="iss__filesDownload__inputBox__wrap">
-            <input name="newFiles" type="checkbox" />
-            <span>not downloaded before</span>
-          </label>
-        </fieldset>
-        <button
-          className={
-            `iss__filesDownload__button${ loading ? " block--button" : "" }`
-          }
-        >{loading ? <Load isInline /> : <span>request</span>}</button>
-      </form>
+      <fieldset className="downloads__mainSet">
+        <label className="downloads__inputBox__wrap">
+          <input ref={newCheckBox} name="newFiles" type="checkbox" />
+          <span>not downloaded before</span>
+        </label>
+      </fieldset>
+      <button
+        type="button"
+        onClick={createTask}
+        className={
+          `downloads__button${ loading ? " block--button" : "" }`
+        }
+      >{loading ? <Load isInline /> : <span>request</span>}</button>
     </div>
-  );
+    {
+      downloads.length
+      ? <DownloadTable data={downloads} onDownload={(id) => { console.log(id); }}/>
+      : "No Data"
+    }
+
+  </>;
 }
