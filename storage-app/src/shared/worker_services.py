@@ -15,7 +15,7 @@ from typing import Any, Optional
 import requests
 from .hasher import VHash, IHash
 from queue import Queue
-from .archive_helpers import FileProducer, ZipConsumer, ZipWriter
+from .archive_helpers import FileProducer, ZipConsumer, ZipWriter, SyncZipping
 from celery import Task
 
 
@@ -33,7 +33,6 @@ class EmbeddingStatus(Enum):
 
 
 class Zipper:
-    written: bool = False
     archive_extension: str = "zip"
 
     def __init__(
@@ -48,9 +47,25 @@ class Zipper:
 
         self._get_annotation(bucket_name, file_ids)
 
-    def archive_objects(self) -> Optional[bool]:
+    def archive_objects(self):
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-        # object_set = Bucket(self.bucket_name).get_download_objects(self.file_ids)
+        object_set = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .find(
+                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
+                no_cursor_timeout=True
+            ) \
+            .batch_size(200)
+
+        zipper = SyncZipping(f"{self.bucket_name}_dataset", object_set, [json_data])
+        zipper.run()
+
+        assert (result_id := zipper.result()), "Archive was not written"
+        self._archive_id = result_id
+
+
+    def _archive_objects(self):
+        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
         object_set = SyncDataBase \
             .get_fs_bucket(self.bucket_name) \
             .find(
@@ -86,12 +101,8 @@ class Zipper:
         consumer.join()
         writer.join()
 
-        self.written = True
-
         assert (result_id := writer.result()), "Archive was not written"
         self._archive_id = result_id
-
-        return self.written
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"
