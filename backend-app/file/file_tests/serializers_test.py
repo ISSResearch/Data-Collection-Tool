@@ -33,6 +33,7 @@ class FileSerializerTest(TestCase):
             set(data.keys()),
             data_keys.union({
                 "rebound",
+                "rebound_project",
                 "related_duplicates",
                 'upload_date',
                 "update_date",

@@ -119,11 +119,11 @@ function FileMedia({ files, slide, pathID }, ref) {
     const setFile = (token) => {
       resetZoom();
       if (!files[slide]) return;
-      var { id, file_type, rebound } = files[slide];
+      var { id, file_type, rebound, rebound_project } = files[slide];
       setTypeVideo(file_type === 'video');
 
       var baseUrl = `${getOriginDomain()}:9000/api/storage`;
-      var queryUrl = `project_${pathID}/${rebound || id}/`;
+      var queryUrl = `project_${rebound_project || pathID}/${rebound || id}/`;
 
       setFileUrl(`${baseUrl}/${queryUrl}?access=${token || tempFileToken}`);
       setMark(rebound ? "DUPLICATE" : "");

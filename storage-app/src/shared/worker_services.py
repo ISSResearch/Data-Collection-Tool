@@ -6,15 +6,16 @@ from shared.settings import (
     APP_BACKEND_URL,
     ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
 )
-from asyncio import get_event_loop, sleep as async_stall_for, create_task
-from shared.app_services import Bucket
+from shared.storage_db import SyncDataBase
+from time import sleep as stall_for
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
+from shared.utils import get_object_id
 from typing import Any, Optional
 import requests
 from .hasher import VHash, IHash
 from queue import Queue
-from .archive_helpers import FileProducer, ZipConsumer, ZipWriter
+from .archive_helpers import FileProducer, ZipConsumer, ZipWriter, SyncZipping
 from celery import Task
 
 
@@ -32,7 +33,6 @@ class EmbeddingStatus(Enum):
 
 
 class Zipper:
-    written: bool = False
     archive_extension: str = "zip"
 
     def __init__(
@@ -41,24 +41,48 @@ class Zipper:
         file_ids: list[str],
         task: Task
     ) -> None:
-        self.object_set = Bucket(bucket_name).get_download_objects(file_ids)
+        self.file_ids = file_ids
         self.bucket_name = bucket_name
         self._task = task
 
         self._get_annotation(bucket_name, file_ids)
 
-    async def archive_objects(self) -> Optional[bool]:
+    def archive_objects(self):
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+        object_set = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .find(
+                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
+                no_cursor_timeout=True
+            ) \
+            .batch_size(200)
+
+        zipper = SyncZipping(f"{self.bucket_name}_dataset", object_set, [json_data])
+        zipper.run()
+
+        assert (result_id := zipper.result()), "Archive was not written"
+        self._archive_id = result_id
+
+    def _archive_objects(self):
+        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+        object_set = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .find(
+                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
+                no_cursor_timeout=True
+            ) \
+            .batch_size(200)
 
         queue = Queue()
 
-        producer = FileProducer(self.object_set, queue, MAX_CONCURENT)
+        producer = FileProducer(object_set, queue, MAX_CONCURENT)
         writer = ZipWriter(f"{self.bucket_name}_dataset")
         consumer = ZipConsumer(queue, [json_data], writer)
 
-        producer_task = create_task(producer.produce())
         consumer.start()
         writer.start()
+
+        producer.produce_sync()
 
         wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
         wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
@@ -68,20 +92,16 @@ class Zipper:
                 wait_list = wait_list.next
                 continue
 
+            print("zip task stall")
             self._task.update_state(state="PROGRESS")
-            await async_stall_for(5)
+            stall_for(3)
 
-        await producer_task
-        await self.object_set.close()
+        object_set.close()
         consumer.join()
         writer.join()
 
-        self.written = True
-
         assert (result_id := writer.result()), "Archive was not written"
         self._archive_id = result_id
-
-        return self.written
 
     def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
         url: str = APP_BACKEND_URL + "/api/files/annotation/"
@@ -133,13 +153,9 @@ class Hasher:
         except Exception: self.project_id = 0
 
     def get_file(self):
-        file = get_event_loop().run_until_complete(
-            Bucket(self.bucket_name)
-            .get_object(self.file_id)
-        )
-        assert file, "No file found"
-
-        self.file = file.file
+        self.file = SyncDataBase \
+            .get_fs_bucket(self.bucket_name) \
+            .open_download_stream(get_object_id(self.file_id))
 
     def hash(self):
         match self.file.metadata.get("file_type"):
