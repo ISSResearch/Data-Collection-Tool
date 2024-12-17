@@ -6,6 +6,7 @@ DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
 FRONTEND_PORT = getenv("FRONTEND_PORT")
+APP_STORAGE_URL = getenv("APP_STORAGE_URL")
 
 TEST_ENV = getenv('CASE') == 'test'
 

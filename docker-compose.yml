@@ -36,6 +36,7 @@ services:
     environment:
       DB_HOST: iss-main-db
       DB_NAME: ${DB_APP_DB_NAME:-app_db}
+      APP_STORAGE_URL: iss-storage:${STORAGE_PORT:-9000}
       SERVER_ORIGINS: ${SERVER_ORIGINS:-localhost}
       SECRET_KEY: ${SECRET_KEY}
       SECRET_ALGO: ${SECRET_ALGO}

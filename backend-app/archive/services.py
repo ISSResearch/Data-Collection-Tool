@@ -4,6 +4,7 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_202_ACCEPTED
 )
+from django.conf import settings
 from rest_framework.views import Request
 from django.db.models.aggregates import Count
 from typing import Any
@@ -53,17 +54,18 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
     files, _ = FileService()._get_files(project.id, request.user, request_query, True)
     if only_new: files = files.filter(archive__isnull=True)
 
-    # response = post(
-    #     "url",
-    #     headers={
-    #         "Authorization": "Bearer " + request.user._make_token(),
-    #         "Content-Type": "application/json",
-    #     },
-    #     json=FileSerializer(files, many=True).data
-    # )
+    response = post(
+        settings.APP_STORAGE_URL + f"/api/archive/{project.id}/",
+        headers={
+            "Authorization": "Bearer " + request.user._make_token(),
+            "Content-Type": "application/json",
+        },
+        json=FileSerializer(files, many=True).data
+    )
 
-    # assert response.status_code == 201
-    # assert (task_id := response.json().get("task_id"))
+    assert response.status_code == 201
+    assert (task_id := response.json().get("task_id"))
+
     from secrets import token_hex
     task_id = token_hex(16)
 
@@ -76,4 +78,4 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
 
         archive.file.add(*files)
 
-    return ArchiveSerializer(archive).data, 201
+    return ArchiveSerializer(archive).data, HTTP_201_CREATED

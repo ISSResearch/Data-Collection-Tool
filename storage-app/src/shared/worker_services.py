@@ -37,96 +37,102 @@ class Zipper:
 
     def __init__(
         self,
-        bucket_name: str,
-        file_ids: list[str],
+        bucket_id: int,
+        annotation: list[dict[str, Any]],
         task: Task
     ) -> None:
-        self.file_ids = file_ids
-        self.bucket_name = bucket_name
         self._task = task
+        self.annotation = annotation
+        self.bucket_id = bucket_id
+        self.sources = None
 
-        self._get_annotation(bucket_name, file_ids)
+    def parse_annotation(self):
+        sources = {}
+
+        for item in self.annotation:
+            bucket = "project_" + str(item.get("rebound_project") or self.project_id)
+            f_id: str = item.get("rebound") or item.get("id", "")
+            f_list = sources.get(bucket, [])
+            f_list.append(get_object_id(f_id))
+            if bucket not in sources: sources[bucket] = f_list
+
+        self.sources = list(sources.items())
 
     def archive_objects(self):
+        assert self.sources, "Annotation must be parsed"
+
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-        object_set = SyncDataBase \
-            .get_fs_bucket(self.bucket_name) \
-            .find(
-                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
-                no_cursor_timeout=True
-            ) \
+
+        get_source = lambda b_name, f_list: SyncDataBase \
+            .get_fs_bucket(b_name) \
+            .find({"_id": {"$in": f_list}}, no_cursor_timeout=True) \
             .batch_size(200)
 
-        zipper = SyncZipping(f"{self.bucket_name}_dataset", object_set, [json_data])
+        source_sets = [get_source(b_name, f_list) for b_name, f_list in self.sources]
+
+        zipper = SyncZipping(f"project_{self.bucket_id}_dataset", source_sets, [json_data])
         zipper.run()
 
-        assert (result_id := zipper.result()), "Archive was not written"
-        self._archive_id = result_id
+        self._result = zipper.result
+        assert self._result, "Error during Archiving"
 
-    def _archive_objects(self):
-        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-        object_set = SyncDataBase \
-            .get_fs_bucket(self.bucket_name) \
-            .find(
-                {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
-                no_cursor_timeout=True
-            ) \
-            .batch_size(200)
+    # def _archive_objects(self):
+    #     json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+    #     object_set = SyncDataBase \
+    #         .get_fs_bucket(self.bucket_name) \
+    #         .find(
+    #             {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
+    #             no_cursor_timeout=True
+    #         ) \
+    #         .batch_size(200)
 
-        queue = Queue()
+    #     queue = Queue()
 
-        producer = FileProducer(object_set, queue, MAX_CONCURENT)
-        writer = ZipWriter(f"{self.bucket_name}_dataset")
-        consumer = ZipConsumer(queue, [json_data], writer)
+    #     producer = FileProducer(object_set, queue, MAX_CONCURENT)
+    #     writer = ZipWriter(f"{self.bucket_name}_dataset")
+    #     consumer = ZipConsumer(queue, [json_data], writer)
 
-        consumer.start()
-        writer.start()
+    #     consumer.start()
+    #     writer.start()
 
-        producer.produce_sync()
+    #     producer.produce_sync()
 
-        wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
-        wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
+    #     wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
+    #     wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
 
-        while wait_list:
-            if wait_list.task.ready:
-                wait_list = wait_list.next
-                continue
+    #     while wait_list:
+    #         if wait_list.task.ready:
+    #             wait_list = wait_list.next
+    #             continue
 
-            print("zip task stall")
-            self._task.update_state(state="PROGRESS")
-            stall_for(3)
+    #         print("zip task stall")
+    #         self._task.update_state(state="PROGRESS")
+    #         stall_for(3)
 
-        object_set.close()
-        consumer.join()
-        writer.join()
+    #     object_set.close()
+    #     consumer.join()
+    #     writer.join()
 
-        assert (result_id := writer.result()), "Archive was not written"
-        self._archive_id = result_id
+    #     assert (result_id := writer.result()), "Archive was not written"
+    #     self._archive_id = result_id
 
-    def _get_annotation(self, bucket_name: str, file_ids: list[str]) -> Any:
-        url: str = APP_BACKEND_URL + "/api/files/annotation/"
+    def send_result(self):
+        assert self._result, "No task result, or missflow"
+
         payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
 
-        try: _, project_id = bucket_name.split("_")
-        except Exception: project_id = ""
+        res = requests.patch(
+            f"{APP_BACKEND_URL }/api/project/archive/{self.bucket_id}/{self._task.id}/",
+            headers={
+                "Authorization": "Internal " + payload_token,
+                "Content-Type": "application/json",
+            },
+            json=self._result
+        )
 
-        headers: dict[str, Any] = {
-            "Authorization": "Internal " + payload_token,
-            "Content-Type": "application/json",
-        }
-        payload: dict[str, Any] = {"project_id": project_id, "file_ids": file_ids}
+        res_status, res_data = res.status_code, res.json()
 
-        response: requests.Response = requests.post(url, headers=headers, json=payload)
-
-        if response.status_code != 202: raise ConnectionError
-
-        response_data: Any = response.json()
-
-        self.annotation: dict[str, Any] = response_data["annotation"]
-
-    @property
-    def archive_id(self) -> Optional[str]:
-        if a_id := self.__dict__.get("_archive_id"): return str(a_id)
+        assert res_status == 202, f"Result send response {res_status}: {res_data}"
 
 
 class Hasher:
