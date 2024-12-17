@@ -15,6 +15,7 @@ from django.db.models import (
     Case,
     Prefetch
 )
+from django.db.models.query import QuerySet
 from rest_framework.request import QueryDict
 from rest_framework.views import Request
 from django.db import connection, transaction
@@ -35,7 +36,6 @@ class ViewSetServices:
         ("status__in", "card[]", True),
         ("file_type__in", "type[]", True),
         ("status", "status", False),
-        ("is_downloaded", "downloaded", False),
         ("author__in", "author[]", True),
         ("upload_date__gte", "from", False),
         ("upload_date__lte", "to", False)
@@ -116,7 +116,6 @@ class ViewSetServices:
         date_from_str = lambda d: tz.make_aware(dt.strptime(d, "%Y-%m-%d"))
 
         match filter_name:
-            case "is_downloaded": return False
             case "upload_date__gte": return date_from_str(query_param)
             case "upload_date__lte": return date_from_str(query_param)
             case _: return query_param
@@ -127,7 +126,7 @@ class ViewSetServices:
         request_user: CustomUser,
         request_query: QueryDict,
         as_query: bool = False
-    ) -> tuple[dict[str, Any], int]:
+    ) -> tuple[dict[str, Any] | QuerySet, int]:
         filters = self._form_filters(project_id, request_user, request_query)
         orders = self._form_orders(request_query)
 

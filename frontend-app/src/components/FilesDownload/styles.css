@@ -101,10 +101,10 @@
     padding: 4px;
 }
 .downloads__table__button {
-    transition: opacity 0.3s ease;
     padding: 4px !important;
 }
 .downloads__table__button > button {
+    transition: opacity 0.3s ease;
     cursor: pointer;
     width: 100%;
     height: 100%;
@@ -114,9 +114,15 @@
 .downloads__table__button > button > svg {
     fill: var(--issBrand);
 }
+.downloads__row__success {
+    background-color: #91df977a;
+}
+.downloads__row__failure {
+    background-color: #ff62627d;
+}
 
 @media (hover: hover) {
-    .downloads__table__button:hover {
+    .downloads__table__button > button:hover {
         opacity: 0.3;
     }
 

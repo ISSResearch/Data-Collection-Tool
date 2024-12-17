@@ -59,7 +59,7 @@ export default function FilesDownload({ pathID, attributes }) {
 
     try {
       var payload = { ...filterData };
-      if (newCheckBox.current.checked) payload.downloaded = false;
+      if (newCheckBox.current.checked) payload.only_new = true;
 
       await api.post(`/api/projects/archive/${pathID}/`, payload, {
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
@@ -132,10 +132,8 @@ export default function FilesDownload({ pathID, attributes }) {
       >{loading ? <Load isInline /> : <span>request</span>}</button>
     </div>
     {
-      downloads.length
-      ? <DownloadTable data={downloads} onDownload={(id) => { console.log(id); }}/>
-      : "No Data"
+      downloads.length &&
+      <DownloadTable data={downloads} onDownload={(id) => { console.log(id); }}/>
     }
-
   </>;
 }

@@ -295,7 +295,6 @@ class ViewServicesTest(TestCase, ViewSetServices):
             filter["status"] = status
         if downloaded:
             query.set("downloaded", downloaded)
-            filter["is_downloaded"] = False
         if author:
             query.set("author[]", author)
             filter["author__in"] = author

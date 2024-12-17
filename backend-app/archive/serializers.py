@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, ChoiceField, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, ChoiceField, SerializerMethodField, IntegerField
 from .models import Archive
 
 
@@ -9,6 +9,7 @@ class StatusChoiceField(ChoiceField):
 class ArchiveSerializer(ModelSerializer):
     status = StatusChoiceField(choices=Archive.STATUSES)
     author = SerializerMethodField()
+    file_count = IntegerField()
 
     class Meta:
         model = Archive

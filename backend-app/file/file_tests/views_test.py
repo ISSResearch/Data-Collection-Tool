@@ -278,10 +278,7 @@ class AnnotationViewTest(TestCase):
             content_type="application/json",
             HTTP_AUTHORIZATION="Bearer " + self.case.user.emit_token()
         )
-        self.assertEqual(
-            self.case.project.file_set.filter(is_downloaded=True).count(),
-            0
-        )
+
 
         admin_request = self.client.post(
             "/api/files/annotation/",
@@ -311,7 +308,3 @@ class AnnotationViewTest(TestCase):
         )
         self.assertEqual(internal_request.status_code, 202)
         self.assertEqual(internal_request.data["annotated"], 1)
-        self.assertEqual(
-            self.case.project.file_set.filter(is_downloaded=True).count(),
-            1
-        )

@@ -36,7 +36,6 @@ class FileModelTest(TestCase):
                     "project",
                     "author",
                     "status",
-                    "is_downloaded",
                     "validator",
                 )
                 .get(id=new_file.id)

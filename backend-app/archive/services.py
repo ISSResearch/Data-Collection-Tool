@@ -20,7 +20,7 @@ from django.db import transaction
 def _get_archives(project: Project) -> tuple[dict[str, Any], int]:
     query = project.archive_set \
         .annotate(file_count=Count("file")) \
-        .order_by("create_date")
+        .order_by("-create_date")
     return ArchiveSerializer(query, many=True).data, HTTP_200_OK
 
 
@@ -41,14 +41,17 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
         .values("name") \
         .values_list("name", flat=True)
 
+    only_new = request_query.get("only_new", False)
+
     filter_data = {
         "status": request_query.get("card", []),
-        "only_new": request_query.get("downloaded", False),
+        "only_new": only_new,
         "type": request_query.get("type", []),
         "attributes": list(attributes)
     }
 
     files, _ = FileService()._get_files(project.id, request.user, request_query, True)
+    if only_new: files = files.filter(archive__isnull=True)
 
     # response = post(
     #     "url",
@@ -71,7 +74,6 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
             author=request.user
         )
 
-        files.update(is_downloaded=True)
         archive.file.add(*files)
 
     return ArchiveSerializer(archive).data, 201
