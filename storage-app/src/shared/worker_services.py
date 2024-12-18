@@ -1,21 +1,14 @@
 from enum import Enum
 from json import dumps
-from shared.settings import (
-    SECRET_KEY,
-    SECRET_ALGO,
-    APP_BACKEND_URL,
-    ASYNC_PRODUCER_MAX_CONCURRENT as MAX_CONCURENT
-)
+from shared.settings import SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
 from shared.storage_db import SyncDataBase
-from time import sleep as stall_for
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
 from shared.utils import get_object_id
 from typing import Any, Optional
 import requests
 from .hasher import VHash, IHash
-from queue import Queue
-from .archive_helpers import FileProducer, ZipConsumer, ZipWriter, SyncZipping
+from .archive_helpers import SyncZipping
 from celery import Task
 
 
@@ -50,7 +43,7 @@ class Zipper:
         sources = {}
 
         for item in self.annotation:
-            bucket = "project_" + str(item.get("rebound_project") or self.project_id)
+            bucket = "project_" + str(item.get("rebound_project") or self.bucket_id)
             f_id: str = item.get("rebound") or item.get("id", "")
             f_list = sources.get(bucket, [])
             f_list.append(get_object_id(f_id))
@@ -76,53 +69,13 @@ class Zipper:
         self._result = zipper.result
         assert self._result, "Error during Archiving"
 
-    # def _archive_objects(self):
-    #     json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-    #     object_set = SyncDataBase \
-    #         .get_fs_bucket(self.bucket_name) \
-    #         .find(
-    #             {"_id": {"$in": [get_object_id(str(object_id)) for object_id in self.file_ids]}},
-    #             no_cursor_timeout=True
-    #         ) \
-    #         .batch_size(200)
-
-    #     queue = Queue()
-
-    #     producer = FileProducer(object_set, queue, MAX_CONCURENT)
-    #     writer = ZipWriter(f"{self.bucket_name}_dataset")
-    #     consumer = ZipConsumer(queue, [json_data], writer)
-
-    #     consumer.start()
-    #     writer.start()
-
-    #     producer.produce_sync()
-
-    #     wait_item = lambda t, n: type("wi", (object,), {"task": t, "next": n})
-    #     wait_list = wait_item(producer, wait_item(consumer, wait_item(writer, None)))
-
-    #     while wait_list:
-    #         if wait_list.task.ready:
-    #             wait_list = wait_list.next
-    #             continue
-
-    #         print("zip task stall")
-    #         self._task.update_state(state="PROGRESS")
-    #         stall_for(3)
-
-    #     object_set.close()
-    #     consumer.join()
-    #     writer.join()
-
-    #     assert (result_id := writer.result()), "Archive was not written"
-    #     self._archive_id = result_id
-
     def send_result(self):
         assert self._result, "No task result, or missflow"
 
         payload_token = emit_token({"minutes": 1}, SECRET_KEY, SECRET_ALGO)
 
         res = requests.patch(
-            f"{APP_BACKEND_URL }/api/project/archive/{self.bucket_id}/{self._task.id}/",
+            f"{APP_BACKEND_URL}/api/projects/archive/{self.bucket_id}/{self._task.request.id}/",
             headers={
                 "Authorization": "Internal " + payload_token,
                 "Content-Type": "application/json",
@@ -130,7 +83,7 @@ class Zipper:
             json=self._result
         )
 
-        res_status, res_data = res.status_code, res.json()
+        res_status, res_data = res.status_code, res.text
 
         assert res_status == 202, f"Result send response {res_status}: {res_data}"
 

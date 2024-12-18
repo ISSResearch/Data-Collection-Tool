@@ -55,7 +55,7 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
     if only_new: files = files.filter(archive__isnull=True)
 
     response = post(
-        settings.APP_STORAGE_URL + f"/api/archive/{project.id}/",
+        settings.APP_STORAGE_URL + f"/api/task/archive/{project.id}/",
         headers={
             "Authorization": "Bearer " + request.user._make_token(),
             "Content-Type": "application/json",
@@ -63,11 +63,8 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
         json=FileSerializer(files, many=True).data
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 201, response.json()
     assert (task_id := response.json().get("task_id"))
-
-    from secrets import token_hex
-    task_id = token_hex(16)
 
     with transaction.atomic():
         archive = project.archive_set.create(
@@ -78,4 +75,22 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
 
         archive.file.add(*files)
 
-    return ArchiveSerializer(archive).data, HTTP_201_CREATED
+    return {"ok": True}, HTTP_201_CREATED
+
+
+@with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)
+def _patch_archive(project: Project, pk: str, data: dict[str, Any]) -> tuple[dict, int]:
+    try:
+        archive = project.archive_set.get(id=pk)
+
+        archive.status = "f" if (error := data.get("error")) else "s"
+
+        if error: archive.result_message = error
+        else:
+            archive.result_id = data.get("zip_id")
+            archive.result_size = data.get("size", 0)
+
+        archive.save()
+
+        return {"ok": True}, HTTP_202_ACCEPTED
+    except Exception: return {"ok": False}, HTTP_400_BAD_REQUEST

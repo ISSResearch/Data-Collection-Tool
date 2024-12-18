@@ -319,7 +319,7 @@ class SyncZipping():
     def result(self) -> Optional[dict[str, Any]]:
         if not self._archive_id: return None
         return {
-            "zip_id": self._archive_id,
+            "zip_id": str(self._archive_id),
             "f_count": len(self.file_list),
             "size": self._archive_size
         }

@@ -1,6 +1,24 @@
 import { deepCopy, extractFileMeta, formUID } from "../utils";
 
 /**
+* @param {number | null} size
+* @returns {string}
+*/
+export const formatSize = (size) => {
+  if (isNaN(size) || size === null) return "";
+
+  var formatNames = [" kb", " mb", " gb", " tb"];
+
+  for (let i = formatNames.length; i > 0; i--) {
+    var A = 1024 ** i;
+    var R = (size / A);
+    if (R >= 1.) return R.toFixed(2) + formatNames[i - 1];
+  }
+
+  return size + " b";
+};
+
+/**
 * @param {object} data
 * @returns {string}
 */

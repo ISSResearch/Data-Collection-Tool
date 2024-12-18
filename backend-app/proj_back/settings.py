@@ -6,11 +6,11 @@ DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
 FRONTEND_PORT = getenv("FRONTEND_PORT")
-APP_STORAGE_URL = getenv("APP_STORAGE_URL")
+APP_STORAGE_URL = "http://" + getenv("APP_STORAGE_URL", "127.0.0.1")
 
-TEST_ENV = getenv('CASE') == 'test'
+TEST_ENV = getenv("CASE") == 'test'
 
-DEBUG = getenv('DEBUG') == 'true'
+DEBUG = getenv("DEBUG") == 'true'
 
 RAW_ORIGIN = getenv('SERVER_ORIGINS')
 SELF_ORIGIN = None

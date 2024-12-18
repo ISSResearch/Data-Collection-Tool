@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { formatFilterJSON } from "../../adapters";
+import { formatFilterJSON, formatSize } from "../../adapters";
 
 /**
 * @param {object} props
@@ -31,7 +31,7 @@ export default function DownloadTable({ data, onDownload }) {
             <td>{item.status.toLowerCase()}</td>
             <td>{item.create_date}</td>
             <td>{item.file_count}</td>
-            <td>{item.result_size}</td>
+            <td>{formatSize(item.result_size)}</td>
             <td>{item.result_message}</td>
             <td>{formatFilterJSON(item.filters)}</td>
             <td className="downloads__table__button">

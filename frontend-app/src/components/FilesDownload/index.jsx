@@ -1,8 +1,9 @@
 import { useState, ReactElement, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../config/api";
+import { api, fileApi } from "../../config/api";
 import { useDispatch } from "react-redux";
 import { addAlert } from "../../slices/alerts";
+import { getOriginDomain } from "../../utils";
 import Load from "../ui/Load";
 import ValidationFilterGroup from '../forms/ValidationFilterGroup';
 import DownloadTable from "./DownloadTable";
@@ -64,6 +65,8 @@ export default function FilesDownload({ pathID, attributes }) {
       await api.post(`/api/projects/archive/${pathID}/`, payload, {
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
       });
+
+      getDownloads();
     }
     catch ({ message, response }) {
       var authFailed = response && (
@@ -105,6 +108,39 @@ export default function FilesDownload({ pathID, attributes }) {
     }
   };
 
+  const getDataset = async (archiveId) => {
+    try {
+      if (!archiveId) throw new Error("Error! No data found");
+
+      var { data: token } = await fileApi.get("/api/temp_token/", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      });
+
+      if (!token) throw new Error("No token returned");
+
+      var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
+      var accessQuery = `/?access=${token}&archive=1`;
+
+      var link = document.createElement("a");
+      link.href = baseUrl + archiveId + accessQuery;
+      link.setAttribute("download", "dataset.zip");
+
+      link.click();
+      link.remove();
+    }
+    catch({ message, response }) {
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
+
+      dispatch(addAlert({
+        message: "Process request error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
+    }
+  };
+
   useEffect(() => {
     getDownloads();
   }, []);
@@ -132,8 +168,8 @@ export default function FilesDownload({ pathID, attributes }) {
       >{loading ? <Load isInline /> : <span>request</span>}</button>
     </div>
     {
-      downloads.length &&
-      <DownloadTable data={downloads} onDownload={(id) => { console.log(id); }}/>
+      !!downloads.length &&
+      <DownloadTable data={downloads} onDownload={getDataset}/>
     }
   </>;
 }
