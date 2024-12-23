@@ -40,7 +40,7 @@ class FileModelTest(TestCase):
                 )
                 .get(id=new_file.id)
             ),
-            set(credentials.values()).union({"p", False, None})
+            set(credentials.values()).union({"p", None})
         )
         self.assertEqual(init_count + 1, self.case.project.file_set.count())
 

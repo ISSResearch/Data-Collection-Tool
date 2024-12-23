@@ -3,7 +3,6 @@ from django.db.models import (
     CharField,
     DateTimeField,
     IntegerField,
-    BooleanField,
     ForeignKey,
     DO_NOTHING,
     QuerySet,

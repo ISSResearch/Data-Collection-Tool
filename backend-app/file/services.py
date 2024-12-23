@@ -356,13 +356,13 @@ class StatsServices:
 
         for row in stat_data:
             a_id, \
-            a_status, \
-            a_name, \
-            a_type, \
-            a_parent, \
-            l_name, \
-            order, \
-            count = cls.attribute_item(row)
+                a_status, \
+                a_name, \
+                a_type, \
+                a_parent, \
+                l_name, \
+                order, \
+                count = cls.attribute_item(row)
 
             target = prepared_stats.get(a_id)
 

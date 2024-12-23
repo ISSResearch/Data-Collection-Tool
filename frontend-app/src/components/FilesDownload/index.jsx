@@ -28,7 +28,7 @@ const TYPE_FILTER = [
 */
 export default function FilesDownload({ pathID, attributes }) {
   const [filterData, setFilterData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(null);
   const [downloads, setDownloads] = useState([]);
   const newCheckBox = useRef(null);
   const dispatch = useDispatch();
@@ -50,23 +50,49 @@ export default function FilesDownload({ pathID, attributes }) {
       name: 'type',
       data: TYPE_FILTER,
     },
+    {
+      prettyName: "Date Filter:",
+      name: "date",
+      type: "date",
+    }
   ], [attributes]);
 
   const handleChange = (type, data) =>
     setFilterData((prev) => ({ ...prev, [type]: data }));
 
-  const createTask = async () => {
-    setLoading(true);
+  const getAnnotation = (data) => {
+    var payload = JSON.stringify(data, null, 4);
+    var blob = new Blob([payload], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+
+    link.download = "annotation.json";
+    link.href = url;
+
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const createTask = async (onlyAnnotation=false) => {
+    setLoading(onlyAnnotation ? "ann" : "task");
 
     try {
       var payload = { ...filterData };
-      if (newCheckBox.current.checked) payload.only_new = true;
+      payload.only_annotation = onlyAnnotation;
 
-      await api.post(`/api/projects/archive/${pathID}/`, payload, {
+      if (newCheckBox.current.checked) payload.only_new = true;
+      if (payload.date) {
+        payload.from = payload.date.from;
+        payload.to = payload.date.to;
+      }
+
+      var { data } = await api.post(`/api/projects/archive/${pathID}/`, payload, {
         headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
       });
 
-      getDownloads();
+      if (onlyAnnotation) getAnnotation(data);
+      else getDownloads();
     }
     catch ({ message, response }) {
       var authFailed = response && (
@@ -82,7 +108,7 @@ export default function FilesDownload({ pathID, attributes }) {
       if (authFailed) navigate("/login");
     }
 
-    setLoading(false);
+    setLoading(null);
   };
 
   const getDownloads = async () => {
@@ -161,11 +187,18 @@ export default function FilesDownload({ pathID, attributes }) {
       </fieldset>
       <button
         type="button"
-        onClick={createTask}
+        onClick={() => createTask()}
         className={
-          `downloads__button${ loading ? " block--button" : "" }`
+          `downloads__button${ loading === "task" ? " block--button" : "" }`
         }
-      >{loading ? <Load isInline /> : <span>request</span>}</button>
+      >{loading === "task" ? <Load isInline /> : <span>get archive</span>}</button>
+      <button
+        type="button"
+        onClick={() => createTask(true)}
+        className={
+          `downloads__button${ loading === "ann" ? " block--button" : "" }`
+        }
+      >{loading === "ann" ? <Load isInline /> : <span>get annotation</span>}</button>
     </div>
     {
       !!downloads.length &&

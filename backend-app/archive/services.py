@@ -27,55 +27,63 @@ def _get_archives(project: Project) -> tuple[dict[str, Any], int]:
 
 @with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)
 def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], int]:
-    request_query = type(
-        "query",
-        (object,),
-        {
-            "get": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else None),
-            "getlist": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else []),
-        }
-    )
-
-    attributes = project.attribute_set \
-        .filter(id__in=request_query.get("attr", [])) \
-        .order_by("level__order", "id") \
-        .values("name") \
-        .values_list("name", flat=True)
-
-    only_new = request_query.get("only_new", False)
-
-    filter_data = {
-        "status": request_query.get("card", []),
-        "only_new": only_new,
-        "type": request_query.get("type", []),
-        "attributes": list(attributes)
-    }
-
-    files, _ = FileService()._get_files(project.id, request.user, request_query, True)
-    if only_new: files = files.filter(archive__isnull=True)
-
-    response = post(
-        settings.APP_STORAGE_URL + f"/api/task/archive/{project.id}/",
-        headers={
-            "Authorization": "Bearer " + request.user._make_token(),
-            "Content-Type": "application/json",
-        },
-        json=FileSerializer(files, many=True).data
-    )
-
-    assert response.status_code == 201, response.json()
-    assert (task_id := response.json().get("task_id"))
-
-    with transaction.atomic():
-        archive = project.archive_set.create(
-            id=task_id,
-            filters=filter_data,
-            author=request.user
+    try:
+        request_query = type(
+            "query",
+            (object,),
+            {
+                "get": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else None),
+                "getlist": lambda *a: request.data.get(a[0], a[1] if len(a) > 1 else []),
+            }
         )
 
-        archive.file.add(*files)
+        attributes = project.attribute_set \
+            .filter(id__in=request_query.get("attr", [])) \
+            .order_by("level__order", "id") \
+            .values("name") \
+            .values_list("name", flat=True)
 
-    return {"ok": True}, HTTP_201_CREATED
+        only_new = request_query.get("only_new", False) is True
+        only_annotation = request_query.get("only_annotation", False) is True
+
+        filter_data = {
+            "status": request_query.get("card", []),
+            "only_new": only_new,
+            "type": request_query.get("type", []),
+            "attributes": list(attributes)
+        }
+
+        files, _ = FileService()._get_files(project.id, request.user, request_query, True)
+        if only_new: files = files.filter(archive__isnull=True)
+
+        annotation = FileSerializer(files, many=True).data
+
+        if only_annotation: return annotation, HTTP_200_OK
+
+        response = post(
+            settings.APP_STORAGE_URL + f"/api/task/archive/{project.id}/",
+            headers={
+                "Authorization": "Bearer " + request.user._make_token(),
+                "Content-Type": "application/json",
+            },
+            json=annotation
+        )
+
+        assert response.status_code == 201, response.json()
+        assert (task_id := response.json().get("task_id"))
+
+        with transaction.atomic():
+            archive = project.archive_set.create(
+                id=task_id,
+                filters=filter_data,
+                author=request.user
+            )
+
+            archive.file.add(*files)
+
+        return {"ok": True}, HTTP_201_CREATED
+
+    except Exception as e: return {"ok": False, "error": str(e)}, HTTP_400_BAD_REQUEST
 
 
 @with_model_assertion(Project, "id", filter={"visible": True}, class_based=False)

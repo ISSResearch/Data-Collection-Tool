@@ -1,6 +1,6 @@
 from rest_framework.views import Response, APIView, Request
 from rest_framework.permissions import IsAuthenticated
-from .permissions import ArchivePermission, ArchivesPermission
+from .permissions import ArchivesPermission
 from user.permissions import InternalPermission
 from .services import _get_archives, _make_archive, _patch_archive
 
