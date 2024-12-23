@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import createStore from "../../store";
 import { MemoryRouter } from "react-router-dom";
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 test("files download component base test", async () => {
-  const { container } = render(
+  render(
     <Provider store={createStore()}>
       <MemoryRouter>
         <FilesDownload attributes={prepared_attributes} pathID={1} />
