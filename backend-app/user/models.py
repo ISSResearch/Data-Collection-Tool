@@ -33,7 +33,7 @@ class CustomUser(AbstractUser):
 
             raise JWTError
 
-    def emit_token(self) -> str:
+    def _make_token(self) -> str:
         time_now: datetime = datetime.utcnow()
         token_settings: dict[str, Any] = settings.SIMPLE_JWT
 
@@ -44,14 +44,15 @@ class CustomUser(AbstractUser):
             "jti": f"emited-token-{time_now}",
         }
 
-        self.token = jwt.encode(
+        return jwt.encode(
             token_data,
             token_settings.get("SIGNING_KEY", ""),
             algorithm=token_settings.get("ALGORITHM", "HS256")
         )
 
+    def emit_token(self) -> str:
+        self.token = self._make_token()
         self.save()
-
         return self.token
 
     def update_permissions(self, permissions: dict[str, bool], project_id: int) -> None:

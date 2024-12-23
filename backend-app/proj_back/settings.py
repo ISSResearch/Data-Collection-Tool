@@ -6,10 +6,11 @@ DB_HOST = getenv('DB_HOST')
 DB_NAME = getenv('DB_NAME')
 
 FRONTEND_PORT = getenv("FRONTEND_PORT")
+APP_STORAGE_URL = "http://" + getenv("APP_STORAGE_URL", "127.0.0.1")
 
-TEST_ENV = getenv('CASE') == 'test'
+TEST_ENV = getenv("CASE") == 'test'
 
-DEBUG = getenv('DEBUG') == 'true'
+DEBUG = getenv("DEBUG") == 'true'
 
 RAW_ORIGIN = getenv('SERVER_ORIGINS')
 SELF_ORIGIN = None
@@ -56,7 +57,8 @@ INSTALLED_APPS = [
     'api',
     'project',
     'attribute',
-    'file'
+    'file',
+    "archive"
 ]
 
 MIDDLEWARE = [
@@ -135,6 +137,7 @@ AUTH_USER_MODEL = 'user.CustomUser'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 REST_FRAMEWORK = {
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),

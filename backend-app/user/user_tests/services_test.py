@@ -168,7 +168,7 @@ class GetCollectiorsTest(TestCase):
             len(self.users)
         )
 
-        result = list(result)
+        result = list(filter(lambda u: u.id in set((x.id for x in self.users)), result))
 
         self.assertTrue(all([
             self.project.id in u.project_upload.values_list("id", flat=True)

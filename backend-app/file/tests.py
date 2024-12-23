@@ -5,7 +5,6 @@ from file.file_tests.serializers_test import FileSerializerTest, FilesSerializer
 from file.file_tests.export_test import ExportTest
 from file.file_tests.services_test import (
     ViewServicesTest,
-    AnnotationTest,
     StatsServiceTest,
     FileUploaderTest,
     ExportServicesTest

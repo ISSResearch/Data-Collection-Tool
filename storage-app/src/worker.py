@@ -30,10 +30,23 @@ register(
 
 
 @worker.task(bind=True, name="produce_download_task",)
-def produce_download_task(self, bucket_name: str, file_ids: list[str]) -> str | None:
-    task = Zipper(bucket_name, file_ids, self)
-    task.archive_objects()
-    return task.archive_id
+def produce_download_task(
+    self,
+    bucket_id: int,
+    annotation: list[dict[str, Any]]
+) -> Optional[dict[str, Any]]:
+    task = Zipper(bucket_id, annotation, self)
+
+    try:
+        task.parse_annotation()
+        task.archive_objects()
+        task.send_result()
+    except Exception as e:
+        task._result = {"zip_id": None, "f_count": 0, "size": 0, "error": str(e)}
+        task.send_result()
+        raise e
+
+    return task._result
 
 
 @worker.task(name="produce_handle_media_task", serializer="custom_encoder")

@@ -12,6 +12,7 @@ import './styles.css';
 */
 function FilterSwitch ({ filter, onChange }) {
   var { name, data, selected, type } = filter;
+
   switch (type) {
     case "attr": return <AttributeMultiSelector
       selectorName={name}

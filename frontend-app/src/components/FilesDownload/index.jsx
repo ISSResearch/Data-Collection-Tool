@@ -1,13 +1,12 @@
-import { useState, ReactElement } from "react";
+import { useState, ReactElement, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, fileApi } from "../../config/api";
-import { useFiles } from "../../hooks";
 import { useDispatch } from "react-redux";
 import { addAlert } from "../../slices/alerts";
+import { getOriginDomain } from "../../utils";
 import Load from "../ui/Load";
-import FileDownloadSelector from "../forms/FileDownloadSelector";
 import ValidationFilterGroup from '../forms/ValidationFilterGroup';
-import DownloadView from "../common/DownloadView";
+import DownloadTable from "./DownloadTable";
 import "./styles.css";
 
 /** @type {{name: string, id: string}[]} */
@@ -29,15 +28,12 @@ const TYPE_FILTER = [
 */
 export default function FilesDownload({ pathID, attributes }) {
   const [filterData, setFilterData] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [manual, setManual] = useState(false);
-  const [isNew, setIsNew] = useState(false);
-  const [task, setTask] = useState("");
+  const [loading, setLoading] = useState(null);
+  const [downloads, setDownloads] = useState([]);
+  const newCheckBox = useRef(null);
   const dispatch = useDispatch();
-  const fileManager = useFiles();
   const navigate = useNavigate();
-
-  const FILTER_FIELDS = [
+  const filterFields = useMemo(() => [
     {
       prettyName: 'Card Filter:',
       name: 'card',
@@ -54,71 +50,49 @@ export default function FilesDownload({ pathID, attributes }) {
       name: 'type',
       data: TYPE_FILTER,
     },
-  ];
-
-  const handleChange = (type, data) => {
-    setFilterData((prev) => ({ ...prev, [type]: data }));
-  };
-
-  const handleTaskInput = ({ value }) => {
-    var className = "set--hidden";
-    var hideElement = document.querySelector(".iss__filesDownload__mainSet");
-
-    if (!value) return hideElement.classList.remove(className);
-    if (!hideElement.classList.contains(className)) hideElement.classList.add(className);
-  };
-
-  const getFiles = async () => {
-    var file_ids;
-
-    if (manual) file_ids = fileManager.files
-      .filter(({ is_downloaded }) => !is_downloaded)
-      .map(({ id }) => id);
-
-    else {
-      var params = { ...filterData, per_page: "max" };
-      if (isNew) params.downloaded = false;
-
-      var { data } = await api.get(`/api/files/project/${pathID}/`, {
-        params,
-        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
-      });
-      file_ids = (
-        isNew
-          ? data.data.filter(({ is_downloaded }) => !is_downloaded)
-          : data.data
-      ).map(({ id }) => id);
+    {
+      prettyName: "Date Filter:",
+      name: "date",
+      type: "date",
     }
+  ], [attributes]);
 
-    if (!file_ids.length) throw new Error("No content");
+  const handleChange = (type, data) =>
+    setFilterData((prev) => ({ ...prev, [type]: data }));
 
-    return file_ids;
+  const getAnnotation = (data) => {
+    var payload = JSON.stringify(data, null, 4);
+    var blob = new Blob([payload], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+
+    link.download = "annotation.json";
+    link.href = url;
+
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
-  const downloadSelected = async (event) => {
-    event.preventDefault();
-
-    var taskInput = event.target.taskID;
-
-    if (taskInput?.value) return setTask(taskInput.value);
-
-    setLoading(true);
+  const createTask = async (onlyAnnotation=false) => {
+    setLoading(onlyAnnotation ? "ann" : "task");
 
     try {
-      var file_ids = await getFiles();
+      var payload = { ...filterData };
+      payload.only_annotation = onlyAnnotation;
 
-      var { data } = await fileApi.post(`/api/task/archive/`,
-        { bucket_name: `project_${pathID}`, file_ids },
-        { headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") } },
-      );
-
-      if (data?.task_id) {
-        dispatch(addAlert({
-          message: `Download task ${data.task_id} created`,
-          type: "success"
-        }));
-        setTask(data.task_id);
+      if (newCheckBox.current.checked) payload.only_new = true;
+      if (payload.date) {
+        payload.from = payload.date.from;
+        payload.to = payload.date.to;
       }
+
+      var { data } = await api.post(`/api/projects/archive/${pathID}/`, payload, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
+      });
+
+      if (onlyAnnotation) getAnnotation(data);
+      else getDownloads();
     }
     catch ({ message, response }) {
       var authFailed = response && (
@@ -134,56 +108,101 @@ export default function FilesDownload({ pathID, attributes }) {
       if (authFailed) navigate("/login");
     }
 
-    setLoading(false);
+    setLoading(null);
   };
 
-  if (task) return <DownloadView taskID={task} />;
+  const getDownloads = async () => {
+    try {
+      const { data } = await api.get(`/api/projects/archive/${pathID}/`, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("dtcAccess") },
+      });
 
-  return (
-    <div className="iss__filesDownload">
-      <h2 className="iss__filesDownload__caption">
-        Choose files to download or enter existing taskID
-      </h2>
-      <ValidationFilterGroup filterData={FILTER_FIELDS} onChange={handleChange} />
-      <form
-        onSubmit={(event) => downloadSelected(event)}
-        className="iss__filesDownload__form"
-      >
-        <fieldset className="iss__filesDownload__mainSet">
-          <label className="iss__filesDownload__inputBox__wrap">
-            <input type="checkbox" onChange={() => setIsNew(!isNew)} />
-            <span>not downloaded before</span>
-          </label>
-          <label className="iss__filesDownload__inputBox__wrap">
-            <input
-              type="checkbox"
-              onChange={({ target }) => setManual(target.checked)}
-            />
-            <span>select manually from option</span>
-          </label>
-        </fieldset>
-        <input
-          onChange={({ target }) => handleTaskInput(target)}
-          type="text"
-          placeholder="taskID"
-          autoComplete="off"
-          name="taskID"
-        />
-        <button
-          className={
-            `iss__filesDownload__button${ loading ? " block--button" : "" }`
-          }
-        >{loading ? <Load isInline /> : <span>request</span>}</button>
-      </form>
-      {
-        manual &&
-        <FileDownloadSelector
-          pathID={pathID}
-          params={filterData}
-          isNew={isNew}
-          fileManager={fileManager}
-        />
-      }
+      setDownloads(data);
+    }
+    catch ({ message, response }) {
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
+
+      dispatch(addAlert({
+        message: "Getting files data error:" + message,
+        type: "error",
+        noSession: authFailed
+      }));
+
+      if (authFailed) navigate("/login");
+    }
+  };
+
+  const getDataset = async (archiveId) => {
+    try {
+      if (!archiveId) throw new Error("Error! No data found");
+
+      var { data: token } = await fileApi.get("/api/temp_token/", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      });
+
+      if (!token) throw new Error("No token returned");
+
+      var baseUrl = getOriginDomain() + ":9000/api/storage/temp_storage/";
+      var accessQuery = `/?access=${token}&archive=1`;
+
+      var link = document.createElement("a");
+      link.href = baseUrl + archiveId + accessQuery;
+      link.setAttribute("download", "dataset.zip");
+
+      link.click();
+      link.remove();
+    }
+    catch({ message, response }) {
+      var authFailed = response && (
+        response.status === 401 || response.status === 403
+      );
+
+      dispatch(addAlert({
+        message: "Process request error: " + message,
+        type: "error",
+        noSession: authFailed
+      }));
+    }
+  };
+
+  useEffect(() => {
+    getDownloads();
+  }, []);
+
+  return <>
+    {/* todo: supposed to be a form element but val filter group has it inside */}
+    <div className="downloads">
+      <ValidationFilterGroup
+        disabled={false}
+        filterData={filterFields}
+        onChange={handleChange}
+      />
+      <fieldset className="downloads__mainSet">
+        <label className="downloads__inputBox__wrap">
+          <input ref={newCheckBox} name="newFiles" type="checkbox" />
+          <span>not downloaded before</span>
+        </label>
+      </fieldset>
+      <button
+        type="button"
+        onClick={() => createTask()}
+        className={
+          `downloads__button${ loading === "task" ? " block--button" : "" }`
+        }
+      >{loading === "task" ? <Load isInline /> : <span>get archive</span>}</button>
+      <button
+        type="button"
+        onClick={() => createTask(true)}
+        className={
+          `downloads__button${ loading === "ann" ? " block--button" : "" }`
+        }
+      >{loading === "ann" ? <Load isInline /> : <span>get annotation</span>}</button>
     </div>
-  );
+    {
+      !!downloads.length &&
+      <DownloadTable data={downloads} onDownload={getDataset}/>
+    }
+  </>;
 }

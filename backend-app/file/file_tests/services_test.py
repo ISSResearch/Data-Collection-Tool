@@ -4,7 +4,6 @@ from file.services import (
     FileUploader,
     StatsServices,
     ViewSetServices,
-    _annotate_files,
     form_export_file
 )
 from json import dumps
@@ -295,7 +294,6 @@ class ViewServicesTest(TestCase, ViewSetServices):
             filter["status"] = status
         if downloaded:
             query.set("downloaded", downloaded)
-            filter["is_downloaded"] = False
         if author:
             query.set("author[]", author)
             filter["author__in"] = author
@@ -331,29 +329,6 @@ class ViewServicesTest(TestCase, ViewSetServices):
                 else per_page
             )
         )
-
-
-class AnnotationTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.case = MockCase()
-        cls.empty_project = Project.objects.create(name="asd")
-        cls.request = lambda _, pid, fset: {"project_id": pid, "file_ids": fset}
-
-    def test_annotate_files(self):
-        res_no_proj, code_no_proj = _annotate_files(self.request(9999, []))
-        res_empty, code_empty = _annotate_files(
-            self.request(self.empty_project.id, [1, 2])
-        )
-        res, code = _annotate_files(
-            self.request(self.case.project.id, [self.case.file_.id])
-        )
-
-        self.assertTrue(code == code_empty == code_no_proj == 202)
-        self.assertTrue(res_no_proj["annotated"] == res_empty["annotated"] == 0)
-        self.assertTrue(res_no_proj["annotation"] == res_empty["annotation"] == [])
-        self.assertEqual(res["annotated"], 1)
 
 
 class StatsServiceTest(TestCase):

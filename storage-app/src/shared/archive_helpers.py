@@ -3,6 +3,7 @@ from typing import Optional
 from threading import Thread
 from queue import Queue
 from gridfs import GridOut, GridIn
+from typing import Any
 from gridfs.synchronous.grid_file import Cursor
 from shared.storage_db import SyncDataBase
 from motor.core import AgnosticBaseCursor
@@ -292,10 +293,10 @@ class SyncZipping():
     def __init__(
         self,
         dest_name: str,
-        object_set: Cursor,
+        source_sets: list[Cursor],
         additional: list[tuple[str, bytes]]
     ):
-        self.object_set = object_set
+        self.source_sets = source_sets
         self.additional = additional
         self.file_list = []
         self._local_dir_end = 0
@@ -314,7 +315,14 @@ class SyncZipping():
 
     def tell(self) -> int: return self._local_dir_end
 
-    def result(self) -> Optional[str]: return self._archive_id
+    @property
+    def result(self) -> Optional[dict[str, Any]]:
+        if not self._archive_id: return None
+        return {
+            "zip_id": str(self._archive_id),
+            "f_count": len(self.file_list),
+            "size": self._archive_size
+        }
 
     def _dump_buffer(self, buffer: BytesIO, zip_buffer: ZipFile):
         dest_offset = self.tell()
@@ -331,7 +339,8 @@ class SyncZipping():
 
     def _finalize(self):
         self._write_end_record(end_buffer := BytesIO())
-        self.dest_write(end_buffer, end_buffer.tell())
+        end_size = end_buffer.tell()
+        self.dest_write(end_buffer, end_size)
 
         self._write_cent_dir(
             self.tell() + end_buffer.tell(),
@@ -339,9 +348,11 @@ class SyncZipping():
             len(self.file_list),
             cent_dir_buffer := BytesIO()
         )
-        self.dest_write(cent_dir_buffer, cent_dir_buffer.tell())
+        cent_dir_size = cent_dir_buffer.tell()
+        self.dest_write(cent_dir_buffer, cent_dir_size)
 
         self._archive_id = self.dest._id
+        self._archive_size = self._local_dir_end + end_size + cent_dir_size
 
         self.dest.close()
 
@@ -421,22 +432,24 @@ class SyncZipping():
         buffer = BytesIO()
         zip_buffer: ZipFile = ZipFile(buffer, "w", ZIP_DEFLATED)
 
-        for file in self.object_set:
-            f_name, ext = str(file._id), file.metadata.get("file_extension", "")
-            if ext: f_name += f".{ext}"
+        for source in self.source_sets:
+            for file in source:
+                f_name, ext = str(file._id), file.metadata.get("file_extension", "")
+                if ext: f_name += f".{ext}"
 
-            f_data = file.read()
+                f_data = file.read()
 
-            zip_buffer.writestr(f_name, f_data)
+                zip_buffer.writestr(f_name, f_data)
 
-            if buffer.tell() > self.DUMP_THRESHOLD:
-                self._dump_buffer(buffer, zip_buffer)
-                buffer = BytesIO()
-                zip_buffer = ZipFile(buffer, "w", ZIP_DEFLATED)
+                if buffer.tell() > self.DUMP_THRESHOLD:
+                    self._dump_buffer(buffer, zip_buffer)
+                    buffer = BytesIO()
+                    zip_buffer = ZipFile(buffer, "w", ZIP_DEFLATED)
+
+            source.close()
 
         for f_name, f_data in self.additional: zip_buffer.writestr(f_name, f_data)
 
         if buffer.tell(): self._dump_buffer(buffer, zip_buffer)
 
-        self.object_set.close()
         self._finalize()

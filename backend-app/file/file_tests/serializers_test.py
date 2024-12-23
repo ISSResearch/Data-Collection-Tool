@@ -27,7 +27,6 @@ class FileSerializerTest(TestCase):
             'file_name',
             'file_type',
             'status',
-            'is_downloaded',
         }
 
         self.assertEqual(

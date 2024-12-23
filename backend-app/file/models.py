@@ -3,7 +3,6 @@ from django.db.models import (
     CharField,
     DateTimeField,
     IntegerField,
-    BooleanField,
     ForeignKey,
     DO_NOTHING,
     QuerySet,
@@ -25,7 +24,6 @@ class File(Model):
     file_name: CharField = CharField(max_length=255)
     file_type: CharField = CharField(max_length=10)
     status: CharField = CharField(max_length=1, choices=STATUSES, default='p')
-    is_downloaded: BooleanField = BooleanField(default=False)
     upload_date: DateTimeField = DateTimeField(auto_now_add=True)
     update_date: DateTimeField = DateTimeField(auto_now_add=True, null=True)
 

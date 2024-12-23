@@ -20,7 +20,11 @@ class SyncDataBase:
 
     @classmethod
     def set_client(cls, uri: str) -> None:
-        if not cls.__client: cls.__client = MongoClient(uri)
+        if not cls.__client: cls.__client = MongoClient(
+            uri,
+            socketTimeoutMS=(60 * 60 * 24) * 1_000,
+            connectTimeoutMS=(60 * 60 * 24) * 1_000
+        )
 
     @classmethod
     def set_db(cls, db_name: str = "") -> None:
