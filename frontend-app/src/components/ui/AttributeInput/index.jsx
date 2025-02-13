@@ -10,6 +10,7 @@ import './styles.css';
 * @param {string} props.formId
 * @param {object[]} props.attributes
 * @param {number} props.depth
+* @param {boolean} props.payloadRequired
 * @param {boolean} props.isChild
 * @param {Function} props.delAttribute
 * @param {Function} props.addAttribute
@@ -29,14 +30,15 @@ export default function AttributeInput({
   handleChange,
   setDeletedOriginAttributes,
   moveUp,
-  moveDown
+  moveDown,
+  payloadRequired
 }) {
   const [lastLevel, setLastLevel] = useState(false);
   const [acceptDelete, setAcceptDelete] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  async function proceedOriginalAttributeDelete(path, id) {
+  const proceedOriginalAttributeDelete = async (path, id) => {
     try {
       await api.request(`/api/attributes/attributes/${id}/`,
         {
@@ -61,12 +63,12 @@ export default function AttributeInput({
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
     }
-  }
+  };
 
-  function handleDeleteAttribute(path, orig, index) {
+  const handleDeleteAttribute = (path, orig, index) => {
     if (orig) setAcceptDelete(index);
     else delAttribute(formId, path, isChild);
-  }
+  };
 
   useEffect(() => {
     var currentDepth = attributes[0]?.path.split('_').length;
@@ -76,7 +78,7 @@ export default function AttributeInput({
   return (
     <div className='iss__form__attributes'>
       {
-        attributes.map(({ id, name, path, children, orig }, index) => (
+        attributes.map(({ id, name, payload, path, children, orig }, index) => (
           <div
             key={id}
             className={`iss__attributeForm${isChild ? ' attribute--child' : ''}`}
@@ -84,9 +86,16 @@ export default function AttributeInput({
             {isChild && <div className='iss__attributeForm__tree'>------|</div>}
             <div className='iss__attributeForm__inputWrap'>
               <input
+                placeholder="payload"
+                required={payloadRequired}
+                onChange={({ target }) => handleChange(formId, target, "payload", path, isChild)}
+                value={payload}
+                className="attributeForm__input__payload"
+              />
+              <input
                 placeholder="Attribute name"
                 required
-                onChange={({ target }) => handleChange(formId, target, path, isChild)}
+                onChange={({ target }) => handleChange(formId, target, "name", path, isChild)}
                 value={name}
               />
               <div className="iss__attributeForm__inputButton">
@@ -144,6 +153,7 @@ export default function AttributeInput({
                 setDeletedOriginAttributes={setDeletedOriginAttributes}
                 moveUp={moveUp}
                 moveDown={moveDown}
+                payloadRequired={payloadRequired}
               />
             }
           </div>

@@ -44,7 +44,7 @@ class ViewSetServices:
         self,
         request_data: dict[str, Any]
     ) -> tuple[dict[str, Any], int]:
-        new_project: ProjectsSerializer = ProjectsSerializer(data=request_data)
+        new_project = ProjectsSerializer(data=request_data)
         try:
             assert new_project.is_valid(), new_project.errors
 

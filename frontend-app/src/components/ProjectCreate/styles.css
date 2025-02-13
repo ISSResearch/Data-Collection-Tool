@@ -66,6 +66,11 @@
     width: 100%;
     font-size: 14px;
 }
+.input--box {
+    flex-direction: row;
+    place-items: center;
+    cursor: pointer;
+}
 @media (hover: hover) {
     .iss__projectCreate__form__createButton:hover {
         background-color: var(--issBrand);

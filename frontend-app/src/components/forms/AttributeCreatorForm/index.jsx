@@ -1,7 +1,7 @@
-import { useEffect, ReactElement } from 'react';
-import AttributesForm from '../AttributesForm';
+import { useEffect, ReactElement } from "react";
+import AttributesForm from "../AttributesForm";
 import FindAndReplace from "../../ui/FindAndReplace";
-import './styles.css';
+import "./styles.css";
 
 /**
 * @param {object} props
@@ -11,9 +11,14 @@ import './styles.css';
 * attributeHook: object
 * }} props.attributeManager
 * @param {object[]} props.withBoundAttributes
+* @param {boolean} props.payloadRequired
 * @returns {ReactElement}
 */
-export default function AttributeCreatorForm({ attributeManager, withBoundAttributes }) {
+export default function AttributeCreatorForm({
+  attributeManager,
+  withBoundAttributes,
+  payloadRequired
+}) {
   const { formHook, levelHook, attributeHook } = attributeManager;
   const { forms, addForm, deleteForm, boundAttributes } = formHook;
 
@@ -27,7 +32,7 @@ export default function AttributeCreatorForm({ attributeManager, withBoundAttrib
   }, []);
 
   return (
-    <fieldset className='iss__attributecreator'>
+    <fieldset className="iss__attributecreator">
       <div className="iss__attributecreator__buttons">
         {
           !withBoundAttributes &&
@@ -45,7 +50,7 @@ export default function AttributeCreatorForm({ attributeManager, withBoundAttrib
           <FindAndReplace onCommit={handleReplace} />
         }
       </div>
-      <div className='iss__attributecreator__attributesForm'>
+      <div className="iss__attributecreator__attributesForm">
         {
           Object.keys(forms).map((formId) => (
             <AttributesForm
@@ -54,6 +59,7 @@ export default function AttributeCreatorForm({ attributeManager, withBoundAttrib
               deleteForm={deleteForm}
               levelHook={levelHook}
               attributeHook={attributeHook}
+              payloadRequired={payloadRequired}
             />
           ))
         }

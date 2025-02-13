@@ -131,6 +131,7 @@ export default function ProjectPage() {
         attributes={project.preparedAttributes}
         projectName={project.name}
         projectDescription={project.description}
+        payloadRequired={project.payload_required}
         canValidate={user.is_superuser || project.permissions.validate}
         pathID={projectID}
       />

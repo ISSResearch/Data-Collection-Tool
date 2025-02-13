@@ -32,6 +32,10 @@
     padding: 6px 8px;
     outline: none;
 }
+.iss__attributeForm__inputWrap .attributeForm__input__payload {
+    background-color: #dddddd;
+    width: 80px;
+}
 .iss__attributeForm__inputButton {
     display: flex;
     width: fit-content;

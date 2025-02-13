@@ -151,6 +151,12 @@
     width: 100%;
     font-size: 14px;
 }
+.input--box {
+    flex-direction: row;
+    place-items: center;
+    cursor: pointer;
+}
+
 @media (hover: hover) {
     .iss__projectEdit__delete--yes:hover {
         background-color: var(--issRed);

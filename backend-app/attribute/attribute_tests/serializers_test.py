@@ -24,7 +24,7 @@ class AttributeSerializerTest(TestCase):
         parent_data = AttributeSerializer(self.case.attribute).data
         child_data = AttributeSerializer(child_attribute).data
 
-        self.assertEqual(set(parent_data.keys()), {'id', 'name', 'parent'})
+        self.assertEqual(set(parent_data.keys()), {"id", "name", "parent", "payload"})
         self.assertIsNone(parent_data.get("parent"))
         self.assertIsNotNone(child_data.get("parent"))
 
@@ -49,21 +49,21 @@ class LevelSerializerTest(TestCase):
         self.assertEqual(
             set(parent_data.keys()),
             {
-                'id',
-                'attributes',
-                'uid',
-                'name',
-                'multiple',
-                'required',
-                'order',
-                'parent',
-                'project'
+                "id",
+                "attributes",
+                "uid",
+                "name",
+                "multiple",
+                "required",
+                "order",
+                "parent",
+                "project"
             }
         )
 
         self.assertEqual(
-            set(parent_data['attributes'][0].keys()),
-            {'id', 'name', 'parent'}
+            set(parent_data["attributes"][0].keys()),
+            {"id", "name", "payload", "parent"}
         )
         self.assertIsNone(parent_data.get("parent"))
         self.assertIsNotNone(child_data.get("parent"))

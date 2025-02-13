@@ -7,7 +7,7 @@ class AttributeSerializer(ModelSerializer):
 
     class Meta:
         model = Attribute
-        fields = ("id", "name", "parent")
+        fields = ("id", "name", "parent", "payload",)
 
 
 class LevelSerializer(ModelSerializer):

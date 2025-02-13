@@ -55,10 +55,10 @@ test("attribute manipulate test", () => {
   expect(hook.current.attributes[formID][1].children).toHaveLength(0);
 
   act(() => {
-    hook.current.handleChange(formID, {value: "newName"}, "0");
+    hook.current.handleChange(formID, {value: "newName"}, "name", "0");
     hook.current.addAttribute(formID, "0");
     hook.current.addAttribute(formID, "0");
-    hook.current.handleChange(formID, {value: "newName"}, "0_0", true);
+    hook.current.handleChange(formID, {value: "newName"}, "name", "0_0", true);
   });
 
   attrs = hook.current.attributes[formID];

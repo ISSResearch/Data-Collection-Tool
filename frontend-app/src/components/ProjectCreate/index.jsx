@@ -1,15 +1,16 @@
-import { useState, ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../../config/api';
-import { useAttributeManager } from '../../hooks';
-import { addAlert } from '../../slices/alerts';
+import { useState, ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../config/api";
+import { useAttributeManager } from "../../hooks";
+import { addAlert } from "../../slices/alerts";
 import { useDispatch } from "react-redux";
-import AttributeCreatorForm from '../forms/AttributeCreatorForm';
-import Load from '../ui/Load';
-import './styles.css';
+import AttributeCreatorForm from "../forms/AttributeCreatorForm";
+import Load from "../ui/Load";
+import "./styles.css";
 
 /** @returns {ReactElement} */
 export default function ProjectCreate() {
+  const [required, setRequired] = useState(false);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
   const dispatch = useDispatch();
@@ -19,13 +20,14 @@ export default function ProjectCreate() {
   const getFormData = ({ target }) => {
     var name = target.project_name?.value;
     var description = target.project_description.value || "";
+    var payload_required = required;
 
     if (!name) throw new Error("Name supposed to be set.");
     description = description.replaceAll(/\n/g, '<br>');
 
     var attributes = attributeManager.formHook.gatherAttributes();
 
-    return { name, description, attributes };
+    return { name, description, attributes, payload_required };
   };
 
   const sendForm = async (event) => {
@@ -72,6 +74,15 @@ export default function ProjectCreate() {
             Name of project:
             <input name="project_name" placeholder='Enter project name' required />
           </label>
+          <label className="iss__projectEdit__form__input input--box">
+            <input
+              name="payload_required"
+              type="checkbox"
+              checked={required}
+              onChange={() => setRequired(!required)}
+            />
+            Attribute payload is required
+          </label>
           <label className='iss__projectCreate__form__input'>
             Project description (raw):
             <textarea
@@ -90,7 +101,10 @@ export default function ProjectCreate() {
           }
         </fieldset>
         <div className='iss__projectCreate__form__border' />
-        <AttributeCreatorForm attributeManager={attributeManager} />
+        <AttributeCreatorForm
+          payloadRequired={required}
+          attributeManager={attributeManager}
+        />
         <button className='iss__projectCreate__form__createButton'>
           {loading ? <Load isInline /> : <span>Create Project</span>}
         </button>
