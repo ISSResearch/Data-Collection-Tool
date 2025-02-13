@@ -2,6 +2,7 @@ from django.db.models import (
     CharField,
     ForeignKey,
     DO_NOTHING,
+    JSONField,
     BigIntegerField,
     Model,
     ManyToManyField,
@@ -16,12 +17,14 @@ from uuid import uuid4
 
 
 class Attribute(TreeNode):
-    name: CharField = CharField(max_length=255)
+    name = CharField(max_length=255)
 
-    project: ForeignKey = ForeignKey("project.Project", on_delete=DO_NOTHING)
-    level: ForeignKey = ForeignKey("attribute.Level", on_delete=DO_NOTHING)
+    project = ForeignKey("project.Project", on_delete=DO_NOTHING)
+    level = ForeignKey("attribute.Level", on_delete=DO_NOTHING)
 
-    order: BigIntegerField = BigIntegerField(default=0)
+    order = BigIntegerField(default=0)
+
+    payload = JSONField(null=True)
 
     class Meta:
         db_table = "attribute"

@@ -116,11 +116,20 @@ export default function useAttributes() {
   * @param {number} formId
   * @param {object} target
   * @param {string} target.value
+  * @param {string} type
   * @param {string} position
   * @param {boolean} isChild
   * @returns {void}
   */
-  const handleChange = (formId, { value }, position, isChild = false) => {
+  const handleChange = (
+    formId,
+    { value },
+    type,
+    position,
+    isChild = false
+  ) => {
+    if (!(["name", "payload"].includes(type))) return;
+
     setAttributes((prevAttributes) => {
       var newAttributes = { ...prevAttributes };
       var path = position.split('_');
@@ -128,7 +137,7 @@ export default function useAttributes() {
         ? deepFind(newAttributes[formId], path)
         : newAttributes[formId][path[0]];
 
-      target.name = value;
+      target[type] = value;
       return newAttributes;
     });
   };

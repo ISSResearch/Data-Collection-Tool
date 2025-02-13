@@ -183,3 +183,50 @@ export const drawPaths = (items, parentOrder=0) => {
 * @returns {Promise<void>}
 */
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+* @param {string} data
+* @returns {string[][]}
+*/
+const _csvToAttrs = (data) => {
+  var _data = data.split("\n");
+  var headers = _data[0].split(",");
+
+  // uid,    level1, level2, ...  leveln
+  // ab-3-f, bwm,    m3,     ..., restyled
+  //
+  // uid,    level1
+  // ab-3-f, red,
+
+  return [headers];
+};
+
+/**
+* @param {ArrayBuffer} data
+* @returns {string[][]}
+*/
+const _xlToAttrs = (data) => data;
+
+/**
+* @param {any} target
+* @throws
+* @returns {object[]}
+*/
+export const parseImport = ({ files }) => {
+  var input = files[0];
+  if (!input) throw new Error("No file input");
+
+  var reader = new FileReader();
+  reader.onload = ({ target }) => {
+    var { result } = target;
+
+    if (!result) throw new Error("Error parsing data");
+
+    var data = typeof result === "string" ? _csvToAttrs(result) : _xlToAttrs(result);
+    console.log(data);
+  };
+
+  reader.readAsText(input);
+
+  return [];
+};

@@ -11,10 +11,11 @@ from typing import Any
 
 
 class Project(Model):
-    name: CharField = CharField(max_length=255)
-    description: TextField = TextField(blank=True)
-    created_at: DateTimeField = DateTimeField(auto_now_add=True)
-    visible: BooleanField = BooleanField(default=True)
+    name = CharField(max_length=255)
+    description = TextField(blank=True)
+    payload_required = BooleanField(default=False)
+    created_at = DateTimeField(auto_now_add=True)
+    visible = BooleanField(default=True)
 
     user_visible = ManyToManyField(to="user.CustomUser", related_name="project_visible")
     user_upload = ManyToManyField(to="user.CustomUser", related_name="project_upload")
@@ -74,6 +75,7 @@ class Project(Model):
 
         for attribute in attributes:
             name: str = attribute["name"]
+            payload = attribute.get("payload", "")
             atr_order: int = attribute.get("order", 0)
             children: list[dict[str, Any]] = attribute["children"]
 
@@ -83,6 +85,10 @@ class Project(Model):
 
                 if ATTRIBUTE.name != name:
                     ATTRIBUTE.name = name
+                    changed = True
+
+                if ATTRIBUTE.payload != payload:
+                    ATTRIBUTE.payload = payload
                     changed = True
 
                 if ATTRIBUTE.order != atr_order:
@@ -96,7 +102,8 @@ class Project(Model):
                     name=name,
                     parent=parent_attribute,
                     level=LEVEL,
-                    order=atr_order
+                    order=atr_order,
+                    payload=payload
                 )
 
             if children: self._create_attributes(children, rest, ATTRIBUTE, LEVEL)

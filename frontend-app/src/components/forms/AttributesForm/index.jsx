@@ -1,10 +1,10 @@
-import { useEffect, useState, ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../../../config/api';
-import { addAlert } from '../../../slices/alerts';
+import { useEffect, useState, ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../../config/api";
+import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
-import AttributeInput from '../../ui/AttributeInput';
-import './styles.css';
+import AttributeInput from "../../ui/AttributeInput";
+import "./styles.css";
 
 /**
 * @param {object} props
@@ -12,6 +12,7 @@ import './styles.css';
 * @param {Function} props.deleteForm
 * @param {object} props.levelHook
 * @param {object} props.attributeHook
+* @param {boolean} props.payloadRequired
 * @returns {ReactElement}
 */
 export default function AttributesForm({
@@ -19,6 +20,7 @@ export default function AttributesForm({
   deleteForm,
   levelHook,
   attributeHook,
+  payloadRequired
 }) {
   const [acceptDelete, setAcceptDelete] = useState(null);
   const {
@@ -43,7 +45,7 @@ export default function AttributesForm({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  async function proceedOriginalLevelDelete(index, id) {
+  const proceedOriginalLevelDelete = async (index, id) => {
     try {
       await api.request(`/api/attributes/levels/${id}/`,
         {
@@ -68,26 +70,36 @@ export default function AttributesForm({
       if (authFailed) navigate("/login");
       setAcceptDelete(null);
     }
-  }
+  };
 
-  function handleLevelDelete(index, orig) {
+  const handleLevelDelete = (index, orig, _id) => {
     if (orig) return setAcceptDelete(index);
     if (index === 0) deleteForm(formId);
     else {
       delLevel(formId, index);
       handleLevelRemove(formId, index);
     }
-  }
+  };
 
-  function handleSetMultiple(index, target) {
+  const handleSetMultiple = (index, target) => {
     try { setMultiple(formId, index, target); }
     catch ({ message }) { dispatch(addAlert({ message, type: "error" })); }
-  }
+  };
 
-  function handleAddLevel() {
+  const handleAddLevel = () => {
     try { addLevel(formId); }
     catch ({ message }) { dispatch(addAlert({ message, type: "error" })); }
-  }
+  };
+
+  // const handleImport = useCallback(() => {
+  //   var input = document.createElement("input");
+  //   input.type = "file";
+  //   input.accept = ".csv,.xls,.xlsx"
+
+  //   input.oninput = ({ target }) => parseImport(target);
+
+  //   input.click();
+  // }, []);
 
   useEffect(() => {
     if (!levels[formId].length) {
@@ -106,6 +118,17 @@ export default function AttributesForm({
             type="button"
             className='iss__attributesForm__button button-add'
           ><span /><span /></button>
+          {/* <button
+            onClick={handleImport}
+            type="button"
+            className="iss__attributesForm__button button-import"
+          >
+            <svg viewBox="0 0 24 24" className="attributeFrom__button__file">
+              <path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.342a2 2 0 0 0-.602-1.43l-4.44-4.342A2 2 0 0 0 13.56 2H6a2 2 0 0 0-2 2m5 9h6m-6 4h3" strokeLinecap="round" />
+              <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            </svg>
+            <span>Import from</span>
+          </button> */}
         </div>
         {
           levels[formId]?.map(({ id, uid, name, orig, multiple, required }, index) => (
@@ -182,6 +205,7 @@ export default function AttributesForm({
             moveUp={moveUp}
             moveDown={moveDown}
             setDeletedOriginAttributes={setDeletedOriginAttributes}
+            payloadRequired={payloadRequired}
           />
         }
       </div>

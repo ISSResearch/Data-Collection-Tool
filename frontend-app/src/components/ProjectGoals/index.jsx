@@ -14,7 +14,7 @@ import "./styles.css";
 * @param {object[]} props.attributes
 * @returns {ReactElement}
 */
-export default function ProjectEdit({ pathID, attributes }) {
+export default function ProjectGoals({ pathID, attributes }) {
   const [goals, setGoals] = useState(null);
   const [query, setQuery] = useSearchParams();
   const user = useSelector((state) => state.user.user);

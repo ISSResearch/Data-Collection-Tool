@@ -64,11 +64,13 @@
     cursor: pointer;
     padding: 2px;
 }
+
 .iss__attributesForm__button span {
     display: block;
     width: 20px;
     height: 4px;
 }
+
 .button-del span {
     background-color: var(--issLightRed);
 }
@@ -79,6 +81,27 @@
 .button-add span:nth-child(1) {
     rotate: 90deg;
 }
+.button-import {
+    margin-left: 20px;
+    display: flex;
+    gap: 4px;
+    width: fit-content;
+}
+.button-import > span {
+    width: fit-content;
+    color: white;
+}
+.button-import > svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+}
+.button-import > svg > path {
+    stroke: white;
+    stroke-width: 2px;
+    stroke-linejoin: "round";
+}
+
 .iss__attributesForm__acceptance__curtain {
     position: absolute;
     width: 100%;
@@ -127,5 +150,11 @@
     }
     .button-del:hover span {
         background-color: var(--issRed);
+    }
+    .button-import:hover > span {
+        color: var(--issGreen);
+    }
+    .button-import:hover > svg > path {
+        stroke: var(--issGreen);
     }
 }

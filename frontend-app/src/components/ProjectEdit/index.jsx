@@ -1,12 +1,12 @@
-import { useState, useRef, ReactElement } from 'react';
-import { useNavigate, Link, useBlocker  } from 'react-router-dom';
-import { useAttributeManager } from '../../hooks';
-import { api } from '../../config/api';
-import { addAlert } from '../../slices/alerts';
+import { useState, useRef, ReactElement } from "react";
+import { useNavigate, Link, useBlocker  } from "react-router-dom";
+import { useAttributeManager } from "../../hooks";
+import { api } from "../../config/api";
+import { addAlert } from "../../slices/alerts";
 import { useDispatch } from "react-redux";
-import Load from '../ui/Load';
-import AttributeCreatorForm from '../forms/AttributeCreatorForm';
-import './styles.css';
+import Load from "../ui/Load";
+import AttributeCreatorForm from "../forms/AttributeCreatorForm";
+import "./styles.css";
 
 /**
 * @param {object} props
@@ -14,14 +14,17 @@ import './styles.css';
 * @param {string} props.projectName
 * @param {string} props.projectDescription
 * @param {number} props.pathID
+* @param {boolean} props.payloadRequired
 * @returns {ReactElement}
 */
 export default function ProjectEdit({
   attributes,
   projectName,
+  payloadRequired,
   projectDescription,
   pathID
 }) {
+  const [required, setRequired] = useState(payloadRequired);
   const [loading, setLoading] = useState(false);
   const [deleteAccept, setDeleteAccept] = useState(false);
   const [preview, setPreview] = useState(projectDescription);
@@ -48,8 +51,9 @@ export default function ProjectEdit({
   const getFormData = ({ target }) => {
     var name = target.project_name.value;
     var description = target.project_description.value || "";
+    var payload_required = required;
 
-    description = description.replace(/\n/g, '<br>');
+    description = description.replace(/\n/g, "<br>");
 
     var attributes = [
       ...attributeManager.formHook.gatherAttributes(),
@@ -58,7 +62,7 @@ export default function ProjectEdit({
       )
     ];
 
-    return { name, description, attributes };
+    return { name, description, attributes, payload_required };
   };
 
   const performOriginalItemsDelete = async (idSet, endpoint) => {
@@ -79,7 +83,7 @@ export default function ProjectEdit({
     if (loading) return;
 
     if (!validateNewAttributes())
-      return dispatch(addAlert({ message: 'Some attribute forms are missed.', type: "error" }));
+      return dispatch(addAlert({ message: "Some attribute forms are missed.", type: "error" }));
 
     setLoading(true);
 
@@ -165,7 +169,7 @@ export default function ProjectEdit({
 
   return (
     <>
-      <fieldset className='iss__projectEdit__fieldset'>
+      <fieldset className="iss__projectEdit__fieldset">
         <Link to={`/projects/${pathID}/visibility`} className='iss__projectEdit__visibilityLink'>
           USER VISIBILITY
         </Link>
@@ -210,6 +214,15 @@ export default function ProjectEdit({
               required
             />
           </label>
+          <label className="iss__projectEdit__form__input input--box">
+            <input
+              name="payload_required"
+              type="checkbox"
+              checked={required}
+              onChange={() => setRequired(!required)}
+            />
+            Attribute payload is required
+          </label>
           <label className="iss__projectEdit__form__input">
             Project description (raw):
             <textarea
@@ -230,12 +243,16 @@ export default function ProjectEdit({
         </fieldset>
         <div className="iss__projectEdit__form__border" />
         <div className="iss__projectEdit__attributes">
-          <AttributeCreatorForm attributeManager={attributeManagerNew} />
+          <AttributeCreatorForm
+            payloadRequired={required}
+            attributeManager={attributeManagerNew}
+          />
           {
             Object.keys(attributeManagerNew.formHook.forms).length > 0 &&
             <div className='iss__projectEdit__attributeSeparator' />
           }
           <AttributeCreatorForm
+            payloadRequired={required}
             attributeManager={attributeManager}
             withBoundAttributes={attributes}
           />

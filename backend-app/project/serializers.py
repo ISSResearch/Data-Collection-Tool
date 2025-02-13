@@ -9,7 +9,7 @@ from .models import Project
 class ProjectsSerializer(ModelSerializer):
     class Meta:
         model = Project
-        fields = ("id", "name", "description", "created_at")
+        fields = ("id", "name", "description", "created_at", "payload_required")
 
     def add_attributes(self) -> None:
         attributeForm: list[list[dict[str, Any]]] = self.initial_data.get("attributes", ())
@@ -21,7 +21,14 @@ class ProjectSerializer(ProjectsSerializer):
     permissions = SerializerMethodField()
 
     class Meta(ProjectsSerializer.Meta):
-        fields = ("id", "name", "description", "attributes", "permissions")
+        fields = (
+            "id",
+            "name",
+            "description",
+            "attributes",
+            "permissions",
+            "payload_required"
+        )
 
     def get_attributes(self, instance: Project) -> dict[str, Any]:
         levels: LevelSerializer = LevelSerializer(
