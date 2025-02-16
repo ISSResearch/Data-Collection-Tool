@@ -137,11 +137,11 @@ def main(file_path: str, sep: str, project: int, encoding="utf-8"):
 
         print("[5/5] Saving...")
 
-        return (
-            (headers, rows),
-            (ir_tree, ir_failed),
-            (levels, levels_failed),
-            (unmatched, total)
-        )
+        # return (
+        #     (headers, rows),
+        #     (ir_tree, ir_failed),
+        #     (levels, levels_failed),
+        #     (unmatched, total)
+        # )
 
     except Exception as e: print(f"[5/5] Process failed, rolling back...\nReason {str(e)}")
