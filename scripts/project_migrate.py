@@ -1,6 +1,6 @@
 from django.db import connection, transaction
 from file.models import File
-from attribute.models import Attribute
+from attribute.models import Attribute, Level
 
 
 def migrate_files(
@@ -42,8 +42,8 @@ def get_ids(sep: str, path_from: str, path_to: str) -> tuple[set[str], set[str]]
     with open(path_to, "r") as f: data_to = f.read()
 
     return (
-        set([row.split(sep)[0] for row in data_from.split("\n") if row]),
-        set([row.split(sep)[0] for row in data_to.split("\n") if row])
+        set([row.split(sep)[0] for row in data_from.split("\n")[1:] if row]),
+        set([row.split(sep)[0] for row in data_to.split("\n")[1:] if row])
     )
 
 def main(target: tuple[int, str], dest: tuple[int, str], sep: str):
@@ -54,22 +54,32 @@ def main(target: tuple[int, str], dest: tuple[int, str], sep: str):
 
     print(f"[1/4] Parsed {len(target_set)} target ids, {len(dest_set)} dest ids")
 
-    with transaction.atomic():
-        for a_id in target_set.intersection(dest_set):
-            dest_attribute = Attribute.objects.get(project_id=dest_id, payload=a_id)
-            res = File.objects \
-                .filter(project_id=target_id, attributegroup__attribute__payload=a_id) \
-                .update(attributegroup__attribute_id=dest_attribute.id)
-            print(f"[2/4] For {a_id} rebound id for a_group {res} files")
+    get_id = lambda pr, pl: Attribute.objects.only("id").get(project_id=pr, payload=pl).id
+    get_level = lambda n: Level.objects.only('id').get(project_id=dest_id, name=n).id
 
+    with transaction.atomic():
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "update attribute_group_attribute set attribute_id = %s where attribute_id = %s;",
+                qv := [
+                    (get_id(dest_id, a_id), get_id(target_id, a_id))
+                    for a_id
+                    in target_set.intersection(dest_set)
+                ]
+            )
+
+        print(f"[2/4] rebounded id for a_group {len(qv)} attributes")
+
+        create_acc = 0
         for a_id in target_set - dest_set:
-            dest_attribute = Attribute.objects.get(project_id=dest_id, payload=a_id)
-            res = Attribute.objects \
-                .get(project_id=target_id, payload=a_id) \
-                .update(project_id=dest_id, level_id=dest_attribute.level_id)
-            print(f"[3/4] For {a_id} new attr rebound prect and level")
+            attr = Attribute.objects.get(project_id=target_id, payload=a_id)
+            attr.project_id=dest_id
+            attr.level_id = get_level(attr.level.name)
+            attr.save()
+            create_acc += 1
+        print(f"[3/4] For {create_acc} new attr rebound prect and level")
 
         res = File.objects \
             .filter(project_id=target_id, attributegroup__attribute__payload__in=target_set) \
-            .update(project_rebound=target_id, project_id=dest_id)
+            .update(rebound_project=target_id, project_id=dest_id)
         print(f"[4/4] Rebound {res} total files to the new projects")
