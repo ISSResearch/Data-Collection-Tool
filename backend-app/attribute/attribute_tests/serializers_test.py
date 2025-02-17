@@ -84,6 +84,7 @@ class AttributeGroupSerializerTest(TestCase):
             {
                 self.case.attribute.id,
                 self.case.attribute.level.order,
-                self.case.attribute.name
+                self.case.attribute.name,
+                self.case.attribute.payload
             },
         )
