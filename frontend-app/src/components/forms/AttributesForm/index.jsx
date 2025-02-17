@@ -72,7 +72,7 @@ export default function AttributesForm({
     }
   };
 
-  const handleLevelDelete = (index, orig, _id) => {
+  const handleLevelDelete = (index, orig) => {
     if (orig) return setAcceptDelete(index);
     if (index === 0) deleteForm(formId);
     else {

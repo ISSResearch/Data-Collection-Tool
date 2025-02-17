@@ -40,7 +40,7 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
         attributes = project.attribute_set \
             .filter(id__in=request_query.get("attr", [])) \
             .order_by("level__order", "id") \
-            .values("name") \
+            .only("name") \
             .values_list("name", flat=True)
 
         only_new = request_query.get("only_new", False) is True

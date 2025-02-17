@@ -3,6 +3,69 @@ from file.models import File
 from attribute.models import Attribute, Level
 
 
+def migrate_third_attrs(target: int, dest: int, from_order: int = 1):
+    attr_data = File.objects \
+        .filter(
+            project_id=dest,
+            rebound_project=target,
+            attributegroup__attribute__project_id=target,
+            attributegroup__attribute__level__order__gte=from_order
+        ) \
+        .values_list(
+            "attributegroup__uid",
+            "attributegroup__attribute__id",
+            "attributegroup__attribute__name",
+            "attributegroup__attribute__project_id",
+            "attributegroup__attribute__level__order"
+        ) \
+        .distinct()
+    print(f"[1/4] Found {attr_data.count()} attrs to migrate")
+
+    rebound = []
+    created = 0
+    failed = []
+
+    cache = {}
+
+    for ag_id, a_id, a_name, p_id, l_order in attr_data:
+        ag_id = str(ag_id)
+
+        if p_id != target: continue
+
+        if (cached := cache.get((a_id, a_name))):
+            print(f"[2/4] Cached {a_name}")
+            rebound.append((cached, a_id, ag_id,))
+            continue
+
+        try:
+            map_id = Attribute.objects.filter(project_id=dest, name=a_name).id
+            rebound.append((map_id, a_id, ag_id))
+            cache[(a_id, a_name)] = map_id
+            print(f"[2/4] Found {a_name} in dest")
+        except:
+            levels = Level.objects.filter(project_id=dest, order=l_order)
+            if levels.count() == 1:
+                map_id = levels.first().attribute_set.create(name=a_name, project_id=dest).id
+                rebound.append((map_id, a_id, ag_id))
+                created += 1
+                cache[(a_id, a_name)] = map_id
+                print(f"[2/4] Created {a_name} in dest")
+            else: failed.append((a_id, a_name))
+
+    print(f"[3/4] Got {len(rebound)} attributes with {created} created")
+
+    with connection.cursor() as cursor: cursor.executemany(
+        """
+            update attribute_group_attribute
+            set attribute_id = %s
+            where attribute_id = %s and attributegroup_id = %s;
+        """,
+        rebound
+    )
+
+    print(f"[4/4] Migrate done with {len(failed)} failed")
+
+
 def migrate_files(
     target_project: int,
     dest_project: int,
@@ -46,6 +109,7 @@ def get_ids(sep: str, path_from: str, path_to: str) -> tuple[set[str], set[str]]
         set([row.split(sep)[0] for row in data_to.split("\n")[1:] if row])
     )
 
+
 def main(target: tuple[int, str], dest: tuple[int, str], sep: str):
     target_id, target_file = target
     dest_id, dest_file = dest
@@ -83,3 +147,6 @@ def main(target: tuple[int, str], dest: tuple[int, str], sep: str):
             .filter(project_id=target_id, attributegroup__attribute__payload__in=target_set) \
             .update(rebound_project=target_id, project_id=dest_id)
         print(f"[4/4] Rebound {res} total files to the new projects")
+
+
+        # migrate_third_attrs(target_id, dest_id, 1)
