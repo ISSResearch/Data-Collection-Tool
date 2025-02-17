@@ -137,7 +137,7 @@ class ViewSetServices:
                     "attributegroup_set__attribute",
                     queryset=Attribute.objects.select_related("level")
                     .order_by("level__order", "level_id")
-                    .only("id", "name", "level__order")
+                    .only("id", "name", "level__order", "payload")
                 )
             ) \
             .annotate(
@@ -159,6 +159,7 @@ class ViewSetServices:
                 .filter(attribute__in=attribute_query) \
                 .annotate(count=Count("uid")) \
                 .filter(count=len(attribute_query)) \
+                .only("uid") \
                 .values("uid")
             files = files.filter(attributegroup__in=Subquery(sub_query))
         else: files = files.distinct()
@@ -259,8 +260,9 @@ class StatsServices:
         "attribute__id",
         "attribute__name",
         "attribute__parent",
+        "attribute__payload",
         "attribute__attributegroup__file__file_type",
-        "attribute__attributegroup__file__status"
+        "attribute__attributegroup__file__status",
     )
 
     _USER_QUERY_VALUES: tuple[str, ...] = (
@@ -327,6 +329,7 @@ class StatsServices:
                 "attribute__name": "No attribute",
                 "attribute__parent": None,
                 "attribute__id": "no-id",
+                "attribute__payload": "",
                 "attribute__attributegroup__file__file_type": entry["file_type"],
                 "attribute__attributegroup__file__status": entry["status"],
                 "count": entry["file_count"]

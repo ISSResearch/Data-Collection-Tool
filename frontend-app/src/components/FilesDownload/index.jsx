@@ -51,7 +51,7 @@ export default function FilesDownload({ pathID, attributes }) {
       data: TYPE_FILTER,
     },
     {
-      prettyName: "Date Filter:",
+      prettyName: "Upload date Filter:",
       name: "date",
       type: "date",
     }
