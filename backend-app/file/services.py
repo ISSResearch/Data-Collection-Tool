@@ -286,6 +286,7 @@ class StatsServices:
         row.get("attribute__name") or "no name",
         row.get("attribute__attributegroup__file__file_type") or "no data",
         row.get("attribute__parent"),
+        row.get("attribute__payload"),
         row["name"],
         row.get("order") or 0,
         row.get("count") or 0,
@@ -363,6 +364,7 @@ class StatsServices:
                 a_name, \
                 a_type, \
                 a_parent, \
+                a_payload, \
                 l_name, \
                 order, \
                 count = cls.attribute_item(row)
@@ -374,6 +376,7 @@ class StatsServices:
                 "levelName": l_name,
                 "name": a_name,
                 "parent": a_parent,
+                "payload": a_payload,
                 "order": order,
                 a_status: {a_type: count}
             }

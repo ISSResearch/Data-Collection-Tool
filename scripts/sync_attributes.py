@@ -14,9 +14,10 @@ def write_attributes(
     tree: list[IRAttribute],
     depth: int,
     levels: list[Level]
-) -> tuple[list[IRAttribute], int]:
+) -> tuple[list[IRAttribute], int, int]:
     unmatched = []
     total = 0
+    total_unmatched = 0
 
     for attribute in tree:
         total += 1
@@ -48,8 +49,36 @@ def write_attributes(
                     target = p_access.get(name=name)
                     print(f"Found targeted {name} for {parent.name}")
                 except:
-                    unmatched.append(attribute)
-                    print(f"Many Found {name} for {parent.name}")
+                    target = (
+                        p_access.filter(payload=uid)
+                        or (
+                            (
+                                new_access.filter(payload=uid)
+                                if (
+                                    new_access :=
+                                    _p.children
+                                    if isinstance(_p := temp.first(), Attribute)
+                                    else _p.attribute_set
+                                ).filter(payload=uid)
+                                else new_access.filter(name=name)
+                            )
+                            if  (
+                                temp := parent.__class__.objects
+                                .filter(project_id=parent.project_id, name=parent.name)
+                                .exclude(id=parent.id)
+                            ).count() == 1
+                            else None
+                        )
+                    )
+
+                    target = target.first() if (target and target.count() == 1) else None
+
+                    if not target:
+                        _count = lambda chn: len(chn) + sum([_count(ch[2]) for ch in chn])
+                        total_unmatched += _count([attribute])
+                        unmatched.append(attribute)
+                        print(f"Many Found {name} for {parent.name}")
+                    else: print(f"Found targeted {name} for {parent.name}")
 
         if target:
             target.payload = uid
@@ -58,7 +87,7 @@ def write_attributes(
             unmatched.extend(child_res[0])
             total += child_res[1]
 
-    return unmatched, total - len(unmatched)
+    return unmatched, total, total_unmatched
 
 
 def raw_to_ir(
@@ -130,10 +159,11 @@ def main(file_path: str, sep: str, project: int, encoding="utf-8"):
             print(f"[3/5] Mapped input headers with DCT levels")
 
             print(f"Starting to map and write attributes...")
-            unmatched, total = write_attributes(levels[0], ir_tree, 0, levels)
+            unmatched, processed, unmatched_count = write_attributes(levels[0], ir_tree, 0, levels)
 
-        print(f"[4/5] Attributes written with {total} total and {len(unmatched)} unmatched")
-        print(f"Unmatched: {unmatched}")
+            print(f"[4/5] Attributes written with {processed} total and {unmatched_count} unmatched")
+            print(f"Unmatched: {[(x[0], x[1]) for x in unmatched]}")
+
 
         print("[5/5] Saving...")
 
