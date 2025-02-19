@@ -12,7 +12,7 @@ IMPLEMENTED = {"json", "csv", "xlsx"}
 
 
 class Export(ABC):
-    ATTRIBUTE_HEADERS = "Attribute,Level,Validation Images,Validation Videos,Accepted Images, Accepted Videos,Declined Images, Declined Videos,Total\n"
+    ATTRIBUTE_HEADERS = "Payload,Attribute,Level,Validation Images,Validation Videos,Accepted Images, Accepted Videos,Declined Images, Declined Videos,Total\n"
     USER_HEADERS = "User,Validation Images,Validation Videos,Accepted Images, Accepted Videos,Declined Images, Declined Videos,Total\n"
 
     t_val = lambda _, x: (x.get('image', 0), x.get('video', 0))
@@ -46,6 +46,7 @@ class JSON(Export):
 
 class CSV(Export):
     def _write_attribute(self, dest: BytesIO, data: ROW):
+        payload = data.get("payload")
         name = data.get("name")
         level_name = data.get("levelName")
         children = data.get("children", [])
@@ -56,7 +57,7 @@ class CSV(Export):
         total = self.sm(val, acc, dec)
 
         dest.write(bytes(
-            f"{name},{level_name},{val[0]},{val[1]},{acc[0]},{acc[1]},{dec[0]},{dec[1]},{total}\n",
+            f"{payload},{name},{level_name},{val[0]},{val[1]},{acc[0]},{acc[1]},{dec[0]},{dec[1]},{total}\n",
             encoding=ENCODING
         ))
 
@@ -105,6 +106,7 @@ class XLS(Export):
     def _row_n(self, new: int): self.__row_n = new
 
     def _write_attribute(self, dest: Worksheet, data: ROW):
+        payload = data.get("payload")
         name = data.get("name")
         level_name = data.get("levelName")
         children = data.get("children", [])
@@ -114,7 +116,7 @@ class XLS(Export):
         dec = self.t_val(data.get("d", {}))
         total = self.sm(val, acc, dec)
 
-        row = (name, level_name, val[0], val[1], acc[0], acc[1], dec[0], dec[1], total)
+        row = (payload, name, level_name, val[0], val[1], acc[0], acc[1], dec[0], dec[1], total)
 
         for i, item in enumerate(row): dest.write(self._row_n, i, item)
         self._row_n += 1

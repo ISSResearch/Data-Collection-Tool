@@ -59,7 +59,11 @@ class DataBase:
 
     @classmethod
     def set_client(cls, uri: str) -> None:
-        if not cls.__client: cls.__client = AsyncIOMotorClient(uri)
+        if not cls.__client: cls.__client = AsyncIOMotorClient(
+            uri,
+            serverSelectionTimeoutMS=5000,
+            retryWrites=True
+        )
 
     @classmethod
     def set_db(cls, db_name: str = "") -> None:

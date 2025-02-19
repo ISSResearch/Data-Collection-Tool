@@ -349,6 +349,7 @@ class StatsServiceTest(TestCase):
             "order": self.case.level.order,
             "name": self.case.attribute.name,
             "parent": self.case.attribute.parent,
+            "payload": None,
             self.case.file_.status or "v": {
                 self.case.file_.file_type or "no data":
                     self.case.file_.attributegroup_set.first().attribute.count()
