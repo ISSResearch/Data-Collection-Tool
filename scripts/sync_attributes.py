@@ -135,18 +135,23 @@ def map_levels(headers: list[str], project: int) -> tuple[list[Level], list[str]
     return levels, failed
 
 
-def main(file_path: str, sep: str, project: int, encoding="utf-8"):
-    try:
-        with open(
-            file_path,
-            "r",
-            encoding=encoding,
-            errors="ignore"
-        ) as file: headers, *rows = [
+def parse_file(
+    file_path: str,
+    sep: str,
+    encoding: str
+) -> tuple[list[str], list[list[str]]]:
+    with open(file_path, "r", encoding=encoding, errors="ignore") as file:
+        headers, *rows = [
             row.split(sep)
             for row in file.read().split("\n")
             if row
         ]
+        return headers, rows
+
+
+def main(file_path: str, sep: str, project: int, encoding="utf-8"):
+    try:
+        headers, rows = parse_file(file_path, sep, encoding)
 
         print(f"[1/5] Successfully parsed input file with {len(headers)} cols and {len(rows)} rows")
 
@@ -175,3 +180,30 @@ def main(file_path: str, sep: str, project: int, encoding="utf-8"):
         # )
 
     except Exception as e: print(f"[5/5] Process failed, rolling back...\nReason {str(e)}")
+
+
+def main_from_export(file_path: str, sep: str, project: int, encoding="utf-8"):
+    headers, rows = parse_file(file_path, sep, encoding)
+    h_payload, h_attr, h_level, *_ = headers
+
+    assert h_payload == "Payload"
+    assert h_attr == "Attribute"
+    assert h_level == "Level"
+
+    level_cache = {}
+
+    try:
+        raise ValueError("unimplemented")
+        with transaction.atomic():
+            for row in rows:
+                uid, name, level_name, *_ = row
+
+                if not (level := level_cache.get(level_name)):
+                    level = Level.objects.get(project_id=project, name=level_name)
+                    level_cache[level_name] = level
+
+                Attribute.objects.filter(project_id=project, name=name, payload__isnull=True)
+
+        raise ValueError("debug rolback")
+
+    except Exception as e:   print("Error: ", str(e))
