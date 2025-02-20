@@ -61,6 +61,4 @@ def main(project: int, from_order: int = 0):
                 print(f"[2/2] Ran with {len(unmatched)} failed")
                 print("Detailed:", unmatched)
 
-            raise ValueError("debug rollback")
-
     except Exception as e: print("Err: " + str(e))
