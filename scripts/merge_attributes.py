@@ -6,6 +6,37 @@ from collections import Counter
 # from merge_attributes import *; w = main(9)
 
 
+def remove_by_id(uid: str) -> tuple[str, str]:
+    try:
+        with transaction.atomic():
+            query = Attribute.objects.filter(payload=uid)
+
+            assert query.count() == 2, "Count != 2"
+
+            a_from, a_to = query
+
+            assert not a.from_children.count(), "Attr has Children"
+
+            with connection.cursor() as cursor: cursor.execute(
+                """
+                    update attribute_group_attribute
+                    set attribute_id = %s
+                    where attribute_id = %s;
+                """,
+                [a_to.id, a_from.id]
+            )
+
+            a_from.projectgoal_set.update(attribute_id=a_to.id)
+
+            assert not a_from.attributegroup_set.count(), "Attribute group not remapped"
+            assert not a_from.projectgoal_set.count(), "Projectgoal not remapped"
+            assert (d := a_from.delete())[0] == 1, "Unexpected delete"
+
+        return None
+    except Exception as e: return (uid, str(e))
+
+
+
 def traverse(access):
     data = access.values_list("name", flat=True)
     count = Counter(data)
@@ -20,9 +51,6 @@ def traverse(access):
 
             a_from, a_to = access.filter(name=name)
             if a_from.payload != None: a_from, a_to = a_to, a_from
-
-            # a_to = access.get(name=name, payload__isnull=False)
-            # a_from = access.get(name=name, payload__isnull=True)
 
             print("from " + a_to.parent.name if a_to.parent else "")
 
@@ -60,7 +88,5 @@ def main(project: int, from_order: int = 0):
                 unmatched = traverse(level.attribute_set)
                 print(f"[2/2] Ran with {len(unmatched)} failed")
                 print("Detailed:", unmatched)
-
-            raise ValueError("debug rollback")
 
     except Exception as e: print("Err: " + str(e))
