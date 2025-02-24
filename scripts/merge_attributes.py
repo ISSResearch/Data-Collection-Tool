@@ -3,7 +3,38 @@ from django.db import connection, transaction
 from typing import Optional
 from collections import Counter
 
-# from merge_attributes import *; w = main(9)
+def traverse_from_targeted(_a_from: int, _a_to: int):
+    a_from = Attribute.objects.get(id=_a_from)
+    a_to = Attribute.objects.get(id=_a_to)
+
+    unmatched = []
+
+    try:
+        with transaction.atomic():
+            with connection.cursor() as cursor: cursor.execute(
+                """
+                    update attribute_group_attribute
+                    set attribute_id = %s
+                    where attribute_id = %s;
+                """,
+                [a_to.id, a_from.id]
+            )
+
+            a_from.children.update(parent_id=a_to.id, level_id=a_to.level_id)
+            a_from.projectgoal_set.update(attribute_id=a_to.id)
+
+            assert not a_from.children.count(), "Children not remapped"
+            assert not a_from.attributegroup_set.count(), "Attribute group not remapped"
+            assert not a_from.projectgoal_set.count(), "Projectgoal not remapped"
+            assert (d := a_from.delete())[0] == 1, "Unexpected delete"
+
+            print( 0, traverse(a_to.children))
+            raise ValueError("debug rollback")
+            return 0, traverse(a_to.children)
+
+    except Exception as e:
+        print(1, str(e))
+        return 1, str(e)
 
 
 def remove_by_id(uid: str) -> tuple[str, str]:
@@ -15,7 +46,7 @@ def remove_by_id(uid: str) -> tuple[str, str]:
 
             a_from, a_to = query
 
-            assert not a.from_children.count(), "Attr has Children"
+            assert not a_from.children.count(), "Attr has Children"
 
             with connection.cursor() as cursor: cursor.execute(
                 """
@@ -37,7 +68,7 @@ def remove_by_id(uid: str) -> tuple[str, str]:
 
 
 
-def traverse(access):
+def traverse(access) -> list[tuple[str, int, str]]:
     data = access.values_list("name", flat=True)
     count = Counter(data)
 
