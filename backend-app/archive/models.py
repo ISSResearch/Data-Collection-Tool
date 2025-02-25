@@ -5,7 +5,6 @@ from django.db.models import (
     ManyToManyField,
     DO_NOTHING,
     DateTimeField,
-    IntegerField,
     BigIntegerField,
     JSONField,
     TextField
