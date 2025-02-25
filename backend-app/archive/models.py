@@ -6,6 +6,7 @@ from django.db.models import (
     DO_NOTHING,
     DateTimeField,
     IntegerField,
+    BigIntegerField,
     JSONField,
     TextField
 )
@@ -16,7 +17,7 @@ class Archive(Model):
 
     id = CharField(max_length=36, primary_key=True)
     result_id = CharField(max_length=24, null=True)
-    result_size = IntegerField(null=True)
+    result_size = BigIntegerField(null=True)
     result_message = TextField(null=True)
     status = CharField(max_length=1, choices=STATUSES, default="p")
     filters = JSONField()

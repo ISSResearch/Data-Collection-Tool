@@ -47,9 +47,9 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
         only_annotation = request_query.get("only_annotation", False) is True
 
         filter_data = {
-            "status": request_query.get("card", []),
+            "status": request_query.get("card[]", []),
             "only_new": only_new,
-            "type": request_query.get("type", []),
+            "type": request_query.get("type[]", []),
             "attributes": list(attributes)
         }
 

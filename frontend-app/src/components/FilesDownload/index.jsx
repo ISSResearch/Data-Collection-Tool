@@ -35,19 +35,19 @@ export default function FilesDownload({ pathID, attributes }) {
   const navigate = useNavigate();
   const filterFields = useMemo(() => [
     {
-      prettyName: 'Card Filter:',
-      name: 'card',
+      prettyName: "Card Filter:",
+      name: "card[]",
       data: CARD_FILTERS,
     },
     {
-      prettyName: 'Attribute Filter:',
-      name: 'attr',
+      prettyName: "Attribute Filter:",
+      name: "attr[]",
       data: attributes,
       type: "attr"
     },
     {
-      prettyName: 'Filetype Filter:',
-      name: 'type',
+      prettyName: "Filetype Filter:",
+      name: "type[]",
       data: TYPE_FILTER,
     },
     {
@@ -120,9 +120,7 @@ export default function FilesDownload({ pathID, attributes }) {
       setDownloads(data);
     }
     catch ({ message, response }) {
-      var authFailed = response && (
-        response.status === 401 || response.status === 403
-      );
+      var authFailed = response && (response.status === 401 || response.status === 403);
 
       dispatch(addAlert({
         message: "Getting files data error:" + message,
@@ -167,9 +165,7 @@ export default function FilesDownload({ pathID, attributes }) {
     }
   };
 
-  useEffect(() => {
-    getDownloads();
-  }, []);
+  useEffect(() => { getDownloads(); }, []);
 
   return <>
     {/* todo: supposed to be a form element but val filter group has it inside */}
