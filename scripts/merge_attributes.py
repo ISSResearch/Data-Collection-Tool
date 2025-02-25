@@ -28,13 +28,9 @@ def traverse_from_targeted(_a_from: int, _a_to: int):
             assert not a_from.projectgoal_set.count(), "Projectgoal not remapped"
             assert (d := a_from.delete())[0] == 1, "Unexpected delete"
 
-            print( 0, traverse(a_to.children))
-            raise ValueError("debug rollback")
             return 0, traverse(a_to.children)
 
-    except Exception as e:
-        print(1, str(e))
-        return 1, str(e)
+    except Exception as e: return 1, str(e)
 
 
 def remove_by_id(uid: str) -> tuple[str, str]:
@@ -68,8 +64,12 @@ def remove_by_id(uid: str) -> tuple[str, str]:
 
 
 
-def traverse(access) -> list[tuple[str, int, str]]:
-    data = access.values_list("name", flat=True)
+def traverse(
+    access,
+    access_by: str = "name",
+    once: bool = False
+) -> list[tuple[str, int, str]]:
+    data = access.values_list(access_by, flat=True)
     count = Counter(data)
 
     unmatched = []
@@ -80,7 +80,7 @@ def traverse(access) -> list[tuple[str, int, str]]:
             print(f"Trying {name}", end=" ")
             assert cnt == 2, "Unexpected Count"
 
-            a_from, a_to = access.filter(name=name)
+            a_from, a_to = access.filter(**{access_by: name})
             if a_from.payload != None: a_from, a_to = a_to, a_from
 
             print("from " + a_to.parent.name if a_to.parent else "")
@@ -104,19 +104,23 @@ def traverse(access) -> list[tuple[str, int, str]]:
 
             print(f"Deleted {name} {d}")
 
-            unmatched.extend(traverse(a_to.children))
+            if not once: unmatched.extend(traverse(a_to.children, access_by))
 
         except Exception as e: unmatched.append((name, cnt, str(e)))
 
     return unmatched
 
 
-def main(project: int, from_order: int = 0):
+def main(
+    project: int,
+    traverse_by: str = "name",
+    once: bool = False,
+):
     try:
         with transaction.atomic():
             for level in Level.objects.filter(project_id=project, parent=None):
                 print(f"\n[1/2] Run for {level.name} level")
-                unmatched = traverse(level.attribute_set)
+                unmatched = traverse(level.attribute_set, traverse_by, once)
                 print(f"[2/2] Ran with {len(unmatched)} failed")
                 print("Detailed:", unmatched)
 
