@@ -101,4 +101,7 @@ def _patch_archive(project: Project, pk: str, data: dict[str, Any]) -> tuple[dic
         archive.save()
 
         return {"ok": True}, HTTP_202_ACCEPTED
-    except Exception: return {"ok": False}, HTTP_400_BAD_REQUEST
+
+    except Exception as e:
+        message = f"{str(e)}\nPossible archive: {data.get("zip_id")}"
+        return {"ok": False, "message": message}, HTTP_400_BAD_REQUEST
