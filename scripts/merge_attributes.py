@@ -1,5 +1,5 @@
 from attribute.models import Attribute, Level
-from django.db import connection, transaction
+from django.db import connection, transaction, Count
 from typing import Optional
 from collections import Counter
 
@@ -80,7 +80,11 @@ def traverse(
             print(f"Trying {name}", end=" ")
             assert cnt == 2, "Unexpected Count"
 
-            a_from, a_to = access.filter(**{access_by: name})
+            a_from, a_to = access \
+                .filter(**{access_by: name}) \
+                .annotate(ag_count=Count("attributegroup")) \
+                .order_by("ag_count")
+                
             if a_from.payload != None: a_from, a_to = a_to, a_from
 
             print("from " + a_to.parent.name if a_to.parent else "")
