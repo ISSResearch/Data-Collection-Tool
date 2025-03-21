@@ -50,7 +50,11 @@ def _make_archive(project: Project, request: Request) -> tuple[dict[str, Any], i
             "status": request_query.get("card[]", []),
             "only_new": only_new,
             "type": request_query.get("type[]", []),
-            "attributes": list(attributes)
+            "attributes": list(attributes),
+            "upload_from": request_query.get("from"),
+            "upload_to": request_query.get("to"),
+            "update_from": request_query.get("validate_from"),
+            "update_to": request_query.get("validate_to"),
         }
 
         files, _ = FileService()._get_files(project.id, request.user, request_query, True)

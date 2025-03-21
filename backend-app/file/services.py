@@ -38,7 +38,9 @@ class ViewSetServices:
         ("status", "status", False),
         ("author__in", "author[]", True),
         ("upload_date__gte", "from", False),
-        ("upload_date__lte", "to", False)
+        ("upload_date__lte", "to", False),
+        ("update_date__gte", "validate_from", False),
+        ("update_date__lte", "validate_to", False)
     )
 
     def _patch_file(
