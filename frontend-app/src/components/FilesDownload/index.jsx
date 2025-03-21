@@ -54,6 +54,11 @@ export default function FilesDownload({ pathID, attributes }) {
       prettyName: "Upload date Filter:",
       name: "date",
       type: "date",
+    },
+    {
+      prettyName: "Validate date Filter:",
+      name: "validate",
+      type: "date",
     }
   ], [attributes]);
 
@@ -85,6 +90,10 @@ export default function FilesDownload({ pathID, attributes }) {
       if (payload.date) {
         payload.from = payload.date.from;
         payload.to = payload.date.to;
+      }
+      if (payload.validate) {
+        payload.validate_from = payload.validate.from;
+        payload.validate_to = payload.validate.to;
       }
 
       var { data } = await api.post(`/api/projects/archive/${pathID}/`, payload, {
