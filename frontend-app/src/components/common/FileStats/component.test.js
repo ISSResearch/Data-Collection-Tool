@@ -22,7 +22,7 @@ test("files stats component test", async () => {
     </Provider>
   ));
 
-  screen.getByRole('table');
+  expect(screen.getAllByRole('table')).toHaveLength(2);
   expect(screen.queryByTestId('load-c')).toBeNull();
   expect(screen.getAllByRole("radio")[0].checked).toBeTruthy();
   expect(screen.getAllByRole("radio")[1].checked).toBeFalsy();

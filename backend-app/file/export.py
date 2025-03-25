@@ -80,7 +80,7 @@ class CSV(Export):
         file = BytesIO()
 
         match self._type:
-            case "attribute":
+            case "attribute" | "diff":
                 headers = self.ATTRIBUTE_HEADERS
                 write = self._write_attribute
             case "user":

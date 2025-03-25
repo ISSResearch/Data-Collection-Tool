@@ -6,6 +6,8 @@ services:
       DEBUG: ${DEBUG:-true}
     volumes:
       - ./backend-app:/app
+    command: >
+      sh -c "gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"
 
   iss-storage:
     environment:

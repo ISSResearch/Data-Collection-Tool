@@ -1,6 +1,6 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from "react";
 import Arrow from "../Arrow";
-import './styles.css';
+import "./styles.css";
 
 /**
 * @param {object} props
@@ -13,26 +13,26 @@ export default function DateSelector({ onChange, defaultSelected }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  function resetSelector() {
+  const resetSelector = () => {
     setFrom("");
     setTo("");
     onChange({});
-  }
+  };
 
-  function handleManualSelect() {
+  const handleManualSelect = () => {
     setIsOpen(false);
     onChange({ from, to });
-  }
+  };
 
-  function handleFrom({ target }) {
+  const handleFrom = ({ target }) => {
     var check = !to || new Date(target.value) < new Date(to);
     setFrom(check ? target.value : "");
-  }
+  };
 
-  function handleTo({ target }) {
-    var check = !from ||  new Date(from) < new Date(target.value);
+  const handleTo = ({ target }) => {
+    var check = !from || new Date(from) < new Date(target.value);
     setTo(check ? target.value : "");
-  }
+  };
 
   useEffect(() => {
     if (defaultSelected) {

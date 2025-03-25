@@ -7,7 +7,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import Request, Response, APIView
 from django.db import transaction, IntegrityError
-from typing import Any
+from typing import Any, Optional
 from file.models import File
 from .models import Level, Attribute
 
@@ -105,3 +105,27 @@ class ViewMixIn(APIView):
         else: delete_ids.add(item.id)
 
         return bool(file_attributes.intersection(delete_ids))
+
+
+def _attribute_diff(
+    project_id: int,
+    diff_from: Optional[str]
+) -> tuple[list[tuple[int, str, str, int]], int]:
+    if not diff_from: return [], HTTP_200_OK
+
+    base_query = Attribute.objects \
+        .prefetch_related("level") \
+        .filter(project_id=project_id) \
+        .values_list("id", "name", "level__name")
+
+    attr_current = set(base_query)
+    attr_upto = set(base_query.filter(create_date__lt=diff_from))
+
+    into_response = lambda lst, tp: [(r[0], r[1], r[2], tp) for r in lst]
+
+    return (
+        into_response(attr_current - attr_upto, 1)
+        +
+        into_response(attr_upto - attr_current, 0),
+        HTTP_200_OK
+    )

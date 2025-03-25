@@ -4,7 +4,7 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
     HTTP_202_ACCEPTED,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
 )
 from django.db.models import (
     Count,
@@ -24,7 +24,7 @@ from django.core.paginator import Paginator
 from attribute.models import Level, AttributeGroup, Attribute
 from user.models import CustomUser
 from json import loads
-from typing import Any
+from typing import Any, Optional
 from datetime import datetime as dt
 from io import BytesIO
 from .export import IMPLEMENTED, JSON, CSV, XLS
@@ -295,7 +295,105 @@ class StatsServices:
     )
 
     @classmethod
-    def from_attribute(cls, project_id: int) -> tuple[list[dict[str, Any]], int]:
+    def from_diff(
+        cls,
+        project_id: int,
+        diff_from: Optional[str]
+    ) -> tuple[list[dict[str, Any]], int]:
+        # TODO: refactor, unify, if this shows legit data
+        if not diff_from: return [], HTTP_200_OK
+
+        def helper(date: Optional[str]) -> list[tuple[Any, ...]]:
+            nonlocal project_id
+            query = """
+                select F.status, F.file_type, count(F.file_type) as count, L.order, L.name, A.id, A.name, A.parent_id, A.payload
+                from file as F
+                left join attribute_group AG on F.id = AG.file_id
+                left join attribute_group_attribute as AGA on AGA.attributegroup_id = AG.uid
+                left join attribute A on AGA.attribute_id = A.id
+                left join level as L on L.id = A.level_id
+                where F.project_id = {} {}
+                group by A.id, F.file_type, F.status, L.id;
+            """.format(project_id, f"and update_date < '{date}'" * bool(date))
+
+            with connection.cursor() as cur:
+                cur.execute(query, [])
+                return cur.fetchall()
+
+        stats_upto = helper(diff_from)
+        stats_current = helper(None)
+
+        intermediate = {}
+
+        for row in stats_current:
+            a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
+
+            a_st = a_st or "v"
+            a_name = a_name or "no attribute"
+            a_tp = a_tp or "no type"
+            order = order or 0
+            l_name = l_name or "no level"
+            a_id = a_id or "no id"
+
+            target = intermediate.get(a_id)
+
+            if not target: intermediate[a_id] = {
+                "id": a_id,
+                "levelName": l_name,
+                "name": a_name,
+                "parent": a_par,
+                "payload": a_payl,
+                "order": order,
+                a_st: {a_tp: cnt}
+            }
+            elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) + cnt
+            else: target[a_st] = {a_tp: cnt}
+
+        for row in stats_upto:
+            a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
+
+            a_st = a_st or "v"
+            a_name = a_name or "no attribute"
+            a_tp = a_tp or "no type"
+            order = order or 0
+            l_name = l_name or "no level"
+            a_id = a_id or "no id"
+
+            target = intermediate.get(a_id)
+
+            if not target: intermediate[a_id] = {
+                "id": a_id,
+                "levelName": l_name,
+                "name": a_name,
+                "parent": a_par,
+                "payload": a_payl,
+                "order": order,
+                a_st: {a_tp: -cnt}
+            }
+            elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) - cnt
+            else: target[a_st] = {a_tp: -cnt}
+
+        items = list(intermediate.items())
+        for key, row in items:
+            if not bool(
+                row.get("v", {}).get("image", 0)
+                | row.get("v", {}).get("video", 0)
+                | row.get("a", {}).get("image", 0)
+                | row.get("a", {}).get("video", 0)
+                | row.get("d", {}).get("image", 0)
+                | row.get("d", {}).get("video", 0)
+            ):
+                del intermediate[key]
+                continue
+
+            if parent := next((p for p in intermediate.values() if p["id"] == row["parent"]), None):
+                parent["children"] = parent.get("children", []) + [row]
+                del intermediate[key]
+
+        return sorted(intermediate.values(), key=lambda r: r["order"]), HTTP_200_OK
+
+    @classmethod
+    def from_attribute(cls, project_id: int, *args) -> tuple[list[dict[str, Any]], int]:
         stats: list[dict[str, Any]] = list(
             Level.objects
             .filter(project_id=project_id)
@@ -345,7 +443,7 @@ class StatsServices:
         return cls._attribute_stat_adapt(stats), HTTP_200_OK
 
     @classmethod
-    def from_user(cls, project_id: int):
+    def from_user(cls, project_id: int, *args):
         stats: list[dict[str, Any]] = list(
             File.objects
                 .filter(project_id=project_id)
@@ -427,7 +525,8 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     query_set = {"type", "project_id", "choice"}
     choice_map = {
         "attribute": StatsServices.from_attribute,
-        "user": StatsServices.from_user
+        "user": StatsServices.from_user,
+        "diff": StatsServices.from_diff
     }
     export_map = {"json": JSON, "csv": CSV, "xlsx": XLS}
 
@@ -438,11 +537,12 @@ def form_export_file(query: dict[str, Any]) -> BytesIO:
     choice = query["choice"]
     project_id = query["project_id"]
     file_type = query["type"]
+    diff_from = query.get("diff_from")
 
     assert file_type in IMPLEMENTED, f"{file_type} not implemented"
-    assert choice in set(choice_map), f"export for {choice} is not implemented"
+    assert (parser := choice_map.get(choice)), f"export for {choice} is not implemented"
 
-    stats, _ = choice_map[choice](project_id)
+    stats, _ = parser(project_id, diff_from)
     file = export_map[file_type](stats, choice)
 
     return file.into_response()

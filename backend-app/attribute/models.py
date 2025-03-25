@@ -10,7 +10,8 @@ from django.db.models import (
     BooleanField,
     TextField,
     CASCADE,
-    IntegerField
+    IntegerField,
+    DateTimeField,
 )
 from tree_queries.models import TreeNode
 from uuid import uuid4
@@ -18,6 +19,7 @@ from uuid import uuid4
 
 class Attribute(TreeNode):
     name = CharField(max_length=255)
+    create_date = DateTimeField(auto_now_add=True)
 
     project = ForeignKey("project.Project", on_delete=DO_NOTHING)
     level = ForeignKey("attribute.Level", on_delete=DO_NOTHING)
