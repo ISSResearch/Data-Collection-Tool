@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from project.permissions import ProjectStatsPermission
 from django.http.response import FileResponse
+from typing import cast, Optional
 from .permissions import FilePermission
 from .services import (
     ViewSetServices,
@@ -55,7 +56,18 @@ def get_user_stats(_, projectID: int) -> Response:
 
 @api_view(("GET",))
 @permission_classes((IsAuthenticated, ProjectStatsPermission))
+def get_diff_stats(request: Request, projectID: int) -> Response:
+    param = cast(Optional[str], request.query_params.get("diff_from"))
+    response, status = StatsServices.from_diff(projectID, param)
+    return Response(response, status=status)
+
+
+@api_view(("GET",))
+@permission_classes((IsAuthenticated, ProjectStatsPermission))
 def export_stats(request: Request) -> Response | FileResponse:
+    response = form_export_file(request.query_params)
+    return FileResponse(response)
+
     try:
         response = form_export_file(request.query_params)
         return FileResponse(response)

@@ -8,7 +8,7 @@ import Load from "../../ui/Load";
 import "./styles.css";
 
 /** @type {string[]} */
-const STAT_TYPES = ["attribute", "user"];
+const STAT_TYPES = ["attribute", "user", "diff"];
 
 /** @type {string[]} */
 const EXPORT_VARIANTS = ["csv", "json", "xlsx"];
@@ -34,8 +34,10 @@ const countItem = (a, b, c) => {
 */
 export default function FileStats({ pathID }) {
   const [stats, setStats] = useState([]);
+  const [attrDiff, setAttrDiff] = useState([]);
   const [choice, setChoice] = useState("attribute");
   const [loading, setLoading] = useState(true);
+  const [diffFrom, setDiffFrom] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,7 +54,7 @@ export default function FileStats({ pathID }) {
   const exportStats = async (type) => {
     try {
       var { data } = await api.get("/api/files/stats/export/", {
-        params: { choice, project_id: pathID, type },
+        params: { choice, project_id: pathID, type, diff_from: diffFrom },
         headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") },
         responseType: "blob"
       });
@@ -84,12 +86,25 @@ export default function FileStats({ pathID }) {
     if (!choice) return;
 
     setLoading(true);
-    api.get(`/api/files/stats/${choice}/${pathID}/`, {
-      headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
-    })
-      .then(({ data }) => {
-        setStats(data);
-        setLoading(false);
+
+    Promise.allSettled([
+      api.get(`/api/files/stats/${choice}/${pathID}/`, {
+        params: { diff_from: diffFrom },
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      }),
+      api.get(`/api/attributes/attributes/diff/${pathID}/`, {
+        params: { diff_from: diffFrom },
+        headers: { "Authorization": "Bearer " + localStorage.getItem("dtcAccess") }
+      })
+    ]).then((result) => {
+        if (result[0].status === "fulfilled") {
+            setStats(result[0].value.data);
+            setLoading(false);
+        }
+        else { throw result[0].reason; }
+
+        if (result[1].status === "fulfilled") {setAttrDiff(result[1].value.data); }
+        else { throw result[1].reason; }
       })
       .catch(({ message, response }) => {
         var authFailed = response && (
@@ -104,11 +119,11 @@ export default function FileStats({ pathID }) {
 
         if (authFailed) navigate("/login");
       });
-  }, [choice]);
+  }, [choice, diffFrom]);
 
   return <>
     <fieldset
-      onChange={({ target }) => setChoice(target.value)}
+      onChange={({ target }) => { setChoice(target.value); setDiffFrom(""); }}
       className="iss__stats__radio"
     >
       Stats by:
@@ -133,6 +148,17 @@ export default function FileStats({ pathID }) {
         ))
       }
     </fieldset>
+    {
+      choice === "diff" &&
+      <label>
+        Diff from:
+        <input
+          type="date"
+          onChange={({ target }) => setDiffFrom(target.value)}
+          className="iss__stats__dateSelector"
+        />
+      </label>
+    }
     <fieldset className="iss__stats__radio">
       Export as:
       {
@@ -173,6 +199,32 @@ export default function FileStats({ pathID }) {
               </tr>
             </tfoot>
           </table>
+          {
+            !!attrDiff.length &&
+            <table className="iss__stats__table table-diff">
+              <thead className="iss__stats__table-header">
+                <tr className="iss__stats__table-row-outer">
+                  <th>Attribute name</th>
+                  <th>Level name</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody className="iss__stats__table-body">
+                {
+                  attrDiff.map((row) => (
+                    <tr
+                      key={row[0]}
+                      className={"iss__stats__table-row " + (row[3] ? "diff-row-cr" : "diff-row-del")}
+                    >
+                      <td>{row[1]}</td>
+                      <td>{row[2]}</td>
+                      <td>{row[3] ? "created" : " deleted"}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          }
         </section>
     }
   </>;
