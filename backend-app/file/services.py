@@ -382,15 +382,13 @@ class StatsServices:
                 | row.get("a", {}).get("video", 0)
                 | row.get("d", {}).get("image", 0)
                 | row.get("d", {}).get("video", 0)
-            ):
-                del intermediate[key]
-                continue
+            ): del intermediate[key]; continue
 
             if parent := next((p for p in intermediate.values() if p["id"] == row["parent"]), None):
                 parent["children"] = parent.get("children", []) + [row]
-                del intermediate[key]
 
-        return sorted(intermediate.values(), key=lambda r: r["order"]), HTTP_200_OK
+        _filtered = filter(lambda r: not r.get("parent"), intermediate.values())
+        return sorted(_filtered, key=lambda r: r["order"]), HTTP_200_OK
 
     @classmethod
     def from_attribute(cls, project_id: int, *args) -> tuple[list[dict[str, Any]], int]:
