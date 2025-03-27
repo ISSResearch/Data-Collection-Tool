@@ -1,4 +1,5 @@
 from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN,
     HTTP_200_OK,
@@ -110,22 +111,25 @@ class ViewMixIn(APIView):
 def _attribute_diff(
     project_id: int,
     diff_from: Optional[str]
-) -> tuple[list[tuple[int, str, str, int]], int]:
+) -> tuple[list[tuple[int, str, str, int]] | str, int]:
     if not diff_from: return [], HTTP_200_OK
 
-    base_query = Attribute.objects \
-        .prefetch_related("level") \
-        .filter(project_id=project_id) \
-        .values_list("id", "name", "level__name")
+    try:
+        base_query = Attribute.objects \
+            .prefetch_related("level") \
+            .filter(project_id=project_id) \
+            .values_list("id", "name", "level__name")
 
-    attr_current = set(base_query)
-    attr_upto = set(base_query.filter(create_date__lt=diff_from))
+        attr_current = set(base_query)
+        attr_upto = set(base_query.filter(create_date__lt=diff_from))
 
-    into_response = lambda lst, tp: [(r[0], r[1], r[2], tp) for r in lst]
+        into_response = lambda lst, tp: [(r[0], r[1], r[2], tp) for r in lst]
 
-    return (
-        into_response(attr_current - attr_upto, 1)
-        +
-        into_response(attr_upto - attr_current, 0),
-        HTTP_200_OK
-    )
+        return (
+            into_response(attr_current - attr_upto, 1)
+            +
+            into_response(attr_upto - attr_current, 0),
+            HTTP_200_OK
+        )
+
+    except Exception as e: return str(e), HTTP_400_BAD_REQUEST

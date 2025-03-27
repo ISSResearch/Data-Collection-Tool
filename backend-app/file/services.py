@@ -299,96 +299,100 @@ class StatsServices:
         cls,
         project_id: int,
         diff_from: Optional[str]
-    ) -> tuple[list[dict[str, Any]], int]:
+    ) -> tuple[list[dict[str, Any]] | str , int]:
         # TODO: refactor, unify, if this shows legit data
         if not diff_from: return [], HTTP_200_OK
 
-        def helper(date: Optional[str]) -> list[tuple[Any, ...]]:
-            nonlocal project_id
-            query = """
-                select F.status, F.file_type, count(F.file_type) as count, L.order, L.name, A.id, A.name, A.parent_id, A.payload
-                from file as F
-                left join attribute_group AG on F.id = AG.file_id
-                left join attribute_group_attribute as AGA on AGA.attributegroup_id = AG.uid
-                left join attribute A on AGA.attribute_id = A.id
-                left join level as L on L.id = A.level_id
-                where F.project_id = {} {}
-                group by A.id, F.file_type, F.status, L.id;
-            """.format(project_id, f"and update_date < '{date}'" * bool(date))
+        try:
+            def helper(date: Optional[str]) -> list[tuple[Any, ...]]:
+                nonlocal project_id
+                query = """
+                    select F.status, F.file_type, count(F.file_type) as count, L.order, L.name, A.id, A.name, A.parent_id, A.payload
+                    from file as F
+                    left join attribute_group AG on F.id = AG.file_id
+                    left join attribute_group_attribute as AGA on AGA.attributegroup_id = AG.uid
+                    left join attribute A on AGA.attribute_id = A.id
+                    left join level as L on L.id = A.level_id
+                    where F.project_id = {} {}
+                    group by A.id, F.file_type, F.status, L.id;
+                """.format(project_id, f"and update_date < '{date}'" * bool(date))
 
-            with connection.cursor() as cur:
-                cur.execute(query, [])
-                return cur.fetchall()
+                with connection.cursor() as cur:
+                    cur.execute(query, [])
+                    return cur.fetchall()
 
-        stats_upto = helper(diff_from)
-        stats_current = helper(None)
+            stats_upto = helper(diff_from)
+            stats_current = helper(None)
 
-        intermediate = {}
+            intermediate = {}
 
-        for row in stats_current:
-            a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
+            for row in stats_current:
+                a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
 
-            a_st = a_st or "v"
-            a_name = a_name or "no attribute"
-            a_tp = a_tp or "no type"
-            order = order or 0
-            l_name = l_name or "no level"
-            a_id = a_id or "no id"
+                a_st = a_st or "v"
+                a_name = a_name or "no attribute"
+                a_tp = a_tp or "no type"
+                order = order or 0
+                l_name = l_name or "no level"
+                a_id = a_id or "no id"
 
-            target = intermediate.get(a_id)
+                target = intermediate.get(a_id)
 
-            if not target: intermediate[a_id] = {
-                "id": a_id,
-                "levelName": l_name,
-                "name": a_name,
-                "parent": a_par,
-                "payload": a_payl,
-                "order": order,
-                a_st: {a_tp: cnt}
-            }
-            elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) + cnt
-            else: target[a_st] = {a_tp: cnt}
+                if not target: intermediate[a_id] = {
+                    "id": a_id,
+                    "levelName": l_name,
+                    "name": a_name,
+                    "parent": a_par,
+                    "payload": a_payl,
+                    "order": order,
+                    a_st: {a_tp: cnt}
+                }
+                elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) + cnt
+                else: target[a_st] = {a_tp: cnt}
 
-        for row in stats_upto:
-            a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
+            for row in stats_upto:
+                a_st, a_tp, cnt, order, l_name, a_id, a_name, a_par, a_payl = row
 
-            a_st = a_st or "v"
-            a_name = a_name or "no attribute"
-            a_tp = a_tp or "no type"
-            order = order or 0
-            l_name = l_name or "no level"
-            a_id = a_id or "no id"
+                a_st = a_st or "v"
+                a_name = a_name or "no attribute"
+                a_tp = a_tp or "no type"
+                order = order or 0
+                l_name = l_name or "no level"
+                a_id = a_id or "no id"
 
-            target = intermediate.get(a_id)
+                target = intermediate.get(a_id)
 
-            if not target: intermediate[a_id] = {
-                "id": a_id,
-                "levelName": l_name,
-                "name": a_name,
-                "parent": a_par,
-                "payload": a_payl,
-                "order": order,
-                a_st: {a_tp: -cnt}
-            }
-            elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) - cnt
-            else: target[a_st] = {a_tp: -cnt}
+                if not target: intermediate[a_id] = {
+                    "id": a_id,
+                    "levelName": l_name,
+                    "name": a_name,
+                    "parent": a_par,
+                    "payload": a_payl,
+                    "order": order,
+                    a_st: {a_tp: -cnt}
+                }
+                elif target.get(a_st): target[a_st][a_tp] = target[a_st].get(a_tp, 0) - cnt
+                else: target[a_st] = {a_tp: -cnt}
 
-        items = list(intermediate.items())
-        for key, row in items:
-            if not bool(
-                row.get("v", {}).get("image", 0)
-                | row.get("v", {}).get("video", 0)
-                | row.get("a", {}).get("image", 0)
-                | row.get("a", {}).get("video", 0)
-                | row.get("d", {}).get("image", 0)
-                | row.get("d", {}).get("video", 0)
-            ): del intermediate[key]; continue
+            items = list(intermediate.items())
+            for key, row in items:
+                if not bool(
+                    row.get("v", {}).get("image", 0)
+                    | row.get("v", {}).get("video", 0)
+                    | row.get("a", {}).get("image", 0)
+                    | row.get("a", {}).get("video", 0)
+                    | row.get("d", {}).get("image", 0)
+                    | row.get("d", {}).get("video", 0)
+                ): del intermediate[key]; continue
 
-            if parent := next((p for p in intermediate.values() if p["id"] == row["parent"]), None):
-                parent["children"] = parent.get("children", []) + [row]
+                if parent := next((p for p in intermediate.values() if p["id"] == row["parent"]), None):
+                    parent["children"] = parent.get("children", []) + [row]
 
-        _filtered = filter(lambda r: not r.get("parent"), intermediate.values())
-        return sorted(_filtered, key=lambda r: r["order"]), HTTP_200_OK
+            _filtered = filter(lambda r: not r.get("parent"), intermediate.values())
+
+            return sorted(_filtered, key=lambda r: r["order"]), HTTP_200_OK
+
+        except Exception as e: return str(e), HTTP_400_BAD_REQUEST
 
     @classmethod
     def from_attribute(cls, project_id: int, *args) -> tuple[list[dict[str, Any]], int]:
