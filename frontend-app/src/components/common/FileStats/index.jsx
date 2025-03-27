@@ -103,7 +103,7 @@ export default function FileStats({ pathID }) {
         }
         else { throw result[0].reason; }
 
-        if (result[1].status === "fulfilled") {setAttrDiff(result[1].value.data); }
+        if (result[1].status === "fulfilled") { setAttrDiff(result[1].value.data); }
         else { throw result[1].reason; }
       })
       .catch(({ message, response }) => {
