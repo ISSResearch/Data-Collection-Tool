@@ -299,7 +299,7 @@ class StatsServices:
         cls,
         project_id: int,
         diff_from: Optional[str]
-    ) -> tuple[list[dict[str, Any]] | str , int]:
+    ) -> tuple[list[dict[str, Any]] | str, int]:
         # TODO: refactor, unify, if this shows legit data
         if not diff_from: return [], HTTP_200_OK
 
