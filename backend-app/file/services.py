@@ -307,14 +307,22 @@ class StatsServices:
             def helper(date: Optional[str]) -> list[tuple[Any, ...]]:
                 nonlocal project_id
                 query = """
-                    select F.status, F.file_type, count(F.file_type) as count, L.order, L.name, A.id, A.name, A.parent_id, A.payload
-                    from file as F
-                    left join attribute_group AG on F.id = AG.file_id
-                    left join attribute_group_attribute as AGA on AGA.attributegroup_id = AG.uid
-                    left join attribute A on AGA.attribute_id = A.id
-                    left join level as L on L.id = A.level_id
-                    where F.project_id = {} {}
-                    group by A.id, F.file_type, F.status, L.id;
+                    with recursive settings as (
+                        select set_config('work_mem', '4MB', true),
+                        set_config('max_parallel_workers_per_gather', '0', true)
+                    ),
+                    FILES as ( select id, status, file_type from file AS F where F.project_id = {} {} ),
+                    ATTRIBUTES as (
+                        select F.status, F.file_type, L.id as l_id, L.order as l_order, L.name as l_name, A.id as a_id, A.name as a_name, A.parent_id, A.payload
+                        from FILES F
+                        left join attribute_group AG on F.id = AG.file_id
+                        left join attribute_group_attribute AGA on AGA.attributegroup_id = AG.uid
+                        left join attribute A on AGA.attribute_id = A.id
+                        left join level L on L.id = A.level_id
+                    )
+                    select status, file_type, count(file_type) as count, l_order, l_name, a_id, a_name, parent_id, payload
+                    from ATTRIBUTES
+                    group by a_id, file_type, status, l_id, l_order, l_name, a_name, parent_id, payload;
                 """.format(project_id, f"and update_date < '{date}'" * bool(date))
 
                 with connection.cursor() as cur:
