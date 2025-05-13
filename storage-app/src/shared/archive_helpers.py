@@ -13,7 +13,7 @@ from io import BufferedWriter, BytesIO
 from struct import pack as pack_data
 from datetime import datetime
 from zipfile import (
-    _Extra,
+    _Extra, # type: ignore
     ZIP64_LIMIT,
     ZIP_FILECOUNT_LIMIT,
     ZipFile,
