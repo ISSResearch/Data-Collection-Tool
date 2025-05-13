@@ -1,5 +1,4 @@
 import { useEffect, useRef, ReactElement } from "react";
-import { getOriginDomain } from "../../../utils/";
 import { fileApi } from "../../../config/api";
 import { addAlert } from "../../../slices/alerts";
 import { useDispatch } from "react-redux";
