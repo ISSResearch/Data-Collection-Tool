@@ -280,7 +280,7 @@ class Producer:
         self._archive_id = None
         self._archive_size = 0
 
-    async def start( self):
+    async def start(self):
         tasks = []
         write_task = create_task(self.write_task())
 
@@ -314,11 +314,9 @@ class Producer:
             loop = get_running_loop()
             return await loop.run_in_executor(None, self._file_queue.get)
 
+        now = datetime.now().isoformat()
         dest = DataBase.get_fs_bucket(TEMP_BUCKET) \
-            .open_upload_stream(
-                self._dest_name,
-                metadata={"created_at": datetime.now().isoformat()}
-            )
+            .open_upload_stream(self._dest_name, metadata={"created_at": now})
 
         while (task := await get_next()):
             buffer, read_size = task
