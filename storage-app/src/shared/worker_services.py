@@ -1,14 +1,15 @@
 from enum import Enum
 from json import dumps
 from shared.settings import SECRET_KEY, SECRET_ALGO, APP_BACKEND_URL
-from shared.storage_db import SyncDataBase
+from shared.storage_db import SyncDataBase, DataBase
 from shared.utils import emit_token
 from shared.embedding_db import EmbeddingStorage
 from shared.utils import get_object_id
-from typing import Any, Optional
+from typing import Any, Optional, cast, Iterable
 import requests
 from .hasher import VHash, IHash
 from .archive_helpers import SyncZipping
+from .concurrent_zipper import Producer, Consumer, MQueue
 from celery import Task
 
 
@@ -51,22 +52,50 @@ class Zipper:
 
         self.sources = list(sources.items())
 
-    def archive_objects(self):
-        assert self.sources, "Annotation must be parsed"
-
-        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
-
+    def _sync_zipper(self, additional: list[tuple[str, bytes]]) -> Optional[dict[str, Any]]:
         get_source = lambda b_name, f_list: SyncDataBase \
             .get_fs_bucket(b_name) \
             .find({"_id": {"$in": f_list}}, no_cursor_timeout=True) \
             .batch_size(200)
 
-        source_sets = [get_source(b_name, f_list) for b_name, f_list in self.sources]
+        source_sets = [
+            get_source(b_name, f_list)
+            for b_name, f_list
+            in cast(Iterable, self.sources)
+        ]
 
-        zipper = SyncZipping(f"project_{self.bucket_id}_dataset", source_sets, [json_data])
+        zipper = SyncZipping(f"project_{self.bucket_id}_dataset", source_sets, additional)
         zipper.run()
 
-        self._result = zipper.result
+        return zipper.result
+
+    async def _async_zipper(self, additional: list[tuple[str, Any]]) -> Optional[dict]:
+        get_source = lambda b_name, f_list: DataBase \
+            .get_fs_bucket(b_name) \
+            .find({"_id": {"$in": f_list}}, no_cursor_timeout=True) \
+            .batch_size(200)
+
+        source_sets = [
+            get_source(b_name, f_list)
+            for b_name, f_list
+            in cast(Iterable, self.sources)
+        ]
+
+        consumer = Consumer(pq := MQueue(), fq := MQueue())
+        producer = Producer(pq, fq, source_sets, additional, f"project_{self.bucket_id}_dataset")
+
+        consumer.start(); await producer.start()
+        consumer.join()
+
+        return producer.result
+
+    def archive_objects(self):
+        assert self.sources, "Annotation must be parsed"
+        json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
+
+        # self._result = self._sync_zipper([json_data])
+        self._result = self._async_zipper([json_data])
+
         assert self._result, "Error during Archiving"
 
     def send_result(self):
