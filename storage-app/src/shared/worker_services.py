@@ -8,7 +8,7 @@ from shared.utils import get_object_id
 from typing import Any, Optional, cast, Iterable
 import requests
 from .hasher import VHash, IHash
-from .archive_helpers import SyncZipping
+from .sync_zipper import SyncZipping
 from .concurrent_zipper import Producer, Consumer, MQueue
 from celery import Task
 
@@ -69,7 +69,7 @@ class Zipper:
 
         return zipper.result
 
-    async def _async_zipper(self, additional: list[tuple[str, Any]]) -> Optional[dict]:
+    async def _async_zipper(self, additional: list[tuple[str, Any]]) -> Optional[dict[str, Any]]:
         get_source = lambda b_name, f_list: DataBase \
             .get_fs_bucket(b_name) \
             .find({"_id": {"$in": f_list}}, no_cursor_timeout=True) \
@@ -93,7 +93,6 @@ class Zipper:
         assert self.sources, "Annotation must be parsed"
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
 
-        # self._result = self._sync_zipper([json_data])
         self._result = self._async_zipper([json_data])
 
         assert self._result, "Error during Archiving"
@@ -146,7 +145,7 @@ class Hasher:
             .open_download_stream(get_object_id(self.file_id))
 
     def hash(self):
-        match self.file.metadata.get("file_type"):
+        match cast(dict, self.file.metadata).get("file_type"):
             case "image": self.embedding = IHash(self.file).embedding
             case "video": self.embedding = VHash(self.file).embedding
             case _: raise ValueError("Unsupported file type")

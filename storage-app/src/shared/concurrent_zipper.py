@@ -302,11 +302,12 @@ class Producer:
         await write_task
 
     async def next(self, file: GridOut):
-        try: self._process_queue.put((self._get_file_name(file), await file.read()))
+        payload = (self._get_file_name(file), await cast(Any, file.read()))
+        try: self._process_queue.put(payload)
         except Exception as e: print(f"next err {str(e)}")
 
     def _get_file_name(self, file: GridOut) -> str:
-        ext = file.metadata.get("file_extension", "")
+        ext = cast(dict, file.metadata).get("file_extension", "")
         return str(file._id) + (f".{ext}" * bool(ext))
 
     async def write_task(self):
