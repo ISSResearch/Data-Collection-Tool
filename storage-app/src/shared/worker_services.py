@@ -7,6 +7,7 @@ from shared.embedding_db import EmbeddingStorage
 from shared.utils import get_object_id
 from typing import Any, Optional, cast, Iterable
 import requests
+from asyncio import run as block_on
 from .hasher import VHash, IHash
 from .sync_zipper import SyncZipping
 from .concurrent_zipper import Producer, Consumer, MQueue
@@ -93,7 +94,8 @@ class Zipper:
         assert self.sources, "Annotation must be parsed"
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
 
-        self._result = self._async_zipper([json_data])
+        # self._result = block_on(self._async_zipper([json_data]))
+        self._result = self._sync_zipper([json_data])
 
         assert self._result, "Error during Archiving"
 

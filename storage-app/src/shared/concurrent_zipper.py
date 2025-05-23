@@ -254,7 +254,7 @@ class Consumer(Process):
 class Producer:
     __slots__ = (
         "_process_queue",
-        "_file_queue"
+        "_file_queue",
         "_source_sets",
         "_additional",
         "_dest_name",
