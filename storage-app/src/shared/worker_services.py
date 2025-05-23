@@ -94,8 +94,11 @@ class Zipper:
         assert self.sources, "Annotation must be parsed"
         json_data: Any = ("annotation.json", dumps(self.annotation, indent=4).encode("utf-8"))
 
-        # self._result = block_on(self._async_zipper([json_data]))
-        self._result = self._sync_zipper([json_data])
+        self._result = (
+            block_on(self._async_zipper([json_data]))
+            if (ZIP_ASYNC := False) else
+            self._sync_zipper([json_data])
+        )
 
         assert self._result, "Error during Archiving"
 
