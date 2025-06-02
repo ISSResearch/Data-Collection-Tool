@@ -46,7 +46,11 @@ services:
     depends_on:
       - iss-main-db
     command: >
-      sh -c "python manage.py makemigrations &&
+      sh -c "python manage.py makemigrations user &&
+             python manage.py makemigrations project &&
+             python manage.py makemigrations attribute &&
+             python manage.py makemigrations file &&
+             python manage.py makemigrations archive &&
              python manage.py migrate &&
              python manage.py remove_tokens &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"
