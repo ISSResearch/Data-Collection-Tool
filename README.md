@@ -1,15 +1,17 @@
 # ISS Data Collection Tool
 
-## Makefile convinient commands (**docker/docker-compose** and **.env file** are supposed to be set):
+## Makefile commands (**docker/docker-compose** and **.env file** are supposed to be set):
 
+- build project:
+  `make build`
 - start project:
-  `make prod`
+  `make start`
 - stop project:
-  `make prod-stop`
+  `make stop`
 - restart project:
-  `make prod-restart`
+  `make restart`
 - start project with rebuild:
-  `make prod-new`
+  `make start-new`
 - start development project:
   `make dev`
 - stop development project:
@@ -25,11 +27,11 @@
 - restart tests:
   `make test-restart`
 - dump main apps database schema:
-  `make appdb-dump-schema`
+  `make dump-schema`
 - dump main apps database data:
-  `make appdb-dump-data`
+  `make dump-data`
 - dump main apps database (schema and data separately):
-  `make dump-database`
+  `make dump-all`
 
 ## Prerequisites:
 
@@ -63,7 +65,7 @@ Docker files:
 - Dockerfile.storage
 
 Command:
-`docker-compose -f docker-compose.dev.yml up -d --build`
+`docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
 
 ## Testing
 
@@ -84,9 +86,9 @@ Available tests:
   `docker exec iss-test-storage python3 src/test.py`
 - Frontend:
   `docker exec iss-test-front npm test`
-- Selenium Tests (browser emulation):
+- Selenium Tests (browser emulation) (turned off as for now):
   `docker exec iss-tests python3 test.py`
-- Python linter (no output means the lint test is passed):
+- Python linter:
   `docker exec iss-tests flake8`
 - JavaScript linter:
   `docker exec iss-test-front npm run lint`

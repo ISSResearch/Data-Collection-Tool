@@ -42,11 +42,7 @@ services:
       BACKEND_PORT: 8000
       MAX_WORKER: 1
     command: >
-      sh -c "python manage.py makemigrations user &&
-             python manage.py makemigrations project &&
-             python manage.py makemigrations attribute &&
-             python manage.py makemigrations file &&
-             python manage.py makemigrations archive &&
+      sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py createsuperuser --email=admin@example.ex --noinput &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"

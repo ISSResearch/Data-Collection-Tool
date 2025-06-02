@@ -1,41 +1,52 @@
-prod:
-	docker compose up -d
+include .env
 
-prod-new:
-	docker compose up -d --build
+DOCKER_IMAGE := dc_app
+DB_CONTAINER := iss-main-db
+PROD_FILE := -f docker-compose.yml
+DEV_FILE := -f docker-compose.dev.yml
+TEST_FILE := -f docker-compose.test.yml
 
-prod-stop:
-	docker compose down
+# MAIN
+build:
+	docker compose ${PROD_FILE} build --no-cache
 
-prod-restart:
-	make prod-stop && make prod
+start:
+	docker compose ${PROD_FILE} up -d
 
+stop:
+	docker compose ${PROD_FILE} down
+
+start-new: build start
+restart: stop start
+
+# DEV
 dev:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-
-dev-new:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	docker compose ${PROD_FILE} ${DEV_FILE} up -d
 
 dev-stop:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	docker compose ${PROD_FILE} ${DEV_FILE} down
 
-dev-restart:
-	make dev-stop && make dev
+dev-new: build dev
+dev-restart: dev-stop dev
 
-test:
-	docker compose -f docker-compose.test.yml up -d --build
+# TEST
+test-start:
+	docker compose ${TEST_FILE} up -d
+
+test-build:
+	docker compose ${TEST_FILE} build --no-cache
 
 test-stop:
-	docker compose -f docker-compose.test.yml down
+	docker compose ${TEST_FILE} down
 
-test-restart:
-	make test-stop && make test
+test: test-build test-start
+test-restart: test-stop test
 
-appdb-dump-schema:
-	docker exec iss-main-db pg_dump -U postgres -d iss_app_db --schema-only > app_dump_schema
+# UTILS
+dump-schema:
+	docker exec ${DB_CONTAINER} pg_dump -U postgres -d ${DB_APP_DB_NAME} --schema-only > dump_schema
 
-appdb-dump-data:
-	docker exec iss-main-db pg_dump -U postgres -d iss_app_db --data-only > app_dump_data
+dump-data:
+	docker exec ${DB_CONTAINER} pg_dump -U postgres -d ${DB_APP_DB_NAME} --data-only > dump_data
 
-dump-database:
-	make appdb-dump-schema && make appdb-dump-data
+dump-all: dump-schema dump-data

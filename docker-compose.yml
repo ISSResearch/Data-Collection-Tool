@@ -6,7 +6,7 @@ services:
     image: postgres:15.3-alpine
     restart: always
     environment:
-      POSTGRES_DB: ${DB_APP_DB_NAME:-app_db}
+      POSTGRES_DB: ${DB_APP_DB_NAME}
       POSTGRES_HOST_AUTH_METHOD: ${DB_APP_AUTH_METHOD:-trust}
     volumes:
       - ./db:/var/lib/postgresql/data
@@ -35,7 +35,7 @@ services:
     restart: always
     environment:
       DB_HOST: iss-main-db
-      DB_NAME: ${DB_APP_DB_NAME:-app_db}
+      DB_NAME: ${DB_APP_DB_NAME}
       APP_STORAGE_URL: iss-storage:${STORAGE_PORT:-9000}
       SERVER_ORIGINS: ${SERVER_ORIGINS:-localhost}
       SECRET_KEY: ${SECRET_KEY}
@@ -46,11 +46,7 @@ services:
     depends_on:
       - iss-main-db
     command: >
-      sh -c "python manage.py makemigrations user &&
-             python manage.py makemigrations project &&
-             python manage.py makemigrations attribute &&
-             python manage.py makemigrations file &&
-             python manage.py makemigrations archive &&
+      sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py remove_tokens &&
              gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"
