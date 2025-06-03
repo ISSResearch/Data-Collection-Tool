@@ -1,4 +1,4 @@
-<img src="/docs/assets/example.png" alt="example">
+<img src="/docs/assets/preview.gif" alt="example">
 
 # ISS Data Collection Tool
 
@@ -67,19 +67,19 @@ docker exec iss-test-front npm run compile          # JavaScript ts compiler che
 
 ## 📚 Documentation & Examples
 
-See docs/:
+See [docs/](/docs):
 
 Project setup guide Label schema manual API usage examples Export format specs
 
-- [Downloads](/docs/downloads.md)
-- [Goals](/docs/goals.md)
-- [Labels](/docs/labels.md)
-- [Projects](/docs/projects.md)
 - [Quickstart](/docs/quickstart.md)
-- [Roles](/docs/roles.md)
-- [Statistics](/docs/statistics.md)
-- [Uploads](/docs/uploads.md)
+- [Projects](/docs/projects.md)
+- [Labels](/docs/labels.md)
 - [Users](/docs/users.md)
+- [Roles](/docs/roles.md)
+- [Uploads](/docs/uploads.md)
+- [Goals](/docs/goals.md)
+- [Statistics](/docs/statistics.md)
+- [Downloads](/docs/downloads.md)
 
 ## 🛠️ Makefile Commands
 
