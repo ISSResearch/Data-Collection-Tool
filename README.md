@@ -1,6 +1,6 @@
-# [ADD BRIEF GIF]
-# ISS Data Collection Tool
 <img src="/docs/assets/example.png" alt="example">
+
+# ISS Data Collection Tool
 
 An end-to-end dataset annotation and management system built for scale. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets.
 
@@ -67,12 +67,19 @@ docker exec iss-test-front npm run compile          # JavaScript ts compiler che
 
 ## 📚 Documentation & Examples
 
-See docs/ and examples/ (coming soon):
+See docs/:
 
-Project setup guide
-Label schema manual
-API usage examples
-Export format specs
+Project setup guide Label schema manual API usage examples Export format specs
+
+- [Downloads](/docs/downloads.md)
+- [Goals](/docs/goals.md)
+- [Labels](/docs/labels.md)
+- [Projects](/docs/projects.md)
+- [Quickstart](/docs/quickstart.md)
+- [Roles](/docs/roles.md)
+- [Statistics](/docs/statistics.md)
+- [Uploads](/docs/uploads.md)
+- [Users](/docs/users.md)
 
 ## 🛠️ Makefile Commands
 
