@@ -1,96 +1,113 @@
+# [ADD BRIEF GIF]
 # ISS Data Collection Tool
+<a src="/docs/assets/example.png">
 
-## Makefile commands (**docker/docker-compose** and **.env file** are supposed to be set):
+An end-to-end dataset annotation and management system built for scale. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets.
 
-- build project:
-  `make build`
-- start project:
-  `make start`
-- stop project:
-  `make stop`
-- restart project:
-  `make restart`
-- start project with rebuild:
-  `make start-new`
-- start development project:
-  `make dev`
-- stop development project:
-  `make dev-stop`
-- restart development project:
-  `make dev-restart`
-- start project with rebuild:
-  `make dev-new`
-- start tests:
-  `make test`
-- stop tests:
-  `make test-stop`
-- restart tests:
-  `make test-restart`
-- dump main apps database schema:
-  `make dump-schema`
-- dump main apps database data:
-  `make dump-data`
-- dump main apps database (schema and data separately):
-  `make dump-all`
+🛠 Under active development. Suitable for internal deployments and pilot stages.
 
-## Prerequisites:
+## 🧩 Purpose
 
-- **docker/docker-compose** installed
-- create and fill **.env** file from sample
+This platform lets you:
 
-For local development copying sample is enough:
-`cp .env.sample .env`
+- Create projects with custom label systems (flat or hierarchical)
+- Upload images and assign them to labeling schemas
+- Delegate validation roles to users for correcting or reviewing annotations
+- Define collection goals per label and track stats
+- Export annotated datasets with filter options
 
-## Running Application
+## ⚙️ Architecture
 
-Docker Compose file: docker-compose.yml
+- **Main Backend:** Django + PostgreSQL
+- **File Backend:** FastAPI + MongoDB (blob storage)
+- **Task Queue:** Celery + Redis
+- **Frontend:** React
+- **Deployment:** Docker, Compose, Makefile-based workflow
 
-Docker files:
+## 📁 Folder Structure (Top Level)
 
-- Dockerfile.backend
-- Dockerfile.frontend
-- Dockerfile.storage
+- `backend-app/` — main Django app
+- `frontend-app/` — React app
+- `storage-app/` — FastAPI blob service
+- `scripts/` — app handy tools
+- `tests/` — global tests
+- `nginx/`, `redis/` — infrastructure configs
+- `Makefile` — common commands
+- `docker-compose*.yml` — dev/test/prod setup
 
-Command:
-`docker-compose up -d --build`
+## 🚀 Getting Started
 
-## Development
+### Prerequisites
 
-Docker Compose file: docker-compose.dev.yml
+- Docker + Docker Compose installed
+- `.env` file created from `.env.sample`
 
-Docker files:
+```bash
+cp .env.sample .env
+```
 
-- Dockerfile.backend
-- Dockerfile.frontend
-- Dockerfile.storage
+### Build & Run
+```bash
+make build  # build all services
+make start  # start in prod mode
+make dev    # start in dev mode
+```
+Full command list available in the Makefile section below.
 
-Command:
-`docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
+## 🧪 Testing
+Run with:
+```bash
+docker exec iss-test-back ./manage.py test          # Main Backend
+docker exec iss-test-storage python3 src/test.py    # Storage Backend
+docker exec iss-test-front npm test                 # Frontend
+docker exec iss-tests flake8                        # Python linter
+docker exec iss-test-front npm run lint             # JavaScript linter
+docker exec iss-test-front npm run compile          # JavaScript ts compiler checker
+```
 
-## Testing
+## 📚 Documentation & Examples
 
-Docker Compose file: docker-compose.test.yml
+See docs/ and examples/ (coming soon):
 
-Docker files:
+Project setup guide
+Label schema manual
+API usage examples
+Export format specs
 
-- Dockerfile.tests
+## 🛠️ Makefile Commands
 
-Command (rebuild is important):
-`docker-compose -f docker-compose.test.yml up -d --build`
+General
+```bash
+make build          # build all services
+make start          # start in prod mode
+make stop           # stop prod mode
+make start-new      # rebuild and start services in prod mode
+make restart        # stop and start in prod mode
+```
 
-Available tests:
+Dev Mode
+```bash
+make dev            # start in dev mode
+make dev-stop       # stop dev mode
+make dev-new        # rebuild and start services in dev mode
+make dev-restart    # stop and start in dev mode
+```
 
-- Main Backend:
-  `docker exec iss-test-back ./manage.py test`
-- Storage Backend:
-  `docker exec iss-test-storage python3 src/test.py`
-- Frontend:
-  `docker exec iss-test-front npm test`
-- Selenium Tests (browser emulation) (turned off as for now):
-  `docker exec iss-tests python3 test.py`
-- Python linter:
-  `docker exec iss-tests flake8`
-- JavaScript linter:
-  `docker exec iss-test-front npm run lint`
-- JavaScript ts compiler checker:
-  `docker exec iss-test-front npm run compile`
+Tests
+```bash
+make test           # rebuild and start services in test mode
+make test-start     # start in test mode
+make test-build     # build test mode
+make test-stop      # stop test mode
+make test-restart   # stop and start services in test mode
+```
+
+Utils
+```bash
+make dump-schema    # dump database schema
+make dump-data      # dump database data
+make dump-all       # dump database both schema and data
+```
+
+# [CONTACT US SECTION?]
+# [LINKS SECTION?]
