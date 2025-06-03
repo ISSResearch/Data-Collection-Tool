@@ -1,6 +1,6 @@
 # [ADD BRIEF GIF]
 # ISS Data Collection Tool
-<a src="/docs/assets/example.png">
+<img src="/docs/assets/example.png" alt="example">
 
 An end-to-end dataset annotation and management system built for scale. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets.
 
