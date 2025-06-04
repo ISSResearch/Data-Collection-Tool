@@ -50,3 +50,6 @@ dump-data:
 	docker exec ${DB_CONTAINER} pg_dump -U postgres -d ${DB_APP_DB_NAME} --data-only > dump_data
 
 dump-all: dump-schema dump-data
+
+init-admin:
+	docker exec -it iss-back ./manage.py createsuperuser

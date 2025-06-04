@@ -4,14 +4,14 @@
 
 An end-to-end dataset annotation and management system built for scale. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets.
 
-🛠 Under active development. Suitable for internal deployments and pilot stages.
+🛠 Currently in active development. Ideal for internal use, pilots, and research-stage projects.
 
 ## 🧩 Purpose
 
 This platform lets you:
 
 - Create projects with custom label systems (flat or hierarchical)
-- Upload images and assign them to labeling schemas
+- Upload images/videos and assign them to labeling schemas
 - Delegate validation roles to users for correcting or reviewing annotations
 - Define collection goals per label and track stats
 - Export annotated datasets with filter options
@@ -67,16 +67,14 @@ docker exec iss-test-front npm run compile          # JavaScript ts compiler che
 
 ## 📚 Documentation & Examples
 
-See [docs/](/docs):
-
-Project setup guide Label schema manual API usage examples Export format specs
+See [docs/](/docs) for manuals and walkthroughs:
 
 - [Quickstart](/docs/quickstart.md)
 - [Projects](/docs/projects.md)
 - [Labels](/docs/labels.md)
-- [Users](/docs/users.md)
-- [Roles](/docs/roles.md)
+- [Users and Roles](/docs/users.md)
 - [Uploads](/docs/uploads.md)
+- [Validation](/docs/validation.md)
 - [Goals](/docs/goals.md)
 - [Statistics](/docs/statistics.md)
 - [Downloads](/docs/downloads.md)
@@ -114,7 +112,5 @@ Utils
 make dump-schema    # dump database schema
 make dump-data      # dump database data
 make dump-all       # dump database both schema and data
+make init-admin     # create new superuser
 ```
-
-# [CONTACT US SECTION?]
-# [LINKS SECTION?]
