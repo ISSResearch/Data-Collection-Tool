@@ -1,40 +1,38 @@
 # 👥 Users & Roles
 
-To operate the system, at least one user must be created via CLI using the make command.
+To operate the system, at least one user must be created via CLI:
 
 ```bash
 make init-admin
 ```
 
 ## 🔑 Roles
-Admin – full access across the system
-Non Admin User / Collector – limited role. Permissions are configurable individually
+- Admin – full access across the system
+- Collector / Common User – limited role; permissions are set per project
 
 ## 🧾 User Creation
-Admins: must be created manually or upgraded from common user
-
-Self-registered users (via UI): start with no permissions
+- Admins: created manually or promoted from a common user
+- Self-registered users: have no access until granted project-specific permissions
 
 <img src="/docs/assets/" alt="register">
 
 ## Permissions
-You must assign permissions manually on a per-project basis
-Role assignment is granular and per project (can vary per user per project)
+Permissions are managed per project under:
+Project → Edit tab → USER VISIBILITY
 
-To assign permission follow the Project → Edit tab → USER VISIBILITY path.
-There you will find a list of common users with cross table of persmissions per project.
-When you are done with ediiting click `SUBMIT VISIBILITY` to save the state.
+There you’ll see a list of users and a cross-table of permissions.
+Click SUBMIT VISIBILITY to save changes.
 
 <img src="/docs/assets/" alt="permissions">
 
-Permission meaning:
-- Can view project: project is accesable in list of project and could be entered.
-- Can upload: has access to `uload` and `goal` tabs. Can upload media files to the project.
-- Can view files: has access to `validation` tab. Can see only self uloaded media.
-- Can validate: has acccess to `validation tab`. Can see all uploaded media and validate them. can change labels.
-- Can view stats: has access to `statistics` tab. Can see stats per project.
-- Can download: has access to `download` tab. Can download uploaded files.
-- Can edit: has access to `edit` tab. Can change project's data.
+Permission types:
+- Can view project – appears in list and is accessible
+- Can upload – access to upload and goal tabs
+- Can view files – access to validation; sees own uploads only
+- Can validate – full access to validation; can edit labels
+- Can view stats – access to statistics
+- Can download – access to download
+- Can edit – access to edit; can modify project
 
 ## ✅ Next Step
 

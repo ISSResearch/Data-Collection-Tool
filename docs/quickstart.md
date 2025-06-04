@@ -35,4 +35,4 @@ Only admin users can currently create new projects and manage roles/permissions.
 More about that in [Users and Roles](/docs/users.md)
 
 ## ✅ Next Step
-[Project](/docs/projects)
+[Project](/docs/projects.md)
