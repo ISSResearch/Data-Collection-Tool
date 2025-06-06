@@ -2,7 +2,7 @@
 
 This tab displays how labels are used and how annotations are validated, broken down by media type.
 
-<img src="/docs/assets/" alt="stats">
+<!-- <img src="/docs/assets/" alt="stats"> -->
 
 ---
 
@@ -12,11 +12,11 @@ You can group stats by:
 
 - Attribute (label and its nested structure)
 
-<img src="/docs/assets/" alt="stats_label">
+<!-- <img src="/docs/assets/" alt="stats_label"> -->
 
 - User (who uploaded the data)
 
-<img src="/docs/assets/" alt="stats_user">
+<!-- <img src="/docs/assets/" alt="stats_user"> -->
 
 Click on a parent row to expand child items.
 
@@ -30,7 +30,7 @@ Export the table in:
 - json
 - xlsx
 
-<img src="/docs/assets/" alt="stats_export">
+<!-- <img src="/docs/assets/" alt="stats_export"> -->
 
 Useful for further processing, reporting, or audits.
 
@@ -43,7 +43,7 @@ The diff view splits data around a reference upload date.
 For example, setting `Diff from`: *2025-01-01* highlights what’s been uploaded since then—helpful for tracking changes over time.
 No data is displayed until a reference date is selected.
 
-<img src="/docs/assets/" alt="stats_diff">
+<!-- <img src="/docs/assets/" alt="stats_diff"> -->
 
 ---
 

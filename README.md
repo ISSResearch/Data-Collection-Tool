@@ -1,4 +1,4 @@
-<img src="/docs/assets/preview.gif" alt="example">
+<!-- <img src="/docs/assets/preview.gif" alt="example"> -->
 
 # ISS Data Collection Tool
 

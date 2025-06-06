@@ -2,7 +2,7 @@
 
 This tab lets you define and track annotation targets for specific labels.
 
-<img src="/docs/assets/" alt="goals">
+<!-- <img src="/docs/assets/" alt="goals"> -->
 
 ---
 
@@ -15,7 +15,7 @@ To define a goal
  - 🖼️ Images (e.g., 1)
  - 🎞️ Videos (e.g., 2)
 
-<img src="/docs/assets/" alt="goals_create">
+<!-- <img src="/docs/assets/" alt="goals_create"> -->
 
 A goal is considered fulfilled when the weighted sum of validated data reaches the target:
 
@@ -37,7 +37,7 @@ Active goals are listed with:
 
 The table is sorted by progress (least done on top) for better prioritization.
 
-<img src="/docs/assets/" alt="goals_table">
+<!-- <img src="/docs/assets/" alt="goals_table"> -->
 
 Goals are hidden once fulfilled, to keep focus on active targets.
 Toggle `show all` to view past goals or completed ones.
