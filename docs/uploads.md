@@ -2,8 +2,6 @@
 
 <!-- <img src="/docs/assets/" alt="uploads"> -->
 
----
-
 ## 🔍 Select Files
 
 Upload images or videos. The UI shows thumbnails for each selected file.
@@ -14,8 +12,6 @@ You can do that by:
 
 <!-- <img src="/docs/assets/" alt="uploads_add"> -->
 <!-- <img src="/docs/assets/" alt="uploads_drop"> -->
-
----
 
 ## 🧱 Annotate with Label Trees
 
@@ -35,16 +31,12 @@ The block on the left is for applying one label tree to all selected media.
 You define the values.
 Hit `apply to all` → auto-fills that tree across items.
 
----
-
 # 🔍 Interactive Media
 
 Click any image to zoom in. Useful for small objects or cluttered scenes.
 This helps especially when annotating dense scenes or small objects.
 
 <!-- <img src="/docs/assets/" alt="uploads_zoom"> -->
-
----
 
 ## ⏳ Uploading
 
@@ -65,12 +57,12 @@ you are free to leave the page.
 
 Server will:
 
-- `Check` for duplicates
-- `Store` label metadata
-- `Delay` validation access until checks complete
+- **Check** for duplicates
+- **Store** label metadata
+- **Delay** validation access until checks complete
 
 ---
 
-## ✅ Next Step
+### ✅ Next Step
 
 - [Validation](/docs/validation.md)
