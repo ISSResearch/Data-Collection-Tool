@@ -81,7 +81,7 @@ See [Validation](/docs/validation.md) for how to validate/ see uploaded images
 
 Each project might have a label schema, defining what’s being collected. Labels can be:
 
-- Flat list (e.g. `Car`, `Dog`, `Tree`)
+- Flat list (e.g. `Red`, `Green`, `Blue`)
 - Hierarchical (e.g. `Animal > Dog > Labrador`)
 - Required
 - Multiple items
