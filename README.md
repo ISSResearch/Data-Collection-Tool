@@ -6,15 +6,29 @@ An end-to-end dataset annotation and management system built for scale. Supports
 
 🛠 Currently in active development. Ideal for internal use, pilots, and research-stage projects.
 
-## 🧩 Purpose
+## 🧩 Features
 
 This platform lets you:
 
-- Create projects with custom label systems (flat or hierarchical)
-- Upload images/videos and assign them to labeling schemas
-- Delegate validation roles to users for correcting or reviewing annotations
-- Define collection goals per label and track stats
-- Export annotated datasets with filter options
+- **Projects** with custom label systems
+- **Uploading** images/videos and assigning them to labeling schemas
+- Collection **Goals**
+- Tracking **Stats**
+- **Export** annotated datasets
+
+## 📚 Documentation & Examples
+
+See [docs/](/docs) for manuals and walkthroughs:
+
+- [Quickstart](/docs/quickstart.md)
+- [Projects](/docs/projects.md)
+- [Labels](/docs/labels.md)
+- [Users and Roles](/docs/users.md)
+- [Uploads](/docs/uploads.md)
+- [Validation](/docs/validation.md)
+- [Goals](/docs/goals.md)
+- [Statistics](/docs/statistics.md)
+- [Downloads](/docs/downloads.md)
 
 ## ⚙️ Architecture
 
@@ -64,20 +78,6 @@ docker exec iss-tests flake8                        # Python linter
 docker exec iss-test-front npm run lint             # JavaScript linter
 docker exec iss-test-front npm run compile          # JavaScript ts compiler checker
 ```
-
-## 📚 Documentation & Examples
-
-See [docs/](/docs) for manuals and walkthroughs:
-
-- [Quickstart](/docs/quickstart.md)
-- [Projects](/docs/projects.md)
-- [Labels](/docs/labels.md)
-- [Users and Roles](/docs/users.md)
-- [Uploads](/docs/uploads.md)
-- [Validation](/docs/validation.md)
-- [Goals](/docs/goals.md)
-- [Statistics](/docs/statistics.md)
-- [Downloads](/docs/downloads.md)
 
 ## 🛠️ Makefile Commands
 
