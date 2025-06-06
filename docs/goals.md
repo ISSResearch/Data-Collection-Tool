@@ -7,9 +7,9 @@ This tab lets you define and track annotation targets for specific labels.
 ## ➕ Create a Goal
 To define a goal
 
-1. Select a single label from any depth of the hierarchy.
-2. Set the desired amount (how many annotated samples you want).
-3. Define media weights for:
+1. Select a **single label** from any depth of the hierarchy.
+2. Set the desired **amount** (how many annotated samples you want).
+3. Define media **weights** for:
  - 🖼️ Images (e.g., 1)
  - 🎞️ Videos (e.g., 2)
 

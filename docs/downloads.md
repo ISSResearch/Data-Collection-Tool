@@ -28,7 +28,7 @@ It includes all annotations matching the current filters.
 
 Once requested, all archives for the project are listed in a table below.
 
-Column `requested` shows the exact filters used to generate each archive.
+Column **requested** shows the exact filters used to generate each archive.
 
 Click the download button to get the archive.
 
@@ -39,7 +39,7 @@ Once the process completes, the row turns green. This means you can get your arc
 <!-- <img src="/docs/assets/" alt="downloads_table_ok"> -->
 
 The archive process may fail.
-In that case, the row turns red and the `result message` column shows what went wrong.
+In that case, the row turns red and the **result message** column shows what went wrong.
 
 <!-- <img src="/docs/assets/" alt="downloads_table_fail"> -->
 
