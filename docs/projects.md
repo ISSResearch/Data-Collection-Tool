@@ -16,7 +16,7 @@ A project groups:
 
 ## 📤 Creating a Project
 
-Only [admin/superusers](#roles-access) can create new projects via the UI or API.
+Only [admin/superusers](#-roles--access) can create new projects via the UI or API.
 
 To create a project:
 1. Log in as an admin
@@ -38,12 +38,12 @@ Each project has the following sections:
 (admin users will see all sections; regular users will only see a subset)
 
 - **Main info** → `/project/:id`
-- [**upload data**](#uploading) → `/project/:id/upload`
-- [**validate data**](#validation) → `/project/:id/validate`
-- [**goals**](#goals) → `/project/:id/goals`
-- [**statistics**](#stats-progress) → `/project/:id/stats`
-- [**download data**](#downloading-results) → `/project/:id/download`
-- [**edit**](#edit-project) → `/project/:id/edit`
+- [**upload data**](#-uploading) → `/project/:id/upload`
+- [**validate data**](#-validation) → `/project/:id/validate`
+- [**goals**](#-goals) → `/project/:id/goals`
+- [**statistics**](#-stats-progress) → `/project/:id/stats`
+- [**download data**](#-downloading-results) → `/project/:id/download`
+- [**edit**](#-edit-project) → `/project/:id/edit`
 
 More of that below
 
