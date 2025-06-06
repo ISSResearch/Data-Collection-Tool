@@ -4,8 +4,6 @@ This tab lets you define and track annotation targets for specific labels.
 
 <!-- <img src="/docs/assets/" alt="goals"> -->
 
----
-
 ## ➕ Create a Goal
 To define a goal
 
@@ -22,18 +20,16 @@ A goal is considered fulfilled when the weighted sum of validated data reaches t
 Example - Goal = 5, image weight = 1, video weight = 2
 You can complete the goal with 5 images, or 2 videos + 1 image, etc.
 
----
-
 ## 📊 Goal Table
 
 Active goals are listed with:
 
-- Label name
-- Media weights
-- Completed count
-- Remaining amount
-- Items on validation
-- Validation progress
+- **Label name**
+- **Media weights**
+- **Completed count**
+- **Remaining amount**
+- **Items on validation**
+- **Validation progress**
 
 The table is sorted by progress (least done on top) for better prioritization.
 
@@ -44,6 +40,6 @@ Toggle `show all` to view past goals or completed ones.
 
 ---
 
-## ✅ Next Step
+### ✅ Next Step
 
 - [Statistics](/docs/statistics.md)
