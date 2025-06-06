@@ -2,8 +2,6 @@
 
 This guide walks you through setting up and using ISS Data Collection Tool locally.
 
----
-
 ## 1. Clone the Repository
 
 ```bash
@@ -41,5 +39,5 @@ More about that in [Users and Roles](/docs/users.md)
 
 ---
 
-## ✅ Next Step
+### ✅ Next Step
 [Project](/docs/projects.md)
