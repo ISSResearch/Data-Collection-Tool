@@ -16,9 +16,9 @@ A project groups:
 
 ## 📤 Creating a Project
 
-Only admin/superusers can create new projects via the UI or API.
+Only [admin/superusers](#roles-access) can create new projects via the UI or API.
 
-To create via UI:
+To create a project:
 1. Log in as an admin
 2. Go to **Projects** section (/projects)
 3. Click **create project**
@@ -32,20 +32,18 @@ To create via UI:
 Next you will be redirected back to list of projects.
 Select your newly created one.
 
-Your project page will look like this:
-
 <!-- <img src="/docs/assets/" alt="project_detail"> -->
 
 Each project has the following sections:
 (admin users will see all sections; regular users will only see a subset)
 
-- Main info → `/project/:id`
-- upload data → `/project/:id/upload`
-- validate data → `/project/:id/validate`
-- goals → `/project/:id/goals`
-- statistics → `/project/:id/stats`
-- download data → `/project/:id/download`
-- edit → `/project/:id/edit`
+- **Main info** → `/project/:id`
+- [**upload data**](#uploading) → `/project/:id/upload`
+- [**validate data**](#validation) → `/project/:id/validate`
+- [**goals**](#goals) → `/project/:id/goals`
+- [**statistics**](#stats-progress) → `/project/:id/stats`
+- [**download data**](#downloading-results) → `/project/:id/download`
+- [**edit**](#edit-project) → `/project/:id/edit`
 
 More of that below
 
@@ -132,6 +130,6 @@ User roles could set with dedicated button.
 
 ---
 
-## ✅ Next Step
+### ✅ Next Step
 
 [Labels](/docs/labels.md)
