@@ -5,8 +5,6 @@ Each project defines its own label system, goals, and data scope.
 
 <!-- <img src="/docs/assets/" alt="project_main"> -->
 
----
-
 ## 🔹 What is a Project?
 
 A project groups:
@@ -15,8 +13,6 @@ A project groups:
 - [Uploaded images/videos](/docs/uploads.md)
 - [Collection goals (per label)](/docs/goals.md)
 - [Assigned users with roles](/docs/users.md)
-
----
 
 ## 📤 Creating a Project
 
@@ -53,8 +49,6 @@ Each project has the following sections:
 
 More of that below
 
----
-
 ## 👥 Roles & Access
 
 Users are split by admin/ non admin ones.
@@ -66,8 +60,6 @@ so you need to manually edit the permissions for it if needed.
 
 See [Users & Roles](/docs/users.md) for how to manage users and set permissions
 
----
-
 ## 🖼️ Uploading
 
 After creating you can upload images or videos.
@@ -78,8 +70,6 @@ Note: media processing on the server side may cause a slight delay before visibi
 
 See [Uploads](/docs/uploads.md) for how to upload media
 
----
-
 ## 📝 Validation
 
 When you are done with uploading you can validate this data whether it's applicable to your project or not.
@@ -88,8 +78,6 @@ Labels could be corrected there too.
 <!-- <img src="/docs/assets/" alt="validate"> -->
 
 See [Validation](/docs/validation.md) for how to validate/ see uploaded images
-
----
 
 ## 🧩 Label Schema
 
@@ -104,8 +92,6 @@ Each project might have a label schema, defining what’s being collected. Label
 
 See [Labels](/docs/labels.md) for how to create and assign them.
 
----
-
 ## 🎯 Goals
 
 Optionally, you can define target counts for labels (e.g. "Need 100 images of `Dog`").
@@ -113,8 +99,6 @@ Optionally, you can define target counts for labels (e.g. "Need 100 images of `D
 <!-- <img src="/docs/assets/" alt="goals"> -->
 
 See [Goals](/docs/goals.md) for how to create and track them.
-
----
 
 ## 📊 Stats & Progress
 
@@ -127,8 +111,6 @@ Each project has a brief dashboard shows the collected count grouped by:
 
 See [Statistics](/docs/statistics.md)
 
----
-
 ## 🗃 Downloading Results
 
 You can export annotated datasets as `.zip` archives with optional filters
@@ -136,8 +118,6 @@ You can export annotated datasets as `.zip` archives with optional filters
 <!-- <img src="/docs/assets/" alt="download"> -->
 
 See [Downloads](/docs/downloads.md) for how to request archives
-
----
 
 ## ⚙️ Edit project
 
