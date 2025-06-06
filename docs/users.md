@@ -7,8 +7,8 @@ make init-admin
 ```
 
 ## 🔑 Roles
-- Admin – full access across the system
-- Collector / Common User – limited role; permissions are set per project
+- **Admin** – full access across the system
+- **Collector** / Common User – limited role; permissions are set per project
 
 ## 🧾 User Creation
 - Admins: created manually or promoted from a common user
@@ -18,22 +18,24 @@ make init-admin
 
 ## Permissions
 Permissions are managed per project under:
-Project → Edit tab → USER VISIBILITY
+Project → Edit tab → `USER VISIBILITY`
 
 There you’ll see a list of users and a cross-table of permissions.
-Click SUBMIT VISIBILITY to save changes.
+Click `SUBMIT VISIBILITY` to save changes.
 
 <!-- <img src="/docs/assets/" alt="permissions"> -->
 
 Permission types:
-- Can view project – appears in list and is accessible
-- Can upload – access to upload and goal tabs
-- Can view files – access to validation; sees own uploads only
-- Can validate – full access to validation; can edit labels
-- Can view stats – access to statistics
-- Can download – access to download
-- Can edit – access to edit; can modify project
+- `Can view project` – appears in list and is accessible
+- `Can upload` – access to upload and goal tabs
+- `Can view files` – access to validation; sees own uploads only
+- `Can validate` – full access to validation; can edit labels
+- `Can view stats` – access to statistics
+- `Can download` – access to download
+- `Can edit` – access to edit; can modify project
 
-## ✅ Next Step
+---
+
+### ✅ Next Step
 
 [Uploads](/docs/uploads.md)
