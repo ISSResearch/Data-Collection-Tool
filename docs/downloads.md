@@ -1,6 +1,6 @@
 # 📥 Downloads
 
-This section lets you download annotation results for a project.
+This section lets you download collected data for a project.
 
 <!-- <img src="/docs/assets/" alt="downloads"> -->
 
