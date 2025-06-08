@@ -2,7 +2,7 @@
 
 # ISS Data Collection Tool
 
-An end-to-end dataset annotation and management system built for scale. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets.
+An end-to-end dataset collection system designed for scalability. Supports multi-role workflows, structured label taxonomies, validation cycles, goal tracking, and archive exports. Ideal for organizations building private, high-integrity datasets with distributed teams of data collectors.
 
 🛠 Currently in active development. Ideal for internal use, pilots, and research-stage projects.
 
