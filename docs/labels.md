@@ -1,6 +1,6 @@
 # 🧩 Labels
 
-Each project uses a label schema to annotate the data being collected These can be:
+Each project uses a label schema to annotate collected data. Labels help ensure even data collection and reduce future class imbalance. These can include:
 
 - Flat or hierarchical
 - Required or optional
