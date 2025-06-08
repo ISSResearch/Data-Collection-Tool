@@ -4,7 +4,6 @@
 db
 venv
 __pycache__
-migrations
 file_store
 storage
 worker_tmp
