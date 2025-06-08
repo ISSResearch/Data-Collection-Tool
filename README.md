@@ -8,13 +8,14 @@ An end-to-end dataset annotation and management system built for scale. Supports
 
 ## 🧩 Features
 
-This platform lets you:
+This platform enables you to:
 
-- **Projects** with custom label systems
-- **Uploading** images/videos and assigning them to labeling schemas
-- Collection **Goals**
-- Tracking **Stats**
-- **Export** annotated datasets
+- Create projects with custom label systems
+- Upload images/videos and assign them to labeling schemas
+- validate uploaded files
+- Set collection goals
+- Track progress with stats
+- Export data
 
 ## 📚 Documentation & Examples
 
