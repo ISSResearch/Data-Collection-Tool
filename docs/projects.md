@@ -3,8 +3,6 @@
 Projects are the core unit of organization in the ISS Data Collection Tool.
 Each project defines its own label system, goals, and data scope.
 
-<!-- <img src="/docs/assets/" alt="project_main"> -->
-
 ## 🔹 What is a Project?
 
 A project groups:
@@ -27,12 +25,10 @@ To create a project:
    - **Project Description**
    - **Label Schema**
 
-<!-- <img src="/docs/assets/" alt="project_create"> -->
+<img src="/docs/assets/project_create.gif" alt="project_create">
 
 Next you will be redirected back to list of projects.
 Select your newly created one.
-
-<!-- <img src="/docs/assets/" alt="project_detail"> -->
 
 Each project has the following sections:
 (admin users will see all sections; regular users will only see a subset)
@@ -54,7 +50,7 @@ Admins have full access to the whole application and items;
 Non admin users by default don't have any access to project or its data
 so you need to manually edit the permissions for it if needed.
 
-<!-- <img src="/docs/assets/" alt="project_permissions"> -->
+<img src="/docs/assets/project_roles.gif" alt="project_roles">
 
 See [Users & Roles](/docs/users.md) for how to manage users and set permissions
 
@@ -64,7 +60,7 @@ After creating you can upload images or videos.
 After labeling and sending media to the server they will appear in validation section.
 Note: media processing on the server side may cause a slight delay before visibility.
 
-<!-- <img src="/docs/assets/" alt="upload"> -->
+<img src="/docs/assets/project_upload.gif" alt="upload">
 
 See [Uploads](/docs/uploads.md) for how to upload media
 
@@ -73,7 +69,7 @@ See [Uploads](/docs/uploads.md) for how to upload media
 When you are done with uploading you can validate this data whether it's applicable to your project or not.
 Labels could be corrected there too.
 
-<!-- <img src="/docs/assets/" alt="validate"> -->
+<img src="/docs/assets/project_validate.gif" alt="validate">
 
 See [Validation](/docs/validation.md) for how to validate/ see uploaded images
 
@@ -86,15 +82,13 @@ Each project might have a label schema, defining what’s being collected. Label
 - Required
 - Multiple items
 
-<!-- <img src="/docs/assets/" alt="labels"> -->
-
 See [Labels](/docs/labels.md) for how to create and assign them.
 
 ## 🎯 Goals
 
 Optionally, you can define target counts for labels (e.g. "Need 100 images of `Dog`").
 
-<!-- <img src="/docs/assets/" alt="goals"> -->
+<img src="/docs/assets/project_goals.gif" alt="goals">
 
 See [Goals](/docs/goals.md) for how to create and track them.
 
@@ -105,7 +99,7 @@ Each project has a brief dashboard shows the collected count grouped by:
 - Media type
 - Validation type
 
-<!-- <img src="/docs/assets/" alt="stats"> -->
+<img src="/docs/assets/project_stats.gif" alt="stats">
 
 See [Statistics](/docs/statistics.md)
 
@@ -113,7 +107,7 @@ See [Statistics](/docs/statistics.md)
 
 You can export annotated datasets as `.zip` archives with optional filters
 
-<!-- <img src="/docs/assets/" alt="download"> -->
+<img src="/docs/assets/project_download.gif" alt="download">
 
 See [Downloads](/docs/downloads.md) for how to request archives
 
@@ -125,8 +119,6 @@ Deleting project won't cause to loose any data. It's just mark as hidden so it c
 After you are done with editing click `SUBMIT EDIT`
 
 User roles could set with dedicated button.
-
-<!-- <img src="/docs/assets/" alt="project_edit"> -->
 
 ---
 
