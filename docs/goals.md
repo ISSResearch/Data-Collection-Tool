@@ -1,6 +1,6 @@
 # 🎯 Goals
 
-This tab lets you define and track annotation targets for specific labels.
+This tab lets you define and track collection targets for specific labels.
 
 <!-- <img src="/docs/assets/" alt="goals"> -->
 
