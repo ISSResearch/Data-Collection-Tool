@@ -36,3 +36,9 @@ In that case, the row turns red and the **result message** column shows what wen
 ## ➕ Only New Files
 When re-downloading later (e.g., the next day), you might want to include only new files.
 Enable the `not downloaded before` flag to skip any files already included in past archives (based on the filters).
+
+---
+
+### ✅ Next Step
+
+[Annotation](/docs/annotation.md)

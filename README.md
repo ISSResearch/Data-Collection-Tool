@@ -30,6 +30,7 @@ See [docs/](/docs) for manuals and walkthroughs:
 - [Goals](/docs/goals.md)
 - [Statistics](/docs/statistics.md)
 - [Downloads](/docs/downloads.md)
+- [Annotation](/docs/annotation.md)
 
 ## ⚙️ Architecture
 
