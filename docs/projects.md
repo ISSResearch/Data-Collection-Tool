@@ -50,7 +50,7 @@ Admins have full access to the whole application and items;
 Non admin users by default don't have any access to project or its data
 so you need to manually edit the permissions for it if needed.
 
-<img src="/docs/assets/project_roles.gif" alt="project_roles">
+<img src="/docs/assets/project_roles.gif" alt="permissions">
 
 See [Users & Roles](/docs/users.md) for how to manage users and set permissions
 

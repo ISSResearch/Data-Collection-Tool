@@ -14,7 +14,7 @@ make init-admin
 - Admins: created manually or promoted from a common user
 - Self-registered users: have no access until granted project-specific permissions
 
-<!-- <img src="/docs/assets/" alt="register"> -->
+<img src="/docs/assets/registration.gif" alt="register">
 
 ## Permissions
 Permissions are managed per project under:
@@ -23,7 +23,7 @@ Project → Edit tab → `USER VISIBILITY`
 There you’ll see a list of users and a cross-table of permissions.
 Click `SUBMIT VISIBILITY` to save changes.
 
-<!-- <img src="/docs/assets/" alt="permissions"> -->
+<img src="/docs/assets/project_roles.gif" alt="permissions">
 
 Permission types:
 - `Can view project` – appears in list and is accessible
