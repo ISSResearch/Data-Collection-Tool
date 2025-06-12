@@ -1,4 +1,4 @@
-<!-- <img src="/docs/assets/preview.gif" alt="example"> -->
+<img src="/docs/assets/preview.gif" alt="example">
 
 # ISS Data Collection Tool
 
@@ -30,6 +30,7 @@ See [docs/](/docs) for manuals and walkthroughs:
 - [Goals](/docs/goals.md)
 - [Statistics](/docs/statistics.md)
 - [Downloads](/docs/downloads.md)
+- [Annotation](/docs/annotation.md)
 
 ## ⚙️ Architecture
 
