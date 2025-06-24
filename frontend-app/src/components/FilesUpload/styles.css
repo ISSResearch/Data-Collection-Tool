@@ -1,0 +1,13 @@
+.iss__filesUpload {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .iss__filesUpload {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,20 @@
+.iss__selector {
+    border-radius: 4px;
+    padding: 4px 8px;
+    border: 1px solid var(--issBrand);
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    font-size: 14px;
+}
+
+.iss__selectorWrap {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.iss__selector__name {
+    font-size: 14px;
+}

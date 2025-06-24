@@ -1,0 +1,81 @@
+.iss__projectCreate__form {
+    width: 100%;
+    border: none;
+    display: grid;
+    grid-template-columns: 35% 1px auto;
+    column-gap: 20px;
+    row-gap: 60px;
+    grid-template-areas:
+        "project_field form_border attribute_field"
+        ". submit-button .";
+}
+.iss__projectCreate__form__set {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    gap: 20px;
+}
+.iss__projectCreate__form__set:nth-child(1) {
+    grid-area: project_field;
+}
+.iss__projectCreate__form__border {
+    grid-area: form_border;
+    background-color: var(--issBrand);
+    margin: -20px 0;
+}
+.iss__projectCreate__form__input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+.iss__projectCreate__form__input > textarea,
+.iss__projectCreate__form__input > input {
+    border-radius: 4px;
+    border: 1px solid var(--issBrand);
+    padding: 12px;
+}
+.iss__projectCreate__form__input textarea {
+    resize: vertical;
+    min-height: 200px;
+}
+.iss__projectCreate__form__createButton {
+    border-radius: 4px;
+    grid-area: submit-button;
+    background: none;
+    border: 1px solid var(--issBrand);
+    cursor: pointer;
+    padding: 12px 20px;
+    width: fit-content;
+    place-self: center;
+    transition: background-color 0.3s ease;
+}
+.iss__projectCreate__form__createButton > span {
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+.iss__projectCreate__preview::before {
+    content: "Preview Description:";
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.iss__projectCreate__preview {
+    width: 100%;
+    font-size: 14px;
+}
+.input--box {
+    flex-direction: row;
+    place-items: center;
+    cursor: pointer;
+}
+@media (hover: hover) {
+    .iss__projectCreate__form__createButton:hover {
+        background-color: var(--issBrand);
+    }
+    .iss__projectCreate__form__createButton:hover > span {
+        color: white;
+    }
+}

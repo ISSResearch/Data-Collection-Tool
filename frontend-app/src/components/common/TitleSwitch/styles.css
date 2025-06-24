@@ -1,0 +1,65 @@
+.iss__titleSwitch {
+    display: flex;
+    gap: 20px;
+    width: fit-content;
+    place-items: center;
+}
+.iss__titleSwitch__nav {
+    display: flex;
+    width: fit-content;
+    list-style: none;
+    gap: 8px;
+}
+.iss__titleSwitch__navItem,
+.iss__titleSwitch__navItem--active {
+    font-size: 14px;
+    text-decoration: none;
+    transition:
+        outline 0.3s ease,
+        color 0.3s ease;
+}
+.iss__titleSwitch__navItem--active {
+    pointer-events: none;
+    color: var(--issBrand);
+    text-decoration: underline;
+}
+.iss__titleSwitch__title {
+    font-size: 28px;
+}
+.iss__titleSwitch__title > * {
+    text-decoration: none;
+    color: var(--issBrand);
+    transition: color 0.3s ease;
+    font-size: 28px;
+}
+@media (max-width: 768px) {
+    .iss__titleSwitch__title > * {
+        font-size: 36px;
+    }
+}
+@media (max-width: 575px) {
+    .iss__titleSwitch {
+        width: 100%;
+        flex-direction: column;
+    }
+    .iss__titleSwitch__navWrap {
+        place-self: flex-start;
+    }
+    .iss__titleSwitch {
+        gap: 20px;
+    }
+}
+@media (max-width: 375px) {
+    .iss__titleSwitch__title > * {
+        font-size: 30px;
+    }
+}
+@media (hover: hover) {
+    .iss__titleSwitch__title > a:hover {
+        color: var(--issLightBrand);
+    }
+    .iss__titleSwitch__navItem:hover {
+        outline-color: var(--issBrand);
+        color: var(--issBrand);
+    }
+}

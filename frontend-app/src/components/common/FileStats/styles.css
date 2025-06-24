@@ -1,0 +1,103 @@
+.iss__stats__radio {
+  border: none;
+  display: flex;
+  gap: 12px;
+}
+.iss__stats__radio:nth-of-type(2) {
+  margin-top: 20px;
+}
+.iss__stats__radioItem > input {
+  display: none;
+}
+.iss__stats__radioItem {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.item--active {
+  pointer-events: none;
+  text-decoration: underline;
+  color: var(--issBrand);
+}
+.item--block {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.iss__stats__tableWrap {
+  margin-top: 20px;
+  overflow-y: scroll;
+}
+.iss__stats__load {
+  width: 100%;
+  display: flex;
+  place-content: center;
+}
+.iss__stats__table {
+  background-color: white;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+.iss__stats__table-row-outer > th {
+  border: 1px solid var(--issBrand);
+  padding: 4px;
+}
+.iss__stats__table-row-outer > th:first-child {
+  width: 35%;
+}
+.iss__stats__table-row-outer > th:last-child {
+  width: fit-content;
+  font-size: 12px;
+  background-color: rgb(216, 234, 255, 0.1);
+}
+.iss__stats__table-footer td {
+  border: 1px solid var(--issBrand);
+  text-align: right;
+  font-size: 12px;
+  text-align: right;
+  font-weight: 600;
+  padding: 2px;
+  background-color: rgb(216, 234, 255, 0.1);
+}
+.iss__stats__table-footer td:last-child {
+  text-align: center;
+}
+.iss__stats__exportButton {
+  background-color: unset;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.iss__stats__dateSelector {
+  margin-top: 8px;
+  margin-left: 12px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 200px;
+  padding: 4px 8px;
+  background-color: white;
+  border: 1px solid var(--issBrand);
+  height: fit-content;
+}
+
+.table-diff {
+  margin-top: 20px;
+}
+
+.diff-row-cr {
+  background-color: rgb(153, 255, 98, 0.3);
+}
+.diff-row-del {
+  background-color: rgb(255, 98, 98, 0.3);
+}
+
+@media (max-width: 600px) {
+  .iss__stats__tableWrap {
+    box-shadow: inset -4px 0px 3px var(--issBrand);
+  }
+}
+@media (hover: hover) {
+  .iss__stats__radioItem:hover,
+  .iss__stats__exportButton:hover {
+    color: var(--issBrand);
+  }
+}

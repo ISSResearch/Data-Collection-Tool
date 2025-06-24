@@ -1,45 +1,157 @@
+version: "3.8"
+
 services:
-  iss_db:
-    container_name: iss_db
-    image: postgres
+  iss-main-db:
+    container_name: iss-main-db
+    image: postgres:15.3-alpine
     restart: always
     environment:
-      POSTGRES_DB: iss_app_db
-      POSTGRES_HOST_AUTH_METHOD: trust  
+      POSTGRES_DB: ${DB_APP_DB_NAME:-app_db}
+      POSTGRES_HOST_AUTH_METHOD: ${DB_APP_AUTH_METHOD:-trust}
     volumes:
       - ./db:/var/lib/postgresql/data
     networks:
       - iss_network
 
-  iss_back:
-    container_name: iss_back
-    image: iss_back
-    build:
-      context: ./back
-      dockerfile: DockerFile
-    restart: always
-    depends_on:
-      - iss_db
+  iss-storage-db:
+    image: mongo:7.0.1-rc0
+    container_name: iss-storage-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_STORAGE_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
     volumes:
-      - ./back/proj_back:/app
+      - ./storage:/data/db
     ports:
-      - 8000:8000
+      - 27017:27017
+    restart: always
     networks:
-      - iss_network    
+      - iss_network
 
-  iss_front:
-    container_name: iss_front
+  iss-back:
+    container_name: iss-back
+    image: iss-back
+    build:
+      dockerfile: Dockerfile.backend
+    restart: always
+    environment:
+      DB_HOST: iss-main-db
+      DB_NAME: ${DB_APP_DB_NAME:-app_db}
+      APP_STORAGE_URL: iss-storage:${STORAGE_PORT:-9000}
+      SERVER_ORIGINS: ${SERVER_ORIGINS:-localhost}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
+      MAX_WORKER: ${MAX_WORKER:-5}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+    depends_on:
+      - iss-main-db
+    command: >
+      sh -c "python manage.py makemigrations user &&
+             python manage.py makemigrations project &&
+             python manage.py makemigrations attribute &&
+             python manage.py makemigrations file &&
+             python manage.py makemigrations archive &&
+             python manage.py migrate &&
+             python manage.py remove_tokens &&
+             gunicorn --config './conf/gunicorn_conf.py' proj_back.wsgi:application"
+    networks:
+      - iss_network
+
+  iss-storage:
+    container_name: iss-storage
+    image: iss-storage
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    environment:
+      DB_HOST: iss-storage-db
+      APP_BACKEND_URL: iss-back:${BACKEND_PORT:-8000}
+      DB_USER: ${DB_STORAGE_USER:-admin}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
+      CELERY_BROKER_URL: ${BROKER_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
+      MAX_WORKER: ${MAX_WORKER:-5}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
+    depends_on:
+      - iss-storage-db
+      - iss-back
+    volumes:
+      - ./embedding_db:/app/embedding_db
+    command: python3 src/main.py
+    networks:
+      - iss_network
+
+  iss-front:
+    container_name: iss-front
     image: iss_front
     build:
-      context: ./front
-      dockerfile: DockerFile
+      dockerfile: Dockerfile.frontend
     restart: always
     depends_on:
-      - iss_back
-    volumes:
-      - ./front/:/app
+      - iss-back
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      PORT: ${FRONTEND_PORT:-3000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
     ports:
-      - 3000:3000
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
+    command: >
+      sh -c "REACT_APP_STORAGE_PORT=${STORAGE_PORT:-9000} REACT_APP_BACKEND_PORT=${BACKEND_PORT:-8000} npm run build && serve -s build"
+    networks:
+      - iss_network
+
+  iss-broker:
+    container_name: iss-broker
+    image: redis:alpine3.18
+    restart: always
+    volumes:
+      - ./broker-db:/data
+      - ./redis:/conf
+    command: redis-server /conf/redis.conf
+    networks:
+      - iss_network
+
+  iss-worker:
+    container_name: iss-worker
+    build:
+      dockerfile: Dockerfile.storage
+    restart: always
+    environment:
+      DB_HOST: iss-storage-db
+      APP_BACKEND_URL: iss-back:${BACKEND_PORT:-8000}
+      DB_USER: ${DB_STORAGE_USER:-admin}
+      DB_PASSWORD: ${DB_STORAGE_PASSWORD:-password}
+      CELERY_BROKER_URL: ${BROKER_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      SECRET_ALGO: ${SECRET_ALGO}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
+    depends_on:
+      - iss-broker
+      - iss-back
+    volumes:
+      - ./embedding_db:/app/embedding_db
+    command: python3 src/worker.py
+    networks:
+      - iss_network
+
+  iss-proxy:
+    container_name: iss-proxy
+    image: nginx:1.25.1-alpine
+    restart: always
+    depends_on:
+      - iss-back
+      - iss-storage
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      STORAGE_PORT: ${STORAGE_PORT:-9000}
+    ports:
+      - "${STORAGE_PORT:-9000}:${STORAGE_PORT:-9000}"
+      - "${BACKEND_PORT:-8000}:${BACKEND_PORT:-8000}"
+    volumes:
+      - ./nginx:/etc/nginx/templates
     networks:
       - iss_network
 

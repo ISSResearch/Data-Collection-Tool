@@ -1,0 +1,41 @@
+.iss__allProjects {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: -6px;
+}
+.iss__projects__card {
+    padding: 6px;
+    width: 20%;
+}
+.iss__projects__loading {
+    width: 100%;
+    display: flex;
+    place-content: center;
+}
+@media (max-width: 1669.99px) {
+    .iss__projects__card {
+        width: 25%;
+    }
+}
+@media (max-width: 1279.99px) {
+    .iss__projects__card {
+        width: 33%;
+    }
+}
+@media (max-width: 768px) {
+    .iss__projects__card {
+        width: 50%;
+    }
+}
+@media (max-width: 575px) {
+    .iss__allProjects {
+        flex-direction: column;
+        margin: 0;
+        gap: 12px;
+    }
+    .iss__projects__card {
+        width: 100%;
+        padding: 0;
+    }
+}

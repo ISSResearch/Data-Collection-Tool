@@ -1,0 +1,228 @@
+.goal__row__progress {
+    padding: 0 !important;
+    position: relative;
+    font-size: 12px;
+    border-radius: 4px;
+    background-color: var(--issLightBrand);
+}
+.goal__row__progress > mark {
+    position: absolute;
+    background-color: unset;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-shadow: 0px 0px 1px black;
+    z-index: 2;
+}
+
+.goal__progressBar {
+    z-index: 1;
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    background-color: var(--issBrand);
+    transition: width 1s ease;
+}
+
+.goal--complete {
+    background-color: var(--issGreen);
+}
+
+.goal__delete {
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+    border-color: var(--issRed);
+    background-color: rgb(255, 98, 98, 0.2);
+    color: var(--issRed);
+}
+
+.goals__inlineCreate {
+    background-color: unset;
+    border: none;
+    margin-left: 8px;
+    color: var(--issBrand);
+    cursor: pointer;
+}
+
+.goals__cardWrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.goals__load {
+    width: 100%;
+    display: flex;
+    place-content: center;
+}
+
+.goal__button,
+.goal__creteButton {
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid;
+    border-color: var(--issGreen);
+    background-color: rgb(235 255 226);
+    color: var(--issGreen);
+    margin-bottom: 20px;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+.goal__creteButton > .iss__loadingMin {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.goal__createFrom {
+    background-color: var(--issBrand);
+    padding: 20px;
+    border-radius: 4px;
+    display: flex;
+    place-items: flex-end;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.goal__createFrom > .iss__selectorWrap {
+    flex-direction: row;
+    width: 100%;
+}
+.goal__createFrom
+    > .iss__selectorWrap
+    > label:has(.iss__selector option[value="clear"]:checked) {
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+.goal__createFrom .iss__selector__name {
+    color: white;
+}
+.goal__createItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.goal__createItem > span {
+    color: white;
+    font-size: 14px;
+}
+.goal__createItem > input,
+.goal__createFrom > select {
+    border-radius: 4px;
+    padding: 4px 8px;
+    background-color: white;
+    border: 1px solid var(--issBrand);
+}
+.goal__creteButton {
+    margin-bottom: 0;
+}
+.goal__errors {
+    color: var(--issRed);
+    width: 100%;
+}
+.goal__table {
+    background-color: white;
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px;
+}
+.goal__table th,
+.goal__table td {
+    border: 1px solid var(--issBrand);
+    padding: 4px;
+}
+.goal__table th:not(:nth-of-type(2)) {
+    width: 1px;
+}
+.goal__table__progress {
+    width: 15% !important;
+}
+
+.goal__table td:not(:nth-of-type(2)) {
+    text-align: center;
+}
+
+.goal__table__pagination {
+    padding: 4px 8px;
+    display: flex;
+    gap: 12px;
+    place-items: center;
+}
+.goal__table__pagination > label > input {
+    border: 1px solid var(--issBrand);
+    padding: 2px 4px;
+    margin-right: 4px;
+}
+.pag--block {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.goal__annotation {
+    display: flex;
+    gap: 20px;
+    place-items: center;
+    margin-bottom: 12px;
+}
+.goal__annotation > label {
+    display: flex;
+    gap: 4px;
+    place-items: center;
+}
+.goal__row__nameCell {
+    position: relative;
+}
+.goal__row__nameCell > mark {
+    background-color: unset;
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: black;
+    opacity: 0.3;
+}
+.goal__createReplace {
+    cursor: pointer;
+    color: white;
+    width: 100%;
+    place-items: center;
+    display: flex;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+@media (hover: hover) {
+    .goal__delete:hover {
+        color: white;
+        background-color: var(--issRed);
+    }
+
+    .goal__button:hover {
+        color: white;
+        background-color: var(--issGreen);
+    }
+    .goal__createFrom > .iss__selectorWrap > label:last-of-type:hover {
+        opacity: 1 !important;
+    }
+}

@@ -1,0 +1,61 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 14,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "^18.2.0"
+    }
+  },
+  "plugins": ["react", "react-hooks", "jsdoc", "@typescript-eslint"],
+  "ignorePatterns": ["*.css"],
+  "rules": {
+    "no-undef": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "jsdoc/require-asterisk-prefix": "error",
+    "jsdoc/check-indentation": "error",
+    "jsdoc/check-param-names": "error",
+    "jsdoc/check-property-names": "error",
+    "jsdoc/check-syntax": "error",
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/check-types": "error",
+    "jsdoc/check-values": "error",
+    "jsdoc/multiline-blocks": "error",
+    "jsdoc/no-bad-blocks": "error",
+    "jsdoc/no-blank-block-descriptions": "error",
+    "jsdoc/no-multi-asterisks": "error",
+    "jsdoc/no-undefined-types": "error",
+    "jsdoc/require-jsdoc": "warn",
+    "jsdoc/require-param": "error",
+    "jsdoc/require-param-name": "error",
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-returns": "error",
+    "jsdoc/require-returns-check": "error",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/require-throws": "error",
+    "jsdoc/valid-types": "error",
+    "semi": "error",
+    "arrow-parens": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-constant-condition": "off"
+  }
+}

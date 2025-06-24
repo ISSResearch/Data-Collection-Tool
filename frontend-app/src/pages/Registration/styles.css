@@ -1,0 +1,26 @@
+.iss__registrationPage {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    background-color: white;
+    border-radius: 4px;
+    padding: 40px 20px;
+    width: fit-content;
+    place-self: center;
+    min-width: 520px;
+}
+@media (max-width: 768px) {
+    .iss__registrationPage {
+        min-width: 480px;
+    }
+}
+@media (max-width: 575px) {
+    .iss__registrationPage {
+        min-width: 100%;
+    }
+}
+@media (max-width: 375px) {
+    .iss__registrationPage {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,45 @@
+.iss__fileSelector {
+    background-color: white;
+    padding: 12px 8px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: min(20%, 260px);
+    width: 100%;
+    justify-content: space-between;
+}
+.iss__fileSelector__inner {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 500px;
+    overflow-y: scroll;
+}
+.iss__fileSelector__pagination {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    place-content: center;
+    place-items: center;
+    font-size: 18px;
+}
+.iss_fileSelector__pagination__input {
+    display: flex;
+    font-size: 18px;
+    gap: 4px;
+}
+.iss_fileSelector__pagination__input > input {
+    border-radius: 4px;
+    width: 40px;
+    font-size: 18px;
+    display: flex;
+    place-content: center;
+    border: 1px solid var(--issBrand);
+}
+.nav--block {
+    pointer-events: none;
+    fill: grey !important;
+}
