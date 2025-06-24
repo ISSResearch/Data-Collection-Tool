@@ -1,0 +1,25 @@
+.iss__navLinks {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+}
+.iss__navLinks__link {
+  background: none;
+  border: 1px solid var(--issBrand);
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--issBrand);
+  text-decoration: none;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+@media (hover:hover) {
+  .iss__navLinks__link:hover {
+    background-color: var(--issBrand);
+    color: white;
+  }
+}
+@media (max-width: 575px) {
+  .iss__navLinks>li:last-of-type {
+    display: none;
+  }
+}

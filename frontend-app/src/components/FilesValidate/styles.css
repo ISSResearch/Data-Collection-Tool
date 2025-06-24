@@ -1,0 +1,27 @@
+.iss__validation__load {
+    width: 100%;
+    display: flex;
+    place-content: center;
+}
+.iss__validation {
+    min-height: 520px;
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    gap: 12px;
+}
+
+.iss_validation__duplicates {
+    display: flex;
+    gap: 8px;
+    place-tems: center;
+    flex-shrink: 1;
+    cursor: pointer;
+}
+
+.iss__validation__filterWrap {
+    width: 100%;
+    display: flex;
+    place-items: center;
+    gap: 20px;
+}

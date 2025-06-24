@@ -1,0 +1,33 @@
+.iss__projectCard {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background-color: white;
+    border: 1px solid var(--issBrand);
+    border-radius: 4px;
+    padding: 12px 20px;
+    transition:
+        background-color 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+.iss__projectCard__name {
+    color: var(--issBrand);
+    margin-bottom: 12px;
+}
+.iss__projectCard__text {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 20px;
+}
+.iss__projectCard__date {
+    font-size: 8px;
+    color: black;
+    text-align: right;
+}
+@media (hover: hover) {
+    .iss__projectCard:hover {
+        transform: scale(1.03);
+        box-shadow: 1px 1px 4px var(--issBrand);
+    }
+}

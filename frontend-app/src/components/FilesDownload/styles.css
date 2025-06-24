@@ -1,0 +1,137 @@
+.downloads {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background-color: var(--issBrand);
+    padding: 20px;
+    border-radius: 4px;
+    place-items: center;
+}
+
+.downloads > .iss__validation__filters {
+    margin: 0;
+    width: 100%;
+}
+.downloads .iss__validation__filters__item > label {
+    color: white;
+}
+
+.downloads__form {
+    width: 100%;
+    display: flex;
+    gap: 40px;
+    place-items: flex-start;
+}
+
+.downloads__form > input {
+    border-radius: 4px;
+    border: 1px solid var(--issBrand);
+    padding: 4px 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+.downloads__mainSet {
+    width: fit-content;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    place-items: flex-start;
+    transition: opacity 0.3s ease;
+}
+
+.set--hidden {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.downloads__mainSet > div {
+    place-self: flex-start;
+}
+
+.downloads__button {
+    border-radius: 4px;
+    background-color: white;
+    max-width: 120px;
+    width: 100%;
+    border: 1px solid var(--issBrand);
+    cursor: pointer;
+    padding: 4px 8px;
+    text-decoration: none;
+    display: flex;
+    place-content: center;
+    border: 1px solid var(--issBrand);
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.downloads__button > span {
+    transition: color 0.3s ease;
+}
+
+.block--button {
+    pointer-events: none;
+}
+
+.downloads__inputBox__wrap {
+    display: flex;
+    gap: 4px;
+    place-content: center;
+}
+.downloads__inputBox__wrap > span {
+    color: white;
+}
+
+.downloads__fileSelector {
+    width: 100%;
+}
+
+.downloads__table {
+    background-color: white;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.downloads__table th,
+.downloads__table td {
+    border: 1px solid var(--issBrand);
+    padding: 4px;
+}
+.downloads__table__button {
+    padding: 4px !important;
+}
+.downloads__table__button > button {
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+}
+.downloads__table__button > button > svg {
+    fill: var(--issBrand);
+}
+.downloads__row__success {
+    background-color: #91df977a;
+}
+.downloads__row__failure {
+    background-color: #ff62627d;
+}
+
+@media (hover: hover) {
+    .downloads__table__button > button:hover {
+        opacity: 0.3;
+    }
+
+    .downloads__button:hover {
+        background-color: var(--issBrand);
+        border-color: white;
+    }
+
+    .downloads__button:hover > span {
+        color: white;
+    }
+}

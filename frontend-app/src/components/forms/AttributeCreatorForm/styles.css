@@ -1,0 +1,55 @@
+.iss__attributecreator {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.iss__attributecreator {
+    grid-area: attribute_field;
+    max-width: 100%;
+}
+
+.iss__attributecreator__addButton {
+    border-radius: 4px;
+    position: relative;
+    width: fit-content;
+    background: none;
+    border: 1px solid var(--issBrand);
+    cursor: pointer;
+    padding: 4px 8px;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.addButton__cross {
+    position: absolute;
+    top: -6px;
+    left: -14px;
+    width: 20px;
+    height: 20px;
+}
+
+.addButton__cross span {
+    display: block;
+    width: 20px;
+    height: 3px;
+    background-color: var(--issLightGreen);
+    position: absolute;
+}
+
+.addButton__cross span:nth-child(1) {
+    transform: rotate(90deg);
+}
+
+.iss__attributecreator__attributesForm {
+    max-width: 557px;
+}
+
+@media (hover: hover) {
+    .iss__attributecreator__addButton:hover {
+        background-color: var(--issBrand);
+        color: white;
+    }
+}

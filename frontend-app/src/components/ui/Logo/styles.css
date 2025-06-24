@@ -1,0 +1,28 @@
+.iss__brand {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    gap: 8px;
+    text-decoration: none;
+    padding-right: 8px;
+    border-right: 1px solid #62abff57;
+    transition: border-color 0.3s ease;
+}
+.iss__brand__logo {
+    width: 100px;
+}
+.iss__brand__name {
+    font-size: 12px;
+    text-align: center;
+    color: var(--issBrand);
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+}
+@media (hover: hover) {
+    .iss__brand:hover {
+        border-color: var(--issBrand);
+    }
+    .iss__brand:hover .iss__brand__name {
+        opacity: 1;
+    }
+}

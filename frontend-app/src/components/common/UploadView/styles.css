@@ -1,0 +1,95 @@
+.iss__uploadProgress__modal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: none;
+    padding: 20px;
+}
+.iss__uploadProgress__modal > div {
+    border: none;
+}
+.iss__uploadProgress__modal::backdrop {
+    background: #d8eaffb5;
+}
+.iss__uploadFiles {
+    background-color: white;
+    border-radius: 4px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.iss__uploadProgress__item {
+    display: flex;
+    gap: 20px;
+}
+.complete-status-f {
+    background-color: var(--issLightRed);
+}
+.complete-status-a {
+    background-color: var(--issLightGreen);
+}
+.iss__uploadProgress__completion {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--issBrand);
+    border-radius: 50%;
+    overflow: hidden;
+}
+.iss__uploadProgress__progressWrap {
+    border-radius: 4px;
+    width: 200px;
+    height: 20px;
+    border: 1px solid var(--issBrand);
+    background-color: var(--issLightBrand);
+}
+.iss__uploadProgress__progress {
+    height: 100%;
+    background-color: var(--issBrand);
+    transition: width 1s ease;
+}
+.name-status-f {
+    color: var(--issLightRed);
+}
+.name-status-a {
+    color: var(--issLightGreen);
+}
+.iss__uploadProgress__fileName {
+    max-width: 200px;
+    width: 100%;
+    overflow-x: scroll;
+    transition: color 0.3s ease;
+}
+.iss__uploadProgress__error {
+    color: var(--issLightRed);
+}
+
+@media (max-width: 768px) {
+    .iss__uploadProgress__item {
+        flex-wrap: wrap;
+        row-gap: 0;
+        justify-content: space-between;
+    }
+    .iss__uploadProgress__fileName {
+        font-size: 16px;
+        max-width: 160px;
+    }
+    .iss__uploadProgress__completion {
+        display: none;
+    }
+}
+
+@media (max-width: 460px) {
+    .iss__uploadProgress__item {
+        flex-direction: column;
+    }
+    .iss__uploadProgress__progressWrap {
+        width: 100%;
+    }
+    .iss__uploadProgress__fileName {
+        font-size: 12px;
+    }
+    .iss__uploadProgress__error {
+        font-size: 14px;
+    }
+}

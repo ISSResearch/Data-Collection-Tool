@@ -1,0 +1,78 @@
+.iss__formContainer {
+    max-width: 360px;
+    width: 100%;
+    padding: 40px 0px;
+    position: relative;
+}
+.iss__form {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    gap: 20px;
+    width: 100%;
+}
+.iss__formContainer__errors {
+    font-size: 16px;
+    color: red;
+    margin-bottom: 20px;
+}
+.iss__input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+    width: 100%;
+    position: relative;
+}
+.iss__input input {
+    padding: 8px 0px;
+    border: none;
+    border-bottom: 1px solid var(--issBrand);
+    outline: none;
+    font-size: 14px;
+}
+.eyeIcon {
+    cursor: pointer;
+    bottom: 8px;
+    right: 8px;
+    position: absolute;
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+.eye--toggle {
+    text-shadow: 0px 0px 10px var(--issBrand);
+}
+.iss__formButton {
+    margin-top: 20px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    width: fit-content;
+    place-self: center;
+    background-color: var(--issBrand);
+    border: 1px solid var(--issBrand);
+    color: white;
+    cursor: pointer;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
+}
+.iss__formLoad {
+    margin: 0 auto;
+}
+@media (hover: hover) {
+    .iss__formContainer a:hover {
+        color: var(--issBrand) !important;
+    }
+    .iss__formButton:hover {
+        color: var(--issBrand);
+        background-color: white;
+    }
+    .eyeIcon:hover {
+        opacity: 1;
+    }
+}
+@media (max-width: 375px) {
+    .iss__form {
+        margin-bottom: 40px;
+    }
+}

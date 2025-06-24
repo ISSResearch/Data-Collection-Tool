@@ -1,0 +1,111 @@
+.iss__manualSelector {
+    border-radius: 4px;
+    position: relative;
+    width: 100%;
+    padding: 4px 8px;
+    background-color: white;
+    border: 1px solid var(--issBrand);
+    height: fit-content;
+}
+
+.iss__manualSelector__selected {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.iss__manualSelector__selected > span {
+    padding: 2px 8px;
+    color: black;
+    font-size: 14px;
+    background-color: var(--issLightBrand);
+    border-radius: 4px;
+}
+
+.iss__manualSelector__selected > svg {
+    position: absolute;
+    top: 20%;
+    right: 0;
+}
+
+.iss__manualSelector__options {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    overflow-y: hidden;
+    background-color: white;
+    max-height: 0;
+    outline: 1px solid transparent;
+    transform: translateY(100%);
+}
+
+.iss__manualSelector__options > div,
+.iss__manualSelector__options > form {
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.options--open {
+    outline-color: var(--issBrand);
+    max-height: 500px;
+    transition:
+        max-height 0.3s ease,
+        outline 0.5s ease;
+}
+
+.iss__manualSelector__level {
+    font-size: 14px;
+    cursor: pointer;
+    color: black;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--issBrand);
+    margin-bottom: 8px;
+}
+
+.iss__manualSelector__selector {
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.off--title {
+    background-color: transparent !important;
+}
+
+.iss__manualSelector__submit {
+    margin: 12px 0;
+    background-color: unset;
+    border: 1px solid var(--issBrand);
+    padding: 4px;
+    width: fit-content;
+    min-width: 60px;
+    place-self: center;
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+@media (hover: hover) {
+    .iss__manualSelector__option:hover {
+        background-color: var(--issLightBrand);
+        cursor: pointer;
+    }
+
+    .iss__manualSelector__level:hover {
+        background-color: var(--issLightBrand);
+    }
+
+    .iss__manualSelector__submit:hover {
+        background-color: var(--issBrand);
+        color: white;
+    }
+}

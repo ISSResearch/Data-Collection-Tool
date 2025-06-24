@@ -1,0 +1,10 @@
+.alertManager {
+    max-width: 200px;
+    width: 100%;
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}

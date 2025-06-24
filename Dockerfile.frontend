@@ -1,0 +1,13 @@
+FROM node:20.4-slim
+
+WORKDIR /app
+
+COPY ./frontend-app/package.json ./
+COPY ./frontend-app/tsconfig.json ./
+COPY ./frontend-app/.eslintrc.json ./
+
+RUN npm install
+RUN npm install -g serve
+
+COPY ./frontend-app/src ./src
+COPY ./frontend-app/public ./public

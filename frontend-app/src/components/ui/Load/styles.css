@@ -1,0 +1,20 @@
+.iss__loading, .iss__loadingMin {
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+.iss__loading {
+  border: 8px solid var(--issLightBrand);
+  border-top: 8px solid var(--issBrand);
+  width: 60px;
+  height: 60px;
+}
+.iss__loadingMin {
+  border: 4px solid var(--issLightBrand);
+  border-top: 4px solid var(--issBrand);
+  width: 30px;
+  height: 30px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

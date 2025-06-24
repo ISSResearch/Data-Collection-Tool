@@ -1,0 +1,35 @@
+.closeCross {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background-color: unset;
+    cursor: pointer;
+}
+
+.closeCross > span {
+    position: absolute;
+    top: 9px;
+    left: 0px;
+    display: block;
+    width: 22px;
+    height: 4px;
+    background-color: var(--issLightRed);
+    transition: opacity 0.3s ease;
+}
+
+.closeCross > span:nth-child(1) {
+    rotate: 45deg;
+}
+
+.closeCross > span:nth-child(2) {
+    rotate: -45deg;
+}
+
+@media (hover: hover) {
+    .closeCross:hover > span {
+        opacity: 0.6;
+    }
+}

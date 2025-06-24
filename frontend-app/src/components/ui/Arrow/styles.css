@@ -1,0 +1,10 @@
+.iss__arrowIcon:hover {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+@media (hover: hover) {
+    .iss__arrowIcon:hover {
+        opacity: 0.5;
+    }
+}
