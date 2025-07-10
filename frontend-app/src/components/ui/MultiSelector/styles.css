@@ -48,15 +48,9 @@
 }
 
 .options--open {
+  padding: 4px 8px;
   outline-color: var(--issBrand);
   max-height: 500px;
-}
-
-.iss__manualSelector__options > div,
-.iss__manualSelector__options > form {
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
 }
 
 .iss__manualSelector__level {
@@ -66,6 +60,8 @@
   padding: 4px 0;
   border-bottom: 1px solid var(--issBrand);
   margin-bottom: 8px;
+  display: block;
+  width: 100%;
 }
 
 .iss__manualSelector__selector {

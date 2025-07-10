@@ -73,27 +73,25 @@ export default function MultiSelector({
           `iss__manualSelector__options${isOpen ? " options--open" : ""}`
         }
       >
-        <div>
-          <label onClick={resetSelector} className="iss__manualSelector__level">
-            clear {selectorLabel}
-          </label>
-          <select multiple ref={selector} className="iss__manualSelector__selector">
-            {
-              selectorOptions.map(({ name, id }) =>
-                <option
-                  key={id}
-                  value={id}
-                  className="iss__manualSelector__option"
-                >{name}</option>
-              )
-            }
-          </select>
-          <button
-            onClick={() => handleManualSelect()}
-            type="button"
-            className="iss__manualSelector__submit"
-          >select</button>
-        </div>
+        <label onClick={resetSelector} className="iss__manualSelector__level">
+          clear {selectorLabel}
+        </label>
+        <select multiple ref={selector} className="iss__manualSelector__selector">
+          {
+            selectorOptions.map(({ name, id }) =>
+              <option
+                key={id}
+                value={id}
+                className="iss__manualSelector__option"
+              >{name}</option>
+            )
+          }
+        </select>
+        <button
+          onClick={() => handleManualSelect()}
+          type="button"
+          className="iss__manualSelector__submit"
+        >select</button>
       </div>
     </div>
   );
