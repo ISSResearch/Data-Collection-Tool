@@ -40,7 +40,7 @@
   left: 0;
   z-index: 1;
   width: 100%;
-  overflow-y: hidden;
+  overflow: hidden;
   background-color: white;
   max-height: 0;
   outline: 1px solid transparent;
@@ -65,6 +65,8 @@
 }
 
 .iss__manualSelector__selector {
+  display: block;
+  width: 100%;
   border: none;
   outline: none;
   font-size: 14px;
@@ -75,7 +77,8 @@
 }
 
 .iss__manualSelector__submit {
-  margin: 12px 0;
+  display: block;
+  margin: 8px auto;
   background-color: unset;
   border: 1px solid var(--issBrand);
   padding: 4px;
